@@ -1,0 +1,293 @@
+%
+% CHAPTER: Inaccuracy
+%
+
+\chapterimage{Train_wreck_at_Montparnasse_1895.pdf} % Chapter heading image
+
+\chapter{Inaccuracy}
+\label{chap:Error}
+
+\begin{quote}
+\begin{flushright}
+\emph{A little inaccuracy sometimes saves\\
+tons of explanations.}\\
+Saki
+\end{flushright}
+\end{quote}
+\bigskip
+
+In Section \ref{def:descriptions_model} we introduced the concept of description $d$ of a representation $r$ as a Turing machine that when it is interpreted by a universal Turing machine $\Gamma$ it prints out the string $r$. In practice, and given that our knowledge about the entity $e$ under study might be incomplete, it could happen that $\Gamma(d)$ produces another string $r'$, which is similar to the string $r$, but not equal. In this chapter we are interested in studying how close the string $r'$ is to the original string $r$, what we call the \emph{inaccuracy} of $d$.
+
+Inaccuracy is the second element we will use to measure how well we understand a research entity. The intuition is that the more accurate is our model, the better we understand the entity. From a formal point of view, the inaccuracy of a description is measured as the normalized information distance between the original representation $r$ and the representation $r'$ produced by our description $d$. Inaccuracy compares the output $r'$ of our inaccurate description $d$ with a the representation $r$ of the entity $e$, which could be an incorrect representation (positive miscoding) of that entity. Inaccuracy only deals with the description $d$, and it does not take into account the fact that $r$ might be an incorrect representation.
+
+Inaccuracy is a quantity that it is no computable in general, and so, it must be approximated in practice. Unfortunately, it does not exists an approximation that can by applied to all kind of topics (strings, abstract, ...) and so, different alternatives will be provided and studied in Part III of this book.
+
+{\color{red} In this chapter will also introduce the concepts of joint inaccuracy of two descriptions and the conditional inaccuracy of a description for an entity given a perfect knowledge of another entity.} And finally, we will extend the concept of inaccuracy from individual entities to research areas.
+
+%
+% Section: Inaccuracy
+%
+\section{Inaccuracy}
+\label{sec:inaccuracy:inaccuracy}
+
+When studying an entity $e \in \mathcal{E}$ through a representation $r \in \mathcal{R}_e$, it might happen that our candidate description $d$ is not a valid description for $r$, that is, $d \notin \mathcal{D}_r$ (see Definition \ref{def:descriptions_model}). In that case, the universal Turing machine $\Gamma$, when given as input $d$, will print out a string $r'$ different from the expected string $r$. Intuitively, we could claim that $d$ is an inaccurate description of the entity $e$. However, since descriptions describe entities indirectly though representations, our formal definition of the concept of inaccuracy has to be given with respect to the representations in use, not with respect to the original entities, and we should take into account that representations might be themselves wrong (something that has been already addressed with the concept of miscoding). Given the above considerations, we propose the following definition of the concept of inaccurate description.
+
+\begin{definition}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}$ a description, with $ d = \langle TM, a \rangle$. If $TM(a) = r'$, such that $r \neq r'$, we say that $d$ is an \emph{inaccurate} description for $r$.
+\end{definition}
+
+A candidate description $d$ could belong, or not, to the valid descriptions $\mathcal{D}_r$ of $r$,
+and the representation $r$ could belong, or not, to the valid $\mathcal{R}_e$ representations of $e$. Moreover, it might happen that the string $r'$ produced by the description $d$ belong the representations $\mathcal{R}_e$ of $e$ but that $d$ does not to belong to the descriptions $\mathcal{D}_r$ of $r$, in which case we should reconsider if $r$ is the best representation of $e$ to consider (see Section \ref{sec:representations}).
+
+If our description is inaccurate, we would like to have a quantitative measure of how far we are from having the right description. In terms of machines, a natural way to define this measure would be by means of computing how difficult is to transform the wrong representation $r'$ produced by our description into the original representation $r$, that is, to compute the normalized information distance between $r'$ and $r$ .
+
+{\color{red} And the other way around and why}.
+
+\begin{definition} [Inaccuracy]
+\label{def:inaccuracy:inaccuracy:inaccuracy}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}$ a description, with $d = \langle TM, a \rangle$. We define the \emph{inaccuracy} of the description $d$ for the representation $r$, denoted by $\iota(d, r)$, as:
+\[
+\iota(d, r) = \frac{ \max\{ K \left(r \mid \Gamma(d) \right), K \left( \Gamma(d) \mid r \right) \} } { \max\{ K(r), K \left(\Gamma(d) \right) \} }
+\]
+\end{definition}
+
+Having a relative measure of inaccuracy instead of an absolute one allow us to compare the inaccuracy of different descriptions for the same representation, and the inaccuracy of different descriptions for different representations.
+
+\begin{example}
+{\color{red} TODO: Pending.}
+\end{example}
+
+The inaccuracy of a description is, conveniently, a number between $0$ and $1$, as next proposition shows.
+
+\begin{proposition}
+\label{prop:inaccuracy:inaccuracy:range}
+We have that $0 \leq \iota(d, r) \leq 1$ for all representations $r \in \mathcal{B}^\ast$ and all the descriptions $d \in \mathcal{D}$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Review.} Given that $K(t \mid m_t)>0$ and that $K(t)>0$, since they are the lengths of non-empty strings, and that $K(t \mid m_t)  \geq K(t)$ as it was proved in Proposition \ref{prop:kolmogorov_conditional}.
+\end{proof}
+
+The above proposition holds for all possible descriptions $d$ and all possible representations $r$, even in the case that a description $d$ is not intended as a model for the representation $r$, in which case the inaccuracy would be close to one.
+
+Being based in the concept of Kolmogorov complexity, inaccuracy is a quantity that cannot be computed in practice for the general case, and so, it must be approximated. How to approximate the concept of inaccuracy is something that depends on the characteristics of the entities under study and their representations. In Part III of this book we will see several examples of approximations.
+
+%
+% Section: Joint Inaccuracy
+%
+
+\section{Joint Inaccuracy}
+
+In Section \ref{sec:descriptions_joint_topic} we introduced the concept of joint representation as a exploratory mechanism to discover new research entities, and in Section \ref{sec:joint_miscoding} we saw how the metric of miscoding changes when concatenate two representations. In this section we are going to study how inaccuracy varies when concatenating representations.
+
+Given two representations $r$ and $s$, we want to know the inaccuracy of the model $m$ when describing the joint representation $rs$. Since we required that $rs$ must be a valid representation (see Definition \ref{def:descriptions_extended_topics}), the formalization of the concept of joint inaccuracy is straightforward:
+
+\begin{definition}
+\label{def:inaccuracy_joint_representation}
+Let $r, s \in \mathcal{R}$ be two different representations, and $m$ a description. We define the joint inaccuracy of the model $m$ for the joint topic $rs$, denoted by $\iota(m, rs)$, as:
+\[
+\iota(m, rs) = \frac{ \max\{ K \left(rs \mid \Gamma(m) \right), K \left( \Gamma(m) \mid rs \right) \} } { \max\{ K(rs), K \left(\Gamma(m) \right) \} }
+\]
+\end{definition}
+
+{\color{red} TODO: Introduce the following propostion}
+
+\begin{proposition}
+Let $r \in \mathcal{R}$ be a representation and $m \in \mathcal{M}$ be a model, then we have that $0 \leq \iota(m, r) \leq 1$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+{\color{red} TODO: Introduce the following propostion}
+
+\begin{proposition}
+Let $r, s \in \mathcal{R}$ be two different representations, and $m \in \mathcal{M}$ be a model, then we have that:
+\[
+\iota(m, rs) \leq \iota(m, r) + \iota(m, s)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+{\color{red} TODO: Introduce the following propostion}
+
+\begin{proposition}
+Let $r, s \in \mathcal{R}$ be two different representations, and $m \in \mathcal{M}$ be a model, then we have that:
+\[
+\iota(m, rs) \leq \iota(m, r), \iota(m, rs) \leq \iota(m, s)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+% TODO: i(m, ts) = i(m, st)
+
+{\color{red} TODO: Introduce the following propostion}
+
+\begin{proposition}
+Let $r \in \mathcal{R}$ be a representation and $m \in \mathcal{M}$ be a model, then we have that:
+\[
+\iota(m, rs) = \iota(m, sr)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+\begin{example}
+\label{ex:inaccuracy_joint_inequality}
+{\color{red} TODO: Provide an example}
+\end{example}
+
+{\color{red} TODO: Fix the following definitions and propositions}
+
+We can extend the concept of joint miscoding to any collection, but finite, of topics.
+
+\begin{definition}
+Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. We define the \emph{joint miscoding of} $t_1, t_2, \ldots, t_n$, denoted by $\mu(t_1, t_2, \ldots, t_n)$, as:
+\[
+\mu(t_1, t_2, \ldots, t_n) = \min_{(t_{e_1}, t_{e_2}, \ldots, t_{e_n}) \in \mathcal{T}_\mathcal{E}^n}  \frac{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \mid \langle t_1, t_2, \ldots, t_n \rangle \right) }{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \right)}
+\]
+We define the \emph{weak miscoding of} $t_1, t_2, \ldots, t_n$, denoted by $\mu(t_1 t_2 \ldots t_n)$, as:
+\[
+\mu(t_1 t_2 \ldots t_n) = \min_{t_e \in \mathcal{T}_\mathcal{E}} \frac{K(t_e \mid t_1 t_2 \ldots t_n)}{k(t_e)}
+\]
+\end{definition}
+
+It is easy to prove that the properties of the concept of miscoding generalizes to multiple topics.
+
+\begin{proposition}
+Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. Then, we have that:
+
+\renewcommand{\theenumi}{\roman{enumi}}
+\begin{enumerate}
+\item $\mu(t_1, t_2, \ldots, t_n) \leq \mu(t_i) \; \forall \, 0 \leq i \leq n$,
+\item $\mu(t_1, \ldots, t_i, \ldots, t_j, \ldots, t_n) = \mu(t_1, \ldots, t_j, \ldots, t_i, \ldots, t_n) \; \forall \, 0 \leq i \leq j \leq n$.
+\item $\mu(t_1 t_2 \ldots t_n) \leq \mu(t_1, t_2, \ldots, t_n)$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+% Inaccuracy of Joint Models
+
+\subsection{Inaccuracy of Joint Models}
+
+{\color{red} TODO: Do we need this concept?}
+
+Given two topics $t$ and $s$, instead of talking about the inaccuracy of the joint topic $ts$, we prefer to deal with the joint inaccuracy of the individual topics.
+
+\begin{definition}
+Let $t, s \in \mathcal{T}$ be two different topics. We define the \emph{joint inaccuracy of the topics $t$ and $s$ given the models $m_s$ and $m_s$}, denoted by $\iota(m_t, m_s)$, as:
+\[
+\iota( m_t, m_s ) = \frac{ K(ts \mid  \langle m_t, m_s \rangle ) } {K(ts)}.
+\]
+\end{definition}
+
+As it was the case of the concept of miscoding, joint inaccuracy is a number between $0$ and $1$.
+
+\begin{proposition}
+We have that $0 \leq \iota(m_t, m_s) \leq 1$ for all $t, s \in \mathcal{T}$ and all $m_t, m_s$.
+\end{proposition}
+\begin{proof}
+{\color{red} Review}
+Given that $K \left( \langle t, s \rangle \mid d_{t,s} \right)>0$ and that $K \left( \langle t, s \rangle \right)>0$, since they are the lengths of non-empty strings, and that $K \left( \langle t, s \rangle \mid d_{t,s} \right)  \geq K \left( \langle t, s \rangle \right)$ as it was proved in Proposition \ref{prop:kolmogorov_conditional}.
+\end{proof}
+
+{\color{red} TODO: Introduce the following propostion}
+
+\begin{proposition}
+Let $t$ and $s$ be two different topics, and $m_t$ and $m_s$ two models. We have that:
+\[
+\iota(m_t, m_s) \leq \iota(m_t) + \iota(m_s)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+{\color{red} TODO: Introduce the following propostion}
+
+\begin{proposition}
+Let $t$ and $s$ be two different topics, and $m_t$ and $m_s$ two models. We have that:
+\[
+\iota(m_t, m_s) \geq \iota(m_t)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+When dealing with the joint inaccuracy of two topics, the order in which the topics are listed is not relevant.
+
+\begin{proposition}
+We have that $\iota(m_t, m_s) = \iota(m_s, m_t)$ for all $t,s \in \mathcal{T}$ and all $m_t, m_s$.
+\end{proposition}
+\begin{proof}
+{\color{red} Review}
+Apply Propositions \ref{prop:kolmogorov_order} and \ref{prop:joint_order}.
+\end{proof}
+
+%
+% Section: Conditional Inaccuracy
+%
+
+\section{Conditional Inaccuracy}
+
+We are also interested into study the inaccuracy of a topic given a perfect knowledge of another topic. That is, we would like to know the \emph{conditional inaccuracy} of a topic.
+
+\begin{definition}
+Let $t,s \in \mathcal{T}$ be two different topics, and let $m_{t \mid s^\star}$ be a conditional model of $t$ given a perfect model for $s$. We define the \emph{conditional inaccuracy} of topic $t$ given the conditional description $m_{t \mid s^\star}$, denoted by $\iota(t \mid m_{t \mid s^\star})$, as: 
+\[
+\iota( t \mid m_{t \mid s^\star}) = \frac{ K \left(t \mid m_{t \mid s^\star} \right) } {K(t \mid m^\star_s)}.
+\]
+\end{definition}
+
+Conditional surfeit is a relative measure, and so, a number between $0$ and $1$.
+
+\begin{proposition}
+We have that $0 \leq \sigma(d_{t \mid s^\star}) \leq 1$ for all $t,s$.
+\end{proposition}
+\begin{proof}
+Given that $K(t,s) \leq l(d_{t,s})$ we have that $\frac{K(t, s)}{l \left( d_{t,s} \right)} \leq 1$ and so, $1 - \frac{K(t, s)}{l \left( d_{t,s} \right)} \geq 0$. Also, since $\frac{K(t, s)}{l \left( d_{t,s} \right)} > 0$ (both quantities are positive integers), we have that $1 - \frac{K(t, s)}{l \left( d_{t,s} \right)} \leq 1$.
+\end{proof}
+
+Intuition tell us that the surfeit of a description could only decrease if we assume the background knowledge given by the description of another topic. This is because we require that this background knowledge must be a perfect description (it presents no surfeit). However, as it was the case of joint surfeit, we have to wait until Chapter \ref{chap:Nescience} to formalize this intuition.
+
+{\color{red} TODO: Review}
+
+Finally, we can extend our concepts of conditional surfeit and conditional redundancy to multiple, but fine, number of topics.
+
+\begin{definition}
+Let $t, s_1, s_2, \ldots, s_n \in \mathcal{T}$ be a finite collection of topics, and let $d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star}$ any conditional description of $t$ given $s_1, s_2, \ldots, s_n$. We define the \emph{conditional surfeit} of the description $d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star}$, denoted by $\sigma(d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star})$, as: 
+\[
+\sigma(d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star}) = 1 - \frac{K\left( t \mid s_1^\star, s_2^\star, \ldots,s_n^\star \right)}{l \left( d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star} \right)}
+\]
+And the \emph{conditional redundancy} of the description $d_{t_1, t_2, \ldots, t_n}$, denoted by $\rho(d_{t_1, t_2, \ldots, t_n})$, as:
+\[
+\rho(d_{t_1, t_2, \ldots, t_n}) = 1 - \frac{K(d_{t_1, t_2, \ldots, t_n})}{l \left( d_{t_1, t_2, \ldots, t_n} \right)}
+\]
+\end{definition}
+
+It is easy to show that the properties of conditional surfeit and conditional redundancy apply to the case of multiple topics as well.
+
+%
+% Section: Inaccuracy of Areas
+%
+
+\section{Inaccuracy of Areas}
+
+The concept of inaccuracy can be extended to research areas in order to quantitative measure the amount of effort required to fix an inaccurate description of the area.
+
+\begin{definition}
+Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A} = \{t_1, t_2, \ldots, t_n\}$, and let $d_{\hat{A}}$ be one of its descriptions. We define the \emph{inaccuracy of the description} $d_{\hat{A}}$ as:
+\[
+\iota(d_{\hat{A}}) = \frac{ K(\langle t_1, t_2, \ldots, t_n \rangle \mid d_{\hat{A}}) } {K(\langle t_1, t_2, \ldots, t_n \rangle)}.
+\]
+\end{definition}
+
+
+

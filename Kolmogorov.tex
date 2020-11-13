@@ -1,0 +1,407 @@
+%
+% CHAPTER 4.- Kolmogorov Complexity
+%
+
+% TODO: Can we talk about independent topics? K(t|s) = K(t)
+% TODO: Does K(t|s) != K(s|t)?
+
+%
+%  Section 1:
+%    - (TODO)   Review proof, for example Vitanyi says C = 2l(n) + 1
+%    - (TODO)   Prove theorem
+
+\chapterimage{Mandelbrot.pdf}
+
+\chapter{Complexity}
+\label{chap:Algorithmic_Information}
+
+\begin{quote}
+\begin{flushright}
+\emph{Everything should be made as simple as possible, \\
+but not simpler. \\}
+Albert Einstein
+\end{flushright}
+\end{quote}
+\bigskip
+
+In Chapter \ref{chap:Coding} it was introduced the notion of complexity of a string based on the lengths of the code words of a prefix free code. We saw that this definition presents two limitations: the first one is that we need to know in advance the set of possible strings, and the second that it is necessary to define a priori a probability distribution over this set. It would be highly convenient if we can widen the set of strings until we cover all strings (that is, $\mathcal{B}^\ast$), without requiring a probability distribution, so we provide an absolute notion of string complexity. Unfortunately, even if we are able to solve these problems, there exists an even more serious limitation when studying the complexity of strings using codes: some strings that we would expect to be classified as simple cannot be compressed at all. For example, the binary expansion of the $\pi$ constant follows a uniform distribution over the set $\left\{0, 1\right\}$, and so, it cannot be compressed; but, on the other hand, it can be fully and effectively described by a very short mathematical formula. What it is required is an alternative definition of complexity of strings.
+
+\emph{Kolmogorov Complexity}, also known as \emph{Algorithmic Information Theory}, provides a definition of complexity of a string that explicitly address these issues. Intuitively, the amount of information of a finite string is the length of the shortest computer program that is able to print the string. It does not require to know in advance the set of valid strings, nor its probability distribution. Moreover, objects like $\pi$ are properly classified as having low complexity. We could say that Kolmogorov complexity provides a universal definition of amount of information that is very close to our intuitive idea. In order to compute the Kolmogorov complexity of a string, we have to agree upon a universal description method, or computer language, and a universal computer. We could rise the question if doing so the complexity of a string becomes a quantity that depends on the computer language selected. Fortunately, it can be shown that this is not the case, since all reasonable options (powerful enough) of computer languages provide the same description length, up to a fixed constant that depends on the selected languages, but now the string itself. Unfortunately, Kolmogorov complexity introduces new problems, being the most important one that it is a non-computable quantity, and so, it must be approximated in practice.
+
+At this point, we could ask ourselves if it is possible to compute the complexity of any object in general, not only strings. The answer is yes, at least in theory. Given an object $x$ what we have to do is to provide an encoding method that describes the object using a string $\langle x \rangle$. That encoding method would be useful only if we are able to losslessly and effectively reconstruct the original objects given their descriptions. Unfortunately, it is not always possible to provide such descriptions, either because we are dealing with abstract objects (like most of the objects studied in mathematics), or because from a practical point of view it is not possible to reconstruct the object given its description (for example with living things\footnote{At least up to today it is not possible to recreate an animal given its DNA.}).
+
+{\color{red} TODO: Include a disclaimer about the word "complexity"}
+
+%
+% Section: String Complexity
+%
+
+\section{Strings Complexity}
+\label{sec:strings_complexity}
+
+{\color{red} TODO: Include somewhere an example of cheating in complexity}
+
+{\color{red} TODO: Explain somewhere the role of these annoying constants}
+
+In Section \ref{sec:Turing-Machines} it was introduced the concept of Turing machine, an idealized model of computers, and we saw that Turing machines can be represented as partial computable functions $T:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, that assigns to each input string $s \in \mathcal{B}^\ast$ the output string $T(s) \in \mathcal{B}^\ast$ (Definition \ref{def:computable-function}); we also introduced the concept of universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ (Definition \ref{def:Universal-Turing-Machine}), a machine that can simulate the behavior of any other Turing machine; that is, for all $(x,v) \in  \mathcal{B}^\ast \times \mathcal{B}^\ast$ we have that $U(x,v) = T_{x}(v)$. Later, in Section \ref{Codes} it was introduced the concept of code, and in particular, the notion of prefix-free code (Definition \ref{def:Prefix-free-Code}), and we saw that this kind of codes present important properties (Theorem \ref{th:Kraft-Inequality}). Next definition merges the best of both worlds, Turing machines and prefix-free codes, and introduce a new type of universal Turing machine.
+
+\begin{definition}
+A \emph{prefix-free universal Turing machine} is a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ such that for every $v \in \mathcal{B}^\ast$, the domain $U_{v}$ is prefix-free, where $U_{v}:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, $U_{v}(x) = U(x, v)$ for all $x \in \mathcal{B}^\ast$.
+\end{definition}
+
+% TODO: This thing about McMillan is true?
+
+Intuitively, what the above definition requires is that no computer program can be a prefix of any other program. This is not a limitation from the point of view of string lengths, since applying McMillan (Theorem \ref{th:Kraft-Inequality}) given a not prefix-free program we could always find a prefix-free one that computes exactly same function and has the same length. Moreover, in practice, real computer programs are usually prefix free; for example, the C programming language requires that all functions must be enclosed by braces \{\}.
+
+The concept of prefix-free universal Turing machine allows us to introduce a new definition of complexity of a string that is more in line with out intuitive idea of amount of computational information contained in an object (encoded as a string).
+
+\begin{definition}[Kolmogorov Complexity]
+\label{def:Kolmogorov-Complexity}
+Fix a prefix-free universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$. The \emph{Kolmogorov complexity} of a string $s \in \mathcal{B}^\ast$, denoted by $K(s)$, is defined as:
+\[
+K(s)=\min_{p,v \in \mathcal{B}^\ast}\left\{l(p) + l(v)\,:\, U(p,v)=s\right\}
+\]
+\end{definition}
+
+Using modern computer science terminology we could say that $U$ is the computer, $p$ is the program and $v$ is the input to the program. Intuitively, the shortest description of a string $s$ is given by two elements: a program that compress all the regular patterns of the string, and a new string $v$ that comprises those parts of $s$ that do not present any regularity. We have to find the optimum balance between increasing the complexity of the program, trying to grasp more regularities, or increase the size of the non-compressible part.
+
+\begin{example}
+Consider the string composed of one thousand times the substring "10", that is "$\underbrace{1010\ldots1010}_{1.000\,\mathrm{times}}$". We could write the following program:
+
+\begin{verbatim}
+    example(char *v) {
+        for (int i=1; i<=1000; i++)
+            printf("%s", v);
+    }
+\end{verbatim}
+and then run it with:
+\begin{verbatim}
+    example("10");
+\end{verbatim}
+
+in order to print it. The length of the original string is 2.000 bits, but the length of the program is 480 bits (assuming that the program is encoded using an uniform code of 8 bits), and the length of the input is 2 bits, so we can conclude that the string has a low complexity. Of course, in order to compute the real Kolmogorov complexity of the string we should find the shortest Turing machine that prints that string.
+
+On the contrary, a string composed of two thousands random 0's and 1's would have a high complexity, since it does not exists any program shorter than the program that prints the string itself.
+\end{example}
+
+As we said in the preface of this chapter, Kolmogorov complexity would be useless if the complexity of the strings depends on the selected universal Turing machine. Next theorem proves that this is not the case, up to a constant that depends on the selected machines, but not on the strings themselves. In this way, we could say that Kolmogorov complexity is an inherent property of the strings themselves.
+
+\begin{theorem}[Invariance theorem]
+\label{def:Invariance-theorem}
+Let $U$ and $U'$ two universal Turing machines. Then, there exists a constant $C_{U, U'}$, that depends on $U$ and $U'$, such that for each string $s \in \Sigma^{\ast}$ we have that:
+\[
+K_{U}(s) \leq K_{U'}(s) + C_{U, U'}
+\]
+\end{theorem}
+\begin{proof}
+Let $p, v$ be the shortest strings that $U'(p,v)=s$, then we have that $U(\langle U',p, v \rangle, \lambda) = U'(p, v) = s$, and that $l(\langle U',p \rangle) = \log(l(\langle U' \rangle)) + 1 + l(\langle U' \rangle) + l(p) = K_{U'}(s) + C$, where $l(\langle U' \rangle)$ is the length of the machine $U'$ using the encoding described in Section \ref{sec:Universal-Turing-Machines}.
+\end{proof}
+
+\begin{example}
+Select a universal programming language, for example Java, and an alternative language, for example Python. We could write an interpreter of Python in Java, that is, a Java program that as input gets a Python script and runs it. Then, we could just ask to Java to run this interpreter over the shortest Python script that prints a string. In this way, the complexity of a string $s \in \mathcal{B}^\ast$ given the language Java $C_J(s)$ would be less or equal than the complexity of the string given the language Phyton $C_J(s)$ plus the length of the Phyton interpreter written in Java $C_{J,P}$, that is, $C_J(s) \leq C_P(s) + C_{J,P}$.  Moreover, the lenght of the interpreter $C_{J,P}$ does not depend on the string $s$.
+\end{example}
+
+Although we have proved that Kolmogorov complexity does not depends on the selected universal Turing machine, the size of the constant $C$ could be a serious limitation in practical applications, since it prevents us to compute the complexity of short strings (the complexity of the string would be very small compared to the constant). This problem is explicitly addressed by the Minimum Description Length principle described in Chapter \ref{chap:Minimum-Length}.
+
+\begin{notation}
+We denote by $s^{\ast}$ the shortest program that print the string $s$ given the universal Turing machine $U$, that is $s^\ast = \langle p,v \rangle$, $U(s^\ast) = s$ and $l(s^\ast) = K(s)$. If there are more than one $s^\ast$ programs satisfying the avobe properties, we select the first one using a lexicographical order iduced by $0 < 1$.
+\end{notation}
+
+The size of the $C_{U, U'}$ constant is not the only limitation that Kolmogorov complexity presents, another problem is that it is a non-computable quantity, that is, there is no algorithm that given a string computes the shortest program that prints that string.
+
+\begin{theorem}
+The function $K:\mathcal{B}^\ast \rightarrow \mathbb{N}$ that assigns to each string $s$ its Kolmogorov complexity $K(s)$ is not computable.
+\end{theorem}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+% TODO: Mention the relation of this theorem with the concept of Kolmogorov complexity
+
+In practice, what we do is to approximate the Kolmogorov complexity by the compressed version of the string, given an standard compression algorithm, for example, the Huffman algorithm described in Section \ref{sec:Huffman-Algorithm}.
+
+%
+% Section: Properties of Kolmogorov Complexity
+%
+
+\section{Properties of Complexity}
+
+Say something intelligent here
+
+
+\begin{proposition}
+\label{prop:kolmogorov_order}
+There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $K(x, y) \leq K(y, x) + c$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+
+The Kolmogorov complexity of a string cannot exceed its own length.
+
+\begin{proposition}
+\label{prop:kolmogorov_length}
+There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s) \leq l(s)+c$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+\begin{proposition}
+For all $s\in\mathcal{B}^{\ast}$ we have that $0 < K(s) < \infty$.
+\end{proposition}
+\begin{proof}
+Since $K(s)$ is the length of a string, it must be greater than $0$. The property $K(s) < \infty$ is a consequence of Proposition \ref{prop:kolmogorov_length} and the fact that we are only dealing with finite strings.
+\end{proof}
+
+
+\begin{proposition}
+Let $U$ and $U'$ two universal Turing machines. Prove that there exists a constant $C$ such that for each $s \in \Sigma$ we have $\mid K_{U}(s) - K_{U'}(s) \mid \leq C$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+By $K(x, y)$ we mean the length of the shortes program that prints the strings $x$ and $y$ in such a way that we can distinguish them.
+
+\begin{proposition}
+\label{prop:additive_kolmogorov}
+There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $K(x, y) \leq K(x) + K(y) + c$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+\begin{proposition}
+\label{prop:excess_kolmogorov}
+There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $K(x, y) \geq K(x) + c$ and $K(x, y) \geq K(y) + c$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+
+\begin{proposition}
+If f:A* -> A* is a computable biyection, then K(f(x)) < K(x) + O(1).
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+%
+% Section: Conditional Kolmogorov Complexity
+%
+
+\section{Conditional Kolmogorov complexity}
+
+Sometimes, the description of a string can be greatly reduced if we assume we know about another string. In this section we are going to introduce the concept of \emph{conditional Kolmogorov complexity}, that is, the complexity of a string $s$ when another string $s'$ is given as input.
+
+\begin{definition}[Conditional Kolmogorov Complexity]
+Given the universal Turing machine $U:\Sigma^{\ast}\times\Sigma^{\ast}\rightarrow\Sigma^{\ast}$ we define the \emph{conditional Kolmogorov complexity} of a string $s\in\Sigma^{\ast}$ given the string $s'\in\Sigma^{\ast}$ as:
+\[
+K(s|s')=\min_{p,v\in\Sigma^{\ast}}\left\{l(p) + l(v)\,:\, U(p,\langle v, s' \rangle)=s\right\}
+\]
+\end{definition}
+
+As it was the case of the non-conditional Kolmogorov complexity, we have that the conditional complexity of a string $s$ is a quantity that depends on the string itself and the provided string $v$, but not on the reference machine used for the computation.
+
+\begin{exercise}
+Given $U$ and $U'$, two universal Turing machines, prove that there exists a constant $C_{U, U'}$ such that for each strings $s$ and $s' \in \Sigma^{\ast}$ we have that $K_{U}(s|s') \leq K_{U'}(s|s') + C_{U, U'}$.
+\end{exercise}
+
+{\color{red} TODO: Multiple conditional complexity}
+
+\begin{proposition}
+For all $s\in\mathcal{B}^{\ast}$ we have that $0 < K(s | v) < \infty$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+
+\begin{proposition}
+There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s | s ) = c$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+The complexity of a string $s$ does not increase when another string
+
+\begin{proposition}
+\label{prop:kolmogorov_conditional}
+There is a constant $c$ such that for all $s, s'\in\mathcal{B}^{\ast}$ we have that $K(s | s' ) \leq K(s) + c$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+{\color{red} TODO: Introduce this propostion.}
+
+\begin{proposition}
+\label{prop:kolmogorov_relations}
+For all $s, s'\in\mathcal{B}^{\ast}$ we have that
+\[
+K(s | s' ) \leq K(s) \leq K(s, s')
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+{\color{red} TODO: Introduce this propostion.}
+
+\begin{proposition}
+\label{prop:kolmogorov_relations}
+For all $X, Y\in\mathcal{B}^{\ast}$ we have that
+\[
+K(XY) = K(X) + K(Y \mid X)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+%
+% Section: Information Distance
+%
+
+\section{Information Distance}
+\label{sec:information_distance}
+
+In this section we are going to introduce a universal measure of absolute information distance between individual objects. Intuitively, the information distance between two strings $x$ and $y$ would be the length of the shortest computer program that allow us to transform $x$ into $y$ and $y$ into $x$. This notion of distance is universal in the sense that it contains all the other notions of computable distance as special cases.
+
+We might be tempted to use as information distance the conditional Kolmogorov coplexity of $x$ given $y$, $K(x \mid y)$, however conditional complexity is not suitable as a measure of information distance due to its assymetry, that is, $K( \lambda \mid y)$ is always small, even in the case of $y$ is not close to the empty string. Equally erroneously would be to use $K(x \mid y) + K(y \mid x)$ since that would not take into account the redundancy existing between the information required to transform $x$ into $y$ and $y$ into $x$.
+
+\begin{definition}
+The \emph{information distance} between two binary strings $x$ and $y$, denoted by $E(x, y)$, is defined as
+\[
+E_U(x, y) = \min \{ l(p) : U(p, x) = y, U(p, y) = x \}
+\]
+\end{definition}
+
+{\color{red} Say something about that information distance is up to a fixed universal Turing machine. Perhaps insists that it is not computable.}
+
+{\color{red} Introduce the following proposition.}
+
+\begin{proposition}
+Let $x$ and $y$ two binary strings, then we have that:
+\[
+E_U(x, y) = \max\{ K(x \mid y), K(y \mid x) \} + O ( \log \max\{ K(x \mid y), K(y \mid x) \}) 
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TBD (based on the maximal overlap).}
+\end{proof}
+
+{\color{red} Introduce the concept of max distance as:}
+\[
+E(x, y) = \max\{ K(x \mid y), K(y \mid x) \}
+\]
+
+\begin{example}
+{\color{red} TODO: Give an example based on the bitwise exclusive or.}
+\end{example}
+
+{\color{red} Introduce the following proposition.}
+
+\begin{proposition}
+{\color{red} $E(x, y)$ is a metric.}
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+{\color{red} TODO: Introduce the concept of admisible information distance. Prove that $E(x, y)$ is an admisible information distance. Prove that it is minimal for every admisible information distance. Explain this notion of universality.}
+
+{\color{red} Explain the problem of using non-normilized distance, perhaps with an example. "Normaliztion refers to the fact that the transformation description size must be seen in relation to the size of the participating objects"}
+
+{\color{red} TODO: Perhaps say something about the options of normalization, and why we choose max.}
+
+\begin{definition}
+The \emph{normalized information distance} between two binary strings $x$ and $y$, denoted by $e(x, y)$, is defined as:
+\[
+e(x, y) = \frac{\max\{ K(x \mid y), K(y \mid x) \}}{\max \{ K(x), K(y) \} }
+\]
+\end{definition}
+
+\begin{definition}
+The \emph{normalized compression distance} between two strings $x$ and $y$, given the compressor $Z$, and denoted by $e_Z(x, y)$, is defined as:
+\[
+e_Z(x, y) = \frac{ Z(xy) - \min\{ Z(x), Z(y) \}}{\max \{ Z(x), Z(y) \} }
+\]
+\end{definition}
+
+{\color{red} Introduce the following proposition.}
+
+\begin{proposition}
+The normalized information distance $e(x, y)$ takes values in the range $[0, 1]$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+{\color{red} Introduce the following proposition.}
+
+\begin{proposition}
+The normalized information distance $e(x, y)$ is a metric, up to negligible errors.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+{\color{red} TODO: Explain that NID is not computable in the general case, and how wonderfull would be to have a computable equivalent.}
+
+{\color{red} Introduce the following proposition.}
+
+\begin{proposition}
+\[
+E(x, y) = \max\{ K(x \mid y), K(y \mid x) \} = K(xy) - \min\{ K(x), K(y) \} + O(\log K(xy) )
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+{\color{red} Introduce the following definition.}
+
+\begin{definition}
+Normalize compression distance.
+\end{definition}
+
+{\color{red} And its properties.}
+
+
+%
+% Section: Incompressibility and Randomness
+%
+
+\section{Incompressibility and Randomness}
+\label{sec:incompressibility_randomness}
+
+% TODO: prove that there is no algorithm to test if a string is random
+
+% TODO: Shall I say something about the futility of talking about "strict randomness"?
+
+It is easy to prove that the mayority of strings cannot be compressed. For each $n$ there are $r^n$ string of length $n$, but only Sum possible shorter descriptions. Therefore, there is at least one string $x$ of length $n$ such that K(n) >= n. We call such strings \emph{incompressible}
+
+\begin{definition}
+For each constant $c$ we say that a string $s$ is \emph{c-incompressible} if $K(s)\geq l(s)-c$.
+\end{definition}
+
+We will use the term \emph{incompressible string} to refer to all the strings that are c-incompressible with small c. Those string are characterized because they do not contain any patterns, since a pattern could be used to reduce the description length. Intuitively, we think of such patternless sequences as being \emph{random}.
+
+Th number of strings o length n thare are c-incompressible is ast least $2^n - 2^(n-c) + 1$. Hence there is ate least one 0-incompressible string of length $n$, at least one-half of all strings of length n are 1-incompressible, at lesat three-fourths of all strings of length $n$ are 2-incompressible, ..., and at leas the $(1-1/2^c)$ th part of all $2^n$ strings of length $n$ are c-incompressible. This means that for each constant c>1 the majority of all strings of length $n$ with n>c are c-incompressible.
+
+\subsection*{Problems}
+
+%
+% Section: Bibliography and References
+%
+
+\section*{Bibliography and References}
+
+The idea of measuring the amount of information contained in a string based on the shorter computer program that can reproduce it was introduced independelntly by Solomonoff \cite{solomonoff1964formal}, Kolmogorov \cite{kolmogorov1965three} and Chaiting \cite{chaitin1969simplicity}.
+
+In the Kolomogorov complexity literature, the concept of Kolmogorov complexity is defined in terms of computable functions, i.e. Turing machines. Then it is shown that there are some machines that do not provide worse descriptiosn than others, up to a constant. And finally, it is proved that unversal Turing machines are not worse than any other machines. We have provided here an easier to understand short-cut to this approach. Also, we do not consider the case of of non-prefix Kolmogorov complexity. And we prefer to split code and data. See XX, XX, XX, or XX for a more classical introduction to Kolmogorov complexity.
+

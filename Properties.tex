@@ -1,0 +1,307 @@
+%
+% CHAPTER 8.- Properties of Nescience
+%
+
+\chapterimage{Philosophers.pdf}
+
+\chapter{Advanced Properties}
+\label{chap:Properties-Nescience}
+
+\begin{quote}
+\begin{flushright}
+\emph{Invert, always invert.}\\
+Carl Gustav Jacob Jacobi\\
+\end{flushright}
+\end{quote}
+\bigskip
+
+This chapter covers more advanced mathematical properties of the concept of nescience. This chapter can be safely skipped by those readers interested only in the applications of nescience. However, it is highly recommended to read it, since if provides a deeper understanding of what nescience is exactly.
+
+{\color{red} Extend this introduction with a very short review of the topics covered in the chapter.}
+
+%
+% Section: Axioms
+%
+
+\section{The Axioms of Science}
+
+Since the time of David Hilbert, mathematics is about the study of the properties of abstract objects and their relations, without paying too much attention to what these objects are or represent. Mathematicians create (or discover) abstract frameworks of logic that can have multiple interpretations. It is up to applied scientists to provide those interpretations. In the same way, we can provide an abstract definition of the concept of nescience, and study its properties, without making any explicit reference to science nor to the scientific method. In doing so, we loose the interpretability of our theory, but, on the other side, we could apply the same results to other disciplines\footnote{In the Appendix \ref{apx:coq} of this book the reader can find the axioms and formal proofs of some basic results implemented in the \texttt{Coq} proof assistant language.}.
+
+\begin{definition}[Axioms of Science]
+
+A \emph{science} is the 6-tuple $\left( \mathcal{E}, \Sigma, \mathcal{D}, \mathcal{O}, \mathcal{R}, N \right)$, where
+
+\begin{itemize}
+\item $\mathcal{E}$ is a non-empty set,
+\item $\Sigma$ is an alphabet,
+\item $\mathcal{D} \subset \Sigma^\ast$ is a prefix-free set of partial recursive functions,
+\item $\mathcal{O} : \mathcal{D} \rightarrow \mathbb{R}^+$ is a universal oracle,
+\item $\mathcal{R} \subset \mathcal{D} \times \mathcal{D}$ is an equivalence relation, and
+\item $N : \mathcal{D} \rightarrow \mathbb{R}$ is the \emph{nescience} function.
+\end{itemize}
+
+\smallskip
+
+that satisfies the following axioms:
+
+\smallskip
+
+\begin{enumerate}[label=(\roman*)]
+
+\item $N(s) \geq 0 \; \forall s \in \mathcal{D}$,
+
+\item if $s, t \in \mathcal{D}$ such that $s \, \mathcal{R} \, t$, $l(s) \leq l(t)$ and $\mathcal{O} (s) < \mathcal{O} (t)$ then $N(s) < N(t)$,
+
+\item if $s, t \in \mathcal{D}$ such that $s \, \mathcal{R} \, t$, $l(s) < l(t)$ and $\mathcal{O} (s) \leq \mathcal{O} (t)$ then $N(s) < N(t)$,
+
+\item if $s, t \in \mathcal{D}$ such that $s \, \mathcal{R} \, t$, $l(s) = l(t)$ and $\mathcal{O} (s) = \mathcal{O} (t)$ then $N(s) = N(t)$,
+
+\item for all $s \in \mathcal{D} \; \exists \, t \in \mathcal{D}$ such that $s \mathcal{R} t$ and $N(t) = 0$.
+
+\item for all $s \in \mathcal{D}$ $N(s) = 0$  if, and only if, $\mathcal{O} (s) = 0$
+and it does not exists a $t \in \mathcal{D}$, $t \neq s$, $s \, \mathcal{R} \, t$  such that $\mathcal{O} (t) = 0$ and $l(t) < l(s)$.
+
+\end{enumerate}
+
+\end{definition}
+
+No all possible sets $\mathcal{E}$ one can think of are valid sets in the theory of nescience; recall we follow the standard ZFC set of axioms for set theory. The alphabet $\Sigma$ must be composed by a finite set of symbols, and by $\Sigma^\ast$ we denote its Kleene closure. The functions that compose the set $\mathcal{D}$ are in the form $f : \Sigma^\ast \rightarrow \Sigma^\ast$; they could be partial, they must be recursive and we assume a standard bijective Gödel encoding of these functions as elements of $\mathcal{D}$.
+
+The \emph{axiom of non-negativity} (i) states that how much we do not know has to be measured as a positive real. The \emph{axiom  of inaccuracy} (ii) deals with the case of having two descriptions of the same length, in which we should prefer the less inaccurate. The \emph{axiom of surfeit} (iii) says that between two descriptions that produce the same result, that is, two descriptions equally accurate, we should always use the shortest one. The \emph{axiom of equality} (iv) shows the necessary conditions for two descriptions to have the same nescience. The \emph{axiom of zero unknown} (v) states that for every possible description, there exist an equivalent description (which is not necessarily unique) that provides perfect knowledge. And the last \emph{axiom of perfect knowledge} (vi) declares the necessary and sufficient conditions to achieve zero nescience.
+
+The axioms of Nescience follow an hypothetico-deductive method for science. The inductive-deductive model could be derived as a particular case of the hypothetic-deductive, by means of introducing the concept of representation of entities, and the metric of miscoding.
+
+The following proposition shows that perfect knowledge implies zero inaccuracy (the converse, in general, does not hold).
+
+\begin{proposition}
+Let $d \in \mathcal{D}$ be a description such that $N(d)=0$, then $\mathcal{O}(d)=0$.
+\end{proposition}
+\begin{proof}
+Apply the axiom of perfect knowledge.
+\end{proof}
+
+We have assumed as axioms the behavior of the nescience function in case of having two related descriptions with the same length and one of them with a smaller inaccuracy than the other ($l(s) = l(t)$ and $\mathcal{O} (s) \leq \mathcal{O} (t)$), the case of two descriptions with the same inaccuracy and one of them shorter than the other ($l(s) \leq l(t)$ and $\mathcal{O} (s) = \mathcal{O} (t)$), and the case of equality ($l(s) = l(t)$ and $\mathcal{O} (s) = \mathcal{O} (t)$). In the next proposition we will consider the rest of the provable cases.
+
+\begin{proposition}
+\label{prop:properties_nescience}
+Let $s, t \in \mathcal{D}$ such that $s \mathcal{R} t$, then we have that
+\begin{enumerate}[label=(\alph*)]
+\item if $l(s) < l(t)$ and $\mathcal{O}(s) < \mathcal{O}(t)$ then $N(s) < N(t)$,
+\item if $l(s) < l(t)$ and $\mathcal{O}(s) = \mathcal{O}(t)$ then $N(s) < N(t)$,
+\item if $l(s) = l(t)$ and $\mathcal{O}(s) < \mathcal{O}(t)$ then $N(s) < N(t)$,
+\item if $l(s) = l(t)$ and $\mathcal{O}(s) > \mathcal{O}(t)$ then $N(s) > N(t)$,
+\item if $l(s) > l(t)$ and $\mathcal{O}(s) = \mathcal{O}(t)$ then $N(s) > N(t)$, and
+\item if $l(s) > l(t)$ and $\mathcal{O}(s) > \mathcal{O}(t)$ then $N(s) < N(t)$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+
+Recall that if $a \le b$ we have that $a < b$ or $a = b$, and that $a < b$ implies $b > a$. 
+
+\begin{enumerate}[label=(\alph*)]
+
+\item Apply the axiom of surfeit.
+
+\item Apply the axiom of surfeit.
+
+\item Apply the axiom of inaccuracy. 
+
+\item Interchange $s$ and $t$ and apply (c).
+
+\item Interchange $s$ and $t$ and apply (b).
+
+\item Interchange $s$ and $t$ and apply (a).
+
+\end{enumerate}
+
+\end{proof}
+
+Unfortunately there is not too much we can say from the axioms about the nescience of two related descriptions $s$ and $t$ in case that $l(s) < l(t)$ and $\mathcal{O} (s) > \mathcal{O} (t)$, and in case that $l(s) > l(t)$ and $\mathcal{O} (s) < \mathcal{O} (t)$. 
+
+Next definition formally introduces the concept of scientific methodology in the context of the theory of nescience.
+
+\begin{definition}
+A \emph{scientific methodology} is an effective procedure that produces a sequence of $t_1, t_2, \ldots, t_n, \ldots$ where $t_i \in \mathcal{D}$ such that $N(t_i) < N(t_{i+1})$.
+\end{definition}
+
+Note that we do not require that in a scientific methodology the collection of $t_i$ refer to the same entity.
+
+%
+% Section: Scientific Method
+%
+
+\section{Scientific Method}
+
+{\color{red} Describe our proposal of scientific method. Short story: based on a exploration/exploitation approach, where the exploration is based in the concept of joint descriptions, and the exploitation in the concept of conditional description.}
+
+{\color{red} Compare against another proposals of scientific method (inductive-deductive, hypothetico-deductive, etc) and with other techniques for knowledge discovery and creativity (triz, etc.)}
+
+\subsection{Science as a Language}
+
+{\color{red} TODO: Provide an alternative definition of the set of descriptions, and prove that it is equivalent to our definition based on the description function}
+
+Since we require computable descriptions, we would like to know if the set of all possible descriptions of a topic is computable as well.
+
+\begin{proposition}
+Study if $D_{t}$ is Turing-decidable, Turing-recognizable or none.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+Although we know that it is not computable, we are interested in the set composed by the shortest possible description of each topic.
+
+\begin{definition}
+We define the set of \emph{perfect descriptions}, denoted by $\mathcal{D}^\star$, as:
+\[
+\mathcal{D}^\star = \{ d_t^\star : t \in \mathcal{T} \}
+\]
+\end{definition}
+
+Since the set $\mathcal{D}$ includes all the possible descriptions of all the possible (describable) topics, we can see this set as a kind of language for science. We do not call it universal language since it depends on the initial set of entities $\mathcal{E}$ and the particular encoding used for these entities.
+
+\begin{proposition}
+The set $\mathcal{D}$ is not Turing-decidable.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Because it depends on the set $\mathcal{T}$ that it could be not computable}
+\end{proof}
+
+Say something here
+
+\begin{proposition}
+The set $\mathcal{D}$ is Turing-recognizable.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: The same argument as the previous proposition}
+\end{proof}
+
+A universal language is determined by a universal Turing machine. Given Two different universal Turing machines $\delta_{a}$ and $\delta_{b}$ defines two different universal languages $\mathcal{L}_{a}$ and $\mathcal{L}_{b}$. Let $\mathcal{L}_{a=b}=\left\{ \left\langle d_{a},d_{b}\right\rangle \,,\,d_{a},d_{b}\in\mathcal{D}\mid\delta_{a}\left(d_{a}\right)=\delta_{b}\left(d_{b}\right)\right\}$.
+
+\begin{proposition}
+Study if $\mathcal{L}_{a=b}$ is Turing-decidable, Turing-recognizable or none.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+Let $\mathcal{L}_{\nexists t}$ the laguage of valid descriptions (from a formal point of view) that do not describe any topic, that is, $\mathcal{L}_{\nexists t}=\left\{ d\in\mathcal{D}\mid\nexists t\in\mathcal{T}\,,\,\delta\left(d\right)=t\right\}$.
+
+\begin{proposition}
+Study if $\mathcal{L}_{\nexists t}$ is Turing-decidable, Turing-recognizable or none.
+\end{proposition}
+
+Let $\mathcal{L}_{\nexists d}$ the laguage topics that are not described by any description, that is, $\mathcal{L}_{\nexists d}=\left\{ t\in\mathcal{T}\mid\nexists d\in\mathcal{D}\,,\,\delta\left(d\right)=t\right\}$.
+
+\begin{proposition}
+Study if $\mathcal{L}_{\nexists d}$ is Turing-decidable, Turing-recognizable or none.
+\end{proposition}
+
+{\color{red} TODO: Extend the concept of conditional description to multiple topics.}
+
+{\color{red} TODO: Introduce the concept of "independent topics" based on the complexity of the conditional description. Study its properties.}
+
+{\color{red} TODO: Define a topology in $\mathcal{T}$ and $\mathcal{D}$. Study the continuity of $\delta$. Study the invariants under $\delta$.}
+
+
+%
+% Section: The Inaccuracy - Surfeit Trade-off
+%
+
+\section{The Inaccuracy - Surfeit Trade-off}
+
+{\color{red} TODO: Explain that given a miscoding, there is a trade-off between inaccuracy and surfeit, in the sense that there exists an optimal point beyond it the more we decrease the inaccuracy, the more we increase the surfeit, and so, the nescience keep constant. Explain how this trade-off imposes a limit to knowledge.}
+
+%
+% Section: Science vs. Pseudoscience
+%
+
+\section{Science vs. Pseudoscience}
+
+{\color{red} TODO: Provide a characterization of the difference between science and pseudoscience. In science, nescience decreases with time, in pseudoscience not.}
+
+%
+% Section: Graspness
+%
+\section{Graspness}
+
+There are some topics whose nescience decrease with time much faster than others, even if the amount of research effort involved is similar. A possible explaination to this fact is that there are some topics that are inherently more difficult to understand.
+
+We define the \emph{graspness} of a topic as the entropy of the set of possible descriptions of that topic. A high graspness means a difficult to understand topic. Intuitively, a research topic is difficult if it has no descriptions much shorter than the others, that is, descriptions that significantly decrease the nescience. For example, in physics there have been a sucession of theories that produced huge advances in our understanding of how nature works (Aristotelian physics, Newton physics, Einstein physics), meanwhile in case of philosophy of science, new theories (deductivism, inductivism, empirism, falsation, ...) have a similar nescience than previous ones.
+
+\begin{definition}[Graspness]
+Let $D_t$ the set of descriptions of a topic $t \in T$. The \emph{graspness} of topic $t$, denoted by $G(t)$, is defined by:
+\[
+G(t) = \sum_{d \in D_t} 2^{-l(d)} l(d)
+\]
+\end{definition}
+
+Grapsness is a postive quantity, whose maximum is reached when all the descriptions of the topic have the same length:
+
+\begin{proposition}
+Let $D_t = \{ d_1, d_2, \ldots, d_q \}$ the set of descriptions of a topic $t \in T$, then we have that $G(t) \leq \log q$, and $G(t) = \log q$ if, and only if, $l(d_1) = l(d_2) = \ldots = l(d_q)$.
+\end{proposition}
+\begin{proof}
+Replace $P(s_i)$ by $2^{-l(d_i)}$ in Proposition \ref{prop:maximum_entropy}.
+\end{proof}
+
+If $G(t) = \log q$ then we have that $N_t = 0$ for all $\hat{d}_t$. In that case, it does not make any sense to do research, since no knew knowledge can be adquired. This is the case of pseudosciences, like astrology, where the nescience of descriptions does not decrease with time. If fact, graspness can be used as a distintive element of what constitutes \emph{science} and what does not.
+
+\begin{definition}
+A topic $t \in T$ is \emph{scientable} if $G(t) < \log d(D_t) - \epsilon$, where $\epsilon \in \mathbb{R}$ is a constant.
+\end{definition}
+
+We can extend the concept of graspness from topics to areas, for example, by means of computing the average graspness of all the topics included in the area.
+
+\begin{definition}
+Let $A \subset T$ a research area. The \emph{graspness} of area $A$, denoted by $G(A)$, is defined by:
+\[
+G(A) = \frac{1}{d(A)} \sum_{t \in A} G(t)
+\]
+\end{definition}
+
+%
+% Section: Effort
+%
+\section{Effort}
+
+{\color{red} TODO: Provide a characterization of the effort, measured in terms of number of operations, or time, to reduce the nescience. Based in the concept of computational complexity. Provide a physical interpretation in terms of information.}
+
+%
+% Section: Human Understanding
+%
+\section{Human Understanding}
+
+In his landmark paper \emph{"On Computable Numbers with an Application to the Entscheidungsproblem"}, where the concept of computable function was proposed for the first time, when the author Alan M. Turing talked about computers, he was thinking about human computers, not machines. In this sense, according to Turing, everything that is computable, can be computed by a human, at least in theory.
+
+The fist limitation is about computation time. We expect that a human is able to find a solution to a particular instance of a problem in order of seconds, maybe minutes or hours, but definitely, in less than a life time, otherwise another human have to start again from scratch to solve the problem. So, given the average computing speed of a human brain, we identify as human solvable problems only those problems with a complexity smaller than a fixed number of steps.
+
+The second limitation is about program size. It might happen that the algorithms to solve a problem is simply too big to fit in our brains. Of course, we could argue that {\color{red} as we saw in Example XX, only X states and Y tape symbols} are sufficient to implement a universal Turing machine capable of solving any computable problem, that is, any problem for which exist a Turing machine that can solve it. However, by just following a set of instruction we do not mean that we understand a problem. We understand a problem when we have made the problem for ourselves, in the sense, that the problem is somehow stored in our brain in our own language. So this limits the problem to those whose length, including the necessary background, can be stored in our brain.
+
+We are looking for solutions that minimize at the same time the computational complexity and the Kolmogorov complexity.
+
+\begin{definition}
+We say that a problem $P$ is \emph{human solvable} if there exist an algorithm $TM$ to solve $P$ such that $t(n)$ and $K(P) < l$.
+\end{definition}
+
+Given the above definition, we could argue that most of the problems we know are not human solvable, but in fact, they have been solved by human. We use two strategies to deal with too complex problems for our individual brains. The fist strategy is that those time-comsuming mechanical parts of the problems are left for computers, so we can reduce the computing time. The second one is that we split the problems into subproblems and each of use specializes in those subproblems.
+
+In this section we are interested in to study the nature of these problems in which this strategy cannot be applied, and so, they are out of reach of individual, nor groups of, humans.
+
+%
+% Section: Areas in Decay
+%
+
+\section{Areas in Decay}
+
+{\color{red} Provide a model of the decay in the interest of research areas. For example, a good explanatory variable could be the number of interesting questions: the less interesting questions, the more the area is near to its end as a interesting research area, of course, as long as its topics are not used as tools.}
+
+%
+% Section: References
+%
+
+\section*{References}
+
+{\color{red} Mention the polemic between Hilbert and Fredge given a reference to the book of Mosterin.}
+
+

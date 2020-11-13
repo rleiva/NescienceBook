@@ -1,0 +1,98 @@
+* Decision trees
+
+The nescience of a candidate solution will be approximated by computing the redundancy of the function that implements the tree, like the one show in \ref{ex:example_tree}, and the relative error of this function when it is applied to the original training dataset. The inaccuracy of a model $\iota(m_t)$ will by approximated by the ratio $|Comp(E)| / |Comp(\mathcal{X})|$, where $|Comp(E)|$ is the length of the compressed version of the subset $E \subset \machcal{X}$ composed by those points that have been misclassified by the tree, and $|Comp(\mathcal{X})|$ is the length of the compressed version of the full dataset. The redundancy of a model $\rho(m)$ will be approximated by computing $1 - |Comp(T)| / |T|$, where $|Comp(T)|$ is the length of the compressed string that represents the tree, and $|T|$ is the length o the uncompressed string. The approximated nescience of the candidate model will be given by the harmonic mean of these two quantities.
+
+--
+
+* Introduction
+
+\begin{example}
+In general it is very difficult to encode abstract objects, like for example, mathematical theories. An option would be to use as an approximation a text summarizing as accurately and concise as possible our current knowledge about them (encyclopedic coverage). For example, if the topic is "Theory X", we could use as its encoding a book called "Foundations of X". Unfortunately, the quality of this encoding will depend on how well we understand the topic itself.
+\end{example}
+
+, or even better, to the set of natural numbers $\mathbb{N}$. What we are looking for is a kind of Gödel numbering. However, as Gödel himself proved with his incompleteness theorem, this is not possible, at least in case of mathematical objects.
+
+Sometimes it is cumbersome to include all the information needed to reconstruct a topic in its model, since that would require very large strings. In those cases, it is usually more convenient to assume some already existing background knowledge, and compute how much we do not know about a topic given that background. For example, in case of mathematics, a topic description should include all the definitions and theorems required to explain the topic until the axioms are reached.
+
+Please note that what we propose is an mathematical approach to the \emph{assisted} discovery of potentially interesting questions. We do not intend that the computer will understand the meaning of the posed questions. Moreover, we do not intend that all the questions are relevant or even meaningful. It is up to the researchers to evaluate the proposed combinations of topics to decide which are exactly the questions they suggest, and to decide if it is worth to pursue them.
+
+If we want to compute how much we do not know about a research topic we have to provide two things: what we already know about that topic, and where is the theoretical limit of what can be known. What we already know about a topic is given by our current best description of that topic. The most valuable descriptions are those that allow us to fully and effectively reconstruct the original topic given its description (they are computable), since this kind of descriptions allow us to avoid many of the paradoxes that arise when we try to formalize the concept of "description". The theoretical limit of what can be known about a topic is given by its perfect description. The perfect description is the shortest possible string that allows us to reconstruct the original topic. However, in general, we do not know that shortest description, since our knowledge is incomplete. Fortunately we know that this description must necessarily be a random string, and so, by means of computing how far our current description is from being a random string, we can estimate in practice how far we are from the ideal shortest one.
+
+--
+
+* Miscoding
+
+Miscoding is a metric that quantitatively measures the quality of the representations we are using to solve a problem or to describe a collection of objects. Intuitively, miscoding is based on the length of the shortest computer program that can reconstruct the original entity under study given a string based representation. The lower the miscoding, the better the quality of the representations. Miscoding is a very important concept in machine learning, since the errors present in a representation could trigger errors in the model developed to solve a problem.
+
+\begin{example}
+In 1900 the German mathematician David Hilbert proposed his famous collection of twenty-three problems. Problem number ten required to devise \emph{"a process according to which it can be determined in a finite number of operations whether a given Diophantine equation is solvable in rational integers"}. Let's call this problem formulation topic $t_1$. In 1970, the Russian mathematician Yuri Matiyaevich proved that such a "procedure" does not exists. Let's call Matiyaevich's theorem topic $t_2$. Mathematicians have used both topics, $t_1$ and $t_2$, as representations of the same entity. Of course, the miscoding of $t_2$ is much lower\footnote{Whether $\mu(t_2)$ is equal to $0$ or not is out of the scope of this book.} than the miscoding of $t_1$. But the important point is that in 1900 mathematicians had a very different idea of what kind of entity was represented by $t_1$.
+\end{example}
+
+--
+
+Bias vs variance
+
+{\color{red} it is possible to show that the expected test MSE, for a given value $x_o$, can always be decomposed into the sum of three fundamental quantities: the variance of $\hat{f}(x_o)$, the squared bias of $\hat{f}(x_o)$ and the variance of the error terms $\epsilon$. That is,
+\[
+E \left( y_o - \hat{f}(x_o) \right) ^ 2 = Var \left( \hat{f} (x_o) \right) + \left[ Bias \left( \hat{f}(x_o) \right) \right] ^ 2 + Var(\epsilon)
+\]
+$E \left( y_o - \hat{f}(x_o) \right) ^ 2$ defines the expected test MSE, and refers to the average test MSE that we would obtain if we repeatedly estimated $f$ using a large number of training sets, and tested each at $x_o$ [...] in order to minimize the expected test error, we need to select a statistical learning method that simultaneously achieves low variance and low bias [...] the expected test MSE can never lie below $Var(\epsilon)$, the irreducible error [...] Variance refers to the amount by which $\hat{f}$ would change if we estimated it using a different training data set [...] in general, more flexible statistical methods have higher variance [...] bias efers to the error that is introduced by approximating a real-life problem, which may be extremely complicaed, by a much simpler model [...] As a general rule, as we use more flexible methods, the variance will increase and the bias will decrease. The relative rate of change of these two quantities determines whether the test MSE increases or decreases. As we increase the felexibility of a class of methods, the bias tends to initially decrease faster than the variance increases. Consequently, the exected test MSE declines. However, at some point incresing flexibility has little impact on the bias but starts to significantly increase the variance. When this happens the test MSE increases [...] The relationship between vias, variance, and test set MSE [...] is referred to as the bias-variance trade-off [...] it is easy to obtain a method with very low variance but high variance [...] or a method with very low variance but high bias [...] the challenge lies in finding a method for which both the variance and the squared bias are low [...] In a real-life situation in which $f$ is unobserved, it is generally not possible to explicitly compute the test MSE, bias, or variance for a statistical learning method [...] cross-validation [...] is a way to estimate the test MSE using the training data.}
+
+{\color{red} The degrees of freedom is a quantity that summarizes the flexibility of a curve [...] the irreducible error [...] corresponds to the lowest achievable test MSE among all possible methods [...] as the flexibility of the statistical learning method increases, we observe a monotone decrease in the training statistical learning that holds regardless of the particular data set at hand and regardless of the statistical method being used [...] when a given method yields a small training MSE but a large test MSE, we aresaid to be overfitting the data [...] may be picking up some patterns that are just caused by random change rather than by true properties of the unknown function $f$ [...] estimating test MSE is [...] difficult because usually no test data are available [...] the flexibility level corresponds to the model with the minimal test MSE can vary considerable among data sets [...] we discuss a variety of approaches that can be used in practice to estimate this minimum point. One imprtatn method is cross-validation [...] which is a method for estimating test MSE using the training data.}
+
+{\color{red} The accuracy of $\hat{Y}$ as a predictor for $Y$ depends on two quantities [...] the reducible error and he irreducible error [...] $\hat{f}$ will not be a perfect estimate for $f$ [...] this error is reducible because we can potentially imporve the accuracy of $\hat{f}$ by using the most appropiate statistical learning technique to estimate $f$ [...] $Y$ is also a function of $\epsilon$ [...] we cannot reduce the error introduced by $\epsilon$. [...] The quantity $\epsilon$ may contain unmeasured variables that are useful in predicting $Y$ [...] The quantity $\epsilon$ may also conain unmeasurale variation.
+\[
+E \left( Y - \hat{Y} \right) ^ 2 = E \left( f(X) + \epsilon - \hat{f} (X) \right) ^ 2 = \left( f(X) - \hat{f} (X) \right) ^ 2 + Var(\epsilon)
+\]
+[...] the irreducible error will always provide an upper bound on the accuracy of our prediction for $Y$. This bound is almost always unknown in practice.}
+
+--
+
+Multiobjective optimization
+
+{\color{red} [...] we want to minimize all the objective functions simultaneously [...] we assume that there does not exist a single solution that is optimal with respect to every objective function, otherwise there would be a trivial solution [...] objective functions are at least partly conflicting [...] they may also be incommensurable [...]}
+
+{\color{red} [...] we denote the image of the feasible region by $Z (=f(S))$ and call it a feasible objective region. It is a subset of the objective space $\mathbb{R}^k$. The elements of $Z$ are called objective vectors or criterion vectors and denoted by $f(\textbf{x})$ or $\textbf{z} = (z_1, z_2, \ldots, z_k)^T$, where $z_i = f_i(x)$ for all $i = 1, \ldots, k$ are objectieve values or criterion values.}
+
+{\color{red} [...] we assume that all the objective functions are to be minimized. If an objective function $f_i$ is to be maximized, it is equivalent to minimize the function $-f_i$.}
+
+{\color{red} If at least one of the objective or the constraint functions is nonlinear, the problem is called a nonlinear multiobjective problem}
+
+{\color{red} TODO: Study if the sets $\mathcal{T}$ and $\mathcal{M}$ are convex; the same for the functions $\mu, \sigma, \rho$. If this is the case, add here the definiton and properties of convex multiobjective optimization problem.}
+
+{\color{red} Because the contradiction and possible incommensurabiltiy of the objective functions, it is not possible to find a single solution that would be optimal for al the objectives simultaneously. Multiobjective optimization problems are in a sense ill-defined.}
+
+{\color{red}
+\begin{definition}
+A decision vector $x^\ast \in S$ is \emph{Pareto optimal} if there does not exist another decision vector $x \in S$ such that $f_i(x) \leq f_i(x^\ast)$ for all $i=1, \ldots, k$ and $f_j(x) < f_j(x^\ast)$ for at least one index $j$.
+\end{definition}
+}
+
+{\color{red} An objective vector $z^\ast \in Z$ is Pareto optimal if there does not exists another objective vector $z \in Z$ such that $z_i \leq z_i^\ast$ for all $i=1, \ldots, k$ and $z_j < z_j^\ast$ for at least one index $j$; or equivalently, $z^\ast$ is Pareto optimal if the decision vector corresponding to it is Pareto optimal}
+
+{\color{red} There are usually a lot (infinite number) of Pareto optimal solutions. We can speak about a set of Pareto optimal set.}
+
+\begin{definition}
+A decision vector $x^\ast \in S$ is locally Pareto optimal if there exists a $\delta > 0$ such that $x^\ast$ is Pareto optimal in $S \cap B(x^\ast, \delta)$. An objective vector $z^\ast \in Z$ is locally Pareto optimal if the decision vector corresponding to it is locally Pareto optimal.
+\end{definition}
+
+{\color{red} [...] any globaly Pareto optimal solution is locally Pareto optimal. The converse is valid for convex multiobjective optimization problems.}
+
+--
+
+Machine Learning
+
+Explain how the bias-variance trade-off is explained under the concept of miscoding.
+
+The distinction between train data and test data makes no sense in the context of the theory of nescience.
+
+In the theory of nescience we do not distinguish between the problem of inference and prediction. Both tasks produce exactly the same models.
+
+The \emph{reducible error} is what we call \emph{inaccuracy}, and the \emph{reducible error} is our \emph{miscoding}. And of course, we do not agree that this kind of error is "irreducible". We thing it can, and it must, be reduced. In statistical learning it is assumed that the irreducible error puts a limit on what we can learn about a dataset. Here we show that this is not the case {\color{red} TODO: explain what we mean}.
+
+ In practice the function $f$ could be partial, the training pair $\left( \mathcal{X}, \mathcal{Y} \right)$ might too small or contain errors, and the family $\mathcal{F}$ of functions does not have any function that solves the problem, and so, an approximation has to be found.
+
+In terms of the theory of nescience, we have a unknown entity $e \in \mathcal{E}$, represented by the topic $\left( \mathcal{X}, \mathcal{Y} \right)$, and we want to find a model from a subset of all possible models. Inaccuracy OK. Surfeit can be only computed relatively to the subset of models used. And misconding can only be reduced by means of using subsets of the topic, instead of the full topic. That is, we can do anything about those elements of $e$ do not encoded by the topic, but we can try to get rid of the non-needed elements of t.
+
+In this chapter we are going to see how we can combine methods from the area of statistical learning with our results of the theory of nescience, in order to find the best models (descriptions) that describe our entity based on its encoding as a dataset. The goal of the chapter is double, to produce an interpretable model that explain the abstract entity, and to proce a predictive model that allow us to forecast new, previously unseen, values.
+

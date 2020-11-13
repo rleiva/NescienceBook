@@ -1,0 +1,323 @@
+%
+% Appendix - Coq Proof Assistant
+%
+
+\chapterimage{TuringMachine.pdf} % Chapter heading image
+
+\chapter{Coq Proof Assistant}
+\label{apx:coq}
+
+\begin{quote}
+\begin{flushright}
+\emph{We are to admit no more causes of natural things \\
+than such as are both true and sufficient \\
+to explain their appearances.}\\
+Isaac Newton
+\end{flushright}
+\end{quote}
+\bigskip
+
+{\color{red} TODO: Say something about Coq and the calculus of inductive constructions.}
+
+{\color{red} Warining! Axioms and propositions are not finished!}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Require Import Arith.
+
+\end{verbatim}}
+\end{sourcecode}
+
+\subsubsection*{Helper lemmas}
+
+Basic properties that are needed to prove some results.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma less_or_equal (n m : nat):
+  n <= m <-> (n < m \/ n = m).
+Proof.
+  split.
+  intros.
+  induction H.
+  right.
+  reflexivity.
+  left.
+  assert (m < S m).
+  auto.
+  firstorder.
+  intros.
+  destruct H as [H1 | H2].
+  induction H1.
+  auto.
+  auto.
+  induction H2.
+  auto.
+Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+\subsubsection*{Objects}
+
+Length function.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Definition l := fun n : nat => Nat.log2 n.
+
+\end{verbatim}}
+\end{sourcecode}
+
+Oracle function, from descriptions to natural numbers.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Parameter O : nat -> nat.
+
+\end{verbatim}}
+\end{sourcecode}
+
+Oracle equivalence relation, from pairs of descriptions to boolean.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Parameter R : nat -> nat -> Prop.
+Axiom reflexive:  forall r     : nat, R r r.
+Axiom symmetric:  forall r s   : nat, R r s -> R s r.
+Axiom transitive: forall r s t : nat, R r s -> R s t -> R r t.
+
+\end{verbatim}}
+\end{sourcecode}
+
+Nescience function, from descriptions to nescience.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Parameter N : nat -> nat.
+
+\end{verbatim}}
+\end{sourcecode}
+
+\subsubsection*{Axioms}
+
+Axiom of non-negativity.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Axiom non_negativity: forall d : nat, N(d) >= 0.
+
+\end{verbatim}}
+\end{sourcecode}
+
+Axiom of surfeit.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Axiom surfeit: forall s t : nat, R s t /\ O s <= O t /\ l s < l t -> N s < N t.
+
+\end{verbatim}}
+\end{sourcecode}
+
+Axiom of inaccuracy.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Axiom inaccuracy: forall s t : nat, R s t /\ O s < O t /\ l s <= l t -> N s < N t.
+
+\end{verbatim}}
+\end{sourcecode}
+
+Axiom of equality.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Axiom equality: forall s t : nat, R s t /\ O s = O t /\ l s = l t -> N s = N t.
+
+\end{verbatim}}
+\end{sourcecode}
+
+Axiom of perfect knowledge.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Axiom perfect_knowledge: forall s : nat, N s = 0 <-> ( O s = 0 )
+  /\ ( ~ exists t : nat, s <> t /\ R s t /\ O t = 0 /\ l t < l s ).
+
+\end{verbatim}}
+\end{sourcecode}
+
+Axiom of zero unknown.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Axiom zero_unknown: forall s : nat, exists t : nat, R s t /\ N t = 0.
+
+\end{verbatim}}
+\end{sourcecode}
+
+\subsubsection*{Properties}
+
+If $N(d) = 0$ then $O(d) = 0$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma zero_inaccuracy (d : nat) :
+  N d = 0 -> O d = 0.
+Proof.
+  intros.
+  apply perfect_knowledge.
+  assumption.
+  Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+If $l(s) < l(t)$ and $O(s) < O(t)$ then $N(s) < N(t)$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma property_ll:
+  forall s t : nat, R s t -> l s < l t -> O s < O t -> N s < N t.
+Proof.
+  intros s t H1 H2 H3.
+  apply surfeit.
+  split.
+  assumption.
+  split.
+  apply less_or_equal.
+  left.
+  apply H3.
+  apply H2.
+Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+If $l(s) < l(t)$ and $O(s) = O(t)$ then $N(s) < N(t)$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma property_le:
+  forall s t : nat, R s t -> l s < l t -> O s = O t -> N s < N t.
+Proof.
+  intros s t H1 H2 H3.
+  apply surfeit.
+  split.
+  assumption.
+  split.
+  apply less_or_equal.
+  right.
+  apply H3.
+  apply H2.
+Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+If $l(s) = l(t)$ and $O(s) < O(t)$ then $N(s) < N(t)$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma property_el:
+  forall s t : nat, R s t -> l s = l t -> O s < O t -> N s < N t.
+Proof.
+  intros s t H1 H2 H3.
+  apply inaccuracy.
+  split.
+  assumption.
+  split.
+  assumption.
+  apply less_or_equal.
+  right.
+  apply H2.
+Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+The property that if $l(s) = l(t)$ and $O(s) = O(t)$ then $N(s) = N(t)$ is given by the axiom of equality.
+
+If $l(s) = l(t)$ and $O(s) > O(t)$ then $N(s) > N(t)$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma property_eg:
+  forall s t : nat, R s t -> l s = l t -> O s > O t -> N s > N t.
+Proof.
+  intros s t H1 H2 H3.
+  apply property_el.
+  apply symmetric.
+  assumption.
+  auto.
+  auto.
+Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+If $l(s) > l(t)$ and $O(s) = O(t)$ then $N(s) > N(t)$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma property_ge:
+  forall s t : nat, R s t -> l s > l t -> O s = O t -> N s > N t.
+Proof.
+  intros s t H1 H2 H3.
+  apply property_le.
+  apply symmetric.
+  assumption.
+  auto.
+  auto.
+  Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+If $l(s) > l(t)$ and $O(s) > O(t)$ then $N(s) > N(t)$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+
+Lemma property_gg:
+  forall s t : nat, R s t -> l s > l t -> O s > O t -> N s > N t.
+Proof.
+  intros s t H1 H2 H3.
+  apply property_ll.
+  apply symmetric.
+  assumption.
+  auto.
+  auto.
+  Qed.
+
+\end{verbatim}}
+\end{sourcecode}
+
+A conclusion cannot be derived from the following premises given the axioms.
+
+\begin{enumerate}[label=(\roman*)]
+\item If $l(s) < l(t)$ and $O(s) > O(t)$.
+\item If $l(s) > l(t)$ and $O(s) < O(t)$.
+\end{enumerate}
+
+
+
+

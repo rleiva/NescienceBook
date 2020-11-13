@@ -1,0 +1,184 @@
+%
+% CHAPTER: Miscoding
+%
+
+\chapterimage{Escher.pdf} % Chapter heading image
+
+\chapter{Miscoding}
+\label{chap:Miscoding}
+
+\begin{quote}
+\begin{flushright}
+\emph{Some mathematical statements are true for no reason,\\
+they're true by accident.}\\
+Gregory Chaitin
+\end{flushright}
+\end{quote}
+\bigskip
+
+For the majority of the scientific disciplines, the set $\mathcal{E}$ of entities under consideration will be composed by abstract elements, or other kind of objects, that cannot be directly studied. If we want to understand them we have to use an indirect method. The common approach is to work with representations of the those entities instead of using the original ones; what we call the set $\mathcal{R}$ of representations. Unfortunately, proceeding in this way introduce new problems: since we do not fully understand the elements of $\mathcal{E}$, otherwise we will not be doing research, the representations used probably will not be as accurate as they should. This limitation has serious implications, since an error in the representation of an entity will induce an error in the model we use to describe that entity. It is of utmost importance to characterize this type error, and to understand its implications.
+
+Miscoding is a quantity that measures the error due to bad encodings. We propose a definition of miscoding based on the length of the shortest computer program that can print one of the ideal representations $r_e \in \mathcal{R}_e$ of an entity $e$ given an incorrect representation $r \in \mathcal{R}$. Intuitively, miscoding quantifies the effort (measured as the length of a program) required to fix that incorrect representation.
+
+Unfortunately, the ideal representation $r_e$ is not known, and so, we cannot compute how far our current representation $r$ is from that string. From a theoretical point of view we could take advantage of the concept of oracle machine used to characterize the set $\mathcal{E}$, since that (abstract) machine knows the answer. However, the inner workings of the oracle are also unknown, and so, they have to be approximated in practice. In PART III of this book we will see different approaches we could use to approximate the behavior of the oracle, and the concept of miscoding.
+
+In this chapter we will formally introduce the concept of miscoding and study its properties. We will also see how the concept of miscoding relates to joint representations, and conditional representations. Finally, we will see how to compute the miscoding of categories and research areas.
+
+%
+% Section: Miscoding
+%
+\section{Miscoding}
+\label{sec:miscoding}
+
+Miscoding refers to the fact that our current encoding of an entity $e \in \mathcal{E}$ might not be perfect, that is, instead of working with a string $r_e \in \mathcal{R}_e$ that perfectly encodes $e$, it might happen we are studying another string $r \in \mathcal{R}$ that it is, hopefully, close to $r_e$ but not necessarily equal. We are interested in to compute the distance between the string $r$ and the perfect one $r_e$ as a quantitative measure of the error we are introducing during the encoding of the entity $e$. Unfortunately, we do not know $r_e$, since, in general, it does not exists a computable function from $\mathcal{R}$ to $\mathcal{E}$. Recall that the only thing we have to our disposal is an abstract oracle machine that knows the shortest possible distance of our representation $r$ to a valid representation of the set $\mathcal{R}_\mathcal{E}$ (see Section \ref{sec:descriptions_topics}).
+
+We can safely assume, that is, it is free from logical contradictions, that the oracle machine also knows how far is $t$ from $t_e$, for all $t \in \mathcal{T}$ and all $t_e \in \mathcal{T}_\mathcal{E}$. Unfortunately, if we ask the oracle how far is a particular $t$ from perfectly encoding the entity in which we are interested, the oracle will require from us to specify the entity in which we are interested. And the only way to tell the oracle which one is that entity is by means of using $t_e$, which, of course, we do not know. The work around we propose to solve this problem is to ask to the oracle how far is $t$ from encoding \emph{any} entity from $\mathcal{E}$.
+
+\begin{definition} [Miscoding]
+\label{def:miscoding}
+Let $t \in \mathcal{T}$ be a topic. We define the \emph{miscoding} of $t$, denoted by $\mu(t)$, as:
+\[
+\mu(t) = \overset{o}{ \underset{s \in \mathcal{T}_\mathcal{E}} \min} \frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} }
+\]
+\end{definition}
+
+Where the quantity $\overset{o}{ \underset{s \in \mathcal{T}_\mathcal{E}} \min}$ has to be computed by the oracle. Intuitively, the more ignorant we are about an entity, the bigger will be the miscoding of our current topic, since a better understanding of that entity means that we should be able to provide an encoding closer to a perfect one.
+
+In our definition of miscoding we have used a relative measure, instead of the absolute one, because besides to compare the miscoding of different encodings of the same entity, we are also interested in to compare the miscoding of different entities.
+
+The miscoding of a topic $t$ is always a number between $0$ and $1$.
+
+\begin{proposition}
+\label{prop:range_miscoding}
+We have that $0 \leq \mu(t) \leq 1$ for all $t \in \mathcal{T}$.
+\end{proposition}
+\begin{proof}
+Given that $0 \leq \frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } \leq 1$ for all $t \in \mathcal{T}$ and all $s \in \mathcal{T}_\mathcal{E}$, since $\mathcal{T}_\mathcal{E} \subseteq \mathcal{T}$ and Proposition {\color{red} XX}.
+\end{proof}
+
+Miscoding is equal to zero if, and only if, the topic $t$ is one of the possible valid encodings of an entity $e$.
+
+\begin{proposition}\label{prop:perfect_encoding}
+Let $t \in \mathcal{T}$ a topic, we have that $\mu(t) = 0$ if, and only if, $t \in \mathcal{T}_\mathcal{E}$.
+\end{proposition}
+\begin{proof}
+Let $t \in \mathcal{T}_\mathcal{E}$, then by Proposition {\color{red} XX} we have that $K(t \mid t) = 0$ and so, $\mu(t) = 0$. In the same way, let's assume that $\mu(t) = 0$, then there exists at least one $s \in \mathcal{T}_\mathcal{E}$ such that $\frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } = 0$, and given Proposition {\color{red} XX} we have that $t = s$.
+\end{proof}
+
+According to Proposition \ref{prop:perfect_encoding}, if the miscoding of $t$ is equal to 0 we can conclude that $t$ perfectly encodes an entity $e$. The problem is that there is no way to know which one is the entity encoded by $t$. Of course, given our scientific intuition, we could guess the entity encoded, but from a mathematical point of view, we can not prove we are right. Moreover, with time and more research, it might happen that we change our mind about the nature of the encoded entity $e$ (see Example \ref{ex:phlogiston}).
+
+An entity $e \in \mathcal{E}$ can have multiple representations, given by the set $\mathcal{T}_e$. Fortunately, miscoding is a quantity that does not depend on the representation selected (see the problem of style in Section \ref{sec:scientific_representation}).
+
+\begin{proposition}
+Let $t \in \mathcal{T}$ be a topic with $\mu(t) = \mu_t$, then we have that
+\[
+\mu_t \leq \frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } \quad \textrm{for all} \quad s \in \mathcal{T}_\mathcal{E}
+\]
+\end{proposition}
+\begin{proof}
+The existence of and $s \in \mathcal{T}_\mathcal{E}$ such that $\frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } < \mu_t$ is a contradiction with the fact that $\mu_t$ is the minimum reached for all possibles $s \in \mathcal{T}_\mathcal{E}$.
+\end{proof}
+
+Given an entity $e$, we have seen that all the representations that belong to $\mathcal{T}_e$ are equally good form the point of view of miscoding, since all of them have a miscoding of $0$. The question is which one we should use in our research? From a practical point of view, we should select that representation that makes it easier to gather new knowledge about the original entity, that is, to reduce the inaccuracy and surfeit of candidate models (see Section {\color{red} XX}).
+
+\begin{example}
+Assume we have a time series $ts$ composed $m$ measurements $x_1, \ldots, x_m$ collected at fixed time intervals from a physical phenomena with a sinusoidal behavior, and assume we have trained a neural network $nn$ that perfectly fits the data, that is, given a time $t$ as input it returns $x_t$. Both representations have the same miscoding, that is $\mu(ts) = \mu(nn)$. An analysis of the cycles of the time series will allow us to discover that the best model for this particular physical phenomena seem to be a sine function, however, no currently known machine learning approach will arrive at the same conclusion having as input the architecture of the neural network (number of layers, sizes, and trained weights). Of course, the oracle is so smart that, in fact, it did it.
+\end{example}
+
+%
+% Section: Joint Miscoding
+%
+\section{Joint Miscoding}
+\label{sec:joint_miscoding}
+
+As we have said in Section \ref{sec:descriptions_joint_topic}, a possible way to discover new entities is by means of combining the already know entities, leveraging on their (approximate) representations. In this section we study how the concept of miscoding behaves when we deal with the union of two different topics.
+
+\begin{definition}
+Let $t, s \in \mathcal{T}$ two different topics. We define the \emph{joint miscoding} of the topics $t$ and $s$, denoted by $\mu(t, s)$, as:
+\[
+\mu(t, s) = \mu(ts) = \overset{o}{ \underset{t_e \in \mathcal{T}_\mathcal{E}} \min} \frac{ \max\{ K(t_e \mid ts), K(ts \mid t_e) \} } { \max\{ K(t_e), K(ts) \} }
+\]
+\end{definition}
+
+\begin{example}
+{\color{red} PENDING}
+\end{example}
+
+The joint miscoding of two topics is always a number between $0$ and $1$. This allow us to compare the joint miscoding of unrelated topics.
+
+\begin{proposition}
+We have that $0 \leq \mu(t,s) \leq 1$ for all $t, s \in \mathcal{T}$.
+\end{proposition}
+\begin{proof}
+Given Definition \ref{def:descriptions_extended_topics} apply Proposition \ref{prop:range_miscoding}.
+\end{proof}
+
+The joint miscoding of two topics is greater or equal than the miscoding of any of them isolated. Intuitively, this allow us to move ourselves into an unknown area, with the hope of discovering new research entities.
+
+\begin{proposition}
+Let $t, s \in \mathcal{T}$ two different topics. We have that $\mu(t,s) \leq \mu(t)$ and that $\mu(t,s) \leq \mu(s)$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+The joint miscoding of two topics is smaller than the sum of the miscoding of the individual topics. Intuitively, we are looking for new entities by creating new representations that are different from the representations we already know, but not too far so that that the new representations are close enough to the representations of a valid entities.
+
+\begin{proposition}
+We have that $\mu(t,s) \leq \mu(t) + \mu(s)$ for all $t, s \in \mathcal{T}$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+When dealing with the concept of joint miscoding, the order in which the topics are listed is not relevant.
+
+\begin{proposition}
+We have that $\mu(t,s) = \mu(s,t)$ for all $t,s \in \mathcal{T}$.
+\end{proposition}
+\begin{proof}
+{\color{red}: Apply Propositions \ref{prop:kolmogorov_order} and \ref{prop:joint_order}.}
+\end{proof}
+
+We can extend the concept of joint miscoding to any finite collection of topics.
+
+\begin{definition}
+Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. We define the \emph{joint miscoding of} $t_1, t_2, \ldots, t_n$, denoted by $\mu(t_1, t_2, \ldots, t_n)$, as:
+\[
+\mu(t_1, t_2, \ldots, t_n) = \overset{o}{ \underset{t_e \in \mathcal{T}_\mathcal{E}} \min} \frac{ \max\{ K(t_e \mid t_1 t_2 \ldots t_n), K(t_1 t_2 \ldots t_n \mid t_e) \} } { \max\{ K(t_e), K(t_1 t_2 \ldots t_n) \} }
+\]
+\end{definition}
+
+Next propostion proves that the properties of the concept of miscoding generalizes to multiple topics.
+
+\begin{proposition}
+Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. Then, we have that:
+
+\renewcommand{\theenumi}{\roman{enumi}}
+\begin{enumerate}
+\item $0 \leq \mu(t_1, t_2, \ldots, t_n) \leq 1$
+\item $\mu(t_1, t_2, \ldots, t_n) \leq \mu(t_1) + \ldots + \mu(t_n)$
+\item $\mu(t_1, t_2, \ldots, t_n) \geq \mu(t_i) \; \forall \, 0 \leq i \leq n$,
+\item $\mu(t_1, \ldots, t_i, \ldots, t_j, \ldots, t_n) = \mu(t_1, \ldots, t_j, \ldots, t_i, \ldots, t_n) \; \forall \, 0 \leq i \leq j \leq n$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+%
+% Section: Miscoding of Areas
+%
+\section{Miscoding of Areas}
+
+{\color{red} TODO: Extend this section.}
+
+The concept of miscoding can be extended to research areas in order to quantitative measure the amount of effort required to fix an inaccurate representation of the area.
+
+\begin{definition}
+Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A} = \{t_1, t_2, \ldots, t_n\}$. We define the \emph{miscoding of the area} given the known subset $d_{\hat{A}}$ as:
+\[
+\mu(\hat{A}) = \min_{(t_{e_1}, t_{e_2}, \ldots, t_{e_n}) \in \mathcal{T}_\mathcal{E}^n}  \frac{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \mid \langle t_1, t_2, \ldots, t_n \rangle \right) }{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \right)}
+\]
+\end{definition}
+

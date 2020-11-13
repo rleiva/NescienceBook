@@ -1,0 +1,310 @@
+%
+% CHAPTER: Surfeit
+%
+
+\chapterimage{Alexander_cuts_the_Gordian_Knot.pdf} % Chapter heading image
+
+\chapter{Surfeit}
+\label{chap:Redundancy}
+
+\begin{quote}
+\begin{flushright}
+\emph{If you can't explain it simply,\\
+you don't understand it well enough.}\\
+Albert Einstein 
+\end{flushright}
+\end{quote}
+\bigskip
+
+Surfeit is a quantity that measures how redundant is a model of a topic. Intuitively, the more ignorant we are about a topic, the longer will be our current best model. Long models usually contain elements that are not needed, since a better understanding of the topic should allow us to remove all those unnecessary elements. 
+
+We define the surfeit of a topic's model as the difference between the length of this model and the length of the best possible model for that topic. In the theory of nescience we assume that the theoretical limit of what can be known about a topic, that is, its perfect model, is the shortest possible model that allows us to fully reconstruct the topic.
+
+The length of the shortest possible model of a topic is given by the Kolmogorov complexity of that topic. As we have seen, this quantity is not computable for the general case, that is, there is no algorithm that given a topic (a binary string) prints out its best possible model. Moreover, in practice, and given that our knowledge about topics is in general incomplete, we do not know the shortest possible model either. Surfeit is a quantity that has to be approximated.
+
+If we were able to come up with a perfect explanation about a topic, that model must be a random string, otherwise it would contain redundant elements that can be removed, and so, either it is not random or it is not perfect. By means of computing how far our current model is from being a random string we can estimate how far we are from having a perfect model.
+
+{\color{red}
+The key idea of this book is that \emph{perfect knowledge implies randomness}. This is, in principle, a highly counterintuitive idea, since a lot of effort in science deals with the task to name, organize and classify our messy, chaotic, world. Even the kind of knowledge that explains how things work requires a previous ordering and classification. Science, apparently, is anything but random. Yet, this is not the case.
+
+The Theory of Nescience is based on the fact that randomness effectively imposes a limit on how much we can know about a particular topic. Far from being a handicap, the proper understanding of this absolute epistemological limitation opens new opportunities in science and technology, both, to solve open problems, and to discover new interesting research topics.
+
+Our common understanding suggests that random strings do not make any sense, since this is what randomness is all about. On the contrary, we will see that random descriptions are the ones which contain the maximum amount of information in the less space possible.
+}
+
+%
+% Section: Surfeit
+%
+
+\section{Surfeit}
+\label{sec:Definition_redundancy}
+
+Given the length of a model for a research topic, and the length of its shortest possible model, we can introduce a relative measure of how much unneeded effort we are using to describe the topic when using that model. We call this quantity \emph{surfeit}, and it will be part of our definition of nescience, that is, how much we do not know about that topic.
+
+\begin{definition}[Surfeit]
+Given a topic $t \in \mathcal{T}$, and a model $m_t \in \mathcal{M}_t$, we define the \emph{surfeit of the model $m_t$ when describing the topic $t$}, denoted by $\sigma(m_t)$, as
+\[
+\sigma (m_t) = 1 - \frac{K(t)}{l(m_t)}
+\]
+\end{definition}
+
+In our definition of surfeit we have used a relative measure instead of an absolute one (i.e., $l\left(m_t\right) - K(t)$), because besides to compare the surfeit of different models for the same topic, we are also interested in to compare the surfeit of different topics (see Chapter \ref{chap:The-Scientific-Method}). We prefer to use $K(t)$ instead of the equivalent $l \left( m_t^\star \right)$ in order to be consistent with the definition of inaccuracy provided in Section \ref{sec:error}.
+
+Intuitively, the more ignorant we are about a topic, the longer will be our current best known model\footnote{The concept of \emph{current best model} will be introduced formally at Chapter \ref{chap:Nescience}.}, since a better understanding of that topic means that we should be able to remove all the redundant elements from that model.
+
+\begin{example}
+{\color{red} TODO: Provide an example to clarify the concept.}
+\end{example}
+
+The surfeit of a model is always a number between $0$ and $1$.
+
+\begin{proposition}
+\label{prop:range_redundancy}
+We have that $0 \leq \sigma(m_t) \leq 1$ for all $t \in \mathcal{T}$ and $m_t \in \mathcal{M}_t$.
+\end{proposition}
+\begin{proof}
+Given that $l\left(m_t\right)>0$ and that $K\left(t\right)>0$, since they are the lengths of non-empty strings, we only need to prove that $l\left(m_t\right) \geq K\left(t\right)$; however $l\left(m_t\right) < K\left(t\right)$ is a contradiction with the fact that $K\left(t\right)$ is the length of the shortest possible Turing machine that prints out $t$.
+\end{proof}
+
+Our definition of surfeit compares the length of a model with the Kolmogorov complexity of the topic, not with the Kolmogorov complexity of the model itself (i.e., $K(m_t)$). That is, surfeit is not a measure of the redundancy of a model. It might happen that we come up with an incompressible model (no redundant elements to remove), that it is not the shortest possible one that describes the topic (see Example \ref{ex:description_neural}). Such a model would not be redundant in the traditional sense, but it still will present some surfeit in the sense of the theory of nescience. Moreover, as we have seen in Chapter \ref{chap:Error}, it migth happen that the model $m$ we are considering does not prefectly describes the topic $t$, that is, $m \notin \mathcal{M}_t$. In practice it is highly convenient to introduce the following alternative (we could say weaker) characterization of the concept of redundant model:
+
+\begin{definition}[Redundancy]
+Given a model $m \in \mathcal{M}$, we define the \emph{redundancy of the model} $m$, denoted by $\rho(m)$, as
+\[
+\rho(m) = 1 - \frac{K(m)}{l(m)}
+\]
+\end{definition}
+
+The redundancy of a model $m$ is a quantity related to the model itself, and it does not depend on the topic $t$ being described.
+
+\begin{example}
+{\color{red} TODO: Provide an example to clarify the concept.}
+\end{example}
+
+We have that the redundancy of a model is always a number between $0$ and $1$.
+
+\begin{proposition}
+We have that $0 \leq \rho(m) \leq 1$ for all $m \in \mathcal{M}$.
+\end{proposition}
+\begin{proof}
+Apply Proposition \ref{prop:kolmogorov_length}.
+\end{proof}
+
+Finally, next proposition formalizes our intuition that the surfeit of a model is greater or equal than its redundancy.
+
+\begin{proposition}
+\label{prop:surfeit_comparison}
+We have that $\rho(m_t) \leq \sigma(m_t)$ for all $t \in \mathcal{T}$ and $m_t \in \mathcal{M}_t$.
+\end{proposition}
+\begin{proof}
+Proving that $\rho(m_t) \leq \sigma(m_t)$ is equivalent to prove that $K(m_t) \geq K(t)$ for all $m_t$. Lets assume that there exist a $m_t$ such that $K(m_t) < K(t)$, that would mean there exists a Turing machine $\langle TM, a \rangle$ such that $TM(a)=t$ but $l(<TM, a>) < K(t)$. That is a contradiction with the fact that $K(t)$ is the length of the shortest possible Turing machine that prints $t$.
+\end{proof}
+
+It would be very nice if Proposition \ref{prop:surfeit_comparison} applies to all possible models. Unfortunately, the proposition is true only when we deal with valid models (from $\mathcal{M}_t$), as Example \ref{ex:surfeit_non_comparison} shows.
+
+\begin{example}
+\label{ex:surfeit_non_comparison}
+{\color{red} TODO: Provide an example.}
+\end{example}
+
+%
+% Section: Joint Surfeit
+%
+
+\section{Joint Surfeit}
+
+The joint surfeit of two topics is given by our current understanding of both topics, and the shortest string that allows us to effectively reconstruct them.
+
+\begin{definition}
+Let $t,s \in \mathcal{T}$ be two different topics, and $d_{t,s}$ a joint description. We define the \emph{joint surfeit} of the description $d_{t,s}$, denoted by $\sigma(d_{t,s})$, as: 
+\[
+\sigma(d_{t,s}) = 1 - \frac{K(t, s)}{l \left( d_{t,s} \right)}
+\]
+\end{definition}
+
+As it was the case of the concept of surfeit, joint surfeit, being a relative measure, is again a number between $0$ and $1$.
+
+\begin{proposition}
+We have that $0 \leq \sigma(d_{t,s}) \leq 1$ for all $t,s$ and all $d_{t,s}$.
+\end{proposition}
+\begin{proof}
+Given that $K(t,s) \leq l(d_{t,s})$ we have that $\frac{K(t, s)}{l \left( d_{t,s} \right)} \leq 1$ and so, $1 - \frac{K(t, s)}{l \left( d_{t,s} \right)} \geq 0$. Also, since $\frac{K(t, s)}{l \left( d_{t,s} \right)} > 0$ (both quantities are positive integers), we have that $1 - \frac{K(t, s)}{l \left( d_{t,s} \right)} \leq 1$.
+\end{proof}
+
+When dealing with the joint surfeit of two topics, the order in which the topics are listed is not relevant.
+
+\begin{proposition}
+We have that $\sigma(d_{t,s}) = \sigma(d_{s,t})$ for all $t,s \in \mathcal{T}$.
+\end{proposition}
+\begin{proof}
+Apply Propositions \ref{prop:kolmogorov_order} and \ref{prop:joint_order}.
+\end{proof}
+
+Our experience tell us that the more topics we include in a research, the less we understand the problem at hand. That is, the joint surfeit of two topics should be greater or equal than the surfeit of any of them isolated. Unfortunately, it is not the case that $\sigma(d_{t,s}) \geq \sigma(d_t)$ for all combinations of $d_{t,s}$ and $d_t$, since $d_{t,s}$ and $d_t$ are arbitrary descriptions of two different topics, $ts$ and $t$. We have to wait until Chapter \ref{chap:Nescience} when the concept of \emph{current best description} will be introduced to formalize our intuition.
+
+In the meantime we can prove a weaker result. In the case that the description $d_{t,s}$ is just the concatenation of $d_t$ and $d_s$, the case we need in our methodology for the discovery of interesting questions (see Chapter \ref{chap:Interesting-Research-Questions}), we have that $\sigma(d_{t,s}) \geq \sigma(d_t)$.
+
+\begin{proposition}
+\label{prop:surfeit_joint_add}
+Let $t, s \in \mathcal{T}$ two topics, and $ts$ the topic resulting as the concatenation of $t$ and $s$, and let $d_t$ and $d_s$ descriptions of $t$ and $s$ respectively. If $d_{t,s} = \langle d_t, d_s \rangle$ we have that  $\sigma(d_{t,s}) \geq \sigma(d_t)$  and $\sigma(d_{t,s}) \geq \sigma(d_s)$.
+\end{proposition}
+\begin{proof}
+Given that Kolmogorov complexity is subadditive (see Proposition \ref{prop:additive_kolmogorov}) and the fact that $l(d_{t,s}) = l(d_t) + l(d_s)$.
+\end{proof}
+
+Intuitively, the joint surfeit of two topics in general should not be equal the sum of the individual surfeits, since it might happen that the topics partially overlap. However, as it was the case of Proposition \ref{prop:surfeit_joint_add}, we have to wait until we define the concept of current best description to fully formalize this concept.
+
+In the same way we introduced the concept of redundancy of a description as a weaker version of the concept of surfeit, we can also introduce the concept of joint redundancy as a weaker version of the concept of joint surfeit.
+
+\begin{definition}
+Let $t,s \in \mathcal{T}$ be two different topics, and $d_{t,s}$ a joint description. We define the \emph{joint redundancy} of the description $d_{t,s}$, denoted by $\rho(d_{t,s})$, as: 
+\[
+\rho(d_{t,s}) = 1 - \frac{K\left( d_{t,s} \right)}{l \left( d_{t,s} \right)}
+\]
+\end{definition}
+
+The joint redundancy satisfy the same properties that the joint surfeit.
+
+\begin{proposition}
+
+For all $t, s \in \mathcal{T}$ and all $d_t \in \mathcal{D}_t$, $d_s \mathcal{D}_s$ we have:
+
+\renewcommand{\theenumi}{\roman{enumi}}
+\begin{enumerate}
+\item $0 \leq \rho(d_{t,s}) \leq 1$,
+\item $\rho(d_{t,s}) = \rho(d_{s,t})$.
+\item If $d_{t,s} = \langle d_t, d_s \rangle$, then $\rho(d_{t,s}) \geq \rho(d_t)$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+
+\renewcommand{\theenumi}{\roman{enumi}}
+\begin{enumerate}
+
+\item Given that $K(d_{t,s}) \leq l(d_{t,s})$ and that both quantities are positive integers.
+
+\item Apply Propositions \ref{prop:kolmogorov_order} and \ref{prop:joint_order}
+
+\item Given that Kolmogorov complexity is subadditive (see Proposition \ref{prop:additive_kolmogorov}) and the fact that $l(d_{t,s}) = l(d_t) + l(d_s)$.
+
+\end{enumerate}
+\end{proof}
+
+As it was the case of surfeit and redundancy, next Proposition shows that the joint surfeit is always greater or equal than the joint redundancy.
+
+\begin{proposition}
+We have that $\rho(d_t) \leq \sigma(d_t)$ for all $t \in \mathcal{T}$ and $d_t \in \mathcal{D}$.
+\end{proposition}
+\begin{proof}
+Apply the fact that $K(d_t) \geq K(t)$ for all $d_t$ and $t$.
+\end{proof}
+
+Finally, we can extend our concepts of joint surface and joint redundancy to multiple, but fine, number of topics.
+
+\begin{definition}
+Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics, and $d_{t_1, t_2, \ldots, t_n}$ a joint description. We define the \emph{joint surfeit} of the description $d_{t_1, t_2, \ldots, t_n}$, denoted by $\sigma(d_{t_1, t_2, \ldots, t_n})$, as: 
+\[
+\sigma(d_{t_1, t_2, \ldots, t_n}) = 1 - \frac{K(t_1, t_2, \ldots, t_n)}{l \left( d_{t_1, t_2, \ldots, t_n} \right)}
+\]
+And the \emph{redundancy} of the description $d_{t_1, t_2, \ldots, t_n}$, denoted by $\rho(d_{t_1, t_2, \ldots, t_n})$, as:
+\[
+\rho(d_{t_1, t_2, \ldots, t_n}) = 1 - \frac{K(d_{t_1, t_2, \ldots, t_n})}{l \left( d_{t_1, t_2, \ldots, t_n} \right)}
+\]
+\end{definition}
+
+It is easy to show that the properties of joint surface and joint redundancy apply to the case of multiple topics.
+
+%
+% Section: Conditional Surfeit
+%
+
+\section{Conditional Surfeit}
+
+We are interested into study how the surfeit of a model for a topic $t$ is affected when we assume a perfect knowledge of another topic $s$. That is, we want to know the surfeit of a conditional model for a topic, what we call \emph{conditional surfeit}.
+
+\begin{definition}
+Let $t,s \in \mathcal{T}$ be two different topics, and let $m_{t \mid s^\star}$ a conditional model of $t$ given $s$. We define the \emph{conditional surfeit} of the model $m_{t \mid s^\star}$, denoted by $\sigma(m_{t \mid s^\star})$, as: 
+\[
+\sigma(m_{t \mid s^\star}) = 1 - \frac{K\left( t \mid s^\star \right)}{l \left( m_{t \mid s^\star} \right)}
+\]
+\end{definition}
+
+This definition is required mostly for practical purposes, since given that our knowledge of $s$ is perfect, we can focus on studying what it is new in topic $t$, that is, in that part not covered by the assumed (perfect) background knowledge.
+
+Conditional surfeit, being a relative measure, is a number between $0$ and $1$.
+
+\begin{proposition}
+We have that $0 \leq \sigma(m_{t \mid s^\star}) \leq 1$ for all $t,s$ and $m_{t \mid s^\star}$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: adapt this proof.}
+Given that $K(t,s) \leq l(m_{t,s})$ we have that $\frac{K(t, s)}{l \left( m_{t,s} \right)} \leq 1$ and so, $1 - \frac{K(t, s)}{l \left( m_{t,s} \right)} \geq 0$. Also, since $\frac{K(t, s)}{l \left( m_{t,s} \right)} > 0$ (both quantities are positive integers), we have that $1 - \frac{K(t, s)}{l \left( m_{t,s} \right)} \leq 1$.
+\end{proof}
+
+Intuition tell us that the surfeit of a description could only decrease if we assume the background knowledge given by the description of another topic. This is because we require that this background knowledge must be a perfect description (it presents no surfeit). However, as it was the case of joint surfeit, we have to wait until Chapter \ref{chap:Nescience} to formalize this intuition.
+
+In the same way we introduced the concept of redundancy of a description as a weaker version of the concept of surfeit, we can also introduce the concept of conditional redundancy as a weaker version of the concept of conditional surfeit.
+
+\begin{definition}
+Let $t,s \in \mathcal{T}$ be two different topics, and let $d_{t \mid s^\star}$ any conditional description of $t$ given $s$. We define the \emph{conditional surfeit} of the description $d_{t \mid s^\star}$, denoted by $\sigma(d_{t \mid s^\star})$, as: 
+\[
+\rho(d_{t \mid s^\star}) = 1 - \frac{K\left( d_{t \mid s^\star} \right)}{l \left( d_{t \mid s^\star} \right)}
+\]
+\end{definition}
+
+Conditional surfeit is a relative measure, and so, a number between $0$ and $1$.
+
+\begin{proposition}
+We have that $0 \leq \rho(d_{t \mid s^\star}) \leq 1$ for all $t,s$ and all $d_{t,s}$.
+\end{proposition}
+\begin{proof}
+Given that $K(d_{t \mid s^\star}) \leq l(d_{t \mid s^\star})$ we have that $\frac{K(d_{t \mid s^\star})}{l \left( d_{t \mid s^\star} \right)} \leq 1$ and so, $1 - \frac{K(d_{t \mid s^\star})}{l \left( d_{t \mid s^\star} \right)} \geq 0$. Also, since $\frac{K(d_{t \mid s^\star})}{l \left( d_{t \mid s^\star} \right)} > 0$ (both quantities are positive integers), we have that $1 - \frac{K(d_{t \mid s^\star})}{l \left( d_{t \mid s^\star} \right)} \leq 1$.
+\end{proof}
+
+Finally, we can extend our concepts of conditional surfeit and conditional redundancy to multiple, but fine, number of topics.
+
+\begin{definition}
+Let $t, s_1, s_2, \ldots, s_n \in \mathcal{T}$ be a finite collection of topics, and let $d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star}$ any conditional description of $t$ given $s_1, s_2, \ldots, s_n$. We define the \emph{conditional surfeit} of the description $d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star}$, denoted by $\sigma(d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star})$, as: 
+\[
+\sigma(d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star}) = 1 - \frac{K\left( t \mid s_1^\star, s_2^\star, \ldots,s_n^\star \right)}{l \left( d_{t \mid s_1^\star, s_2^\star, \ldots,s_n^\star} \right)}
+\]
+And the \emph{conditional redundancy} of the description $d_{t_1, t_2, \ldots, t_n}$, denoted by $\rho(d_{t_1, t_2, \ldots, t_n})$, as:
+\[
+\rho(d_{t_1, t_2, \ldots, t_n}) = 1 - \frac{K(d_{t_1, t_2, \ldots, t_n})}{l \left( d_{t_1, t_2, \ldots, t_n} \right)}
+\]
+\end{definition}
+
+It is easy to show that the properties of conditional surfeit and conditional redundancy apply to the case of multiple topics as well.
+
+%
+% Section: Surfeit of Areas
+%
+
+\section{Surfeit of Areas}
+
+The concept of surfeit can be extended to research areas, to quantitative measure the amount of extra effort we are using to describe the topics of the area.
+
+\begin{definition}
+Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A} = \{t_1, t_2, \ldots, t_n\}$, and let $d_{\hat{A}}$ be a description. We define the \emph{surfeit of the description} $d_{\hat{A}}$ as:
+\[
+\sigma \left( d_{\hat{A}} \right) = 1  - \frac{K( \langle t_1, t_2, \ldots, t_n \rangle )}{l \left( d_{\hat{A}} \right)}
+\]
+\end{definition}
+
+As it was the case of the concept of redundancy, in general we do not know the complexity of the area $K(\hat{A})$, and so, in practice, it must be approximated by the complexity of the descriptions themselves $K(\hat{d}_{\hat{A}})$. However, in the particular case of areas, we could have also problems with the quantity $\hat{d}_{\hat{A}}$, since it requires to study the conditional descriptions of the topics included in the area.
+
+\begin{definition}
+Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A} = \{t_1, t_2, \ldots, t_n\}$, and let $d_{\hat{A}}$ be a description. We define the \emph{weak redundancy of the description} $d_{\hat{A}}$ as:
+\[
+\rho(d_{\hat{A}}) =  1  - \frac{K \left( d_{\hat{A}} \right)}{l \left( d_{\hat{A}} \right)}
+\]
+\end{definition}
+
+%
+% Section: References
+%
+
+\section*{References}
+
+The concept of redundancy has been also investigated in the context of information theory, since we are interested on using codes with low redundancy (see for example \cite{abramson1963information}).
+

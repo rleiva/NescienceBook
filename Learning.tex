@@ -162,6 +162,49 @@ There are two main reasons why we want to estimate the function $f$: prediction 
 
 {\color{red} TODO: Pending}
 
+% Decision Trees
+
+\subsection{Decision Trees}
+\label{subsec:learning_decision_trees}
+
+Let $f:\mathbb{R}^p \rightarrow \mathcal{G}$ be a classification function from the set of input vectors $\mathbb{R}^p$, where each vector $\textbf{x} = \{x_1, x_2, \ldots, x_p \}$ is composed by $p$ features, to the set of classification labels $\mathcal{G} = \{0, 1, \ldots, \ell\}$, and let $\mathbb{X} \subset \mathbb{R}^p$ be a subset of $n$ training vectors with their corresponding target vector $\textbf{y} \in \mathcal{G}^n$. We are interested in to find a model $\hat{f}$ from a family $\mathcal{F}$ of non-parametric models of binary decision trees, based on the training pair $\left( \mathbb{X}, \textbf{y} \right)$, such that $\hat{f}(\textbf{x})$ is as close as possible the real values $f(\textbf{x}) = y$. That is, we are interested in to solve a supervised classification problem (refer to Section \ref{sec:machine_learning} for more information about this kind of problems).
+
+A decision tree is a mathematical model that predicts the value of a target variable by learning simple \texttt{if-else} decision rules inferred from the training set (see Example \ref{ex:example_tree}). The nodes of the tree contain pairs of values $(j, w)$, where $1 \leq j \leq p$ is a feature index and $w \in \mathbb{R}$ is a threshold, and the tree leafs contain values of $\mathcal{G}$. Given a vector $\textbf{x} \in \mathbb{R}^p$ we perform a tree traversal checking at each node if $x_j \leq w$ to decide if we continue with the left or right branch of the node, until a leaf is reached. We associate the value $\hat{y}$ of the reached leaf with the vector $\textbf{x}$. 
+
+\begin{example}
+\label{ex:example_tree}
+In Figure \ref{tab:DecisionTreeExample}, left side, it is shown an example of a dataset composed by two classes, red dots and blue dots. We want to find a decision tree such that given the features $X1$ and $X2$, it returns if the corresponding dot is blue or red. A possible solution to this problem is depicted in the right side of the table. This decision tree can be also encoded as a function in a programming language, for example in Python, as next code shows.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+def tree(X1, X2):
+    if X1 < 50:
+        if X2 < 20:
+            return "red"
+        else:
+            return "blue"
+    else:
+        return "red"
+\end{verbatim}}
+\end{sourcecode}
+
+\end{example}
+
+\begin{table}
+\begin{center}
+
+\begin{tabular}{ c c }
+
+\includegraphics[scale=0.4]{decision_tree_example_data} & \raisebox{.4\height}{\includegraphics[scale=0.4]{decision_tree_example}}
+
+\end{tabular}
+\end{center}
+\caption{\label{tab:DecisionTreeExample}Example of Decision Tree}
+\end{table}
+
+The algorithms for the construction of decision trees usually work by recursively partitioning the training set $\mathbb{X}$ in such a way that the values of the target vector $\textbf{y}$ are grouped together, until all partitions are composed by a single label. The problem with these building methods is that they produce very complex trees that overfit the training data. Overfitted trees not only lead to poor predictive capabilities on non-training data, but also produce models that can be exceedingly difficult to interpret. A common approach to avoid overfitting in decision trees is to force an early stopping of the algorithm before the tree becomes too complex. Popular stopping criteria include limiting the maximum depth of the tree, requiring a minimum number of sample points at leaf nodes, or computing the accuracy gain yielded by adding new nodes. However, those heuristics demand the optimization of hyperparameters which makes the training process computationally expensive.
+
+
 %
 % Minimum Message Length
 %

@@ -900,51 +900,12 @@ If we write \texttt{type(model.model)} we will see that the library has selected
 \section{Decision Trees}
 \label{sec:decision_trees}
 
-In the last sections we have seen how we can use the concepts of miscoding, inaccuracy, surfeit and nescience to evaluate the quality of datasets and models. In this section we are going to see how to apply the same concepts to find the best model, from a given family of models, and the best subset of the training data. In particular, we are going to propose a new algorithm to fit near optimal decision trees to a given dataset.
-
-Let $f:\mathbb{R}^p \rightarrow \mathcal{G}$ be a classification function from the set of input vectors $\mathbb{R}^p$, where each vector $\textbf{x} = \{x_1, x_2, \ldots, x_p \}$ is composed by $p$ features, to the set of classification labels $\mathcal{G} = \{0, 1, \ldots, \ell\}$, and let $\mathbb{X} \subset \mathbb{R}^p$ be a subset of $n$ training vectors with their corresponding target vector $\textbf{y} \in \mathcal{G}^n$. We are interested in to find a model $\hat{f}$ from a family $\mathcal{F}$ of non-parametric models of binary decision trees, based on the training pair $\left( \mathbb{X}, \textbf{y} \right)$, such that $\hat{f}(\textbf{x})$ is as close as possible the real values $f(\textbf{x}) = y$. That is, we are interested in to solve a supervised classification problem (refer to Section \ref{sec:machine_learning} for more information about this kind of problems).
-
-A decision tree is a mathematical model that predicts the value of a target variable by learning simple \texttt{if-else} decision rules inferred from the training set (see Example \ref{ex:example_tree}). The nodes of the tree contain pairs of values $(j, w)$, where $1 \leq j \leq p$ is a feature index and $w \in \mathbb{R}$ is a threshold, and the tree leafs contain values of $\mathcal{G}$. Given a vector $\textbf{x} \in \mathbb{R}^p$ we perform a tree traversal checking at each node if $x_j \leq w$ to decide if we continue with the left or right branch of the node, until a leaf is reached. We associate the value $\hat{y}$ of the reached leaf with the vector $\textbf{x}$. 
-
-\begin{example}
-\label{ex:example_tree}
-In Figure \ref{tab:DecisionTreeExample}, left side, it is shown an example of a dataset composed by two classes, red dots and blue dots. We want to find a decision tree such that given the features $X1$ and $X2$, it returns if the corresponding dot is blue or red. A possible solution to this problem is depicted in the right side of the table. This decision tree can be also encoded as a function in a programming language, for example in Python, as next code shows.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-def tree(X1, X2):
-    if X1 < 50:
-        if X2 < 20:
-            return "red"
-        else:
-            return "blue"
-    else:
-        return "red"
-\end{verbatim}}
-\end{sourcecode}
-
-\end{example}
-
-\begin{table}
-\begin{center}
-
-\begin{tabular}{ c c }
-
-\includegraphics[scale=0.4]{decision_tree_example_data} & \raisebox{.4\height}{\includegraphics[scale=0.4]{decision_tree_example}}
-
-\end{tabular}
-\end{center}
-\caption{\label{tab:DecisionTreeExample}Example of Decision Tree}
-\end{table}
-
-The algorithms for the construction of decision trees usually work by recursively partitioning the training set $\mathbb{X}$ in such a way that the values of the target vector $\textbf{y}$ are grouped together, until all partitions are composed by a single label. The problem with these building methods is that they produce very complex trees that overfit the training data. Overfitted trees not only lead to poor predictive capabilities on non-training data, but also produce models that can be exceedingly difficult to interpret. A common approach to avoid overfitting in decision trees is to force an early stopping of the algorithm before the tree becomes too complex. Popular stopping criteria include limiting the maximum depth of the tree, requiring a minimum number of sample points at leaf nodes, or computing the accuracy gain yielded by adding new nodes. However, those heuristics demand the optimization of hyperparameters which makes the training process computationally expensive.
-
-In this section, we are going to see how to apply the minimum nescience principle to the construction of decision trees that, by design, avoids the overfitting of the training data, without losing accuracy. The new algorithm proposed here does not require the optimization of hyperparameters, thus significantly reducing the training time. Moreover, the algorithm produces much smaller and more shallow trees than traditional algorithms, facilitating the interpretability of the resulting models.
+In the last sections we have seen how to use the concepts of miscoding, inaccuracy, surfeit and nescience to evaluate the quality of datasets and models, and to automatically select a family of models and search over its hyperparameters to find the best possible description of a topic. In particular, we have studied in detail the family of binary decision trees. The procedure used in the \texttt{fastautoml} library with trees was a mix between a classical approach (a CART algorithm combined with a cross-complexity pruning), and an evaluation of candidate trees using the minimum nescience principle. In this section we are going to see a new algorithm to derive optimal trees, both for classification and regression problems, that is entirely based on the theory of nescience. The new algorithm, by design, avoids the overfitting of the training dataset without losing accuracy, it does not require the optimization of hyperparameters, thus significantly reducing the training time, and it produces much smaller and more shallow trees than traditional algorithms, facilitating the interpretability of the results.
 
 \subsection{Algorithm Description}
 \label{sub:tree_algorithm_description}
 
-Next algorithm shows the pseudocode of the proposed procedure to build a decision tree given a training dataset $(\mathbb{X}, \textbf{y})$. The algorithm is based on a breadth first traversal of trees. The algorithm requires a function called \textsc{bestSplit()} that returns the best split of a given subset of the data into two subsets; and a second function, called \textsc{Nescience()} that provides an estimation of the nescience of the current tree. The algorithm is based on two nested loops: the external \textbf{while} loop keeps a list of the candidate nodes to grow, whereas the internal \textbf{for} loop finds the best node to grow the tree. The latter operation requires to check all possible options and select the one that minimizes the nescience. There are two exit points in the algorithm: the first one is when it is not possible to reduce more the nescience of the tree, and the second one is if there are no more nodes to grow.
+Next pseudocode shows the proposed algorithm to build a decision tree given a training dataset $(\mathbf{X}, \mathbf{y})$. The procedure is based on a breadth first traversal of trees combined with a greedy approach. It requires a function called \textsc{bestSplit()} that returns the best split of a given subset of the data into two subsets; and a second function, called \textsc{Nescience()} that provides an estimation of the nescience of the current tree. The algorithm is based on two nested loops: the external \textbf{while} loop keeps a list of the candidate nodes to grow, whereas the internal \textbf{for} loop finds the best node to grow the tree. The latter operation requires to check all possible growing options and select the one that minimizes the nescience. The exit point of the algorithm is when there are no more branches to grow. We keep track of the best nescience achieved during the building process and return the associated tree.
 
 \begin{sourcecode}
 \label{algorithm:decision_tree}
@@ -1017,12 +978,26 @@ The main difference of our algorithm from other decision tree building algorithm
 \subsubsection*{Splitting Criteria}
 \label{sub:splitting_criteria}
 
-Given a subset $Q \subset \mathbb{X}$ we have to find an split for $Q$ such that the values $\textbf{y}$ are grouped together. A split is a pair $\theta = (j,w)$, were $1 \leq j \leq m$ is a feature index and $w \in \mathbb{R}$ a threshold. A split partitions the set $Q$ into two disjoint subsets $Q_l = \{x_i \in Q : x_{ij} \leq w\}$, and $Q_r = Q \backslash Q_l$. A common splitting criteria used in practice is to minimize the weighted entropy of the subsets $Q_l$ and $Q_r$. The weighted entropy of a split, denoted by $\tilde{H}$, is defined as:
-\begin{equation}
-\tilde{H}(Q, \theta) = \frac{d(Q_l)}{d(Q)} H(Q_l) + \frac{d(Q_r)}{d(Q)} H(Q_r)
-\label{equation:weighted_entropy}
-\end{equation}
-where $d(S)$ is the number of elements (or diameter) of set $S$, and $H(S)$ is the entropy of $S$ (see Section \ref{sec:Entropy}). We are interested to find the optimal split $\theta^\star = \argmin_\theta \tilde{H}(Q,\theta)$. The function \textsc{bestSplit()} returns a new tree node with the best split $\theta^\star$ of a given subset of data $Q$.
+Given a subset $\mathbf{Q} \subseteq \mathbf{X}$ we have to find an split for $\mathbf{Q}$ such that the values of $\textbf{y}$ are grouped together. Recall that a split is a pair $\theta = (j,w)$, were $1 \leq j \leq p$ is a feature index and $w$ is the partition point (see Section \ref{subsec:learning_decision_trees}). A split divides the set $\mathbf{Q}$ into two disjoint subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r = \mathbf{Q} \backslash \mathbf{Q}_l$. In case of a continuous variable we have that $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} \leq w\}$, and if the feature is categorical we define $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} = w\}$\footnote{Ideally, for the categorical case, instead of a single feature $w$ we should search over all the elements of the power set of the set of features $\mathcal{P} \{1, 2, \ldots, p \}$. Unfortunately, that would imply to check $2^p$ cases, something that is time-expensive from the computational point of view.}.
+
+In Section \ref{subsec:learning_decision_trees} we saw that a common splitting criteria used in practice is to minimize the weighted entropy $\tilde{H}$ of the subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r$, that is, to find an split that it is minimal $\theta^\star = \argmin_\theta \tilde{H}(\mathbf{Q},\theta)$. More explicitly, if $\mathbf{y}$ is a target vector taking values from a set of $k$ labels $\mathcal{G} = \{g_1, \ldots, g_k \}$ (either because is a categorical target or a continuous target that has been discretized into $k$ intervals), and denoting the subsets of $\mathbf{y}$ as $\mathbf{y}^l = \{y_i : \mathbf{x}_i \in \mathbf{Q}_l \}$ and $\mathbf{y}^r = \{y_i : \mathbf{x}_i \in \mathbf{Q}_r \}$, and $n_l$ and $n_r$ are the number of elements of $\mathbf{y}^l$ and $\mathbf{y}^r$ respectively, we have that
+\begin{multline}
+\tilde{H}(\mathbf{Q},\theta) = \frac{n_l}{n} \left( - \sum_{i=1}^k \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} \log_2{ \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} } \right) \\
++ \frac{n_r}{n} \left( - \sum_{i=1}^k \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} \log_2{ \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} } \right)
+\end{multline}
+
+In our nescience based decision tree algorithm, the splitting criteria is to minimize the total length of encoding the subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r$ using optimal codes. We have to find the optimal split $ \theta^\star = \argmin_\theta \hat{K}_C(\mathbf{Q} \mid \theta) = \argmin_\theta \{ \hat{K}_{C_l}(\mathbf{Q}_l) + \hat{K}_{C_r}(\mathbf{Q}_r) \}$ where $C_l$ and $C_r$ are the optimal codes given the relative frequencies of the observed values of $\mathbf{y}^l$ and $\mathbf{y}^r$ respectively. The quantity $\hat{K}_C(\mathbf{Q} \mid \theta)$ is computed as:
+\[
+\hat{K}_C(\mathbf{Q} \mid \theta) = \hat{K}_{C_l}(\mathbf{Q}_l) + \hat{K}_{C_r}(\mathbf{Q}_r) = - \sum_{i=1}^k \log_2{ \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} } - \sum_{i=1}^k \log_2{ \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} }
+\]
+I this particular case (if we use as compression algorithm a code with optimal lengths, and continuous variables have been discretized) it turns out that both expressions are equivalent given the following relation:
+\[
+\tilde{H}(\mathbf{Q},\theta) = \frac{1}{n} \hat{K}_C(\mathbf{Q} \mid \theta)
+\]
+We prefer to talk of encoding length instead of weighted entropy because it has an easier interpretation in the context of the theory of nescience.
+\begin{remark}
+Strictly speaking, if we want to implement a decision trees search algorithm fully compliant with the minimum nescience principle, instead of using a total length encoding as splitting criteria, we should had computed the nescience at each split and select that one that makes it minimal. However, early experiments have shown that at local level it works better to group the values of $y$ than to reduce the nescience. Further research is required to confirm and explain this point.
+\end{remark}
 
 \subsubsection*{Practical Implementation}
 

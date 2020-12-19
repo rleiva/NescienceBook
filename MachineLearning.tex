@@ -47,7 +47,7 @@ In the web page that accompanies this book, the reader can find a collection of 
 %
 
 \section{Inaccuracy}
-\label{sec:machine_learning:inaccuracy}
+\label{sec:machine_learning_inaccuracy}
 
 In Section \ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as the normalized information distance between the representation $r$ and the string $\Gamma(d)$ printed out by a universal Turing machine when given the description as input:
 \[
@@ -226,7 +226,7 @@ The experiment consists in training a decision tree classifier with a minimum nu
 %
 
 \section{Miscoding}
-\label{sec:approx-miscoding}
+\label{sec:machine_learning_miscoding}
 
 In Section \ref{def:miscoding} we introduced the concept of miscoding as a quantitative measure of how well a string based encoding $r \in \mathcal{R}$ represents a research entity from $\mathcal{E}$. The miscoding of a representation $r$ was defined as:
 \[
@@ -492,7 +492,7 @@ Intuitively, as Example \ref{example:accumulated_partial_feature_miscoding} show
 %
 
 \section{Surfeit}
-\label{sec:machine_learning:surfeit}
+\label{sec:machine_learning_surfeit}
 
 In Section \ref{sec:Definition_redundancy} we defined the surfeit of the model $m \in \mathcal{M}$ for the representation $r \in \mathcal{R}$ as:
 \[
@@ -635,6 +635,7 @@ In example \ref{ex:dt_vs_nn} we have assumed that both models, decision tree and
 %
 
 \section{Nescience}
+\label{sec:machine_learning_nescience}
 
 In Chapter \ref{chap:Nescience} we defined the concept of nescience as the solution to a non-linear multi-objective optimization problem, where we had to minimize the miscoding, inaccuracy and surfeit of representations and models. The solution to this problem is, in general, not unique, in the sense that we can find multiple pairs of representations and models that have the property that we can not improve one of these quantities without degrading the others (Pareto optimality). However, in practice, we expect that a machine learning library should provide a single solution when training a model over a dataset. In order to provide this unique solution, we have to resort to a utility function that selects one from the available solutions. The nescience library provide different alternatives of utility functions, being the default one the arithmetic mean the tree metrics.
 
@@ -845,6 +846,7 @@ As we can see, the results provided by the \texttt{nescience} library are slight
 %
 
 \section{Auto Machine Classification}
+\label{sec:machine_learning_classification}
 
 The nescience library also includes a module for auto-machine learning (both for classification and regression problems). The auto-machine learning module returns the model, from a collection of families of models, that provides the smalles nescience. For each family of models, the class perform a greedy search over the hyperparameters required for each family. In Appendix XX is described the detail for each family of models.
 
@@ -879,6 +881,28 @@ If we write \texttt{type(model.model)} we will see that the library has selected
 
 {\color{red} TODO: Compare with other automl tools.}
 
+\subsection{Surfeit of Algorithms}
+
+\subsubsection*{Decision Trees}
+\label{subsec:surfeit_decision_trees}
+
+For the representation of a tree as a string we use the following template:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+def tree{[attrs]}:
+    if [attr] <= [thresh]:
+        return [label] || [subtree]
+    else:
+        return [label] || [subtree]
+\end{verbatim}}
+\end{sourcecode}
+
+Where \texttt{[attrs]} is the list of attributes used, and only those used in the model,%
+\footnote{If the dataset contains many attributes, listing all of them when dealing with very short models would make the length of the model's header greater than the length of the body.}  \texttt{[attr]} is a single attribute represented by the letter \texttt{X} followed by a number (e.g. \texttt{X1}), \texttt{[thresh]} is the threshold used for the split, \texttt{[label]} is one of the valid labels from the set $\mathcal{G}$, and \texttt{|| [subtree]} means that the \texttt{return} statement can be replaced by another level of \texttt{[if - else]} conditions. We could have used a much shorter description of trees by replacing word tokens with symbols, e.g., by the ternary conditional operators \texttt{?} and \texttt{:} used in modern programming languages, or by dropping the \texttt{return} statement. This would produce shorter trees, but the complexity of the models would remain the same, up to an additive constant that does not depend on the model itself. Since the harmonic mean compares relative values instead of absolute ones, this additive constant can be safely ignored.
+
+
+
 %
 % Section: Auto Regression
 %
@@ -900,12 +924,12 @@ If we write \texttt{type(model.model)} we will see that the library has selected
 \section{Decision Trees}
 \label{sec:decision_trees}
 
-In the last sections we have seen how to use the concepts of miscoding, inaccuracy, surfeit and nescience to evaluate the quality of datasets and models, and to automatically select a family of models and search over its hyperparameters to find the best possible description of a topic. In particular, we have studied in detail the family of binary decision trees. The procedure used in the \texttt{fastautoml} library with trees was a mix between a classical approach (a CART algorithm combined with a cross-complexity pruning), and an evaluation of candidate trees using the minimum nescience principle. In this section we are going to see a new algorithm to derive optimal trees, both for classification and regression problems, that is entirely based on the theory of nescience. The new algorithm, by design, avoids the overfitting of the training dataset without losing accuracy, it does not require the optimization of hyperparameters, thus significantly reducing the training time, and it produces much smaller and more shallow trees than traditional algorithms, facilitating the interpretability of the results.
+In the last sections we have seen how to use the concepts of miscoding, inaccuracy, surfeit and nescience to evaluate the quality of datasets and models, and to automatically select a family of models and search over its hyperparameters to find the best possible description of a topic. In particular, we have studied in detail the family of binary decision trees. The procedure used in the \texttt{fastautoml} library with trees was a mix between a classical approach (a CART algorithm combined with a cost-complexity pruning), and an evaluation of candidate trees using the minimum nescience principle. In this section we are going to see a new algorithm to derive optimal trees, both for classification and regression problems, that is entirely based on the theory of nescience. The new algorithm, by design, avoids the overfitting of the training dataset without losing accuracy, it does not require the optimization of hyperparameters, thus significantly reducing the training time, and it produces much smaller and more shallow trees than traditional algorithms, facilitating the interpretability of the results.
 
 \subsection{Algorithm Description}
 \label{sub:tree_algorithm_description}
 
-Next pseudocode shows the proposed algorithm to build a decision tree given a training dataset $(\mathbf{X}, \mathbf{y})$. The procedure is based on a breadth first traversal of trees combined with a greedy approach. It requires a function called \textsc{bestSplit()} that returns the best split of a given subset of the data into two subsets; and a second function, called \textsc{Nescience()} that provides an estimation of the nescience of the current tree. The algorithm is based on two nested loops: the external \textbf{while} loop keeps a list of the candidate nodes to grow, whereas the internal \textbf{for} loop finds the best node to grow the tree. The latter operation requires to check all possible growing options and select the one that minimizes the nescience. The exit point of the algorithm is when there are no more branches to grow. We keep track of the best nescience achieved during the building process and return the associated tree.
+The following pseudocode shows the proposed algorithm to build a decision tree given a training dataset $(\mathbf{X}, \mathbf{y})$. The procedure is based on a breadth first traversal of trees combined with a greedy approach. It requires a function called \textsc{bestSplit()} that returns the best split of a given subset of the data into two subsets; and a second function, called \textsc{Nescience()} that provides an estimation of the nescience of the current tree. The algorithm is based on two nested loops: the external \textbf{while} loop keeps a list of the candidate nodes to grow, whereas the internal \textbf{for} loop finds the best node to grow the tree. The latter operation requires to check all possible growing options and select the one that minimizes the nescience. The exit point of the algorithm is when there are no more branches to grow. We keep track of the best nescience achieved during the building process and return the associated tree.
 
 \begin{sourcecode}
 \label{algorithm:decision_tree}
@@ -923,60 +947,46 @@ def BUILD_TREE(data)
         nescience <- bestNescience
         bestNode <- None
         childNode <- None
-        side <- None
         
         for i <- 1, nodesList.length()
 
             node <- nodesList[i]
             
-            if node.left.empty()
-            
-                node.left <- BESTSPLIT(node.ldata)
-                tmp <- NESCIENCE(tree)
-                if tmp < nescience
-                    nescience <- tmp
-                    bestNode <- i
-                    childNode <- node.left
-                    side <- "left"
+            node.child <- BESTSPLIT(node.ldata)
+            tmp <- NESCIENCE(tree)
+            if tmp < nescience
+                nescience <- tmp
+                bestNode <- i
                 
-                node.left <- None
+            node.left <- None
 
-            if node.right.empty()
-            
-                node.right <- BESTSPLIT(node.rdata)
-                tmp <- NESCIENCE(tree)
-                if tmp < nescience
-                    nescience <- tmp
-                    bestNode <- i
-                    childNode <- node.right
-                    side <- "right"
-                
-                node.right <- None
-
-        if nescience >= bestNescience
-            return tree
-
-        node <- nodeList[bestNode]
-        bestNescience <- nescience
-            
-        if side == "left"
-            node.left <- childNode
+        if nescience < bestNescience
+            node <- nodeList[bestNode]
+            bestNescience <- nescience
             nodesList.append(node.left)
-        else
-            node.right <- childNode
-            nodesList.append(node.right)
-            
-        if not node.left.empty() and not node.right.empty()
-            nodesList.remove(bestNode)
+                        
+            if not node.left.empty() and not node.right.empty()
+                nodesList.remove(bestNode)
     
     return tree
 \end{verbatim}}
 \end{sourcecode}
 
-The main difference of our algorithm from other decision tree building algorithms is in the \textbf{for} loop. In traditional algorithms, the order in which the branches are evaluated is irrelevant. However, since our algorithm could stop the growing process at any point, at each iteration we have to select the best branch candidate. A second difference it that our algorithm performs the growing process using internal nodes instead of leaves, unlike other algorithms. The reason is that at each step of the growing process we have to evaluate the current version of the tree, which requires to remove, or close, all the leaves that have not been evaluated yet. Keeping track of non-evaluated leaves, or copying the tree before closing it, is computationally expensive. Growing a tree from internal nodes requires to know which side of the branch, left of right, is the one we are going to extend.
+The main difference of our algorithm from other decision tree building algorithms is in the way the tree is evaluated. Instead of using only accuracy as most of the algorithms do, in addition, we take into account the complexity of the tree (surfeit) to avoid overfitting, and the quality of the subset of data used during the training process (miscoding).
+
+\subsubsection*{Nescience}
+\label{sub:tree_nescience}
+
+The calculation of the nescience implemented in the algorithm is based on a Euclidean distance utility function (see Section \ref{sec:machine_learning_nescience}), because that one was the one that produced the best results in the tests we have performed. For the computation of miscoding and inaccuracy, we use the same techniques that the one used in the \texttt{fastautoml} library, described in Section \ref{sec:machine_learning_miscoding} and Section \ref{sec:machine_learning_inaccuracy} respectively. For the implementation of surfeit, we use the same template to describe trees that was used in the \texttt{DecisionTreeClassifier} of the \texttt{AutoClassifier} class, and that was described in Section \ref{subsec:surfeit_decision_trees}. The only difference is that we also allow equalities in the nodes (\texttt{if [attr] = [thresh]}), something not supported by the \texttt{DecisionTreeClassifier} algorithm of the \texttt{scikit-learn} library.
+
+The generic problem of the instability of inaccuracy due to very short models, also applies to this algorithm (see Section \ref{sec:machine_learning_surfeit}), and the particular problem of the algorithms to build decision trees, in which the best local split might not be that one that minimizes the error (see Section \ref{sec:sec:machine_learning_classification}) is also relevant in this case.
+
+The concept of nescience is used in two different ways in our algorithm. For every iteration of the \texttt{for} loop we have to decide which one of the candidate branches of the tree we should develop. Recall that the order in which we develop the branches is important, since it might happens that one branch does not get develped because that would mean increase the sufeit without a sufficiently large decrease of the inaccuracy. The second place is a the end of the \texttt{while} loop, we we keep trac of the nescience of the different building steps, to decide at the end of the algorithm with wich tree we return.
+
+We treat regression problems as classification problems in which we discretizes the continuous target variable $\mathbf{y}$ into $n$ intervals given the number of samples, and using a uniform discretization (see Section \label{sec:codes_continuous_data}). Once the target variable has been discretized, we train a regular classification tree.
 
 \subsubsection*{Splitting Criteria}
-\label{sub:splitting_criteria}
+\label{sub:tree_splitting_criteria}
 
 Given a subset $\mathbf{Q} \subseteq \mathbf{X}$ we have to find an split for $\mathbf{Q}$ such that the values of $\textbf{y}$ are grouped together. Recall that a split is a pair $\theta = (j,w)$, were $1 \leq j \leq p$ is a feature index and $w$ is the partition point (see Section \ref{subsec:learning_decision_trees}). A split divides the set $\mathbf{Q}$ into two disjoint subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r = \mathbf{Q} \backslash \mathbf{Q}_l$. In case of a continuous variable we have that $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} \leq w\}$, and if the feature is categorical we define $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} = w\}$\footnote{Ideally, for the categorical case, instead of a single feature $w$ we should search over all the elements of the power set of the set of features $\mathcal{P} \{1, 2, \ldots, p \}$. Unfortunately, that would imply to check $2^p$ cases, something that is time-expensive from the computational point of view.}.
 
@@ -995,38 +1005,19 @@ I this particular case (if we use as compression algorithm a code with optimal l
 \tilde{H}(\mathbf{Q},\theta) = \frac{1}{n} \hat{K}_C(\mathbf{Q} \mid \theta)
 \]
 We prefer to talk of encoding length instead of weighted entropy because it has an easier interpretation in the context of the theory of nescience.
+
 \begin{remark}
 Strictly speaking, if we want to implement a decision trees search algorithm fully compliant with the minimum nescience principle, instead of using a total length encoding as splitting criteria, we should had computed the nescience at each split and select that one that makes it minimal. However, early experiments have shown that at local level it works better to group the values of $y$ than to reduce the nescience. Further research is required to confirm and explain this point.
 \end{remark}
 
 \subsubsection*{Practical Implementation}
 
-In the web page that accompanies this book\footnote{http://www.mathematicsunknown.com} we provide an open-source implementation of our algorithm in Python. Our software can be used in conjunction with other machine learning tools from the \texttt{scikit-learn} library, since we adhere to the their API guidelines. For example, our algorithm can be used as part of an ensemble of classifiers, like the \texttt{BaggingClassifier} meta-estimator, or the results of the classification could be cross-validated with tools like \texttt{cross\_val\_score}.
-
-For the representation of a tree as a string we use the following template:
+In the web page that accompanies this book\footnote{http://www.mathematicsunknown.com} we provide an open-source implementation of our algorithm in Python. Our software can be used together with other machine learning tools from the \texttt{scikit-learn} library, since we adhere to the their API guidelines. For example, our algorithm can be used as part of an ensemble of classifiers, like the \texttt{BaggingClassifier} meta-estimator, or the results of the classification could be cross-validated with tools like \texttt{cross\_val\_score}. As an example, to provide a model for the breast cancer dataset, we could do something like the following:
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
-def tree{[attrs]}:
-    if [attr] <= [thresh]:
-        return [label] || [subtree]
-    else:
-        return [label] || [subtree]
-\end{verbatim}}
-\end{sourcecode}
-
-Where \texttt{[attrs]} is the list of attributes used, and only those used in the model,%
-\footnote{If the dataset contains many attributes, listing all of them when dealing with very short models would make the length of the model's header greater than the length of the body.}  \texttt{[attr]} is a single attribute represented by the letter \texttt{X} followed by a number (e.g. \texttt{X1}), \texttt{[thresh]} is the threshold used for the split, \texttt{[label]} is one of the valid labels from the set $\mathcal{G}$, and \texttt{|| [subtree]} means that the \texttt{return} statement can be replaced by another level of \texttt{[if - else]} conditions. We could have used a much shorter description of trees by replacing word tokens with symbols, e.g., by the ternary conditional operators \texttt{?} and \texttt{:} used in modern programming languages, or by dropping the \texttt{return} statement. This would produce shorter trees, but the complexity of the models would remain the same, up to an additive constant that does not depend on the model itself. Since the harmonic mean compares relative values instead of absolute ones, this additive constant can be safely ignored.
-
-\subsection{Algorithm Evaluation}
-\label{sub:algorithm_evaluation}
-
-In the web page that accompanies this book we provide an open-source implementation of our algorithm in Python. Our software can be used in conjunction with other machine learning tools from the \texttt{scikit-learn} library, since we adhere to the library API guidelines. For example, to provide a model for the breast cancer dataset, we could do something like the following:
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from Nescience.NescienceDecisionTree import NescienceDecisionTreeClassifier
-form sklearn.datasets import load_breast_cancer
+from NescienceDecisionTree import NescienceDecisionTreeClassifier
+from sklearn.datasets import load_breast_cancer
 
 data = load_breast_cancer()
 
@@ -1035,6 +1026,9 @@ model.fit(data.data, data.target)
 print("Score: ", model.score(data.data, data.target))
 \end{verbatim}}
 \end{sourcecode}
+
+\subsection{Algorithm Evaluation}
+\label{sub:algorithm_evaluation}
 
 In this section we are going to evaluate our new algorithm, and compare its performance against the well-known algorithm CART. CART, \emph{Classification and Regression Trees}, is the de-facto standard algorithm used in the machine learning industry for the derivation of decision trees. For this particular experiment we have used the CART implementation provided by \texttt{scikit-learn}.
 

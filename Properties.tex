@@ -31,8 +31,7 @@ In this section we propose a collection of axioms that capture the concept of sc
 
 Let $\Sigma = \{ \sigma_1, \sigma_2, \ldots, \sigma_n \}$ be a finite non-empty alphabet, and let $\Sigma^\ast$ denote the Kleene closure of $\Sigma$.
 
-
-A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \mathcal{U}, <_s, <_i, \mathcal{R}, <_n, \lambda)$ where
+A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \lambda, \mathcal{R}, \oplus, \mid, U , <_n)$ where
 
 \begin{enumerate}[label=(\roman*)]
 \item $\mathcal{U}$ is a partial function called \emph{machine},
@@ -47,9 +46,87 @@ A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \mathcal{U}
 
 The individual elements of this structure satisfy the following properties:
 
+The oracle relation $\mathcal{R}$ is an equivalence relation, that is, it satisfy the following properties:
+
+\vskip 0.25cm
+
 \begin{enumerate}[label=(\roman*)]
-\item the oracle is an equivalence relation.
+\item (reflexivity) $\forall s \in \Sigma^\star \; s \mathcal{R} s$.
+\item (symmetry) $\forall s , t \in \Sigma^\star$ if $s \mathcal{R} t$ then $t \mathcal{R} s$.
+\item (transitivity) $\forall s , t, r \in \Sigma^\star$ if $s \mathcal{R} t$ and $t \mathcal{R} r$ then $s \mathcal{R} r$.
 \end{enumerate}
+
+\vskip 0.25 cm
+
+The nescience relation $<_N$ is a strict partial order, that is, it satisfy the following properties:
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Ax XX (asymmetry of nescience)] $\forall s , t \in \Sigma^\star$ if $s <_N t$ then $\lnot t <_N s$.
+\item[Ax XX (transitivity of nescience)] $\forall s , t, r \in \Sigma^\star$ if $s <_N t$ and $t <_N r$ then $s <_N r$.
+\end{description}
+
+\vskip 0.25cm
+
+Moreover, every equivalence class defined by $\mathcal{R}$ has a minimal element.
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Ax XX (minimal elements of nescience)] for all $[x] \in \mathcal{R} / <_N$ there exists $r \in [x]$ such that it does not exists an $s \in [x]$ such that $s <_N r$.
+\end{description}
+
+\vskip 0.25cm
+
+However, the nescience relation does not define a global minimum element for $\Sigma^\star$, nor minimum elements for the equivalence classes.
+
+The concatenation function $\oplus$ is a total function that satisfy the following properties:
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Ax XX (totality of concatenation)] $\forall s , t \in \Sigma^\star$ if $s <_N t$ then $\lnot t <_N s$.
+\item[Ax XX (identity of concatenation)] $\forall s \in \Sigma^\star$ we have that $s \oplus \lambda = \lambda \oplus s = s$.
+\item[Ax XX (associativity of concatenation)] $\forall s, r, t \in \Sigma^\star$ we have that $\oplus(\oplus(s, t), r) = \oplus(s, \oplus(t, r))$.
+\end{description}
+
+\vskip 0.25cm
+
+Since this point we will use the infix notation of the concatenation operation, that is, $s \oplus r$ instead of the $\oplus(s, r)$.
+
+Nescience of concatenation
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Ax XX (nescience of concatenation)] Let $r \in \Sigma^\star$, then we have that $r <_N r \oplus s$ for all $s \in \Sigma^\ast-\{\lambda\}$.
+\end{description}
+
+\vskip 0.25cm
+
+The conditional function ...
+
+Nescience of conditional
+
+\begin{description}
+\item[Ax XX (nescience of conditional)] Let $r \in \Sigma^\ast$, then we have that $r \mid s <_N r$ for all $s \in \Sigma^\ast-\{\lambda\}$.
+\end{description}
+
+The universal machine $\mathcal{U}$ satisfy the following properties:
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Axiom XX] For all $r \in \Sigma^\ast$ such that $\mathcal{U}(r) \uparrow$ we have that $r \mathcal{R} U(r)$.
+\item[Axiom XX] For all $r, s \in \Sigma^\ast$ such that $U(r) \uparrow$ and $U(s) \uparrow$ we have that $U(r \oplus s) = U(r) \oplus U(s)$.
+\item[Axiom XX] For all $r \in \Sigma^\ast$ such that $U(r) \uparrow$ we have that $U(r \mid s) = U(r)$.
+\item[Axiom XX] For all $r \in \Sigma^\ast$ such that $U(r) \uparrow$ we have that $\lnot U(r) <_N r$ and $\lnot r <_N U(r)$.
+\end{description}
+
+We denote by $=_N$ the case that $\lnot U(r) _N r$ and $\lnot r _N U(r)$.
+
+\vskip 0.25cm
 
 And the structure satisfy the following axioms:
 

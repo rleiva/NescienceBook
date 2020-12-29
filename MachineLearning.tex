@@ -56,7 +56,40 @@ In Section \ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a descri
 
 Inaccuracy, being based in Kolmogorov complexity, is not computable for the general case, and so, it has to be approximated in practice. In this section we are going to see how this concept can be estimated in case of a model trained using a dataset. The approach will be similar to the one used in case of miscoding (see Section \ref{sec:approx-miscoding} for more information).
 
-Given a training dataset $\mathbb{X}$ and a target variable $\mathbf{y}$, we can approximate the inaccuracy of a model $m$ as a predictor of $\mathbf{y}$ by means of computing the normalized compression distance between the predicted values $\mathbf{\hat{y}} = m(\mathbb{X})$ and the observed values $\mathbf{y}$. The Kolmogorov complexity $K(\mathbf{v})$ of a vector $\mathbf{v}$ will be approximated by the length of the compressed version of that vector $\hat{K}_C(\mathbf{v})$ using as compressor a minimal length code $C$, computed given the relative frequencies of the values observed in the vector $\mathbf{v}$ (see Section \ref{sec:approx-miscoding}).
+As it is customary, the Kolmogorov complexity $K(s)$ of a string $s$ will be approximated by the length of the compressed version of that string using a standard compressor, that is, we will use the normalized compression distance:
+\[
+E_Z(\mathbf{x}_j, \mathbf{y}) = \frac{\max\{ \hat{K}_Z(\mathbf{x}_j \mid \mathbf{y}), \hat{K}_Z(\mathbf{y} \mid \mathbf{x}_j) \}}{\max \{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} }
+\]
+where $\hat{K}_Z(s)$ denotes the length of the compressed version of the string $s$ using the compressor $Z$. In the particular case of having a vector $\mathbf{x} = \{ x_1, \ldots, x_n \}$ of measurements, the string $s$ to be compressed will be the concatenation of the encoded values $s = \langle x_1, \ldots, x_n \rangle$. We prefer the following equivalent definition of normalized compression dinstance, since in practice it is easier to compute the joint distribution of two vectors than the conditional distribution:
+\[
+E_Z(\mathbf{x}_j, \mathbf{y}) = \frac{ \hat{K}_Z(\mathbf{x}_j, \mathbf{y}) - \min\{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} } { \max\{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} }
+\]
+As compression technique we will use a code $C$ with minimal length, given the relative frequencies of the different observed values (see Section \ref{sec:Optimal-Codes}). If $\mathbf{x}$ is a qualitative vector (either a feature or the target variable) taking values from a set labels $\mathcal{G} = \{g_1, \ldots, g_\ell\}$, that is $\mathbf{x} \in \mathcal{G}^n$, the quantity $\hat{K}_C(\mathbf{x})$ can be computed as:
+\[
+\hat{K}_C(\mathbf{x}) = - \sum_{i=1}^l \log_2{ \frac{ \sum_{j=1}^n I(x_j = g_i)} {n} } 
+\]
+If the case of $\mathbf{x}$ being based on a continuous random variable, we cannot calculate the probability of $x_j$ since, in general, the underline probability distribution of $\mathbf{x}$ is unknown. Moreover, we have that $P(x_j)=0$ for all $j$. In order to approximate the value $K(\mathbf{x})$ using a minimal length code $C$, we have to discretize first the vector $\mathbf{x}$ into a collection of intervals.
+
+Given a continuous feature $\bold{x}_j$ composed by $n$ samples $\{x_{1j}, \ldots, x_{nj}\}$, a discretization algorithm will produce a finite non-overlapping partition of $m$ discrete intervals $D=\{ [d_o, d_1], (d_1, d_2], \ldots, (d_{m-1}, d_m] \}$, where $d_o = \min{\bold{x}_j}$, and $d_m = \max{\bold{x}_j}$, and $d_i < d_{i+1}$ for $i = 0, 1, \ldots, m-1$, and then it assigns a categorical value to each interval. We will use discretization to estimate the probability of a particular observation.
+
+A discretization algorithm is a mapping between a (possibly huge) number of numeric values and a reduced set of discrete values, and so, it is a process in which some information is potentially lost. The choice of discretization algorithm is something that could have a high impact in the practical computation of the nescience. We are interested in a discretization algorithm that produces a large number of intervals (low bias), with a large number of number of observations per interval (low variance). Common techniques include \emph{equal width discretization}, \emph{equal frequency discretization} and \emph{fixed frequency discretization}. However, these techniques require the optimization of an hyperparameter, and so, they are not suitable for our purposes.
+
+In the \texttt{fastautoml} library we use a \emph{proportional discretization approach}, where the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. The algorithm starts by sorting the values of $\bold{x}_j$ in ascending order and then discretizing them into $m$ intervals of approximately $s$ (possibly identical) values each. In this way, as the number of training observations increases, both interval frequency and number of intervals increases, taking advantage of the larger number of observations. In the same way, when the number of observations decreases, we reduce both. In particular, in the nescience library we set $s = m = \sqrt{n}$
+
+The same procedure can be applied in case of having a discrete feature with too many labels compared with the number of samples.
+
+Using this discretization procedure, we can approximate the Kolmogorov complexity of a vector $\mathbf{x}$ by:
+\[
+\hat{K}_C(\mathbf{x}) = - \sum_{i=1}^m \log_2{ \frac{ \sum_{j=1}^n I(x_j \in D_i)} {n} } 
+\]
+where $D_i$ is the interval defined by the end points $(i-1, i)$.
+
+The quantity $\hat{K}_C$ can be generalized to the an arbitrary number of $m$ vectors $\hat{K}_C(\mathbf{x_1}, \ldots, \mathbf{x_m})$ composed by $n$ samples each, by considering the joint encoded vector
+\[
+\langle \mathbf{x_1}, \mathbf{x_2}, \ldots, \mathbf{x_m} \rangle = \{ \langle x_{11}, x_{12}, \ldots, x_{1m} \rangle, \ldots, \langle x_{n1}, x_{n2}, \ldots, x_{nm} \rangle \}
+\]
+
+
 
 {\color{red} TODO: This definition correspond to the discriminative case. Introduce the generative case as well.}
 
@@ -236,42 +269,13 @@ and we saw that this quantity cannot be computed in practice for the general cas
 
 In this section we are going to see how this concept can be adapted in practice to compute the error made by using a dataset $\mathbb{X}$ as a representation of a response variable $\mathbf{y}$ (see Section \ref{sec:machine_learning}). Our goal is double, in one hand we are interested to measure the quality of the dataset $\mathbb{X}$ as a predictor of the variable $\mathbf{y}$, and in the other we want to identify those features $\mathbf{x}_j$ of $\mathbb{X}$ that have the higher predictive power for $\mathbf{y}$. In this context, the target variable $\mathbf{y}$ would play the role of the entity, and the dataset $\mathbb{X}$ the role of representation, so to speak.
 
+Given a training dataset $\mathbb{X}$ and a target variable $\mathbf{y}$, we can approximate the inaccuracy of a model $m$ as a predictor of $\mathbf{y}$ by means of computing the normalized compression distance between the predicted values $\mathbf{\hat{y}} = m(\mathbb{X})$ and the observed values $\mathbf{y}$. The Kolmogorov complexity $K(\mathbf{v})$ of a vector $\mathbf{v}$ will be approximated by the length of the compressed version of that vector $\hat{K}_C(\mathbf{v})$ using as compressor a minimal length code $C$, computed given the relative frequencies of the values observed in the vector $\mathbf{v}$ (see Section \ref{sec:approx-miscoding}).
+
 Given a training dataset $\mathbb{X}$ composed by $n$ vectors with $p$ features, we can approximate the miscoding of a feature $\mathbf{x}_j$ for the target variable $\mathbf{y}$ by computing the normalized information distance between $\mathbf{x}_j$ and $\mathbf{y}$ (see Section \ref{sec:information_distance}):
 \[
 E(\mathbf{x}_j, \mathbf{y}) = \frac{\max\{ K(\mathbf{x}_j \mid \mathbf{y}), K(\mathbf{y} \mid \mathbf{x}_j) \}}{\max \{ K(\mathbf{x}_j), K(\mathbf{y}) \} }
 \]
-As it is customary, the Kolmogorov complexity $K(s)$ of a string $s$ will be approximated by the length of the compressed version of that string using a standard compressor, that is, we will use the normalized compression distance:
-\[
-E_Z(\mathbf{x}_j, \mathbf{y}) = \frac{\max\{ \hat{K}_Z(\mathbf{x}_j \mid \mathbf{y}), \hat{K}_Z(\mathbf{y} \mid \mathbf{x}_j) \}}{\max \{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} }
-\]
-where $\hat{K}_Z(s)$ denotes the length of the compressed version of the string $s$ using the compressor $Z$. In the particular case of having a vector $\mathbf{x} = \{ x_1, \ldots, x_n \}$ of measurements, the string $s$ to be compressed will be the concatenation of the encoded values $s = \langle x_1, \ldots, x_n \rangle$. We prefer the following equivalent definition of normalized compression dinstance, since in practice it is easier to compute the joint distribution of two vectors than the conditional distribution:
-\[
-E_Z(\mathbf{x}_j, \mathbf{y}) = \frac{ \hat{K}_Z(\mathbf{x}_j, \mathbf{y}) - \min\{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} } { \max\{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} }
-\]
-As compression technique we will use a code $C$ with minimal length, given the relative frequencies of the different observed values (see Section \ref{sec:Optimal-Codes}). If $\mathbf{x}$ is a qualitative vector (either a feature or the target variable) taking values from a set labels $\mathcal{G} = \{g_1, \ldots, g_\ell\}$, that is $\mathbf{x} \in \mathcal{G}^n$, the quantity $\hat{K}_C(\mathbf{x})$ can be computed as:
-\[
-\hat{K}_C(\mathbf{x}) = - \sum_{i=1}^l \log_2{ \frac{ \sum_{j=1}^n I(x_j = g_i)} {n} } 
-\]
-If the case of $\mathbf{x}$ being based on a continuous random variable, we cannot calculate the probability of $x_j$ since, in general, the underline probability distribution of $\mathbf{x}$ is unknown. Moreover, we have that $P(x_j)=0$ for all $j$. In order to approximate the value $K(\mathbf{x})$ using a minimal length code $C$, we have to discretize first the vector $\mathbf{x}$ into a collection of intervals.
 
-Given a continuous feature $\bold{x}_j$ composed by $n$ samples $\{x_{1j}, \ldots, x_{nj}\}$, a discretization algorithm will produce a finite non-overlapping partition of $m$ discrete intervals $D=\{ [d_o, d_1], (d_1, d_2], \ldots, (d_{m-1}, d_m] \}$, where $d_o = \min{\bold{x}_j}$, and $d_m = \max{\bold{x}_j}$, and $d_i < d_{i+1}$ for $i = 0, 1, \ldots, m-1$, and then it assigns a categorical value to each interval. We will use discretization to estimate the probability of a particular observation.
-
-A discretization algorithm is a mapping between a (possibly huge) number of numeric values and a reduced set of discrete values, and so, it is a process in which some information is potentially lost. The choice of discretization algorithm is something that could have a high impact in the practical computation of the nescience. We are interested in a discretization algorithm that produces a large number of intervals (low bias), with a large number of number of observations per interval (low variance). Common techniques include \emph{equal width discretization}, \emph{equal frequency discretization} and \emph{fixed frequency discretization}. However, these techniques require the optimization of an hyperparameter, and so, they are not suitable for our purposes.
-
-In the \texttt{fastautoml} library we use a \emph{proportional discretization approach}, where the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. The algorithm starts by sorting the values of $\bold{x}_j$ in ascending order and then discretizing them into $m$ intervals of approximately $s$ (possibly identical) values each. In this way, as the number of training observations increases, both interval frequency and number of intervals increases, taking advantage of the larger number of observations. In the same way, when the number of observations decreases, we reduce both. In particular, in the nescience library we set $s = m = \sqrt{n}$
-
-The same procedure can be applied in case of having a discrete feature with too many labels compared with the number of samples.
-
-Using this discretization procedure, we can approximate the Kolmogorov complexity of a vector $\mathbf{x}$ by:
-\[
-\hat{K}_C(\mathbf{x}) = - \sum_{i=1}^m \log_2{ \frac{ \sum_{j=1}^n I(x_j \in D_i)} {n} } 
-\]
-where $D_i$ is the interval defined by the end points $(i-1, i)$.
-
-The quantity $\hat{K}_C$ can be generalized to the an arbitrary number of $m$ vectors $\hat{K}_C(\mathbf{x_1}, \ldots, \mathbf{x_m})$ composed by $n$ samples each, by considering the joint encoded vector
-\[
-\langle \mathbf{x_1}, \mathbf{x_2}, \ldots, \mathbf{x_m} \rangle = \{ \langle x_{11}, x_{12}, \ldots, x_{1m} \rangle, \ldots, \langle x_{n1}, x_{n2}, \ldots, x_{nm} \rangle \}
-\]
 
 Given the above considerations, we can provide the following approximation for the concept of miscoding for representations based on datasets.
 

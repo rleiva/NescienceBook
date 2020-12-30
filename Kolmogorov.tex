@@ -30,18 +30,12 @@ In Chapter \ref{chap:Coding} it was introduced the notion of complexity of a str
 
 At this point, we could ask ourselves if it is possible to compute the complexity of any object in general, not only strings. The answer is yes, at least in theory. Given an object $x$ what we have to do is to provide an encoding method that describes the object using a string $\langle x \rangle$. That encoding method would be useful only if we are able to losslessly and effectively reconstruct the original objects given their descriptions. Unfortunately, it is not always possible to provide such descriptions, either because we are dealing with abstract objects (like most of the objects studied in mathematics), or because from a practical point of view it is not possible to reconstruct the object given its description (for example with living things\footnote{At least up to today it is not possible to recreate an animal given its DNA.}).
 
-{\color{red} TODO: Include a disclaimer about the word "complexity"}
-
 %
 % Section: String Complexity
 %
 
 \section{Strings Complexity}
 \label{sec:strings_complexity}
-
-{\color{red} TODO: Include somewhere an example of cheating in complexity}
-
-{\color{red} TODO: Explain somewhere the role of these annoying constants}
 
 In Section \ref{sec:Turing-Machines} it was introduced the concept of Turing machine, an idealized model of computers, and we saw that Turing machines can be represented as partial computable functions $T:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, that assigns to each input string $s \in \mathcal{B}^\ast$ the output string $T(s) \in \mathcal{B}^\ast$ (Definition \ref{def:computable-function}); we also introduced the concept of universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ (Definition \ref{def:Universal-Turing-Machine}), a machine that can simulate the behavior of any other Turing machine; that is, for all $(x,v) \in  \mathcal{B}^\ast \times \mathcal{B}^\ast$ we have that $U(x,v) = T_{x}(v)$. Later, in Section \ref{Codes} it was introduced the concept of code, and in particular, the notion of prefix-free code (Definition \ref{def:Prefix-free-Code}), and we saw that this kind of codes present important properties (Theorem \ref{th:Kraft-Inequality}). Next definition merges the best of both worlds, Turing machines and prefix-free codes, and introduce a new type of universal Turing machine.
 
@@ -51,7 +45,7 @@ A \emph{prefix-free universal Turing machine} is a universal Turing machine $U:\
 
 % TODO: This thing about McMillan is true?
 
-Intuitively, what the above definition requires is that no computer program can be a prefix of any other program. This is not a limitation from the point of view of string lengths, since applying McMillan (Theorem \ref{th:Kraft-Inequality}) given a not prefix-free program we could always find a prefix-free one that computes exactly same function and has the same length. Moreover, in practice, real computer programs are usually prefix free; for example, the C programming language requires that all functions must be enclosed by braces \{\}.
+Intuitively, what the above definition requires is that no computer program can be a prefix of any other program. This is not a limitation from the point of view of string lengths, since applying McMillan (Theorem \ref{th:Kraft-Inequality}) given a non-prefix-free program we could always find a prefix-free one that computes exactly same function and has the same length. Moreover, in practice, real computer programs are usually prefix free; for example, the C programming language requires that all functions must be enclosed by braces \{\}.
 
 The concept of prefix-free universal Turing machine allows us to introduce a new definition of complexity of a string that is more in line with out intuitive idea of amount of computational information contained in an object (encoded as a string).
 
@@ -101,7 +95,7 @@ Let $p, v$ be the shortest strings that $U'(p,v)=s$, then we have that $U(\langl
 Select a universal programming language, for example Java, and an alternative language, for example Python. We could write an interpreter of Python in Java, that is, a Java program that as input gets a Python script and runs it. Then, we could just ask to Java to run this interpreter over the shortest Python script that prints a string. In this way, the complexity of a string $s \in \mathcal{B}^\ast$ given the language Java $C_J(s)$ would be less or equal than the complexity of the string given the language Phyton $C_J(s)$ plus the length of the Phyton interpreter written in Java $C_{J,P}$, that is, $C_J(s) \leq C_P(s) + C_{J,P}$.  Moreover, the lenght of the interpreter $C_{J,P}$ does not depend on the string $s$.
 \end{example}
 
-Although we have proved that Kolmogorov complexity does not depends on the selected universal Turing machine, the size of the constant $C$ could be a serious limitation in practical applications, since it prevents us to compute the complexity of short strings (the complexity of the string would be very small compared to the constant). This problem is explicitly addressed by the Minimum Description Length principle described in Chapter \ref{chap:Minimum-Length}.
+Although we have proved that Kolmogorov complexity does not depends on the selected universal Turing machine, the size of the constant $C$ could be a serious limitation in practical applications, since it prevents us to compute the complexity of short strings (the complexity of the string would be very small compared to the constant). This problem is explicitly addressed by the Minimum Description Length principle described in Chapter \ref{ch:Learning}.
 
 \begin{notation}
 We denote by $s^{\ast}$ the shortest program that print the string $s$ given the universal Turing machine $U$, that is $s^\ast = \langle p,v \rangle$, $U(s^\ast) = s$ and $l(s^\ast) = K(s)$. If there are more than one $s^\ast$ programs satisfying the avobe properties, we select the first one using a lexicographical order iduced by $0 < 1$.
@@ -116,8 +110,6 @@ The function $K:\mathcal{B}^\ast \rightarrow \mathbb{N}$ that assigns to each st
 {\color{red} TODO}
 \end{proof}
 
-% TODO: Mention the relation of this theorem with the concept of Kolmogorov complexity
-
 In practice, what we do is to approximate the Kolmogorov complexity by the compressed version of the string, given an standard compression algorithm, for example, the Huffman algorithm described in Section \ref{sec:Huffman-Algorithm}.
 
 %
@@ -126,8 +118,7 @@ In practice, what we do is to approximate the Kolmogorov complexity by the compr
 
 \section{Properties of Complexity}
 
-Say something intelligent here
-
+{\color{red} TODO: Section Pending!}
 
 \begin{proposition}
 \label{prop:kolmogorov_order}
@@ -194,6 +185,8 @@ If f:A* -> A* is a computable biyection, then K(f(x)) < K(x) + O(1).
 %
 
 \section{Conditional Kolmogorov complexity}
+
+{\color{red} TODO: Section Pending!}
 
 Sometimes, the description of a string can be greatly reduced if we assume we know about another string. In this section we are going to introduce the concept of \emph{conditional Kolmogorov complexity}, that is, the complexity of a string $s$ when another string $s'$ is given as input.
 
@@ -269,6 +262,8 @@ K(XY) = K(X) + K(Y \mid X)
 
 \section{Information Distance}
 \label{sec:information_distance}
+
+{\color{red} TODO: Section Pending!}
 
 In this section we are going to introduce a universal measure of absolute information distance between individual objects. Intuitively, the information distance between two strings $x$ and $y$ would be the length of the shortest computer program that allow us to transform $x$ into $y$ and $y$ into $x$. This notion of distance is universal in the sense that it contains all the other notions of computable distance as special cases.
 
@@ -379,9 +374,7 @@ Normalize compression distance.
 \section{Incompressibility and Randomness}
 \label{sec:incompressibility_randomness}
 
-% TODO: prove that there is no algorithm to test if a string is random
-
-% TODO: Shall I say something about the futility of talking about "strict randomness"?
+{\color{red} TODO: Section Pending!}
 
 It is easy to prove that the mayority of strings cannot be compressed. For each $n$ there are $r^n$ string of length $n$, but only Sum possible shorter descriptions. Therefore, there is at least one string $x$ of length $n$ such that K(n) >= n. We call such strings \emph{incompressible}
 
@@ -393,13 +386,14 @@ We will use the term \emph{incompressible string} to refer to all the strings th
 
 Th number of strings o length n thare are c-incompressible is ast least $2^n - 2^(n-c) + 1$. Hence there is ate least one 0-incompressible string of length $n$, at least one-half of all strings of length n are 1-incompressible, at lesat three-fourths of all strings of length $n$ are 2-incompressible, ..., and at leas the $(1-1/2^c)$ th part of all $2^n$ strings of length $n$ are c-incompressible. This means that for each constant c>1 the majority of all strings of length $n$ with n>c are c-incompressible.
 
-\subsection*{Problems}
 
 %
 % Section: Bibliography and References
 %
 
 \section*{Bibliography and References}
+
+{\color{red} TODO: Section Pending!}
 
 The idea of measuring the amount of information contained in a string based on the shorter computer program that can reproduce it was introduced independelntly by Solomonoff \cite{solomonoff1964formal}, Kolmogorov \cite{kolmogorov1965three} and Chaiting \cite{chaitin1969simplicity}.
 

@@ -27,135 +27,164 @@ Since the time of David Hilbert, mathematics is about the study of the propertie
 
 \section{The Axioms of Science}
 
-In this section we propose a collection of axioms that capture the concept of science and the scientific method\footnote{In the Appendix \ref{apx:coq} of this book the reader can find the axioms and proofs of basic results implemented in the \texttt{Coq} proof assistant language.}. Our axioms are based on first-order logic and the ZFC axioms of set theory.
+{\color{red} TODO: Review}
 
-Let $\Sigma = \{ \sigma_1, \sigma_2, \ldots, \sigma_n \}$ be a finite non-empty alphabet, and let $\Sigma^\ast$ denote the Kleene closure of $\Sigma$.
+In this section we propose a collection of axioms that formalize the concept of science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory (see Appendix \ref{apx:foundations_mathematics}). We also prove some basic results and show how the axioms relate to the concepts we have introduced in the previous chapters. In Appendix \ref{apx:coq} the reader can find the axioms and proofs implemented in the \texttt{Coq} proof assistant language.
 
-A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \lambda, \mathcal{R}, \oplus, \mid, U , <_n)$ where
-
-\begin{enumerate}[label=(\roman*)]
-\item $\mathcal{U}$ is a partial function called \emph{machine},
-\item $<_s$ is a relation called \emph{surfeit},
-\item $<_i$ is a well-order relation called \emph{inaccuracy},
-\item $\mathcal{O}$ is an equivalence relation called \emph{oracle},
-\item $<_n$ is a relation called \emph{nescience}, and
-\item $\lambda \in \Sigma^\ast$ is the empty string.
-\end{enumerate}
-
-\smallskip
-
-The individual elements of this structure satisfy the following properties:
-
-The oracle relation $\mathcal{R}$ is an equivalence relation, that is, it satisfy the following properties:
+Let $\Sigma = \{ \sigma_1, \sigma_2, \ldots, \sigma_n \}$ be a finite non-empty alphabet, and let $\Sigma^\ast$ denote the set composed by all possible finite strings made up of symbols from $\Sigma$. A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \lambda, \mathcal{O}, <_n, \oplus, \mid, U)$ where:
 
 \vskip 0.25cm
 
 \begin{enumerate}[label=(\roman*)]
-\item (reflexivity) $\forall s \in \Sigma^\star \; s \mathcal{R} s$.
-\item (symmetry) $\forall s , t \in \Sigma^\star$ if $s \mathcal{R} t$ then $t \mathcal{R} s$.
-\item (transitivity) $\forall s , t, r \in \Sigma^\star$ if $s \mathcal{R} t$ and $t \mathcal{R} r$ then $s \mathcal{R} r$.
+\item $\lambda \in \Sigma^\ast$ is the empty string.
+\item $\mathcal{O}$ is a relation called \emph{oracle},
+\item $<_n$ is a relation called \emph{nescience},
+\item $\oplus$ is a binary function called \emph{joint},
+\item $\mid$ is a binary function called \emph{conditional}, and
+\item $\mathcal{U}$ is a unary function called \emph{machine}
 \end{enumerate}
+
+\vskip 0.25cm
+
+The oracle $\mathcal{O}$ is an equivalence relation:
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Axiom 1] $\forall t \in \Sigma^\ast \; t \mathcal{O} t$.
+\item[Axiom 2] $\forall s , t \in \Sigma^\ast$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
+\item[Axiom 3] $\forall r, s , t \in \Sigma^\ast$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
+\end{description}
 
 \vskip 0.25 cm
 
-The nescience relation $<_N$ is a strict partial order, that is, it satisfy the following properties:
+The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\Sigma^\ast$ into the quotient set $\Sigma^\ast / \mathcal{O}$. Intuitively, each equivalence class refers to an entity, and it contains all possible representations (strings) that encode that entity. Entities are not part of the axioms of the theory of nescience, and the encoding schema is in general unknown. The abstract oracle is the only tool we have at our disposal to connect entities and their representations.
+
+The nescience relation $<_N$ is a strict partial order:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Ax XX (asymmetry of nescience)] $\forall s , t \in \Sigma^\star$ if $s <_N t$ then $\lnot t <_N s$.
-\item[Ax XX (transitivity of nescience)] $\forall s , t, r \in \Sigma^\star$ if $s <_N t$ and $t <_N r$ then $s <_N r$.
+\item[Axiom 4] $\forall t \in \Sigma^\ast$ we have that $\lnot t <_N t$.
+\item[Axiom 5] $\forall s , t \in \Sigma^\ast$ if $s <_N t$ then $\lnot t <_N s$.
+\item[Axiom 6] $\forall r , s, t \in \Sigma^\ast$ if $r <_N s$ and $s <_N t$ then $r <_N t$.
 \end{description}
 
 \vskip 0.25cm
 
-Moreover, every equivalence class defined by $\mathcal{R}$ has a minimal element.
+We denote by $ s =_N t$ when $\lnot s <_N t$ and $\lnot t <_N s$. Intuitively, the symbol $=_N$ represents the case that our unknown given the representations $s$ and $t$, which may belong to the same equivalence class or to different equivalence classes, is the same. 
+
+Every equivalence class defined by $\mathcal{O}$ has a minimal element with respect to the relation $<_N$:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Ax XX (minimal elements of nescience)] for all $[x] \in \mathcal{R} / <_N$ there exists $r \in [x]$ such that it does not exists an $s \in [x]$ such that $s <_N r$.
+\item[Axiom 7] for all $[x] \in \mathcal{O} / <_N$ there exists $r \in [x]$ such that it does not exists an $s \in [x]$ such that $s <_N r$.
 \end{description}
 
 \vskip 0.25cm
 
-However, the nescience relation does not define a global minimum element for $\Sigma^\star$, nor minimum elements for the equivalence classes.
+A class could have more than one minimal element with respect to the nescience ordering. The nescience relation does not define a global minimum element for $\Sigma^\ast$, nor minimum elements for the individual equivalence classes. Given an entity, in general it does not exists a single optimal description, instead what we have is a collection of optimal descriptions.
 
-The concatenation function $\oplus$ is a total function that satisfy the following properties:
+The concatenation function $\oplus : \Sigma^\ast \times \Sigma^\ast \rightarrow \Sigma^\ast$ is a binary function that satisfy the following properties:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Ax XX (totality of concatenation)] $\forall s , t \in \Sigma^\star$ if $s <_N t$ then $\lnot t <_N s$.
-\item[Ax XX (identity of concatenation)] $\forall s \in \Sigma^\star$ we have that $s \oplus \lambda = \lambda \oplus s = s$.
-\item[Ax XX (associativity of concatenation)] $\forall s, r, t \in \Sigma^\star$ we have that $\oplus(\oplus(s, t), r) = \oplus(s, \oplus(t, r))$.
+\item[Axiom 8] $\forall s, t \in \Sigma^\ast$ we have that $\oplus(s, t) \in \Sigma$.
+\item[Axiom 9] $\forall s \in \Sigma^\ast$ we have that $\oplus(s, \lambda) = \oplus( \lambda, s) = s$.
+\item[Axiom 10] $\forall r, s, t \in \Sigma^\ast$ we have that $\oplus(\oplus(r, s), t) = \oplus(r, \oplus(s, t))$.
 \end{description}
 
 \vskip 0.25cm
 
-Since this point we will use the infix notation of the concatenation operation, that is, $s \oplus r$ instead of the $\oplus(s, r)$.
+$\Sigma^\ast$ with the concatenation operation $\oplus$ forms a free monoid. Since this point we will use the infix notation of the concatenation function, that is, we will write $s \oplus t$ instead of the $\oplus(s, t)$.
 
-Nescience of concatenation
+Next axiom states how the operation of concatenation is related to nescience (recall that $\Sigma^{+}$ denotes $\Sigma^\ast-\{\lambda\}$ and $[x] \in \mathcal{O} / <_N$ denotes a equivalence class):
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Ax XX (nescience of concatenation)] Let $r \in \Sigma^\star$, then we have that $r <_N r \oplus s$ for all $s \in \Sigma^\ast-\{\lambda\}$.
+\item[Axiom 11] Let $r \in \Sigma^{+}$ a minimal element of class $[x]$, then we have that $r <_N r \oplus s$ for all $s \in [x]$.
 \end{description}
 
 \vskip 0.25cm
 
-The conditional function ...
+Axiom 11 captures the concept of miscoding, since adding more symbols to an optimal representation only increases the nescience. Unfortunately, we cannot say anything about adding more symbols to a non-optimal representation, since the nescience could increase or decrease. The same happens when we concatenate strings that belong to different classes. 
 
-Nescience of conditional
-
-\begin{description}
-\item[Ax XX (nescience of conditional)] Let $r \in \Sigma^\ast$, then we have that $r \mid s <_N r$ for all $s \in \Sigma^\ast-\{\lambda\}$.
-\end{description}
-
-The universal machine $\mathcal{U}$ satisfy the following properties:
+The machine $\mathcal{U} : \Sigma^\ast \rightarrow \Sigma^\ast$ is an universal Turing machine, that given a string $s \in \Sigma^\ast$ encoding a Turing machine, simulates its behaviour. Of course, the function $\mathcal{U}$ is partial, since not all the strings of $\Sigma^\ast$ encode valid Turing machines. We have to select a particular universal Turing machine and encode its description using first-order logic. As we have seen, selecting a different universal machine would result in encoded machines with different length, and that could alter the actual values of nescience. However, since in this axiomatization we are only interested in the ordering o of strings according to their nescience, the particular machine selected is not relevant, since that ordering is not altered. We will use the shortest possible universal machine, composed by two states and three tape symbols:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom XX] For all $r \in \Sigma^\ast$ such that $\mathcal{U}(r) \uparrow$ we have that $r \mathcal{R} U(r)$.
-\item[Axiom XX] For all $r, s \in \Sigma^\ast$ such that $U(r) \uparrow$ and $U(s) \uparrow$ we have that $U(r \oplus s) = U(r) \oplus U(s)$.
-\item[Axiom XX] For all $r \in \Sigma^\ast$ such that $U(r) \uparrow$ we have that $U(r \mid s) = U(r)$.
-\item[Axiom XX] For all $r \in \Sigma^\ast$ such that $U(r) \uparrow$ we have that $\lnot U(r) <_N r$ and $\lnot r <_N U(r)$.
+\item[Axiom 12] The machine $\mathcal{U} : \Sigma^\ast \times \Sigma^\ast \rightarrow \Sigma^\ast$ satisfy the following properties ...
 \end{description}
-
-We denote by $=_N$ the case that $\lnot U(r) _N r$ and $\lnot r _N U(r)$.
 
 \vskip 0.25cm
 
-And the structure satisfy the following axioms:
+The relation between the machine $\mathcal{U}$ and the oracle $\mathcal{O}$ is given by the following axiom:
 
-\smallskip
+\vskip 0.25cm
 
-\begin{enumerate}[label=(\roman*)]
+\begin{description}
+\item[Axiom 13] For all $r \in \Sigma^\ast$ such that $\mathcal{U}(r) \uparrow$ we have that $r \mathcal{O} U(r)$.
+\end{description}
 
-\item $N(s) \geq 0 \; \forall s \in \mathcal{D}$,
+\vskip 0.25cm
 
-\item if $s, t \in \mathcal{D}$ such that $s \, \mathcal{R} \, t$, $l(s) \leq l(t)$ and $\mathcal{O} (s) < \mathcal{O} (t)$ then $N(s) < N(t)$,
+That is, descriptions are also representations.
 
-\item if $s, t \in \mathcal{D}$ such that $s \, \mathcal{R} \, t$, $l(s) < l(t)$ and $\mathcal{O} (s) \leq \mathcal{O} (t)$ then $N(s) < N(t)$,
+\vskip 0.25cm
 
-\item if $s, t \in \mathcal{D}$ such that $s \, \mathcal{R} \, t$, $l(s) = l(t)$ and $\mathcal{O} (s) = \mathcal{O} (t)$ then $N(s) = N(t)$,
+The relation between the machine $\mathcal{U}$ and the concatenation of strings is given by the following axiom:
 
-\item for all $s \in \mathcal{D} \; \exists \, t \in \mathcal{D}$ such that $s \mathcal{R} t$ and $N(t) = 0$.
+\vskip 0.25cm
 
-\item for all $s \in \mathcal{D}$ $N(s) = 0$  if, and only if, $\mathcal{O} (s) = 0$
-and it does not exists a $t \in \mathcal{D}$, $t \neq s$, $s \, \mathcal{R} \, t$  such that $\mathcal{O} (t) = 0$ and $l(t) < l(s)$.
+\begin{description}
+\item[Axiom 14] For all $r, s \in \Sigma^\ast$ such that $U(r) \uparrow$ and $U(s) \uparrow$ we have that $U(r \oplus s) = U(r) \oplus U(s)$.
+\end{description}
 
-\end{enumerate}
+\vskip 0.25cm
 
-No all possible sets $\mathcal{E}$ one can think of are valid sets in the theory of nescience; recall we follow the standard ZFC set of axioms for set theory. The alphabet $\Sigma$ must be composed by a finite set of symbols, and by $\Sigma^\ast$ we denote its Kleene closure. The functions that compose the set $\mathcal{D}$ are in the form $f : \Sigma^\ast \rightarrow \Sigma^\ast$; they could be partial, they must be recursive and we assume a standard bijective Gödel encoding of these functions as elements of $\mathcal{D}$.
+That is, we require that descriptions have to be self-delimited, for example, by being prefix-free.
 
-The \emph{axiom of non-negativity} (i) states that how much we do not know has to be measured as a positive real. The \emph{axiom  of inaccuracy} (ii) deals with the case of having two descriptions of the same length, in which we should prefer the less inaccurate. The \emph{axiom of surfeit} (iii) says that between two descriptions that produce the same result, that is, two descriptions equally accurate, we should always use the shortest one. The \emph{axiom of equality} (iv) shows the necessary conditions for two descriptions to have the same nescience. The \emph{axiom of zero unknown} (v) states that for every possible description, there exist an equivalent description (which is not necessarily unique) that provides perfect knowledge. And the last \emph{axiom of perfect knowledge} (vi) declares the necessary and sufficient conditions to achieve zero nescience.
+The conditional function $\mid : \Sigma^\ast \times \Sigma^\ast \rightarrow \Sigma^\ast$ is a binary function that satisfy the following properties:
 
-The axioms of Nescience follow an hypothetico-deductive method for science. The inductive-deductive model could be derived as a particular case of the hypothetic-deductive, by means of introducing the concept of representation of entities, and the metric of miscoding.
+\vskip 0.25cm
 
-The following proposition shows that perfect knowledge implies zero inaccuracy (the converse, in general, does not hold).
+\begin{description}
+\item[Axiom 15] $\forall s, t \in \Sigma^\ast$ we have that $\mid(s, t) \in \Sigma^\ast$.
+\item[Axiom 16] $\forall s \in \Sigma^\ast$ we have that $\mid (s, \lambda) = \mid( \lambda, s) = s$.
+\item[Axiom 17] $\forall r, s, t \in \Sigma^\ast$ we have that $\mid (\mid (r, s), t) = \mid (r, \mid (s, t))$.
+\end{description}
+
+Since this point we will use the infix notation of the conditional function, that is, we will write $s \mid t$ instead of the $\mid (s, t)$.
+
+The relation between the machine $\mathcal{U}$ and conditional $\mid$ is given by the following axiom:
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Axiom 18] For all $r \in \Sigma^\ast$ such that $U(r) \uparrow$ we have that $U(r \mid s) = U(r)$.
+\end{description}
+
+\vskip 0.25cm
+
+The relation between the machine $\mathcal{U}$ and the nescience is given by the following axiom:
+
+\begin{description}
+\item[Axiom 19] For all $s \in \Sigma^\ast$ such that $U(s) \uparrow$ and $U(s) = t$ we have that $\lnot U(s) =_N t$.
+\end{description}
+
+\vskip 0.25cm
+
+The relation of the nescience ordering and the conditional function is given through the application of the machine:
+
+\begin{description}
+\item[Axiom 20] Let $s \in \Sigma^\ast$ such that $U(s) \uparrow$, then we have that $U(s \mid t) <_N U(s)$ for all $t \in \Sigma^\ast-\{\lambda\}$.
+\end{description}
+
+{\color{red} TODO: Pending, axiom of distributive law}
 
 \begin{proposition}
 Let $d \in \mathcal{D}$ be a description such that $N(d)=0$, then $\mathcal{O}(d)=0$.

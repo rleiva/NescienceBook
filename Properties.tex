@@ -31,12 +31,12 @@ Since the time of David Hilbert, mathematics is about the study of the propertie
 
 In this section we propose a collection of axioms that formalize the concept of science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory (see Appendix \ref{apx:foundations_mathematics}). We also prove some basic results and show how the axioms relate to the concepts we have introduced in the previous chapters. In Appendix \ref{apx:coq} the reader can find the axioms and proofs implemented in the \texttt{Coq} proof assistant language.
 
-Let $\Sigma = \{ \sigma_1, \sigma_2, \ldots, \sigma_n \}$ be a finite non-empty alphabet, and let $\Sigma^\ast$ denote the set composed by all possible finite strings made up of symbols from $\Sigma$. A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \lambda, \mathcal{O}, <_n, \oplus, \mid, U)$ where:
+Let $\mathcal{B}^\ast$ be the set composed by all finite binary strings, and let $\Sigma \subset \mathcal{B}^\ast$ be a subset of strings. A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \lambda, \mathcal{O}, <_n, \oplus, \mid, U)$ where:
 
 \vskip 0.25cm
 
 \begin{enumerate}[label=(\roman*)]
-\item $\lambda \in \Sigma^\ast$ is the empty string.
+\item $\lambda \in \Sigma$ is the empty string.
 \item $\mathcal{O}$ is a relation called \emph{oracle},
 \item $<_n$ is a relation called \emph{nescience},
 \item $\oplus$ is a binary function called \emph{joint},
@@ -51,73 +51,79 @@ The oracle $\mathcal{O}$ is an equivalence relation:
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 1] $\forall t \in \Sigma^\ast \; t \mathcal{O} t$.
-\item[Axiom 2] $\forall s , t \in \Sigma^\ast$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
-\item[Axiom 3] $\forall r, s , t \in \Sigma^\ast$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
+\item[Axiom 1] $\forall t \in \Sigma \; t \mathcal{O} t$.
+\item[Axiom 2] $\forall s , t \in \Sigma$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
+\item[Axiom 3] $\forall r, s , t \in \Sigma$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
 \end{description}
 
 \vskip 0.25 cm
 
-The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\Sigma^\ast$ into the quotient set $\Sigma^\ast / \mathcal{O}$. Intuitively, each equivalence class refers to an entity, and it contains all possible representations (strings) that encode that entity. Entities are not part of the axioms of the theory of nescience, and the encoding schema is in general unknown. The abstract oracle is the only tool we have at our disposal to connect entities and their representations.
+The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\Sigma$ into the quotient set $\Sigma / \mathcal{O}$. Each equivalence class $[e] \in \Sigma / \mathcal{O}$ refers to an entity, and it contains all possible representations (strings) that encode that entity. However, the entities themselves are not part of the axioms. The abstract oracle is the only tool we have at our disposal to match entities and their representations. The schema used internally by the oracle to encode the original entities is, in general, unknown.
+
+In practice, the best results are achieved if we take into account the recommendations of Chapter \ref{cha:Topics-and-Descriptions} about how to choose the right entities to study. Of course, we could select a collection of entities that do not make any sense, and still apply the axioms, in the same way that we could select a collection of nonsense atomic propositions and apply to them the rules of propositional logic.
+
+For the rest of this section, when we talk about \emph{entities}, we mean the equivalence classes of $\Sigma / \mathcal{O}$.
 
 The nescience relation $<_N$ is a strict partial order:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 4] $\forall t \in \Sigma^\ast$ we have that $\lnot t <_N t$.
-\item[Axiom 5] $\forall s , t \in \Sigma^\ast$ if $s <_N t$ then $\lnot t <_N s$.
-\item[Axiom 6] $\forall r , s, t \in \Sigma^\ast$ if $r <_N s$ and $s <_N t$ then $r <_N t$.
+\item[Axiom 4] $\forall t \in \Sigma$ we have that $\lnot t <_N t$.
+\item[Axiom 5] $\forall s , t \in \Sigma$ if $s <_N t$ then $\lnot t <_N s$.
+\item[Axiom 6] $\forall r , s, t \in \Sigma$ if $r <_N s$ and $s <_N t$ then $r <_N t$.
 \end{description}
 
 \vskip 0.25cm
 
-We denote by $ s =_N t$ when $\lnot s <_N t$ and $\lnot t <_N s$. Intuitively, the symbol $=_N$ represents the case that our unknown given the representations $s$ and $t$, which may belong to the same equivalence class or to different equivalence classes, is the same. 
+We denote by $ s =_N t$ if $\lnot s <_N t$ and $\lnot t <_N s$. Intuitively, the symbol $=_N$ represents the case that our unknown given the representations $s$ and $t$, which may belong to the same equivalence class or to different equivalence classes, is the same. 
 
 Every equivalence class defined by $\mathcal{O}$ has a minimal element with respect to the relation $<_N$:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 7] for all $[x] \in \mathcal{O} / <_N$ there exists $r \in [x]$ such that it does not exists an $s \in [x]$ such that $s <_N r$.
+\item[Axiom 7] for all $[e] \in \mathcal{O} / <_N$ there exists at least one $r \in [e]$ such that it does not exists an $s \in [e]$ such that $s <_N r$.
 \end{description}
 
 \vskip 0.25cm
 
-A class could have more than one minimal element with respect to the nescience ordering. The nescience relation does not define a global minimum element for $\Sigma^\ast$, nor minimum elements for the individual equivalence classes. Given an entity, in general it does not exists a single optimal description, instead what we have is a collection of optimal descriptions.
+A class could have more than one minimal element with respect to the nescience ordering. Those minimal elements correspond to what we have called the valid representations of an entity. All the other representations that are not minimal are misrepresentations of the entity, and so, they present a higher nescience. The nescience relation does not require a global minimum element for $\Sigma$, nor minimum elements for the individual equivalence classes.
 
-The concatenation function $\oplus : \Sigma^\ast \times \Sigma^\ast \rightarrow \Sigma^\ast$ is a binary function that satisfy the following properties:
+The concatenation function $\oplus : \Sigma \times \Sigma \rightarrow \Sigma$ is a binary function that satisfy the following properties:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 8] $\forall s, t \in \Sigma^\ast$ we have that $\oplus(s, t) \in \Sigma$.
-\item[Axiom 9] $\forall s \in \Sigma^\ast$ we have that $\oplus(s, \lambda) = \oplus( \lambda, s) = s$.
-\item[Axiom 10] $\forall r, s, t \in \Sigma^\ast$ we have that $\oplus(\oplus(r, s), t) = \oplus(r, \oplus(s, t))$.
+\item[Axiom 8] $\forall s, t \in \Sigma$ we have that $\oplus(s, t) \in \Sigma$.
+\item[Axiom 9] $\forall s \in \Sigma$ we have that $\oplus(s, \lambda) = \oplus( \lambda, s) = s$.
+\item[Axiom 10] $\forall r, s, t \in \Sigma$ we have that $\oplus(\oplus(r, s), t) = \oplus(r, \oplus(s, t))$.
 \end{description}
 
 \vskip 0.25cm
 
-$\Sigma^\ast$ with the concatenation operation $\oplus$ forms a free monoid. Since this point we will use the infix notation of the concatenation function, that is, we will write $s \oplus t$ instead of the $\oplus(s, t)$.
+$\Sigma$ together with the concatenation operation $\oplus$ forms a free monoid. In particular, we have that $\Sigma = \Sigma^\ast = \mathcal{B}^\ast$. Since this point we will use the infix notation of the concatenation function, that is, we will write $s \oplus t$ instead of the $\oplus(s, t)$, and instead of $\Sigma$ we will talk about $\Sigma^\ast$.
 
-Next axiom states how the operation of concatenation is related to nescience (recall that $\Sigma^{+}$ denotes $\Sigma^\ast-\{\lambda\}$ and $[x] \in \mathcal{O} / <_N$ denotes a equivalence class):
+Next axiom states how the operation of concatenation relates to nescience (recall that $\Sigma^{+}$ denotes $\Sigma^\ast-\{\lambda\}$):
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 11] Let $r \in \Sigma^{+}$ a minimal element of class $[x]$, then we have that $r <_N r \oplus s$ for all $s \in [x]$.
+\item[Axiom 11] Let $r \in \Sigma^{+}$ a minimal element of class $[e]$, then we have that $r <_N r \oplus s$ for all $s \in [e]$ that are not minimal.
 \end{description}
 
 \vskip 0.25cm
 
 Axiom 11 captures the concept of miscoding, since adding more symbols to an optimal representation only increases the nescience. Unfortunately, we cannot say anything about adding more symbols to a non-optimal representation, since the nescience could increase or decrease. The same happens when we concatenate strings that belong to different classes. 
 
-The machine $\mathcal{U} : \Sigma^\ast \rightarrow \Sigma^\ast$ is an universal Turing machine, that given a string $s \in \Sigma^\ast$ encoding a Turing machine, simulates its behaviour. Of course, the function $\mathcal{U}$ is partial, since not all the strings of $\Sigma^\ast$ encode valid Turing machines. We have to select a particular universal Turing machine and encode its description using first-order logic. As we have seen, selecting a different universal machine would result in encoded machines with different length, and that could alter the actual values of nescience. However, since in this axiomatization we are only interested in the ordering o of strings according to their nescience, the particular machine selected is not relevant, since that ordering is not altered. We will use the shortest possible universal machine, composed by two states and three tape symbols:
+The machine $\mathcal{U} : \Sigma^\ast \rightarrow \Sigma^\ast$ is an universal Turing machine, that given a string $s \in \Sigma^\ast$ encoding a Turing machine, simulates its behavior. The input of the machine is a string in the form $<TM, i>$, where $TM$ is an encoded Turing machine, and $i$ is the input to that machine, and outputs $TM(i)$. If the input $d$ is not in the form $<TM, i>$, the machine will simply output $d$. In any case, the machine has to be partial, since it might happen that for some inputs it never halts.
+
+We have to select a particular universal Turing machine and encode its internal working using first-order logic. As we have seen (Theorem \ref{def:Invariance-theorem}) selecting different universal machines would result in different encoding lengths, and that could alter the value of nescience. However, since in this axiomatization we are only interested in the ordering of strings according to their nescience, and not in the actual values, the particular machine selected is not relevant, since that order is preserved. In particular, for the axioms we will use the shortest possible universal machine ({\color{red} Ref}), composed by two states and three tape symbols:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 12] The machine $\mathcal{U} : \Sigma^\ast \times \Sigma^\ast \rightarrow \Sigma^\ast$ satisfy the following properties ...
+\item[Axiom 12] The machine $\mathcal{U} : \Sigma^\ast \rightarrow \Sigma^\ast$ satisfy the following properties {\color{red} TODO: a universal machine with input, that leaves the input tape unmodified in case of failure.}
 \end{description}
 
 \vskip 0.25cm
@@ -127,12 +133,12 @@ The relation between the machine $\mathcal{U}$ and the oracle $\mathcal{O}$ is g
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 13] For all $r \in \Sigma^\ast$ such that $\mathcal{U}(r) \uparrow$ we have that $r \mathcal{O} U(r)$.
+\item[Axiom 13] For all $s \in \Sigma^\ast$ such that $\mathcal{U}(s) \downarrow$ we have that $s \mathcal{O} U(s)$.
 \end{description}
 
 \vskip 0.25cm
 
-That is, descriptions are also representations.
+That is, descriptions are also representations, and they represent the same entity.
 
 \vskip 0.25cm
 
@@ -141,7 +147,7 @@ The relation between the machine $\mathcal{U}$ and the concatenation of strings 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 14] For all $r, s \in \Sigma^\ast$ such that $U(r) \uparrow$ and $U(s) \uparrow$ we have that $U(r \oplus s) = U(r) \oplus U(s)$.
+\item[Axiom 14] For all $s, t \in \Sigma^\ast$ such that $U(s) \downarrow$ and $U(t) \downarrow$ we have that $U(s \oplus t) = U(s) \oplus U(t)$.
 \end{description}
 
 \vskip 0.25cm

@@ -43,18 +43,10 @@ pip install fastautoml
 In the web page that accompanies this book, the reader can find a collection of notebooks for the \texttt{jupyter-lab} environment describing how the library works. For each subsection of this chapter, there is a notebook that implements all the examples included, so that the reader can repeat and play with them. Additional information about the \texttt{fastautoml} library, and a reference of the API provided, can be also found in the web page of the book.
 
 %
-% Section: Inaccuracy
+% Section: A Note About Compression
 %
-
-\section{Inaccuracy}
-\label{sec:machine_learning_inaccuracy}
-
-In Section \ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as the normalized information distance between the representation $r$ and the string $\Gamma(d)$ printed out by a universal Turing machine when given the description as input:
-\[
-\iota(d, r) = \frac{ \max\{ K \left(r \mid \Gamma(d) \right), K \left( \Gamma(d) \mid r \right) \} } { \max\{ K(r), K \left(\Gamma(d) \right) \} }
-\]
-
-Inaccuracy, being based in Kolmogorov complexity, is not computable for the general case, and so, it has to be approximated in practice. In this section we are going to see how this concept can be estimated in case of a model trained using a dataset. The approach will be similar to the one used in case of miscoding (see Section \ref{sec:approx-miscoding} for more information).
+\section{A Note About Compression}
+\label{sec:note_about_compression}
 
 As it is customary, the Kolmogorov complexity $K(s)$ of a string $s$ will be approximated by the length of the compressed version of that string using a standard compressor, that is, we will use the normalized compression distance:
 \[
@@ -70,13 +62,11 @@ As compression technique we will use a code $C$ with minimal length, given the r
 \]
 If the case of $\mathbf{x}$ being based on a continuous random variable, we cannot calculate the probability of $x_j$ since, in general, the underline probability distribution of $\mathbf{x}$ is unknown. Moreover, we have that $P(x_j)=0$ for all $j$. In order to approximate the value $K(\mathbf{x})$ using a minimal length code $C$, we have to discretize first the vector $\mathbf{x}$ into a collection of intervals.
 
-Given a continuous feature $\bold{x}_j$ composed by $n$ samples $\{x_{1j}, \ldots, x_{nj}\}$, a discretization algorithm will produce a finite non-overlapping partition of $m$ discrete intervals $D=\{ [d_o, d_1], (d_1, d_2], \ldots, (d_{m-1}, d_m] \}$, where $d_o = \min{\bold{x}_j}$, and $d_m = \max{\bold{x}_j}$, and $d_i < d_{i+1}$ for $i = 0, 1, \ldots, m-1$, and then it assigns a categorical value to each interval. We will use discretization to estimate the probability of a particular observation.
-
 A discretization algorithm is a mapping between a (possibly huge) number of numeric values and a reduced set of discrete values, and so, it is a process in which some information is potentially lost. The choice of discretization algorithm is something that could have a high impact in the practical computation of the nescience. We are interested in a discretization algorithm that produces a large number of intervals (low bias), with a large number of number of observations per interval (low variance). Common techniques include \emph{equal width discretization}, \emph{equal frequency discretization} and \emph{fixed frequency discretization}. However, these techniques require the optimization of an hyperparameter, and so, they are not suitable for our purposes.
 
-In the \texttt{fastautoml} library we use a \emph{proportional discretization approach}, where the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. The algorithm starts by sorting the values of $\bold{x}_j$ in ascending order and then discretizing them into $m$ intervals of approximately $s$ (possibly identical) values each. In this way, as the number of training observations increases, both interval frequency and number of intervals increases, taking advantage of the larger number of observations. In the same way, when the number of observations decreases, we reduce both. In particular, in the nescience library we set $s = m = \sqrt{n}$
+In the \texttt{fastautoml} library we use a proportional discretization approach (see Section \ref{sec:discretization_algorithms}), where the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. In particular, in the nescience library we set $s = m = \sqrt{n}$ or ...
 
-The same procedure can be applied in case of having a discrete feature with too many labels compared with the number of samples.
+The same procedure can be applied in case of having a discrete features ...
 
 Using this discretization procedure, we can approximate the Kolmogorov complexity of a vector $\mathbf{x}$ by:
 \[
@@ -88,6 +78,371 @@ The quantity $\hat{K}_C$ can be generalized to the an arbitrary number of $m$ ve
 \[
 \langle \mathbf{x_1}, \mathbf{x_2}, \ldots, \mathbf{x_m} \rangle = \{ \langle x_{11}, x_{12}, \ldots, x_{1m} \rangle, \ldots, \langle x_{n1}, x_{n2}, \ldots, x_{nm} \rangle \}
 \]
+
+\begin{proposition}
+The normalized compression distance of two vectors $x$ and $y$ computed using a compressor based on optimal codes is equivalent to the normalized mutual information of these two vectors, that is:
+\[
+NCD_C\left(\mathbf{x},\mathbf{y}\right)=1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }
+\]
+\end{proposition}
+\begin{proof}
+We have to prove that
+\begin{align*}
+NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{C\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} }{\max\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} } \\
+& =\frac{nH\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} }{\max\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} } \\
+& =\frac{H\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }
+\end{align*}
+We have to consider two cases. In case 1 we assume that $H\left(\mathbf{x}\right)>H\left(\mathbf{y}\right)$, and so
+\begin{align*}
+NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\
+& = \frac{H\left(\mathbf{y}\right)+H\left(\mathbf{x}\mid\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\ 
+& = \frac{H\left(\mathbf{x}\mid\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\
+& = \frac{H\left(\mathbf{x}\right)-\left(H\left(\mathbf{x}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{x}\right)} \\ & = 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\text{\ensuremath{\mathbf{x}}}\right)}
+\end{align*}
+and in case of $H\left(\mathbf{y}\right)>H\left(\mathbf{x}\right)$ we have that
+\begin{align*}
+NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)} \\ & =\frac{H\left(\mathbf{x}\right)+H\left(\mathbf{y}\mid\mathbf{x}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)} \\ & = \frac{H\left(\mathbf{y}\mid\mathbf{x}\right)}{H\left(\mathbf{y}\right)}=\frac{H\left(\mathbf{y}\right)-\left(H\left(\mathbf{y}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{y}\right)} \\ & = \frac{H\left(\mathbf{y}\right)-\left(H\left(\mathbf{y}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{y}\right)} \\ & = 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\text{\ensuremath{\mathbf{y}}}\right)}
+\end{align*}
+and so
+\[
+NCD_c\left(\mathbf{x},\mathbf{y}\right)=1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }
+\]
+\end{proof}
+
+The quantity $1 - \frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }$ has been already proposed in~\cite{ferri2009experimental} as a candidate definition of the concept of Normalized Mutual Information. However, to the best of our knowledge ({\color{red} Double check!}), it has not been used in practice.
+
+%
+% Section: Miscoding
+%
+
+\section{Miscoding}
+\label{sec:machine_learning_miscoding}
+
+In Section \ref{def:miscoding} we introduced the concept of miscoding as a quantitative measure of how well a string based encoding $r \in \mathcal{R}$ represents a research entity from $\mathcal{E}$. The miscoding of a representation $r$ was defined as:
+\[
+\mu(r) = \overset{o}{ \underset{s \in \mathcal{R}_\mathcal{E}} \min} \frac{ \max\{ K(s \mid r), K(r \mid s) \} } { \max\{ K(s), K(r) \} }
+\]
+and we saw that this quantity cannot be computed in practice for the general case. First of all because it requires a computation from an abstract oracle machine, second because it is based on the uncomputable Kolmogorov complexity, and third because it does not take into account the entity $e$ in which we are interested. 
+
+In this section we are going to see how this concept can be adapted in practice to compute the error made by using a dataset $\mathbf{X}$ as a representation of a response variable $\mathbf{y}$ (see Section \ref{sec:machine_learning}). Our goal is double, in one hand we are interested in measuring the quality of the dataset $\mathbf{X}$ as a predictor of the variable $\mathbf{y}$, and in the other we want to identify those features $\mathbf{x}_j$ of $\mathbf{X}$ that have the higher predictive power for $\mathbf{y}$. This is the problem addressed by discriminative models (see Section \ref{sec:generative_discriminative}) in which we want to estimate the conditional distribution $P( \mathbf{y} \mid \mathbf{X} )$.
+
+Given a training dataset $\mathbf{X}$ composed by $p$ features, we can approximate the miscoding of a feature $\mathbf{x}_j$ for the target variable $\mathbf{y}$ by computing the normalized information distance between $\mathbf{x}_j$ and $\mathbf{y}$ (see Section \ref{sec:information_distance}):
+\[
+E(\mathbf{x}_j, \mathbf{y}) = \frac{\max\{ K(\mathbf{x}_j \mid \mathbf{y}), K(\mathbf{y} \mid \mathbf{x}_j) \}}{\max \{ K(\mathbf{x}_j), K(\mathbf{y}) \} }
+\]
+The Kolmogorov complexity $K(\mathbf{v})$ of a vector $\mathbf{v}$ will be approximated by the length of the compressed version of that vector $\hat{K}_C(\mathbf{v})$ using as compressor a minimal length code $C$ (see Section \ref{sec:note_about_compression}).
+
+\begin{definition}
+Let $\mathbf{y}$ be a response variable, $\mathbf{X}$ a dataset composed by $p$ features, and $\mathbf{x}_j$ the $j-th$ feature. We define the regular feature miscoding of $\mathbf{x}_j$ as a representation of $\mathbf{y}$, denoted by $\hat\mu(\mathbf{x}_j, \mathbf{y})$, as:
+\[
+\hat\mu(\mathbf{x}_j, \mathbf{y}) = \frac{ \hat{K}_C(\mathbf{x}_j, \mathbf{y}) - \min\{ \hat{K}_C(\mathbf{x}_j), \hat{K}_C(\mathbf{y}) \} } { \max\{ \hat{K}_C(\mathbf{x}_j), \hat{K}_C(\mathbf{y}) \} }
+\]\end{definition}
+
+Intuitively, the quantity $\hat\mu(\mathbf{x}_j, \mathbf{y})$ is a measure of the effort, as the length of a computer program and in relative terms, required to fully encode $\mathbf{y}$ assuming a knowledge of $\mathbf{x}_j$, and the other way around. The lower this value, the better would be the quality of $\mathbf{x}_j$ as a predictor for $\mathbf{y}$.
+
+\begin{example}
+
+Let's $\mathbf{y}$ be a target variable composed by $1.000$ random samples that follows a normal distribution $N(3,1)$ with mean $\mu = 3$ and standard deviation $\sigma = 1$, $\mathbf{x}_1$ be a predictor feature that is equal to $\mathbf{y}$ with some random noise, that is $\mathbf{x}_1 = \mathbf{y} + N(3, 1) / 10$, and $\mathbf{x}_2$ be a second predictor based on random samples from a exponential distribution with a rate of $\lambda = 1$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from scipy.stats import norm, expon
+
+y  = norm.rvs(loc=3, scale=1, size=10000)
+x1 = y + norm.rvs(loc=3, scale=1, size=10000) / 10
+x2 = expon.rvs(size=10000)
+\end{verbatim}}
+\end{sourcecode}
+
+We can use the Nescience library to compute the miscoding of the features $\mathbf{x}_1$ and $\mathbf{x}_2$ when they encode the target variable $\mathbf{y}$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.miscoding import Miscoding
+import numpy as np
+
+X = np.column_stack((x1, x2))
+
+miscoding = Miscoding()
+miscoding.fit(X, y)
+miscoding.miscoding_features(mode="regular")
+\end{verbatim}}
+\end{sourcecode}
+
+The output of the library would be something similar to the following\footnote{Since we are generating a list of $1.000$ random samples, the reader could get a slightly different result when running this example.}:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+array([0.27445364, 0.9934222])
+\end{verbatim}}
+\end{sourcecode}
+
+As it was expected the miscoding of $\hat\mu(\mathbf{x}_1, \mathbf{y})$ is much smaller than the miscoding of $\hat\mu(\mathbf{x}_2, \mathbf{y})$. In this case, we should prefer $\mathbf{x}_1$ over $\mathbf{x}_2$ as a predictor of $\mathbf{y}$.
+
+\end{example}
+
+Sometimes we will use the normalized version of the complements of the individual miscodings, that is $\frac{ 1 - \hat\mu(\mathbf{x}_i, \mathbf{y}) } { \sum_{i=j}^p 1 - \hat\mu(\mathbf{x}_j, \mathbf{y}) }$, instead of the regular ones $\hat\mu(\mathbf{x}_i, \mathbf{y})$, because they are easier to compare with other feature selection techniques, and because they have a visually appealing interpretation. We call this version of miscoding the \emph{adjusted} feature miscoding.
+
+\begin{example}
+\label{example:gaussian_blob_miscoding}
+In this example we are going to generate a synthetic dataset where the target variable $\mathbf{y}$ is a collection of normally-distributed clusters of points, and the training set $\mathbb{X}$ is composed by both, relevant and irrelevant predictors. In particular we will generate $1.000$ samples composed by $20$ features that describe $10$ clusters; only $4$ of the features are relevant for prediction, and the other remaining $6$ are just random values.
+
+In Figure \ref{figure:gaussian_blob_cluster} we can see a two-dimensional projection of this dataset, along the hyperplane composed by features 8 and 10.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{gaussian_blob_cluster.png}
+\caption{Gaussian Blob Cluster.}
+\label{figure:gaussian_blob_cluster}
+\end{figure}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.miscoding import Miscoding
+from sklearn.datasets.samples_generator import make_classification
+
+X, y = make_classification(n_samples=1000, n_features=20, n_informative=4,
+       n_redundant=0, n_classes=10, n_clusters_per_class=1, flip_y=0)
+
+miscoding = Miscoding()
+miscoding.fit(X, y)
+msd = miscoding.miscoding_features(mode='adjusted')
+\end{verbatim}}
+\end{sourcecode}
+
+We will use the adjusted version of the miscoding for an easier comparison with other feature selection techniques. If we plot the results (see Figure \ref{figure:miscoding_make_classification}) we will see that the library has successfully identified the four relevant predictors ($\mathbf{x}_3$, $\mathbf{x}_8$, $\mathbf{x}_{10}$ and $\mathbf{x}_{16}$). Since we are using the adjusted version of miscodings, the higher the value the better, and mind that actual values have to be interpreted in relative terms. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{feature_miscoding.png}
+\caption{Miscoding of a Synthetic Dataset.}
+\label{figure:miscoding_make_classification}
+\end{figure}
+
+We can compare miscoding with correlation, a common technique used in machine learning to identify the most relevant features of a dataset. In Figure \ref{figure:correlation_make_classification} is shown correlation between the individual features that compose $\mathbb{X}$ and the target variable $\mathbf{y}$. As we can observe, correlation fails to properly identify one of the relevant features ($\mathbf{x}_3$).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{feature_correlation.png}
+\caption{Correlation of a Synthetic Dataset.}
+\label{figure:correlation_make_classification}
+\end{figure}
+
+\end{example}
+
+Feature miscoding allow us to identify the most relevant features of a training dataset $\mathbf{X}$, but it cannot be used to compute the miscoding of the dataset itself. If we start with a miscoding of $1$ (full unknown), and subtract the miscodings of the individual features, we will end up with a negative miscoding, something that it is not allowed by our theory. If we use the adjusted version, the dataset miscoding will be $0$ for all datasets, which is against our intuition that not all possible datasets $\mathbf{X}$ represent equally well a target variable $\mathbf{y}$. According to the theory of nescience, we expect that non-relevant features add, instead of subtract, to the global miscoding of the dataset.
+
+In order to address this problem, we have to introduce the concept of partial miscoding of a feature, as the difference between the adjusted and normalized miscodings.
+
+\begin{definition}
+Let $\mathbf{y}$ be a target variable, $\mathbf{X}$ a dataset composed by $p$ features, and $\mathbf{x}_j$ the $j-th$ feature. We define the partial miscoding of $\mathbf{x}_j$ as a representation of $\mathbf{y}$, denoted by $\tilde\mu(\mathbf{x}_j, \mathbf{y})$, as:
+\[
+\tilde\mu(\mathbf{x}_i, \mathbf{y}) = \frac{ 1 - \hat\mu(\mathbf{x}_i, \mathbf{y}) } { \sum_{j=1}^p 1 - \hat\mu(\mathbf{x}_j, \mathbf{y}) } - \frac{\hat\mu(\mathbf{x}_i, \mathbf{y}) } { \sum_{j=1}^p \hat\mu(\mathbf{x}_j, \mathbf{y}) }
+\]
+\end{definition}
+
+A positive partial miscoding means that the feature contributes to describe the target variable, meanwhile a negative value means that the feature is not relevant.
+
+\begin{example}
+\label{example:partial_feature_miscoding}
+In this example we will use again the synthetic dataset of Example \ref{example:gaussian_blob_miscoding}, but we will increase the number of relevant features from $4$ to $14$. Then, we will compute the list of partial miscodings.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.miscoding import Miscoding
+from sklearn.datasets.samples_generator import make_classification
+
+X, y = make_classification(n_samples=1000, n_features=20, n_informative=14,
+       n_redundant=0, n_classes=10, n_clusters_per_class=1, flip_y=0)
+
+miscoding = Miscoding()
+miscoding.fit(X, y)
+msd = miscoding.miscoding_features(mode="partial")
+\end{verbatim}}
+\end{sourcecode}
+
+As we can see in Figure \ref{figure:partial_feature_miscoding}, not only the library has been able to correctly identify the relevant features, but also, non relevant features have now a negative contribution to the global miscoding.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{partial_miscoding.png}
+\caption{Partial Feature Miscoding.}
+\label{figure:partial_feature_miscoding}
+\end{figure}
+
+\end{example}
+
+Given the definition of partial feature miscoding we can provide a definition of the concept of miscoding of a target variable given a subset of predictors that it is closer to the original concept of miscoding defined by the theory of nescience.
+
+\begin{definition}
+Let $\mathbf{y}$ be a target variable, $\mathbf{X} = \{ \mathbf{x}_1, \ldots, \mathbf{x}_p \}$ a dataset composed by $p$ features, and $\mathbf{Z} = \{ \mathbf{z}_1, \ldots, \mathbf{z}_k \}$ a subset of features, that is, $\{ \mathbf{z}_1, \ldots, \mathbf{z}_k \} \subseteq \{ \mathbf{x}_1, \ldots, \mathbf{x}_p \}$. We define the miscoding of $\mathbf{Z}$ as a representation of $\mathbf{y}$, denoted by $\hat\mu(\mathbf{Z}, \mathbf{y})$, as:
+\[
+\hat\mu(\mathbf{Z}, \mathbf{y}) = \sum_{i=1}^k \tilde\mu (\mathbf{z}_i, \mathbf{y})
+\]
+\end{definition}
+
+\begin{example}
+\label{example:accumulated_partial_feature_miscoding}
+Based on the dataset and the partial features miscoding computed in Example \ref{example:partial_feature_miscoding}, in Figure \ref{figure:accumulated_partial_feature_miscoding} we can see the evolution of the miscoding of the training subset $\mathbb{Z}$ as we add more features to the study.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{accumulated_partial_miscoding.png}
+\caption{Accumulated Partial Feature Miscoding.}
+\label{figure:accumulated_partial_feature_miscoding}
+\end{figure}
+
+\end{example}
+
+In the following final example we are going to compare the performance of a machine learning classifier when using a full dataset and a reduced version of the same dataset using only those features identified as relevant, i.e., with positive partial miscoding.
+
+\begin{example}
+In this example we will train a neural network with the standard MNIST dataset in order to classify hand written digits. The evaluation criteria will be the score of the classifier, that is, the percentage of digits correctly classified, applied over a test dataset different from the dataset used for training. The neural network will be trained and evaluated using all the features that compose the dataset, and with a reduced version of the dataset composed by only those features with a positive partial miscoding.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+import numpy  as np
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.datasets import load_digits
+from fastautoml.fastautoml import Miscoding
+
+data = load_digits()
+X_raw = data.data
+y_raw = data.target
+
+miscoding = Miscoding()
+miscoding.fit(X_raw, y_raw)
+mscd = miscoding.miscoding_features(miscoding='partial')
+X_red = X_raw[:,np.where(mscd > 0)[0]]
+y_red = y_raw
+
+X_raw_train, X_raw_test, y_raw_train, y_raw_test = train_test_split(X_raw,
+             y_raw, test_size=.3)
+X_red_train, X_red_test, y_red_train, y_red_test = train_test_split(X_red,
+             y_red, test_size=.3)
+
+clf = MLPClassifier(alpha=1, max_iter=1000)
+
+clf.fit(X_raw_train, y_raw_train)
+score_raw = clf.score(X_raw_test, y_raw_test)
+        
+clf.fit(X_red_train, y_red_train)
+score_red = clf.score(X_red_test, y_red_test)
+        
+reduction = 1 - X_red_train.shape[1] / X_raw_train.shape[1]
+
+print("Score raw:", score_raw, " Score Miscoding:", score_red,
+      " Reduction:", reduction)
+\end{verbatim}}
+\end{sourcecode}
+
+If we run the above source code, we will see that the score of the neural network classifier is about the same for the two datasets, 98\% of the digits are correctly classified using the test data. However, the reduced dataset used for training based on the optimal miscoding is 43\% smaller than the original dataset. This size reduction could have a big impact in the training time of the neural network. Smaller datasets are also relevant when working with ensembles of models, like random forests, where hundreds or thousands of models have to be trained.
+
+\end{example}
+
+Intuitively, as Example \ref{example:accumulated_partial_feature_miscoding} shows, we should prefer the subset $\mathbf{Z}$ of $\mathbf{X}$ composed by all those features whose partial miscoding are greater than zero. However, as we will see in the following sections of this chapter, this might not be the case. Feature selection is only one of the criteria used in the process of finding an optimal model for an entity represented by a dataset. It might happen that other elements, like inaccuracy or surfeit, suggest to use a different subset of predictors. The global optimization criteria we should use is the concept of nescience. A sensible approach to use partial miscoding would be to incrementally add to our model those features with higher miscoding, until all features with a positive value have been added, or an optimality criterion has been reached.
+
+In case of having a generative model (see Section \ref{sec:generative_discriminative}), that is, a machine learning algorithm designed to find the joint probability $P(\mathbf{X}, \mathbf{y})$, we could use miscoding to compute how the different features relate to each other, that is, the quantity $\hat\mu(\mathbf{x}_i, \mathbf{x}_j)$ for each pair of values $i, j \leq p$. The result would be a miscoding matrix (see Example \ref{example:miscoding_boston}).
+
+\begin{example}
+\label{example:miscoding_boston}
+The Boston dataset included in \texttt{scikit-learn} library contains a collection of variables that (potentially) could explain the price of houses in the area of Boston. In this example, instead of computing which are the factors that contribute the most to the price of houses, we are going to study the inter-dependence between these factors, using a miscoding matrix.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.fastautoml import Miscoding
+from sklearn.datasets import load_boston
+
+data = load_boston()
+
+miscoding = Miscoding(X_type="numeric", y_type="numeric")
+miscoding.fit(data.data, data.target)
+mscd_matrix = miscoding.features_matrix(mode='regular')
+\end{verbatim}}
+\end{sourcecode}
+
+In Figure \ref{figure:miscoding_matrix} we can see a graphical representation using a heatmap of the miscoding matrix computed over the features. The darker values represent a lower miscoding (mind we are using the regular version of the concept of miscoding). In particular, the values of the main diagonal are equal to zero. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.4\textwidth]{miscoding_matrix.png}
+\caption{Regular Miscoding Matrix.}
+\label{figure:miscoding_matrix}
+\end{figure}
+
+The minimum value of $0.52$ is obtained with the pair $(8, 9)$ that correspond to the features "index of accessibility to radial highways" and "full-value property-tax rate per \$10,000". These features are good candidates to evaluate in a predictive model, since they contain non-redundant information. The maximum value of $0.99$ is achieved with the pair $(3, 12)$ with the features "Charles River dummy variable" and "\% lower status of the population". These features contains almost the same information, and so, including both in a model does not add nothing new, but increases the complexity of the model and the risk of over-fitting.
+
+\end{example}
+
+Finally, we are going to see the concept of miscoding applied to a feature and a delayed version of itself as a function of this delay, what we call auto-miscoding, and the miscoding of a feature applied over a delayed version of the target (or another feature), what we call cross-miscoding.
+
+Auto-miscoding is intended to detect the repetitive patterns in a time series (see Section \ref{sec:intro_time_series}), for example, the presence of cycles. Auto-miscoding computes the miscoding of a time series (a vector) at time $t=0$, , with a lagged version of itself at time $t=i$, and repeat this process for a given number $n$ of lagging periods:
+\[
+\hat\mu(\mathbf{x}^{t=0}$, $\mathbf{x}^{t=i}) \quad i=1,\ldots,n
+\]
+
+\begin{example}
+In this example we are going to study the presence of cycles in the number of passengers of a US airline. In Figure \ref{figure:air_passengers} is depicted a time series of monthly passengers from 1949 to 1960 (AirPassenger dataset, see References section bellow). As we can observe, there is a clear cycle that repeats every twelve months. We can apply the concept of auto-miscoding to validate analytically that this is the case.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{airpassengers.png}
+\caption{Air Passengers.}
+\label{figure:air_passengers}
+\end{figure}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.fastautoml import Miscoding
+
+data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"], parse_dates=True)
+X = np.array(data["#Passengers"]).reshape(-1, 1)
+
+miscoding = Miscoding()
+miscoding.fit(X, y=None)
+mscd = miscoding.auto_miscoding(attribute=0, max_lag=36, mode='adjusted')
+\end{verbatim}}
+\end{sourcecode}
+
+As we can see in Figure \ref{figure:auto-miscoding} there is a peak on the value of auto-miscoding every twelve months. That means that the distance of the time series is minimal with respect to a yearly lagged versions of itself.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{auto-miscoding.png}
+\caption{Auto-miscoding of Air Passengers.}
+\label{figure:auto-miscoding}
+\end{figure}
+
+\end{example}
+
+Cross-miscoding computes the inter-relation between a time series and a lagged version of a second time series. The objective is to detect if the first time series has a temporal predictive power over the second. Given a candidate predictive feature $\mathbf{x}$ and a target $\mathbf{y}$ (or a second feature), cross-miscoding computes the following quantity:
+\[
+\hat\mu(\mathbf{x}^{t=0}, \mathbf{y}^{t=i}) \quad i=1,\ldots,n
+\]
+
+\begin{example}
+{\color{red} TODO: cross-miscoding.}
+\end{example}
+
+\begin{remark}
+{\color{red} TODO: The problem of redundancy.}
+\end{remark}
+
+%
+% Section: Inaccuracy
+%
+
+\section{Inaccuracy}
+\label{sec:machine_learning_inaccuracy}
+
+In Section \ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as the normalized information distance between the representation $r$ and the string $\Gamma(d)$ printed out by a universal Turing machine when given the description as input:
+\[
+\iota(d, r) = \frac{ \max\{ K \left(r \mid \Gamma(d) \right), K \left( \Gamma(d) \mid r \right) \} } { \max\{ K(r), K \left(\Gamma(d) \right) \} }
+\]
+
+Inaccuracy, being based in Kolmogorov complexity, is not computable for the general case, and so, it has to be approximated in practice. In this section we are going to see how this concept can be estimated in case of a model trained using a dataset. The approach will be similar to the one used in case of miscoding (see Section \ref{sec:approx-miscoding} for more information).
+
 
 
 
@@ -254,241 +609,7 @@ The experiment consists in training a decision tree classifier with a minimum nu
 \end{example}
 
 
-%
-% Section: Miscoding
-%
 
-\section{Miscoding}
-\label{sec:machine_learning_miscoding}
-
-In Section \ref{def:miscoding} we introduced the concept of miscoding as a quantitative measure of how well a string based encoding $r \in \mathcal{R}$ represents a research entity from $\mathcal{E}$. The miscoding of a representation $r$ was defined as:
-\[
-\mu(r) = \overset{o}{ \underset{s \in \mathcal{R}_\mathcal{E}} \min} \frac{ \max\{ K(s \mid r), K(r \mid s) \} } { \max\{ K(s), K(r) \} }
-\]
-and we saw that this quantity cannot be computed in practice for the general case. First of all because it requires a computation from an abstract oracle machine, second because it is based on the uncomputable Kolmogorov complexity, and third because it does not take into account the entity $e$ in which we are interested. 
-
-In this section we are going to see how this concept can be adapted in practice to compute the error made by using a dataset $\mathbb{X}$ as a representation of a response variable $\mathbf{y}$ (see Section \ref{sec:machine_learning}). Our goal is double, in one hand we are interested to measure the quality of the dataset $\mathbb{X}$ as a predictor of the variable $\mathbf{y}$, and in the other we want to identify those features $\mathbf{x}_j$ of $\mathbb{X}$ that have the higher predictive power for $\mathbf{y}$. In this context, the target variable $\mathbf{y}$ would play the role of the entity, and the dataset $\mathbb{X}$ the role of representation, so to speak.
-
-Given a training dataset $\mathbb{X}$ and a target variable $\mathbf{y}$, we can approximate the inaccuracy of a model $m$ as a predictor of $\mathbf{y}$ by means of computing the normalized compression distance between the predicted values $\mathbf{\hat{y}} = m(\mathbb{X})$ and the observed values $\mathbf{y}$. The Kolmogorov complexity $K(\mathbf{v})$ of a vector $\mathbf{v}$ will be approximated by the length of the compressed version of that vector $\hat{K}_C(\mathbf{v})$ using as compressor a minimal length code $C$, computed given the relative frequencies of the values observed in the vector $\mathbf{v}$ (see Section \ref{sec:approx-miscoding}).
-
-Given a training dataset $\mathbb{X}$ composed by $n$ vectors with $p$ features, we can approximate the miscoding of a feature $\mathbf{x}_j$ for the target variable $\mathbf{y}$ by computing the normalized information distance between $\mathbf{x}_j$ and $\mathbf{y}$ (see Section \ref{sec:information_distance}):
-\[
-E(\mathbf{x}_j, \mathbf{y}) = \frac{\max\{ K(\mathbf{x}_j \mid \mathbf{y}), K(\mathbf{y} \mid \mathbf{x}_j) \}}{\max \{ K(\mathbf{x}_j), K(\mathbf{y}) \} }
-\]
-
-
-Given the above considerations, we can provide the following approximation for the concept of miscoding for representations based on datasets.
-
-\begin{definition}
-Let $\mathbf{y}$ be a response variable, $\mathbb{X}$ a dataset composed by $p$ features, and $\mathbf{x}_j$ the $j-th$ feature. We define the feature miscoding of $\mathbf{x}_j$ as a representation of $\mathbf{y}$, denoted by $\hat\mu(\mathbf{x}_j, \mathbf{y})$, as:
-\[
-\hat\mu(\mathbf{x}_j, \mathbf{y}) = \frac{ \hat{K}_C(\mathbf{x}_j, \mathbf{y}) - \min\{ \hat{K}_C(\mathbf{x}_j), \hat{K}_C(\mathbf{y}) \} } { \max\{ \hat{K}_C(\mathbf{x}_j), \hat{K}_C(\mathbf{y}) \} }
-\]\end{definition}
-
-Intuitively, the quantity $\hat\mu(\mathbf{x}_j, \mathbf{y})$ is a measure of the effort, in relative terms, required to fully encode $\mathbf{y}$ assuming a knowledge of $\mathbf{x}_j$, and the other way around. The lower this value, the better is the quality of $\mathbf{x}_j$ as a predictor for $\mathbf{y}$.
-
-\begin{example}
-
-Let's $\mathbf{y}$ be a target variable composed by $1.000$ random samples that follows a normal distribution $N(3,1)$ with mean $\mu = 3$ and standard deviation $\sigma = 1$, $\mathbf{x}_1$ be a predictor feature that is equal to $\mathbf{y}$ with some random noise, that is $\mathbf{x}_1 = \mathbf{y} + N(0, 1)$, and $\mathbf{x}_2$ be a second predictor based on random samples from a exponential distribution with a rate of $\lambda = 1$.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from scipy.stats import norm, expon
-
-y  = norm.rvs(loc=3, size=1000)
-x1 = y + np.random.randn()
-x2 = expon.rvs(size=1000)
-\end{verbatim}}
-\end{sourcecode}
-
-We can use the Nescience library to compute the miscoding of the features $\mathbf{x}_1$ and $\mathbf{x}_2$ when they encode the target variable $\mathbf{y}$.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from Nescience.Nescience import Miscoding
-import numpy as np
-
-X = np.column_stack((x1, x2))
-
-miscoding = Miscoding()
-miscoding.fit(X, y)
-miscoding.miscoding_features(type='regular')
-\end{verbatim}}
-\end{sourcecode}
-
-The output of the library would be something similar to the following\footnote{Since we are generating a list of $1.000$ random samples, the reader could get a slightly different result when running this example.}:
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-array([0.        , 0.84443761])
-\end{verbatim}}
-\end{sourcecode}
-
-As it was expected the miscoding of $\hat\mu(\mathbf{x}_1, \mathbf{y})$ is almost zero, meanwhile the miscoding of $\hat\mu(\mathbf{x}_2, \mathbf{y})$ is much higher. In this case, we should prefer $\mathbf{x}_1$ over $\mathbf{x}_2$ as a predictor of $\mathbf{y}$.
-
-\end{example}
-
-Sometimes we will use the normalized version of the complements of the individual miscodings, that is $\frac{ 1 - \hat\mu(\mathbf{x}_i, \mathbf{y}) } { \sum_{i=j}^p 1 - \hat\mu(\mathbf{x}_j, \mathbf{y}) }$, instead of the regular ones $\hat\mu(\mathbf{x}_i, \mathbf{y})$, because they are easier to compare with other feature selection techniques, and because they have a visually appealing interpretation. We call this version of miscoding the adjusted feature miscoding.
-
-\begin{example}
-In this example we are going to generate a synthetic dataset where the target variable $\mathbf{y}$ is a collection of normally-distributed clusters of points, and the training set $\mathbb{X}$ is composed by both, relevant and irrelevant predictors. In particular we will generate $1.000$ samples composed by $10$ features that describe $10$ clusters; only $4$ of the features are relevant for prediction, and the other remaining $6$ are just random values.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from Nescience.Nescience import Miscoding
-from sklearn.datasets.samples_generator import make_classification
-
-X, y = make_classification(n_samples=1000, n_features=10, n_informative=4,
-       n_redundant=0, n_classes=10, n_clusters_per_class=1, flip_y=0)
-
-miscoding = Miscoding()
-miscoding.fit(X, y)
-msd = miscoding.miscoding_features(miscoding='adjusted')
-\end{verbatim}}
-\end{sourcecode}
-
-We will use the adjusted version of the miscoding for an easier comparison with other feature selection techniques. If we plot the results (see Figure \ref{figure:miscoding_make_classification}) we will see that the library has successfully identified the four relevant predictors ($\mathbf{x}_3$, $\mathbf{x}_8$, $\mathbf{x}_{10}$ and $\mathbf{x}_{16}$). Since we are using the adjusted version of miscodings, the actual values have to be interpreted in relative terms. 
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{feature_miscoding.png}
-\caption{Miscoding of a Synthetic Dataset.}
-\label{figure:miscoding_make_classification}
-\end{figure}
-
-We can compare miscoding with correlation, a common technique used in machine learning to identify the most relevant features of a dataset. In Figure \ref{figure:correlation_make_classification} is shown correlation between the individual features that compose $\mathbb{X}$ and the target variable $\mathbf{y}$. As we can observe, correlation fails to properly identify one of the relevant features ($\mathbf{x}_3$).
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-np.corrcoef(X, y)
-\end{verbatim}}
-\end{sourcecode}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{feature_correlation.png}
-\caption{Correlation of a Synthetic Dataset.}
-\label{figure:correlation_make_classification}
-\end{figure}
-
-\end{example}
-
-Feature miscoding allow us to identify the most relevant features of a training dataset $\mathbb{X}$, but it cannot be used to compute the miscoding of the dataset itself. If we start with a miscoding of $1$ (full unknown), and subtract the miscodings of the individual features, we will end up with a negative miscoding, something that it is not allowed by our theory. If we use the adjusted version, the dataset miscoding will be $0$ for all datasets, which is against our intuition that not all possible datasets $\mathbb{X}$ represent equally well a target variable $\mathbf{y}$. According to the theory of nescience, we expect that non-relevant features add, instead of subtract, to the global miscoding of the dataset.
-
-In order to address this problem, we have to introduce the concept of partial miscoding of a feature, as the difference between the adjusted and normalized miscodings.
-
-\begin{definition}
-Let $\mathbf{y}$ be a target variable, $\mathbb{X}$ a dataset composed by $p$ features, and $\mathbf{x}_j$ the $j-th$ feature. We define the partial miscoding of $\mathbf{x}_j$ as a representation of $\mathbf{y}$, denoted by $\tilde\mu(\mathbf{x}_j, \mathbf{y})$, as:
-\[
-\tilde\mu(\mathbf{x}_i, \mathbf{y}) = \frac{ 1 - \hat\mu(\mathbf{x}_i, \mathbf{y}) } { \sum_{j=1}^p 1 - \hat\mu(\mathbf{x}_j, \mathbf{y}) } - \frac{\hat\mu(\mathbf{x}_i, \mathbf{y}) } { \sum_{j=1}^p \hat\mu(\mathbf{x}_j, \mathbf{y}) }
-\]
-\end{definition}
-
-A positive partial miscoding means that the feature contributes to describe the target variable, meanwhile a negative value means that the feature is not relevant.
-
-\begin{example}
-\label{example:partial_feature_miscoding}
-In this example we will use again a synthetic dataset composed by a collection of normally-distributed clusters of points, but we will increase the number of features to $20$, from which $14$ are relevant. Then, we will compute the list of partial miscodings.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from Nescience.Nescience import Miscoding
-from sklearn.datasets.samples_generator import make_classification
-
-X, y = make_classification(n_samples=1000, n_features=20, n_informative=14,
-       n_redundant=0, n_classes=10, n_clusters_per_class=1, flip_y=0)
-
-miscoding = Miscoding()
-miscoding.fit(X, y)
-msd = miscoding.miscoding_features(miscoding="partial")
-\end{verbatim}}
-\end{sourcecode}
-
-As we can see in Figure \ref{figure:partial_feature_miscoding}, not only the library has been able to correctly identify the relevant features, but also, non relevant features have now a negative contribution to the global miscoding.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{partial_miscoding.png}
-\caption{Partial Feature Miscoding.}
-\label{figure:partial_feature_miscoding}
-\end{figure}
-
-\end{example}
-
-Given the definition of partial feature miscoding we can provide a definition of the concept of miscoding of a target variable given a subset of predictors that it is closer to the original concept of miscoding defined by the theory of nescience.
-
-\begin{definition}
-Let $\mathbf{y}$ be a target variable, $\mathbb{X} = \{ \mathbf{x}_1, \ldots, \mathbf{x}_p \}$ a dataset composed by $p$ features, and $\mathbb{Z} = \{ \mathbf{z}_1, \ldots, \mathbf{z}_k \}$ a subset of features, that is, $\{ \mathbf{z}_1, \ldots, \mathbf{z}_k \} \subseteq \{ \mathbf{x}_1, \ldots, \mathbf{x}_p \}$. We define the miscoding of $\mathbb{Z}$ as a representation of $\mathbf{y}$, denoted by $\hat\mu(\mathbb{Z}, \mathbf{y})$, as:
-\[
-\hat\mu(\mathbb{Z}, \mathbf{y}) = \sum_{i=1}^k \tilde\mu (\mathbf{z}_i, \mathbf{y})
-\]
-\end{definition}
-
-A sensible approach to use the concept of partial miscoding in machine learning would be to incrementally add to our model those features with higher partial miscoding, until all features with a positive partial miscoding have been added, or a optimality criterion has been reached (see Example \ref{example:accumulated_partial_feature_miscoding}).
-
-{\color{red} TODO: Prove that this approach is (near) optimal compared to evaluating all the possible feature combinations.}
-
-\begin{example}
-\label{example:accumulated_partial_feature_miscoding}
-Based on the dataset and the partial features miscoding computed in Example \ref{example:partial_feature_miscoding}, in Figure \ref{figure:accumulated_partial_feature_miscoding} we can see the evolution of the miscoding of the training subset $\mathbb{Z}$ as we add more features to the study.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{accumulated_partial_miscoding.png}
-\caption{Accumulated Partial Feature Miscoding.}
-\label{figure:accumulated_partial_feature_miscoding}
-\end{figure}
-
-\end{example}
-
-In the following final example we are going to compare the performance of a machine learning classifier when using a full dataset and a reduced version of the same dataset using only those features identified as relevant, i.e., with positive partial miscoding.
-
-\begin{example}
-In this example we will train a neural network with the standard MNIST dataset in order to classify hand written digits. The evaluation criteria will be the score of the classifier, that is, the percentage of digits correctly classified, applied over a test dataset different from the dataset used for training. The neural network will be trained and evaluated using all the features that compose the dataset, and with a reduced version of the dataset composed by only those features with a positive partial miscoding.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-import numpy  as np
-from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPClassifier
-from sklearn.datasets import load_digits
-from Nescience.Nescience import Miscoding
-
-data = load_digits()
-X_raw = data.data
-y_raw = data.target
-
-miscoding = Miscoding()
-miscoding.fit(X_raw, y_raw)
-mscd = miscoding.miscoding_features(miscoding='partial')
-X_red = X_raw[:,np.where(mscd > 0)[0]]
-y_red = y_raw
-
-X_raw_train, X_raw_test, y_raw_train, y_raw_test = train_test_split(X_raw,
-             y_raw, test_size=.3)
-X_red_train, X_red_test, y_red_train, y_red_test = train_test_split(X_red,
-             y_red, test_size=.3)
-
-clf = MLPClassifier(alpha=1, max_iter=1000)
-
-clf.fit(X_raw_train, y_raw_train)
-score_raw = clf.score(X_raw_test, y_raw_test)
-        
-clf.fit(X_red_train, y_red_train)
-score_red = clf.score(X_red_test, y_red_test)
-        
-reduction = 1 - X_red_train.shape[1] / X_raw_train.shape[1]
-
-print("Score raw:", score_raw, " Score Miscoding:", score_red,
-      " Reduction:", reduction)
-\end{verbatim}}
-\end{sourcecode}
-
-If we run the above source code, we will see that the score of the neural network classifier is about the same for the two datasets, 98\% of the digits are correctly classified using the test data. However, the reduced dataset used for training based on the optimal miscoding is 43\% smaller than the original dataset. This size reduction could have a big impact in the training time of the neural network. Smaller datasets are also relevant when working with ensembles of models, like random forests, where hundreds or thousands of models have to be trained.
-
-\end{example}
-
-Intuitively, as Example \ref{example:accumulated_partial_feature_miscoding} shows, we should prefer the subset $\mathbb{Z}$ of $\mathbb{X}$ composed by all those features whose partial miscoding are greater than zero. However, as we will see in the following sections of this chapter, this might not be the case. Feature selection is only one of the criteria used in the process of finding an optimal model for an entity represented by a dataset. It might happen that other elements, like inaccuracy or surfeit, suggest to use a different subset of predictors. The global optimization criteria we should use is the concept of nescience.
 
 
 %
@@ -1255,6 +1376,8 @@ In our web page can be found an implementation of the decision tree following th
 The Minimum Description Length \cite{grunwald2007minimum} and the Minimum Message Length \cite{wallace2005statistical} techniques have been applied to the problem of inferring decision trees in \cite{quinlan1989inferring}, later on clarified and extended in~\cite{wallace1993coding}, in \cite{mehta1995mdl} as a technique for pruning, and in \cite{rastogi1998public}, among others. Although the underlining concepts behind the cost function proposed in this chapter are the same (namely, that learning is equivalent to the capability to compress), our approach is very different from the ones described in these works.
 
 An excellent survey of the available discretization methods can be found in~\cite{garcia2013survey}; in the paper the authors also propose a taxonomy to classify existing methods based in their properties and they conduct an extensive comparative experimental study. The proportional discretization method used to compute miscoding is introduced in~\cite{yang2009discretization}, where there is also a theoretical justification of why this method reduces the bias and the variance of the discretized variable.
+
+{\color{red} TODO: Find the original reference of the AirPassengers dataset.}
 
 
 

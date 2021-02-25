@@ -126,7 +126,7 @@ and we saw that this quantity cannot be computed in practice for the general cas
 
 In this section we are going to see how this concept can be adapted in practice to compute the error made by using a dataset $\mathbf{X}$ as a representation of a response variable $\mathbf{y}$ (see Section \ref{sec:machine_learning}). Our goal is double, in one hand we are interested in measuring the quality of the dataset $\mathbf{X}$ as a predictor of the variable $\mathbf{y}$, and in the other we want to identify those features $\mathbf{x}_j$ of $\mathbf{X}$ that have the higher predictive power for $\mathbf{y}$. This is the problem addressed by discriminative models (see Section \ref{sec:generative_discriminative}) in which we want to estimate the conditional distribution $P( \mathbf{y} \mid \mathbf{X} )$.
 
-Given a training dataset $\mathbf{X}$ composed by $p$ features, we can approximate the miscoding of a feature $\mathbf{x}_j$ for the target variable $\mathbf{y}$ by computing the normalized information distance between $\mathbf{x}_j$ and $\mathbf{y}$ (see Section \ref{sec:information_distance}):
+Given a training dataset $\mathbf{X}$, we can approximate the miscoding of a feature $\mathbf{x}_j$ for the target variable $\mathbf{y}$ by computing the normalized information distance between $\mathbf{x}_j$ and $\mathbf{y}$ (see Section \ref{sec:information_distance}):
 \[
 E(\mathbf{x}_j, \mathbf{y}) = \frac{\max\{ K(\mathbf{x}_j \mid \mathbf{y}), K(\mathbf{y} \mid \mathbf{x}_j) \}}{\max \{ K(\mathbf{x}_j), K(\mathbf{y}) \} }
 \]
@@ -219,7 +219,7 @@ We will use the adjusted version of the miscoding for an easier comparison with 
 \label{figure:miscoding_make_classification}
 \end{figure}
 
-We can compare miscoding with correlation, a common technique used in machine learning to identify the most relevant features of a dataset. In Figure \ref{figure:correlation_make_classification} is shown correlation between the individual features that compose $\mathbb{X}$ and the target variable $\mathbf{y}$. As we can observe, correlation fails to properly identify one of the relevant features ($\mathbf{x}_3$).
+We can compare miscoding with correlation, a common technique used in machine learning to identify the most relevant features of a dataset. In Figure \ref{figure:correlation_make_classification} is shown correlation between the individual features that compose $\mathbf{X}$ and the target variable $\mathbf{y}$. As we can observe, correlation fails to properly identify one of the relevant features ($\mathbf{x}_3$).
 
 \begin{figure}[h]
 \centering
@@ -245,7 +245,7 @@ A positive partial miscoding means that the feature contributes to describe the 
 
 \begin{example}
 \label{example:partial_feature_miscoding}
-In this example we will use again the synthetic dataset of Example \ref{example:gaussian_blob_miscoding}, but we will increase the number of relevant features from $4$ to $14$. Then, we will compute the list of partial miscodings.
+We will use again the synthetic dataset of Example \ref{example:gaussian_blob_miscoding}, but we will increase the number of relevant features from $4$ to $14$. Then, we will compute the list of partial miscodings.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
@@ -283,7 +283,7 @@ Let $\mathbf{y}$ be a target variable, $\mathbf{X} = \{ \mathbf{x}_1, \ldots, \m
 
 \begin{example}
 \label{example:accumulated_partial_feature_miscoding}
-Based on the dataset and the partial features miscoding computed in Example \ref{example:partial_feature_miscoding}, in Figure \ref{figure:accumulated_partial_feature_miscoding} we can see the evolution of the miscoding of the training subset $\mathbb{Z}$ as we add more features to the study.
+Based on the dataset and the partial features miscoding computed in Example \ref{example:partial_feature_miscoding}, in Figure \ref{figure:accumulated_partial_feature_miscoding} we can see the evolution of the miscoding of the training subset $\mathbf{Z}$ as we add more features to the study.
 
 \begin{figure}[h]
 \centering
@@ -294,10 +294,10 @@ Based on the dataset and the partial features miscoding computed in Example \ref
 
 \end{example}
 
-In the following final example we are going to compare the performance of a machine learning classifier when using a full dataset and a reduced version of the same dataset using only those features identified as relevant, i.e., with positive partial miscoding.
+In the following example we are going to compare the performance of a machine learning classifier when using a full dataset and a reduced version of the same dataset using only those features identified as relevant, i.e., with positive partial miscoding.
 
 \begin{example}
-In this example we will train a neural network with the standard MNIST dataset in order to classify hand written digits. The evaluation criteria will be the score of the classifier, that is, the percentage of digits correctly classified, applied over a test dataset different from the dataset used for training. The neural network will be trained and evaluated using all the features that compose the dataset, and with a reduced version of the dataset composed by only those features with a positive partial miscoding.
+Let's train a neural network with the standard MNIST dataset in order to classify hand written digits. The evaluation criteria will be the score of the classifier, that is, the percentage of digits correctly classified, applied over a test dataset different from the dataset used for training. The neural network will be trained and evaluated using all the features that compose the dataset, and with a reduced version of the dataset composed by only those features with a positive partial miscoding.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
@@ -334,6 +334,8 @@ reduction = 1 - X_red_train.shape[1] / X_raw_train.shape[1]
 
 print("Score raw:", score_raw, " Score Miscoding:", score_red,
       " Reduction:", reduction)
+
+Score raw: 0.9833333333333333  Score Miscoding: 0.9814814814814815  Data Reduction: 0.46875
 \end{verbatim}}
 \end{sourcecode}
 
@@ -422,11 +424,41 @@ Cross-miscoding computes the inter-relation between a time series and a lagged v
 \]
 
 \begin{example}
-{\color{red} TODO: cross-miscoding.}
+We are interested to determine if it possible to predict the energy consumption of the appliances of a house. The data set to study (appliances energy prediction dataset, see References below) is composed by the temperature and humidity conditions measured in the different rooms of the house every ten minutes, and the energy consumption of the appliances. The dataset also includes some information about the current weather, from a nearby weather station.
+
+For every feature we will compute the optimal lag at which the features has the best prediction capabilities:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.fastautoml import Miscoding
+
+X = pd.read_csv("../data/energydata_complete.csv", parse_dates=["date"], index_col="date")
+y = X["Appliances"]
+X = X.drop(["Appliances", "lights"], axis=1)
+
+miscoding = Miscoding()
+miscoding.fit(X, y)
+
+best_lag  = list()
+for i in np.arange(X.shape[1]):
+    mscd = miscoding.cross_miscoding(attribute1=i, min_lag=1, max_lag=30)
+    best_lag.append(np.where(mscd == np.max(mscd))[0][0] + 1)
+\end{verbatim}}
+\end{sourcecode}
+
+In Figure \ref{figure:cross-miscoding} we can see a plot of the results. As we can observe, in general, for the in-house measurements we should use small lag values. However, in case of the weather conditions, bigger lags provide better results.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{cross_miscoding_lag.png}
+\caption{Cross Miscoding Lag}
+\label{figure:cross-miscoding}
+\end{figure}
+
 \end{example}
 
 \begin{remark}
-{\color{red} TODO: The problem of redundancy.}
+The approximation to the concept of miscoding introduced in this chapter estimates the quality of individual features as predictors of a target value, and the quality of the training dataset as a whole. However, the current approximation does not take into account the existing redundancy among the features themselves. For example, it might happen that two features $\mathbf{x}_i$ and $\mathbf{x}_j$ have very low miscoding with respect to the target variable $\mathbf{y}$, but at the same time they are redundant, in the sense that they contain almost the same information. It is still an open question how to extend the concept of miscoding to take into account feature redundancy, in such a way that it is close to the theoretical definition, it can be computed efficiently, and it does not require a huge number of samples.
 \end{remark}
 
 %
@@ -754,6 +786,10 @@ In this second case, again, both models have the same accuracy (we have increase
 \end{example}
 
 In example \ref{ex:dt_vs_nn} we have assumed that both models, decision tree and neural networks, have the same accuracy. When this is not the case, when the models do not have the same accuracy, we have to apply to the concept of nescience in order to decide between them. 
+
+\begin{remark}
+{\color{red} TODO: Mention the problem of the stability of the signal.}
+\end{remark}
 
 %
 % Section: Nescience
@@ -1378,6 +1414,8 @@ The Minimum Description Length \cite{grunwald2007minimum} and the Minimum Messag
 An excellent survey of the available discretization methods can be found in~\cite{garcia2013survey}; in the paper the authors also propose a taxonomy to classify existing methods based in their properties and they conduct an extensive comparative experimental study. The proportional discretization method used to compute miscoding is introduced in~\cite{yang2009discretization}, where there is also a theoretical justification of why this method reduces the bias and the variance of the discretized variable.
 
 {\color{red} TODO: Find the original reference of the AirPassengers dataset.}
+
+{\color{red} TODO: Find the original reference of the Appliance energy consumption dataset. https://archive.ics.uci.edu/ml/datasets/Appliances+energy+prediction}
 
 
 

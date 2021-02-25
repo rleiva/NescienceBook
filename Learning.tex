@@ -110,23 +110,40 @@ where $Pr\left(x\right)$ is the marginal data probability $Pr\left( x \right) = 
 \section{Machine Learning}
 \label{sec:machine_learning}
 
+{\color{red} Rewrite this section using a schema of definition-proposition-proof.}
+
 There is a controversy between mathematicians and computer scientists about the difference between statistical inference and machine learning. From our point of view there are important differences. In statistical inference, given a target variable $\mathbf{y}$ and a training data $\mathbf{X}$, the goal is to find a model that infer a value $\hat{y}_i$ that maximizes the probability $P(\hat{y}_i \mid \mathbf{x}_i)$; meanwhile, in machine learning, finding the value with the highest probability is not necessarily our objective, perhaps we are more interested in minimize the number of false positives, or minimize the number of errors among under-represented categories (see below). Another difference is that statistical inference models are mathematical functions, meanwhile machine learning models are usually computer programs that can not be easily manipulated algebraically. Finally, in statistics we are also interested in the mathematical properties of the methods in use, that is, if there exists a solution, if we can guarantee that search algorithms converge, and to estimate how far the selected models are from the real ones; in machine learning our interest is mostly finding models that work in practice, without caring too much about their mathematical properties. The goal of this book is to reconcile both worlds into one single theoretical framework.
 
-Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning we have a collection of training samples and the corresponding observed target values, and our interests is to predict the output of new, previously unseen, observations; meanwhile in \emph{unsupervised} learning there are no targets, just training samples, and what we are looking for is to learn the structure of the data. Supervised learning algorithms can be applied to \emph{regression} problems, where the value to predict is quantitative, and to solve \emph{classification} problems, where the targets are qualitative. \emph{Qualitative} attributes take values from a finite collection of distinct non-numerical categories, and so, no arithmetic operations can be applied to them, although they could be ranked in order. \emph{Quantitative} attributes are numerical, and they can be either \emph{discrete} if the range of possible values is countable, or \emph{continuous} if it is not countable. The machine learning problems addressed in this book will be mostly supervised.
+Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning we have a collection of training samples and the corresponding observed target values, and our interests is to predict the output of new, previously unseen, observations; meanwhile in \emph{unsupervised} learning there are no targets, just training samples, and what we are looking for is to learn the structure of the data. Supervised learning algorithms can be applied to \emph{regression} problems, where the value to predict is quantitative, and to solve \emph{classification} problems, where the targets are qualitative. \emph{Qualitative} attributes take values from a finite collection of distinct non-numerical categories, and so, no arithmetic operations can be applied to them, although in some cases they can be ranked in order. \emph{Quantitative} attributes are numerical, and they can be either \emph{discrete} if the range of possible values is countable, or \emph{continuous} if it is not countable.
 
-Let $\mathbf{X} = \{ \mathbf{x}_1, \ldots, \mathbf{x}_n \}$ be a training dataset composed by $n$ vectors, where each individual sample vector $\mathbf{x}_i = \{ x_{i1}, x_{i2}, \ldots, x_{ip} \}$ is composed by $p$ observed values called attributes, and let $\mathbf{y} = \{ y_1, \ldots, y_n \}$ be a target variable. We assume there is some relationship between the target values $y_i$ and the samples $\mathbf{x}_i$ that can be expressed in the form
-\[
-\mathbf{y} = f\left( \mathbf{X} \right)
-\]
-where $f$ is a unknown function. Our goal is to find a predicted value $\hat{y}$ for a new sample $\mathbf{x} \notin \mathbf{X}$, such that
+Let $\mathbf{X} = \{ \mathbf{x}_1, \ldots, \mathbf{x}_p \}$ be a training dataset composed by $p$ features, where each individual feature $\mathbf{x}_i = \{ x_{i1}, x_{i2}, \ldots, x_{in} \}$ is composed by $n$ observed values, and let $\mathbf{y} = \{ y_1, \ldots, y_n \}$ be a target variable. We assume there is some relationship between the target values $y_i$ and the samples $\mathbf{x}_i$ that can be expressed in the form
+
+\begin{equation}
+\label{eq:machine_learning_model}
+\mathbf{y} = f\left( \mathbf{X} \right) + \epsilon
+\end{equation}
+
+where $f$ is a unknown function, and $\epsilon$ is a random terms independent of $\mathbf{X}$ and with mean zero. Our goal is to find a
+function $\hat{f}$, estimated using a machine learning algorithm, such that $\mathbf{y} \approx \hat{f} \left( \mathbf{X} \right)$. This  function $\hat{f}$ allows us to \emph{predict} the target value, denoted by $\hat{y}$, for predictors not contained in the training dataset $\mathbf{x} \notin \mathbf{X}$
 \[
 \hat{y} = \hat{f} \left( \mathbf{x} \right)
 \]
-where $\hat{f}$ is a function estimated using a machine learning algorithm.
 
-{\color{red} Parametric vs. non-parametric}
+Most of the statistical learning methods can be characterize as either parametric or non-parametric. With parametric methods we select a priori a functional for, and the we fit the free parameters of this functional form. In contrast, with non-parametric models we do not make any assumption about the form of the mmodels. Given their flexibility, non-parametric methods ususally require more traing data to train. Moreiverm the risk of overfittin training data is in general higher in case of non-parametric methods that in case of non-parametric methods. Non-parametric methods are more difficult to interpret by human.
+
+There are two main reasons why we want to estimate the function $f$: prediction cand inference. In case of inference, we are interested in to learn the way that the response variable $Y$ is affected when the predictors $X$ change, but not necessary to make predictions of future values. Depending on whether we are interested in prediction or inference, different mathine learning methods are usally used.
 
 \subsection{Model Accuracy}
+
+The error term $\epsilon$ introduced in Equation \ref{eq:machine_learning_model} correspond to variables that have not been taken into account in our study, and other effects that can not be measured. This kind of error is called \emph{irreducible}, since there is nothing we can do to reduced it. A second type of error, called \emph{reducible}, refers t the fact that our estimate $\hat{f}$ of the function $f$ might not be perfect. It is called reducible because with better estimates the error will decrease.
+
+{\color{red} Derive this property}
+
+We are interested in the average error made by our model. Assuming that both $\hat{f}$ and $X$ are fixed, it can be shown that
+\[
+E\left(Y-\hat{Y}\right)^{2}=E\left[f\left(X\right)+\epsilon-\hat{f}\left(X\right)\right]^{2}=\left[f\left(X\right)-\hat{f}\left(X\right)\right]^{2}+Var\left(\epsilon\right)
+\]
+The irreducible error is an upper bound to the accuracy of our predictions. Unfortunately, in practice, this bound is almost always unknown.
 
 
 \subsubsection{Mean Squared Error}
@@ -147,16 +164,25 @@ If the response variable is qualitative the quantity we seek to minimize is the 
 \]
 where $\hat{f}(X_i)$ is the predicted class for the $i$th observation, and $I$ is a function that equals $1$ if $Y_i \neq \hat{f}(X_i)$ and zero otherwise.
 
-Most of the statistical learning methods can be characterize as either parametric or non-parametric. With parametric methods we select a priori a functional for, and the we fit the free parameters of this functional form. In contrast, with non-parametric models we do not make any assumption about the form of the mmodels. Given their flexibility, non-parametric methods ususally require more traing data to train. Moreiverm the risk of overfittin training data is in general higher in case of non-parametric methods that in case of non-parametric methods. Non-parametric methods are more difficult to interpret by human.
-
-There are two main reasons why we want to estimate the function $f$: prediction cand inference. In case of inference, we are interested in to learn the way that the response variable $Y$ is affected when the predictors $X$ change, but not necessary to make predictions of future values. Depending on whether we are interested in prediction or inference, different mathine learning methods are usally used.
-
 \subsection{No free lunch theorem}
 
 {\color{red} There is no free lunch in statistics: no one method dominates all others over all possible data sets. On a particular data set, one specific method may work best, but some other method may work better on a similar but different data set}
 
 \subsection{The bias-variance trade-off}
 
+{\color{red}
+
+It is possible to show that the expected test MSE, for a given value $x_{0}$, can be always decomposed into the sum of tree fundamental quantities: the variance of $\hat{f}\left(x_{0}\right)$, the squared ed bias of $\hat{f}\left(x_{0}\right)$ and the variance of the error term $\epsilon$:
+\[
+E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}=Var\left(\hat{f}\left(x_{0}\right)\right)\left[Bias\left(\hat{f}\left(x_{0}\right)\right)\right]^{2}+Var\left(\epsilon\right)
+\]
+where $E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}$ defines the expected test MSE, and refers to the average test MSE that would obtain if we repeatedly estimated f using a large number of training sets, and tested each at $x_{0}$.
+
+In order to minimize the expected test error, we need to select a statistical learning method that simultaneously achieves low variance and low bias. The expected test MSE can never lie below $Var\left(\epsilon\right)$, the irreducible error. Variance refers to the amount by which $\hat{f}$ would change if we estimated it using a different training data set. In general, more flexible statistical methods have higher variance. Bias refers to the error that is introduced by approximating a real-life problem, which may be extremely complicated, by a much more simpler model. Generally, more flexible methods result in less bias. As a general rule, as we use more flexible methods, the variance will increase and the bias will decrease. The relative rate of change of these two quantities determines whether the test MSE increases or decreases.
+
+The relationship between bias, variance, and test set MSE is referred to as the bias-variance trade-off. It is easy to obtain a method with extremely low bias but high variance, or a method with very low variance but high bias. The challenge lies in finding a method fro which both the variance and the squared bias are low. In a real-life situation in which f is unobserved, it is generally not possible to explicitly compute the test MSE, bias, or variance for a statistical learning methods. Alternative approaches, like for example cross-validation, are used to estimate the test MSE using the training data.
+
+}
 
 \subsection{Generative vs. discriminative models}
 \label{sec:generative_discriminative}

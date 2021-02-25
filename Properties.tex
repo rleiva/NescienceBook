@@ -17,6 +17,8 @@ Carl Gustav Jacob Jacobi\\
 
 This chapter covers more advanced mathematical properties of the concept of nescience. This chapter can be safely skipped by those readers interested only in the applications of nescience. However, it is highly recommended to read it, since if provides a deeper understanding of what nescience is exactly.
 
+{\color{red} TODO: Explain the abstract nature of the axioms vs. the interpretation we have provided in the previous chapters. Mention that perhaps there exists other interpretations.}
+
 Since the time of David Hilbert, mathematics is about the study of the properties of abstract objects and their relations, without paying too much attention to what these objects are or represent. Mathematicians create (or discover) abstract frameworks of logic that can have multiple interpretations. It is up to applied scientists to provide those interpretations. In the same way, we can provide an abstract definition of the concept of nescience, and study its properties, without making any explicit reference to science nor to the scientific method. In doing so, we loose the interpretability of our theory, but, on the other side, we could apply the same results to other disciplines.
 
 {\color{red} Extend this introduction with a very short review of the topics covered in the chapter.}
@@ -27,11 +29,9 @@ Since the time of David Hilbert, mathematics is about the study of the propertie
 
 \section{The Axioms of Science}
 
-{\color{red} TODO: Explain the abstract nature of the axioms vs. the interpretation we have provided in the previous chapters. Mention that perhaps there exists other interpretations.}
+In this section we propose a collection of axioms that formalize the concept of science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory with equality (see Appendix \ref{apx:foundations_mathematics}). We also prove some basic results and show how the axioms relate to the concepts we have introduced in the previous chapters. In Appendix \ref{apx:coq} the reader can find the axioms and proofs implemented in the \texttt{Coq} proof assistant language.
 
-In this section we propose a collection of axioms that formalize the concept of science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory (see Appendix \ref{apx:foundations_mathematics}). We also prove some basic results and show how the axioms relate to the concepts we have introduced in the previous chapters. In Appendix \ref{apx:coq} the reader can find the axioms and proofs implemented in the \texttt{Coq} proof assistant language.
-
-Let $\mathcal{B}^\ast$ be the set composed by all finite binary strings, and let $\Sigma \subset \mathcal{B}^\ast$ be a subset of strings. A \emph{science} is a first-order logic structure $(\Sigma^\ast \mid \lambda, \mathcal{O}, <_n, \oplus, \mid, U)$ where:
+Let $\mathcal{B}^\ast$ be the set composed by all finite binary strings, and let $\Sigma \subset \mathcal{B}^\ast$ be a subset of strings. A \emph{science} is a first-order logic structure $(\Sigma \mid \lambda, \mathcal{O}, <_n, \oplus, \mid, U)$ where:
 
 \vskip 0.25cm
 
@@ -58,11 +58,9 @@ The oracle $\mathcal{O}$ is an equivalence relation:
 
 \vskip 0.25 cm
 
-The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\Sigma$ into the quotient set $\Sigma / \mathcal{O}$. Each equivalence class $[e] \in \Sigma / \mathcal{O}$ refers to an entity, and it contains all possible representations (strings) that encode that entity. However, the entities themselves are not part of the axioms. The abstract oracle is the only tool we have at our disposal to match entities and their representations. The schema used internally by the oracle to encode the original entities is, in general, unknown.
+The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\Sigma$ into the quotient set $\Sigma / \mathcal{O}$. Each equivalence class $[e] \in \Sigma / \mathcal{O}$ refers to an entity, and it contains all possible representations and descriptions related to that entity. However, the entities themselves are not part of the axioms. The abstract oracle is the only tool we have at our disposal to match entities and their representations. The schema used internally by the oracle to encode the original entities is, in general, unknown. In practice, the best results are achieved if we take into account the recommendations of Chapter \ref{cha:Topics-and-Descriptions} about how to choose the right entities to study. Of course, we could select a collection of entities that do not make any sense, and still apply the axioms, in the same way that we could select a collection of nonsense atomic propositions and apply to them the rules of propositional logic.
 
-In practice, the best results are achieved if we take into account the recommendations of Chapter \ref{cha:Topics-and-Descriptions} about how to choose the right entities to study. Of course, we could select a collection of entities that do not make any sense, and still apply the axioms, in the same way that we could select a collection of nonsense atomic propositions and apply to them the rules of propositional logic.
-
-For the rest of this section, when we talk about \emph{entities}, we mean the equivalence classes defined by $\Sigma / \mathcal{O}$.
+For the rest of this section, when we talk about entities, we refer to the equivalence classes defined by $\Sigma / \mathcal{O}$.
 
 The nescience relation $<_N$ is a strict partial order:
 
@@ -76,19 +74,27 @@ The nescience relation $<_N$ is a strict partial order:
 
 \vskip 0.25cm
 
-We denote by $ s =_N t$ when $\lnot s <_N t$ and $\lnot t <_N s$. Intuitively, the symbol $=_N$ represents the case that our unknown given the representations $s$ and $t$, which may belong to the same equivalence class or to different equivalence classes, is the same. 
+We cannot provide a quantitative measure of nescience, since numbers are not part of our axiomatic structure. Instead what we have defined is an ordering of the different elements of $\Sigma$ according to how much we do not known given those strings. The ordering has to be partial, i.e. not every pair of elements of $\Sigma$ can be compared, and strict, i.e. nescience equality is not defined. The problem of assuming a non-strict total order for nescience $\leq_N$ is that if $s \leq_N t$ and $t \leq_N s$ then $s = t$, that is, if two strings have the same nescience, they must be the same string, and this is not necessarily the case. A non-strict total order matching our intuitive notion of nescience would require to include natural numbers in the axioms, and to distinguish between the symbols $=$ for equality of strings and $=_N$ for the equality of nescience. Instead, within our axiomatic structure, nescience equality is just a notational convention.
+
+\begin{notation}
+We denote by $ s =_N t$ the case that $(s, t) \notin <_N$.
+\end{notation}
+
+We want the symbol $=_N$ to represent the case that our unknown given the strings $s$ and $t$, which may belong to the same equivalence class or to different equivalence classes, be the same. In order to do that we need additional axioms.
 
 Every equivalence class defined by $\mathcal{O}$ has at least one minimal element with respect to the relation $<_N$:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 7] for all $[e] \in \mathcal{O} / <_N$ there exists at least one $r \in [e]$ such that it does not exists an $s \in [e]$ such that $s <_N r$.
+\item[Axiom 7] For all $[e] \in \mathcal{O} / <_N$ there exists at least one $r \in [e]$ such that it does not exists an $s \in [e]$ such that $s <_N r$.
 \end{description}
 
 \vskip 0.25cm
 
-A class could have more than one minimal element with respect to the nescience ordering. Those minimal elements correspond to what we have called the valid representations of an entity. All the other representations that are not minimal are misrepresentations, they have a higher nescience. The nescience relation does not require a global minimum element for $\Sigma$, nor minimum elements for the individual equivalence classes.
+A class could have more than one minimal element with respect to the nescience ordering. Those minimal elements correspond to what we have called the valid representations of an entity. All the other representations of that entity that are not minimal are misrepresentations, and so, they have a higher nescience. The axioms do not require the nescience relation to have a global minimum element for $\Sigma$, nor minimum elements for the individual equivalence classes.
+
+{\color{red} TODO: Clarify how those minimal elements relate to descriptions.}
 
 The concatenation function $\oplus : \Sigma \times \Sigma \rightarrow \Sigma$ is a binary function that satisfy the following properties:
 
@@ -118,13 +124,16 @@ Next axiom states how the operation of concatenation relates to nescience (recal
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 11] Let $r \in \Sigma^{+}$ be a minimal element of class $[e]$, then we have that $r <_N r \oplus t$ for all $t \in [e]$ that are not minimal.
-\item[Axiom 12] Let $s \in \Sigma^{+}$ be a non-minimal element of class $[e]$, then there exists $t \in [e]$ we have that $s <_N s \oplus t$ for all $t \in [e]$ that are not minimal.
+\item[Axiom 11] Let $r \in \Sigma^{+}$ be a non-minimal element, then $i)$ there exist a $s \in \Sigma^{+}$ such that $r \oplus s <_N s$ or $s \oplus r <_N s$, or $ii)$ there exists a $t \in \Sigma^{+}$ in the form $r = \alpha \oplus t \oplus \beta$ with $\alpha, \beta \in \Sigma^\ast$ such that $t <_N r$, or both.
 \end{description}
 
 \vskip 0.25cm
 
-Axiom 11 captures the concept of miscoding, since adding more symbols to an optimal representation only increases the nescience.
+{\color{red} TODO: Axiom 11 relates to representations.}
+
+{\color{red} TODO: Axiom 12 relates to descriptions.}
+
+{\color{red} TODO: Explain what happens with $\lambda$, the class it belongs to, and its role as a minimal element.}
 
 Next proposition shows how we can reduce the nescience of the non-valid representations, either by adding more relevant symbols, or by elmininating non-relevant symbols.
 
@@ -139,7 +148,11 @@ Let $r \in \Sigma^{+}$ be a non-minimal element of class $[e]$, then either:
 {\color{red} TODO: Pending}
 \end{proof}
 
-The same happens when we concatenate strings that belong to different classes. 
+The same happens when we concatenate strings that belong to different classes.
+
+{\color{red} TODO: Prove that the concatenation of two minimal elements of the same class is also minimal.}
+
+{\color{red} TODO: Explain how axioms 11 and 12 relate to the concatenation of descriptions.}
 
 The machine $\mathcal{U} : \Sigma^\ast \rightarrow \Sigma^\ast$ is an universal Turing machine, that given a string $s \in \Sigma^\ast$ encoding a Turing machine, simulates its behavior. The input of the machine is a string in the form $<TM, i>$, where $TM$ is an encoded Turing machine, and $i$ is the input to that machine, and outputs $TM(i)$. If the input $d$ is not in the form $<TM, i>$, the machine will simply output $d$. In any case, the machine has to be partial, since it might happen that for some inputs it never halts.
 

@@ -36,15 +36,13 @@ In this chapter we will formally introduce the concept of miscoding and study it
 
 Miscoding refers to the fact that our current representation of the entity $e \in \mathcal{E}$ might not be the right one, that is, instead of working with a string $r_e \in \mathcal{R}_e$ that perfectly encodes $e$, it might happen we are studying another string $r \in \mathcal{R}_e$ that it is, hopefully, close to $r_e$ but not necessarily equal. We are interested in to compute the distance between the string $r$ and the perfect one $r_e$ as a quantitative measure of the error we are introducing with a wrong encoding of the entity $e$. Unfortunately, we do not know $r_e$, since, in general, it does not exists a computable function from $\mathcal{R}$ to $\mathcal{E}$. Recall that the only thing we have to our disposal is an abstract oracle machine $f_\mathcal{E}$ that knows which strings represents each entity (see Section \ref{sec:representations}).
 
-We start by distinguishing between valid representations, that is strings that contain all the information required by the oracle to reconstruct an entity (and no more), and non-valid representations.
-
-{\color{red} TODO: can we provide a better definition?}
+We start by distinguishing between valid representations, that is strings that contain all the information required by the oracle to reconstruct an entity, and non-valid representations.
 
 \begin{definition}
-Let $\mathcal{E}$ be a collection of entities, and $f_\mathcal{E}$ and encoding function. We define the set of valid representations for $\mathcal{E}$, denoted by $\mathcal{R}_\mathcal{E}$, as the subset of $\mathcal{B}^\ast$ composed by those strings that contains all the information required by the oracle to reconstruct an entity of $\mathcal{E}$, and no more.
+Let $\mathcal{E}$ be a collection of entities, and $f_\mathcal{E}$ and encoding function. We define the set of valid representations for $\mathcal{E}$, denoted by $\mathcal{R}_\mathcal{E}$, as the domain of $f_\mathcal{E}$.
 \end{definition}
 
-We can safely assume, that is, it is free from logical contradictions, that the oracle machine also knows how far is $r$ from $r_e$, for all $r \in \mathcal{R}$ and all $r_e \in \mathcal{R}_\mathcal{E}$. Unfortunately, if we ask the oracle how far is a particular $r$ from perfectly encoding the entity in which we are interested, the oracle will require from us to specify the entity in which we are interested. And the only way to tell the oracle which one is that entity is by means of using $r_e$, which, of course, we do not know. The work around we propose to solve this problem is to ask to the oracle how far is $r$ from encoding \emph{any} entity from $\mathcal{E}$.
+We can safely assume (it is free from logical contradictions) that the oracle machine also knows how far is $r$ from $r_e$, for all $r \in \mathcal{R}$ and all $r_e \in \mathcal{R}_\mathcal{E}$. Unfortunately, if we ask the oracle how far is a particular $r$ from perfectly encoding the entity in which we are interested, the oracle will require from us to specify the entity in which we are interested. And the only way to tell the oracle which one is that entity is by means of using $r_e$, which, of course, we do not know. The work around we propose to solve this problem is to ask to the oracle how far is $r$ from encoding \emph{any} entity from $\mathcal{E}$.
 
 \begin{definition} [Miscoding]
 \label{def:miscoding}
@@ -55,6 +53,8 @@ Let $r \in \mathcal{R}$ be a representation. We define the \emph{miscoding} of $
 \end{definition}
 
 Where the quantity $\overset{o}{ \underset{s \in \mathcal{R}_\mathcal{E}} \min}$ has to be computed by the oracle. Intuitively, the more ignorant we are about an entity, the bigger will be the miscoding of our current representation, since a better understanding of that entity means that we should be able to provide an encoding closer to a perfect one.
+
+Miscoding is computed using a two-way approach: we require the oracle to compute the length of the shortest computer program that can print the string $s$ encoding the closest possible entity given our representation $r$, and the other way around, that is, to compute the length of the shortest computer program that can print $r$ given the string $s$. That is, a perfect representation has to include all the information required to reconstruct an entity, but no more. Miscoding is about including only relevant symbols, meanwhile surfeit (see Chapter \ref{chap:Redundancy}) is about including only those symbols that are needed.
 
 In our definition of miscoding we have used a relative measure, instead of the absolute one, because besides to compare the miscoding of different encodings for the same entity, we are also interested in comparing the miscoding of different entities.
 
@@ -79,23 +79,42 @@ Let $t \in \mathcal{T}_\mathcal{E}$, then by Proposition {\color{red} XX} we hav
 
 According to Proposition \ref{prop:perfect_encoding}, if the miscoding of $t$ is equal to 0 we can conclude that $t$ perfectly encodes an entity $e$. The problem is that there is no way to know which one is the entity encoded by $t$. Of course, given our scientific intuition, we could guess the entity encoded, but from a mathematical point of view, we can not prove we are right. Moreover, with time and more research, it might happen that we change our mind about the nature of the encoded entity $e$ (see Example \ref{ex:phlogiston}).
 
-An entity $e \in \mathcal{E}$ can have multiple representations, given by the set $\mathcal{T}_e$. Fortunately, miscoding is a quantity that does not depend on the representation selected (see the problem of style in Section \ref{sec:scientific_representation}).
+An entity $e \in \mathcal{E}$ can have multiple representations, given by the set $\mathcal{R}_e$. Fortunately, miscoding is a quantity that does not depend on the representation selected (see the problem of style in Section \ref{sec:scientific_representation}).
 
 \begin{proposition}
-Let $t \in \mathcal{T}$ be a topic with $\mu(t) = \mu_t$, then we have that
+Let $t \in \mathcal{R}$ be a representation with $\mu(t) = \mu_t$, then we have that
 \[
 \mu_t \leq \frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } \quad \textrm{for all} \quad s \in \mathcal{T}_\mathcal{E}
 \]
 \end{proposition}
 \begin{proof}
-The existence of and $s \in \mathcal{T}_\mathcal{E}$ such that $\frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } < \mu_t$ is a contradiction with the fact that $\mu_t$ is the minimum reached for all possibles $s \in \mathcal{T}_\mathcal{E}$.
+The existence of an $s \in \mathcal{R}_\mathcal{E}$ such that $\frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } < \mu_t$ is a contradiction with the fact that $\mu_t$ is the minimum reached for all possibles $s \in \mathcal{T}_\mathcal{E}$.
 \end{proof}
 
-Given an entity $e$, we have seen that all the representations that belong to $\mathcal{T}_e$ are equally good form the point of view of miscoding, since all of them have a miscoding of $0$. The question is which one we should use in our research? From a practical point of view, we should select that representation that makes it easier to gather new knowledge about the original entity, that is, to reduce the inaccuracy and surfeit of candidate models (see Section {\color{red} XX}).
+Given an entity $e$, we have seen that all the representations that belong to $\mathcal{R}_e$ are equally good form the point of view of miscoding, since all of them have a miscoding of $0$. The question is which one we should use in our research? From a practical point of view, we should select that representation that makes it easier to gather new knowledge about the original entity, that is, to reduce the inaccuracy and surfeit of candidate models (see Section {\color{red} XX}).
 
 \begin{example}
 Assume we have a time series $ts$ composed $m$ measurements $x_1, \ldots, x_m$ collected at fixed time intervals from a physical phenomena with a sinusoidal behavior, and assume we have trained a neural network $nn$ that perfectly fits the data, that is, given a time $t$ as input it returns $x_t$. Both representations have the same miscoding, that is $\mu(ts) = \mu(nn)$. An analysis of the cycles of the time series will allow us to discover that the best model for this particular physical phenomena seem to be a sine function, however, no currently known machine learning approach will arrive at the same conclusion having as input the architecture of the neural network (number of layers, sizes, and trained weights). Of course, the oracle is so smart that, in fact, it did it.
 \end{example}
+
+%
+% Section: Reducing Miscoding
+%
+\section{Reducing Miscoding}
+
+As we have seen in Section \ref{sec:descriptions_joint_topic}, a possible way to imporove the quality of our current representations, is by adding, or removing, symbols from our current representation.
+
+\begin{theorem}
+Let $r \in \mathcal{R}$ be a representation such that $\mu(r) >0$, then at least one of the following cases is true:
+\begin{enumerate}[label=(\roman*)]
+\item there exist a $s \in \Sigma^{+}$ such that $r \oplus s <_N s$ or $s \oplus r <_N s$,
+\item there exists a $t \in \Sigma^{+}$ in the form $r = \alpha \oplus t \oplus \beta$ with $\alpha, \beta \in \Sigma^\ast$ such that $t <_N r$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
 
 %
 % Section: Joint Miscoding
@@ -103,10 +122,15 @@ Assume we have a time series $ts$ composed $m$ measurements $x_1, \ldots, x_m$ c
 \section{Joint Miscoding}
 \label{sec:joint_miscoding}
 
-As we have seen in Section \ref{sec:descriptions_joint_topic}, a possible way to imporove the quality of our current representations, is by adding, or removing, symbols from our current representation. A similar approach could be use to discover new unkown entities, by means of combining the (possible approximate) representations of the already kown entities. In both cases, they require the concatenation of representations. In this section we study how the concept of miscoding behaves when we concatenate two representations.
+
+{\color{red} TODO: Extend}
+
+A similar approach could be used to discover new unknown entities, by means of combining the (possible approximate) representations of the already known entities.
+
+In both cases, we require the concatenation of strings. In this section we study how the concept of miscoding behaves when we concatenate two representations.
 
 \begin{definition}
-Let $t, s \in \mathcal{R}$ two different representations. We define the \emph{joint miscoding} of the representations $r$ and $s$, denoted by $\mu(r, s)$, as:
+Let $r, s \in \mathcal{R}$ two different representations. We define the \emph{joint miscoding} of the representations $r$ and $s$, denoted by $\mu(r, s)$, as:
 \[
 \mu(r, s) =  \overset{o}{ \underset{t_e \in \mathcal{T}_\mathcal{E}} \min} \frac{ \max\{ K(t_e \mid ts), K(ts \mid t_e) \} } { \max\{ K(t_e), K(ts) \} }
 \]

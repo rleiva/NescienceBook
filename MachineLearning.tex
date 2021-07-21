@@ -22,7 +22,7 @@ This chapter is devoted to how to apply the concept of minimum nescience to the 
 
 We will start by providing practical approximations for the concepts of miscoding, inaccuracy and surfeit when the entities are encoded as datasets, and then we will show how to combine them in the single quantity of nescience. These approximations will allow us to introduce the \emph{minimum nescience principle}, a technique designed to automate the process of finding optimal models in machine learning (auto-machine learning). 
 
-Besides introducing these approximations, we will show how to apply them to solve practical problems. The examples will be based on the \texttt{fastautoml} library, an open source python library that provides an implementation of the ideas included in this chapter.
+Besides introducing these approximations, we will show how to apply them to solve practical problems. The examples will be based on the \texttt{nescience}\footnote{\texttt{https://github.com/rleiva/nescience}} library, an open source python library that provides an implementation of the ideas included in this chapter.
 
 %
 % Section: Nescience Library
@@ -30,17 +30,17 @@ Besides introducing these approximations, we will show how to apply them to solv
 
 \section{Nescience Python Library}
 
-The \texttt{fastautoml} library is an open source Python library that provides an implementation of the ideas included in this book applied to the area of machine learning. The library follows the API and conventions of the highly popular \texttt{scikit-learn} machine learning tool suite, and so, it can be combined with the methods provided by this package.
+The \texttt{nescience} library is an open source Python library that provides an implementation of the ideas included in this book applied to the area of machine learning. The library follows the API and conventions of the highly popular \texttt{scikit-learn} machine learning tool suite, and so, it can be combined with the methods provided by this package.
 
-The \texttt{fastautoml} library can be installed with the \texttt{pip} utility:
+The \texttt{nescience} library can be installed with the \texttt{pip} utility:
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
-pip install fastautoml
+pip install nescience
 \end{verbatim}}
 \end{sourcecode}
 
-In the web page that accompanies this book, the reader can find a collection of notebooks for the \texttt{jupyter-lab} environment describing how the library works. For each subsection of this chapter, there is a notebook that implements all the examples included, so that the reader can repeat and play with them. Additional information about the \texttt{fastautoml} library, and a reference of the API provided, can be also found in the web page of the book.
+In the web page that accompanies this book, the reader can find a collection of notebooks for the \texttt{jupyter-lab} environment describing how the library works. For each subsection of this chapter, there is a notebook that implements all the examples included, so that the reader can repeat and play with them. Additional information about the \texttt{nescience} library, and a reference of the API provided, can be also found in the web page of the book.
 
 %
 % Section: A Note About Compression
@@ -64,9 +64,7 @@ If the case of $\mathbf{x}$ being based on a continuous random variable, we cann
 
 A discretization algorithm is a mapping between a (possibly huge) number of numeric values and a reduced set of discrete values, and so, it is a process in which some information is potentially lost. The choice of discretization algorithm is something that could have a high impact in the practical computation of the nescience. We are interested in a discretization algorithm that produces a large number of intervals (low bias), with a large number of number of observations per interval (low variance). Common techniques include \emph{equal width discretization}, \emph{equal frequency discretization} and \emph{fixed frequency discretization}. However, these techniques require the optimization of an hyperparameter, and so, they are not suitable for our purposes.
 
-In the \texttt{fastautoml} library we use a proportional discretization approach (see Section \ref{sec:discretization_algorithms}), where the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. In particular, in the nescience library we set $s = m = \sqrt{n}$ or ...
-
-The same procedure can be applied in case of having a discrete features ...
+In the \texttt{nescience} library we use a proportional discretization approach (see Section \ref{sec:discretization_algorithms}), where the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. In particular, in the nescience library we set $s = m = \sqrt{n}$.
 
 Using this discretization procedure, we can approximate the Kolmogorov complexity of a vector $\mathbf{x}$ by:
 \[
@@ -88,20 +86,18 @@ NCD_C\left(\mathbf{x},\mathbf{y}\right)=1-\frac{I\left(\mathbf{x};\mathbf{y}\rig
 \begin{proof}
 We have to prove that
 \begin{align*}
-NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{C\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} }{\max\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} } \\
-& =\frac{nH\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} }{\max\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} } \\
+NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{C\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} }{\max\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} } =\frac{nH\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} }{\max\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} } \\
 & =\frac{H\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }
 \end{align*}
 We have to consider two cases. In case 1 we assume that $H\left(\mathbf{x}\right)>H\left(\mathbf{y}\right)$, and so
 \begin{align*}
-NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\
-& = \frac{H\left(\mathbf{y}\right)+H\left(\mathbf{x}\mid\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\ 
-& = \frac{H\left(\mathbf{x}\mid\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\
-& = \frac{H\left(\mathbf{x}\right)-\left(H\left(\mathbf{x}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{x}\right)} \\ & = 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\text{\ensuremath{\mathbf{x}}}\right)}
+NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} = \frac{H\left(\mathbf{y}\right)+H\left(\mathbf{x}\mid\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} = \frac{H\left(\mathbf{x}\mid\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\
+& = \frac{H\left(\mathbf{x}\right)-\left(H\left(\mathbf{x}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{x}\right)} = 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\text{\ensuremath{\mathbf{x}}}\right)}
 \end{align*}
 and in case of $H\left(\mathbf{y}\right)>H\left(\mathbf{x}\right)$ we have that
 \begin{align*}
-NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)} \\ & =\frac{H\left(\mathbf{x}\right)+H\left(\mathbf{y}\mid\mathbf{x}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)} \\ & = \frac{H\left(\mathbf{y}\mid\mathbf{x}\right)}{H\left(\mathbf{y}\right)}=\frac{H\left(\mathbf{y}\right)-\left(H\left(\mathbf{y}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{y}\right)} \\ & = \frac{H\left(\mathbf{y}\right)-\left(H\left(\mathbf{y}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{y}\right)} \\ & = 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\text{\ensuremath{\mathbf{y}}}\right)}
+NCD\left(\mathbf{x},\mathbf{y}\right) & = \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)} =\frac{H\left(\mathbf{x}\right)+H\left(\mathbf{y}\mid\mathbf{x}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)} = \frac{H\left(\mathbf{y}\mid\mathbf{x}\right)}{H\left(\mathbf{y}\right)}=\frac{H\left(\mathbf{y}\right)-\left(H\left(\mathbf{y}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{y}\right)} \\
+& = \frac{H\left(\mathbf{y}\right)-\left(H\left(\mathbf{y}\right)-H\left(\mathbf{x}\mid\mathbf{y}\right)\right)}{H\left(\mathbf{y}\right)} = 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\text{\ensuremath{\mathbf{y}}}\right)}
 \end{align*}
 and so
 \[
@@ -109,7 +105,39 @@ NCD_c\left(\mathbf{x},\mathbf{y}\right)=1-\frac{I\left(\mathbf{x};\mathbf{y}\rig
 \]
 \end{proof}
 
-The quantity $1 - \frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }$ has been already proposed in~\cite{ferri2009experimental} as a candidate definition of the concept of Normalized Mutual Information. However, to the best of our knowledge ({\color{red} Double check!}), it has not been used in practice.
+The quantity $1 - \frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }$ has been already proposed in~\cite{ferri2009experimental} as a candidate definition of the concept of Normalized Mutual Information. However, to the best of our knowledge, it has not been used in practice.
+
+\begin{example}
+    
+\end{example}
+
+\begin{remark}
+    
+In order to properly approximate the complexity of a continuos feature, we have to use a discretization algorthm that does not change the distribution of the observed values. For example, the kmeans algorithm, given that the optimization criteria es to minimize 
+
+
+In the \texttt{nescience} we use a uniform discretization, in which all the intervals have the same length. However, this apprach is not optimal, especially when we are in a two dimensional space, in which we have to discretize the joint distribution of two attributes x and y. 
+
+For example, in the next figure, we can see a cloud of points, and how a uniform distriubtion has many intervals withour points.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{discretization_uniform.png}
+    \caption{Uniform discretization.}
+    \label{figure:discretization_uniform}
+\end{figure}
+
+A better approach would be to compute the convex hull arund the actual cloud of points, and then divide the space into sqrt intervals of the same length, by for example, computing the n centroid using a kmeans algorithm and then useing voronoi pologons. Howerver, up to the best of our knowledge, a discretization algorithm based on a constrained version of the kmeans in which the distribution of the points is not changes, has not been developed.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{discretization_kmeans.png}
+    \caption{Convex hull and kmeans discretization.}
+    \label{figure:discretization_kmeans}
+\end{figure}
+
+
+\end{remark}
 
 %
 % Section: Miscoding

@@ -405,90 +405,6 @@ The minimum value of $0.52$ is obtained with the pair $(8, 9)$ that correspond t
 
 \end{example}
 
-Finally, we are going to see the concept of miscoding applied to a feature and a delayed version of itself as a function of this delay, what we call auto-miscoding, and the miscoding of a feature applied over a delayed version of the target (or another feature), what we call cross-miscoding.
-
-Auto-miscoding is intended to detect the repetitive patterns in a time series (see Section \ref{sec:intro_time_series}), for example, the presence of cycles. Auto-miscoding computes the miscoding of a time series (a vector) at time $t=0$, , with a lagged version of itself at time $t=i$, and repeat this process for a given number $n$ of lagging periods:
-\[
-\hat\mu(\mathbf{x}^{t=0}$, $\mathbf{x}^{t=i}) \quad i=1,\ldots,n
-\]
-
-\begin{example}
-In this example we are going to study the presence of cycles in the number of passengers of a US airline. In Figure \ref{figure:air_passengers} is depicted a time series of monthly passengers from 1949 to 1960 (AirPassenger dataset, see References section bellow). As we can observe, there is a clear cycle that repeats every twelve months. We can apply the concept of auto-miscoding to validate analytically that this is the case.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{airpassengers.png}
-\caption{Air Passengers.}
-\label{figure:air_passengers}
-\end{figure}
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from fastautoml.fastautoml import Miscoding
-
-data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"], parse_dates=True)
-X = np.array(data["#Passengers"]).reshape(-1, 1)
-
-miscoding = Miscoding()
-miscoding.fit(X, y=None)
-mscd = miscoding.auto_miscoding(attribute=0, max_lag=36, mode='adjusted')
-\end{verbatim}}
-\end{sourcecode}
-
-As we can see in Figure \ref{figure:auto-miscoding} there is a peak on the value of auto-miscoding every twelve months. That means that the distance of the time series is minimal with respect to a yearly lagged versions of itself.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{auto-miscoding.png}
-\caption{Auto-miscoding of Air Passengers.}
-\label{figure:auto-miscoding}
-\end{figure}
-
-\end{example}
-
-Cross-miscoding computes the inter-relation between a time series and a lagged version of a second time series. The objective is to detect if the first time series has a temporal predictive power over the second. Given a candidate predictive feature $\mathbf{x}$ and a target $\mathbf{y}$ (or a second feature), cross-miscoding computes the following quantity:
-\[
-\hat\mu(\mathbf{x}^{t=0}, \mathbf{y}^{t=i}) \quad i=1,\ldots,n
-\]
-
-\begin{example}
-We are interested to determine if it possible to predict the energy consumption of the appliances of a house. The data set to study (appliances energy prediction dataset, see References below) is composed by the temperature and humidity conditions measured in the different rooms of the house every ten minutes, and the energy consumption of the appliances. The dataset also includes some information about the current weather, from a nearby weather station.
-
-For every feature we will compute the optimal lag at which the features has the best prediction capabilities:
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from fastautoml.fastautoml import Miscoding
-
-X = pd.read_csv("../data/energydata_complete.csv", parse_dates=["date"], index_col="date")
-y = X["Appliances"]
-X = X.drop(["Appliances", "lights"], axis=1)
-
-miscoding = Miscoding()
-miscoding.fit(X, y)
-
-best_lag  = list()
-for i in np.arange(X.shape[1]):
-    mscd = miscoding.cross_miscoding(attribute1=i, min_lag=1, max_lag=30)
-    best_lag.append(np.where(mscd == np.max(mscd))[0][0] + 1)
-\end{verbatim}}
-\end{sourcecode}
-
-In Figure \ref{figure:cross-miscoding} we can see a plot of the results. As we can observe, in general, for the in-house measurements we should use small lag values. However, in case of the weather conditions, bigger lags provide better results.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{cross_miscoding_lag.png}
-\caption{Cross Miscoding Lag}
-\label{figure:cross-miscoding}
-\end{figure}
-
-\end{example}
-
-\begin{remark}
-The approximation to the concept of miscoding introduced in this chapter estimates the quality of individual features as predictors of a target value, and the quality of the training dataset as a whole. However, the current approximation does not take into account the existing redundancy among the features themselves. For example, it might happen that two features $\mathbf{x}_i$ and $\mathbf{x}_j$ have very low miscoding with respect to the target variable $\mathbf{y}$, but at the same time they are redundant, in the sense that they contain almost the same information. It is still an open question how to extend the concept of miscoding to take into account feature redundancy, in such a way that it is close to the theoretical definition, it can be computed efficiently, and it does not require a huge number of samples.
-\end{remark}
-
 %
 % Section: Inaccuracy
 %
@@ -1100,10 +1016,219 @@ Where \texttt{[attrs]} is the list of attributes used, and only those used in th
 
 
 %
-% Section: Auto Time Series
+% Section: Time Series
 %
 
-\section{Auto Time Series}
+\section{Time Series}
+
+Finally, we are going to see the concept of miscoding applied to a feature and a delayed version of itself as a function of this delay, what we call auto-miscoding, and the miscoding of a feature applied over a delayed version of the target (or another feature), what we call cross-miscoding.
+
+Auto-miscoding is intended to detect the repetitive patterns in a time series (see Section \ref{sec:intro_time_series}), for example, the presence of cycles. Auto-miscoding computes the miscoding of a time series (a vector) at time $t=0$, , with a lagged version of itself at time $t=i$, and repeat this process for a given number $n$ of lagging periods:
+\[
+\hat\mu(\mathbf{x}^{t=0}$, $\mathbf{x}^{t=i}) \quad i=1,\ldots,n
+\]
+
+\begin{example}
+In this example we are going to study the presence of cycles in the number of passengers of a US airline. In Figure \ref{figure:air_passengers} is depicted a time series of monthly passengers from 1949 to 1960 (AirPassenger dataset, see References section bellow). As we can observe, there is a clear cycle that repeats every twelve months. We can apply the concept of auto-miscoding to validate analytically that this is the case.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{airpassengers.png}
+\caption{Air Passengers.}
+\label{figure:air_passengers}
+\end{figure}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.fastautoml import Miscoding
+
+data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"], parse_dates=True)
+X = np.array(data["#Passengers"]).reshape(-1, 1)
+
+miscoding = Miscoding()
+miscoding.fit(X, y=None)
+mscd = miscoding.auto_miscoding(attribute=0, max_lag=36, mode='adjusted')
+\end{verbatim}}
+\end{sourcecode}
+
+As we can see in Figure \ref{figure:auto-miscoding} there is a peak on the value of auto-miscoding every twelve months. That means that the distance of the time series is minimal with respect to a yearly lagged versions of itself.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{auto-miscoding.png}
+\caption{Auto-miscoding of Air Passengers.}
+\label{figure:auto-miscoding}
+\end{figure}
+
+\end{example}
+
+Cross-miscoding computes the inter-relation between a time series and a lagged version of a second time series. The objective is to detect if the first time series has a temporal predictive power over the second. Given a candidate predictive feature $\mathbf{x}$ and a target $\mathbf{y}$ (or a second feature), cross-miscoding computes the following quantity:
+\[
+\hat\mu(\mathbf{x}^{t=0}, \mathbf{y}^{t=i}) \quad i=1,\ldots,n
+\]
+
+\begin{example}
+We are interested to determine if it possible to predict the energy consumption of the appliances of a house. The data set to study (appliances energy prediction dataset, see References below) is composed by the temperature and humidity conditions measured in the different rooms of the house every ten minutes, and the energy consumption of the appliances. The dataset also includes some information about the current weather, from a nearby weather station.
+
+For every feature we will compute the optimal lag at which the features has the best prediction capabilities:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.fastautoml import Miscoding
+
+X = pd.read_csv("../data/energydata_complete.csv", parse_dates=["date"], index_col="date")
+y = X["Appliances"]
+X = X.drop(["Appliances", "lights"], axis=1)
+
+miscoding = Miscoding()
+miscoding.fit(X, y)
+
+best_lag  = list()
+for i in np.arange(X.shape[1]):
+    mscd = miscoding.cross_miscoding(attribute1=i, min_lag=1, max_lag=30)
+    best_lag.append(np.where(mscd == np.max(mscd))[0][0] + 1)
+\end{verbatim}}
+\end{sourcecode}
+
+In Figure \ref{figure:cross-miscoding} we can see a plot of the results. As we can observe, in general, for the in-house measurements we should use small lag values. However, in case of the weather conditions, bigger lags provide better results.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{cross_miscoding_lag.png}
+\caption{Cross Miscoding Lag}
+\label{figure:cross-miscoding}
+\end{figure}
+
+\end{example}
+
+\begin{remark}
+The approximation to the concept of miscoding introduced in this chapter estimates the quality of individual features as predictors of a target value, and the quality of the training dataset as a whole. However, the current approximation does not take into account the existing redundancy among the features themselves. For example, it might happen that two features $\mathbf{x}_i$ and $\mathbf{x}_j$ have very low miscoding with respect to the target variable $\mathbf{y}$, but at the same time they are redundant, in the sense that they contain almost the same information. It is still an open question how to extend the concept of miscoding to take into account feature redundancy, in such a way that it is close to the theoretical definition, it can be computed efficiently, and it does not require a huge number of samples.
+\end{remark}
+
+
+%
+% Section: Anomaly Detection
+%
+
+\section{Anomaly Detection}
+
+As we have seen in Section XXX, the main problem in the area of anomalies detection is that we do not have a precise mathematical definiton of what an anomaly is. Given a dataset, in this book we propose to equate the concept of abnormal samples with that of incompressible samples, and study its consequences. The essence of this chapter is that learning is about finding regularities in a dataset, and finding regularities is what data compression is about. We have also seen that the best model is the one that minimizes the sum of the length of the model plus the length of the data given the model. This optimal model divides our dataset into two disjoint subsets, the compressible part, and the incompressible part. It is the former in which we are interested in this section, since being incompressible means that they cannot be explained by the model, that is, they are model-based anomalies given the best possible model.
+
+{\color{red} Fix the following definition.}
+
+\begin{definition}
+Let $\emph{X}$ be a dataset composed by $p$ features and $n$ samples, $\mathbf{y}$ the target variable, and $\mathit{M}$ a model such that the nescience $N \left( \mathbf{X}, \mathit{M} \right)$ is minimal. Let $\hat{y} = \mathit{M} \left( \mathbf{X} \right)$ be the predicitons made by the model $\mathit{M}$ over the vectors of $\mathbf{X}$. We define the \emph{anomaly subset} of $\mathbf{X}$, denoted by $\mathcal{A}_\mathit{M}^\mathbf{X}$, to the set of $X$ such that $y \neq \hat{y}$.
+\end{definition}
+
+The \texttt{nescience.anomalies} class allow us to identify the anomaly subset, that is, the collection of samples that do not match the regularity patterns found in the rest of the dataset. In Example \ref{ex-abnormal_boston_houses} we will see how to apply this class to indentify houses with abnormal low prices, and to explain why they are cheaper.
+
+\begin{example}
+\label{ex-abnormal_boston_houses}
+In this example we will use the Boston House Price dataset provided by the \texttt{scikit-learn} toolkit. The dataset contains 13 predictive features (both, numeric and categorical) measuring different characteristics of the houses, such as number of rooms, age, etc., and the target is the median value of owner-occupied homes. The dataset is composed by five hundred samples. We are interested in to identify those house that have an abnormally low price, that is, houses that given their characteristics (number of rooms, size, etc) should have a higher price.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.datasets import load_boston
+
+data = load_boston()
+X    = data.data
+y    = data.target
+\end{verbatim}}
+\end{sourcecode}
+
+We have to train a "knowledge model", that is, find the best model that explains the target variable given the predictors, without overfitting. By default, the \texttt{anomalies} class uses the AutoML capabilities provided by the \texttt{nescience} library.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from nescience.anomalies import Anomalies
+
+model = Anomalies(X_type="mixed", y_type="numeric")
+model.fit(X, y)
+\end{verbatim}}
+\end{sourcecode}
+
+Finally, we have to select those samples for which the actual price is smaller than the one predicted by the model.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+anomalies = model.get_anomalies("smaller")
+X.shape, anomalies.shape
+((506, 13), (25,))
+\end{verbatim}}
+\end{sourcecode}
+
+As we can see, there are 25 houses with abnormally low price.
+\end{example}
+
+The \texttt{anomalies} class also allow us to classify the identified anomalies according to the characteristics they share.
+
+
+Let's see which are the best attributes that describe those abnormal houses.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+model.get_classes(n_dims=1, an_type="smaller", filter_balancedness=True,
+                  filter_redundancy=False, filter_repeated_attrs=False)
+
+Attribute1	Attribute2	Inertia	        N Class 0	N Class 1	Ratio
+2	        None	        154.953975	9	        16	        0.36
+4	        None   	        0.090593	6	        19	        0.24
+5	        None	        5.002437	17	        8	        0.68
+7	        None	        20.352117	6	        19	        0.24
+8	        None	        77.611111	18	        7	        0.72
+9	        None	        41737.11111	7	        18	        0.28
+10	        None	        26.577436	13	        12	        0.52
+12	        None	        430.294828	18	        7	        0.72
+\end{verbatim}}
+\end{sourcecode}
+
+According to the inertia, the best attribute that allow us to classify the anomalies is the number 4 (nitric oxides concentration). This attribute divides the abnormal houses into two clusters of size 6 and 19. Let's see how the house's price is affected by this dimension.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+        
+lr = LinearRegression()
+lr.fit(X[:,4].reshape(-1, 1), y)
+        
+plt.scatter(X[:,4].reshape(-1, 1), y)
+plt.plot(X[:,4], lr.intercept_ + lr.coef_ * X[:,4], color="red")
+plt.xlabel(data.feature_names[4])
+plt.ylabel("Price")
+\end{verbatim}}
+\end{sourcecode}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{nox_price.png}
+\caption{Price as a function of NOX.}
+\label{figure:nox_vs_price}
+\end{figure}
+
+The regression line suggest that the price of the houses is smaller in those areas with higher levels of nitric oxides concentration. Let's see how the anomalies are classified according to this dimension.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+class0, class1 = model.get_class_points(attribute1=4, attribute2=None, an_type="smaller")
+
+plt.hist(class0)
+plt.hist(class1)
+plt.ylabel("Count")
+plt.xlabel(data.feature_names[4])
+plt.show()
+\end{verbatim}}
+\end{sourcecode}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{nox_histogram.png}
+\caption{Histogram of anomalies NOX.}
+\label{figure:nox_histogram}
+\end{figure}
+
+The analysis suggests that six of the houses have an abnormally low price because they are in an area with high levels of contamination. We can repeat the same analysis with the other attributes, although they have a higher inertia, so the class separation is not that evident. Please mind that there could be more than one reason why the price of a house is abnormally low. 
+
 
 
 %

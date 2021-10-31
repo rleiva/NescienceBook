@@ -29,9 +29,9 @@ Since the time of David Hilbert, mathematics is about the study of the propertie
 
 \section{The Axioms of Science}
 
-In this section we propose a collection of axioms that formalize the concept of science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory with equality (see Appendix \ref{apx:foundations_mathematics}). We also prove some basic results and show how the axioms relate to the concepts we have introduced in the previous chapters. In Appendix \ref{apx:coq} the reader can find the axioms and proofs implemented in the \texttt{Coq} proof assistant language.
+In this section we propose a collection of axioms that formalize the concept of science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory with equality (see Appendix \ref{apx:foundations_mathematics}). We also prove some basic results and show how the axioms relate to the concepts we have introduced in the previous chapters.
 
-Let $\mathcal{B}^\ast$ be the set composed by all finite binary strings, and let $\Sigma \subset \mathcal{B}^\ast$ be a subset of strings. A \emph{science} is a first-order logic structure $(\Sigma \mid \lambda, \mathcal{O}, <_n, \oplus, \mid, U)$ where:
+Let $\mathcal{B}^\ast$ be the set of finite binary strings. We call \emph{science} to the first-order logic structure $(\mathcal{B}^\ast \mid \lambda, \mathcal{O}, <_n, \oplus, \mid)$ where:
 
 \vskip 0.25cm
 
@@ -39,9 +39,8 @@ Let $\mathcal{B}^\ast$ be the set composed by all finite binary strings, and let
 \item $\lambda \in \Sigma$ is the empty string.
 \item $\mathcal{O}$ is a relation called \emph{oracle},
 \item $<_n$ is a relation called \emph{nescience},
-\item $\oplus$ is a binary function called \emph{joint},
-\item $\mid$ is a binary function called \emph{conditional}, and
-\item $\mathcal{U}$ is a unary function called \emph{machine}
+\item $\oplus$ is a binary function called \emph{joint}, and
+\item $\mid$ is a binary function called \emph{conditional}
 \end{enumerate}
 
 \vskip 0.25cm
@@ -51,36 +50,36 @@ The oracle $\mathcal{O}$ is an equivalence relation:
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 1] $\forall t \in \Sigma \; t \mathcal{O} t$.
-\item[Axiom 2] $\forall s , t \in \Sigma$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
-\item[Axiom 3] $\forall r, s , t \in \Sigma$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
+\item[Axiom 1] $\forall t \in \mathcal{B}^\ast \; t \mathcal{O} t$.
+\item[Axiom 2] $\forall s , t \in \mathcal{B}^\ast$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
+\item[Axiom 3] $\forall r, s , t \in \mathcal{B}^\ast$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
 \end{description}
 
 \vskip 0.25 cm
 
-The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\Sigma$ into the quotient set $\Sigma / \mathcal{O}$. Each equivalence class $[e] \in \Sigma / \mathcal{O}$ refers to an entity, and it contains all possible representations and descriptions related to that entity. However, the entities themselves are not part of the axioms. The abstract oracle is the only tool we have at our disposal to match entities and their representations. The schema used internally by the oracle to encode the original entities is, in general, unknown. In practice, the best results are achieved if we take into account the recommendations of Chapter \ref{cha:Topics-and-Descriptions} about how to choose the right entities to study. Of course, we could select a collection of entities that do not make any sense, and still apply the axioms, in the same way that we could select a collection of nonsense atomic propositions and apply to them the rules of propositional logic.
-
-For the rest of this section, when we talk about entities, we refer to the equivalence classes defined by $\Sigma / \mathcal{O}$.
+The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\mathcal{B}^\ast$ into the quotient set $\mathcal{B}^\ast / \mathcal{O}$. Each equivalence class $[e] \in \mathcal{B}^\ast / \mathcal{O}$ corresponds to an entity, and it contains all possible representations and descriptions of that entity (including the wrong ones). However, the entities themselves are not part of the set $\mathcal{B}^\ast$. This abstract oracle is the only tool we have at our disposal to match entities and their string based representations. The actual schema used internally by the oracle to relate entities and its representations is irrelevant in this axiomatization. For the rest of this section, when we talk about entities, we refer to the equivalence classes defined by $\mathcal{B}^\ast / \mathcal{O}$.
 
 The nescience relation $<_N$ is a strict partial order:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 4] $\forall t \in \Sigma$ we have that $\lnot t <_N t$.
-\item[Axiom 5] $\forall s , t \in \Sigma$ if $s <_N t$ then $\lnot t <_N s$.
-\item[Axiom 6] $\forall r , s, t \in \Sigma$ if $r <_N s$ and $s <_N t$ then $r <_N t$.
+\item[Axiom 4] $\forall t \in \mathcal{B}^\ast$ we have that $\lnot t <_N t$.
+\item[Axiom 5] $\forall s , t \in \mathcal{B}^\ast$ if $s <_N t$ then $\lnot t <_N s$.
+\item[Axiom 6] $\forall r , s, t \in \mathcal{B}^\ast$ if $r <_N s$ and $s <_N t$ then $r <_N t$.
 \end{description}
 
 \vskip 0.25cm
 
-We cannot provide a quantitative measure of nescience, since numbers are not part of our axiomatic structure. Instead what we have defined is an ordering of the different elements of $\Sigma$ according to how much we do not known given those strings. The ordering has to be partial, i.e. not every pair of elements of $\Sigma$ can be compared, and strict, i.e. nescience equality is not defined. The problem of assuming a non-strict total order for nescience $\leq_N$ is that if $s \leq_N t$ and $t \leq_N s$ then $s = t$, that is, if two strings have the same nescience, they must be the same string, and this is not necessarily the case. A non-strict total order matching our intuitive notion of nescience would require to include natural numbers in the axioms, and to distinguish between the symbols $=$ for equality of strings and $=_N$ for the equality of nescience. Instead, within our axiomatic structure, nescience equality is just a notational convention.
+We cannot provide a quantitative measure of nescience, since numbers are not part of our axiomatic structure. Instead what we have defined is a relative ordering of the different elements of $\mathcal{B}^\ast$ according to how much we do not known given those strings. The ordering has to be partial, i.e. not every pair of elements of $\mathcal{B}^\ast$ can be compared, and strict, i.e. nescience equality is not defined\footnote{The problem of assuming a non-strict total order for nescience $\leq_N$ is that if $s \leq_N t$ and $t \leq_N s$ then $s = t$, that is, if two strings have the same nescience, they must be the same string, and this is not necessarily the case. A non-strict total order matching our intuitive notion of nescience would require to include natural numbers in the axioms, and to distinguish between the symbols $=$ for equality of strings and $=_N$ for the equality of nescience.}. Within our axioms, nescience equality is just a notational convention.
 
 \begin{notation}
-We denote by $ s =_N t$ the case that $(s, t) \notin <_N$.
+Let $[e]$ be an entity, and $s, t \in [e]$ two strings. We denote by $ s =_N t$ the case that $(s, t) \notin <_N$.
 \end{notation}
 
-We want the symbol $=_N$ to represent the case that our unknown given the strings $s$ and $t$, which may belong to the same equivalence class or to different equivalence classes, be the same. In order to do that we need additional axioms.
+We want the symbol $=_N$ to represent the case that our unknown given the strings $s$ and $t$ is the same. Given the axioms, this can be only done if both strings belong to the same equivalence class.
+
+{\color{red} TODO: Next axiom is in fact a consequence of the above. Prove it!}
 
 Every equivalence class defined by $\mathcal{O}$ has at least one minimal element with respect to the relation $<_N$:
 
@@ -92,46 +91,62 @@ Every equivalence class defined by $\mathcal{O}$ has at least one minimal elemen
 
 \vskip 0.25cm
 
-A class could have more than one minimal element with respect to the nescience ordering. Those minimal elements correspond to what we have called the valid representations of an entity. All the other representations of that entity that are not minimal are misrepresentations, and so, they have a higher nescience. The axioms do not require the nescience relation to have a global minimum element for $\Sigma$, nor minimum elements for the individual equivalence classes.
+A class could have more than one minimal element with respect to the nescience ordering. The axioms do not require the nescience relation to have a global minimum element for $\mathcal{B}^\ast$, nor minimum elements for the individual equivalence classes.
 
-{\color{red} TODO: Clarify how those minimal elements relate to descriptions.}
+{\color{red} TODO: Clarify how those minimal elements relate to representations and descriptions.}
 
-The concatenation function $\oplus : \Sigma \times \Sigma \rightarrow \Sigma$ is a binary function that satisfy the following properties:
-
-\vskip 0.25cm
-
-\begin{description}
-\item[Axiom 8] $\forall s, t \in \Sigma$ we have that $\oplus(s, t) \in \Sigma$.
-\item[Axiom 9] $\forall s \in \Sigma$ we have that $\oplus(s, \lambda) = \oplus( \lambda, s) = s$.
-\item[Axiom 10] $\forall r, s, t \in \Sigma$ we have that $\oplus(\oplus(r, s), t) = \oplus(r, \oplus(s, t))$.
-\end{description}
-
-\vskip 0.25cm
-
-$\Sigma$ together with the concatenation operation $\oplus$ forms a free monoid.
-
-\begin{proposition}
-We have that $\Sigma = \Sigma^\ast = \mathcal{B}^\ast$. 
-\end{proposition}
-\begin{proof}
-{\color{red} TODO: Pending!}
-\end{proof}
-
-Since this point we will use the infix notation of the concatenation function, that is, we will write $s \oplus t$ instead of the $\oplus(s, t)$, and instead of $\Sigma$ we will talk about $\Sigma^\ast$.
-
-Next axiom states how the operation of concatenation relates to nescience (recall that $\Sigma^{+}$ denotes $\Sigma^\ast-\{\lambda\}$):
+The concatenation function $\oplus : \mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ is a binary function that satisfy the following properties:
 
 \vskip 0.25cm
 
 \begin{description}
-\item[Axiom 11] Let $r \in \Sigma^{+}$ be a non-minimal element, then $i)$ there exist a $s \in \Sigma^{+}$ such that $r \oplus s <_N s$ or $s \oplus r <_N s$, or $ii)$ there exists a $t \in \Sigma^{+}$ in the form $r = \alpha \oplus t \oplus \beta$ with $\alpha, \beta \in \Sigma^\ast$ such that $t <_N r$, or both.
+\item[Axiom 8] $\forall s, t \in \mathcal{B}^\ast$ we have that $\oplus(s, t) \in \mathcal{B}^\ast$.
+\item[Axiom 9] $\forall s \in \mathcal{B}^\ast$ we have that $\oplus(s, \lambda) = \oplus( \lambda, s) = s$.
+\item[Axiom 10] $\forall r, s, t \in \mathcal{B}^\ast$ we have that $\oplus(\oplus(r, s), t) = \oplus(r, \oplus(s, t))$.
 \end{description}
 
 \vskip 0.25cm
 
-{\color{red} TODO: Axiom 11 relates to representations.}
+$\mathcal{B}^\ast$ together with the concatenation operation $\oplus$ forms a free monoid.
 
-{\color{red} TODO: Axiom 12 relates to descriptions.}
+\begin{notation}
+We will use the infix notation of the concatenation function, that is, we will write $s \oplus t$ instead of the $\oplus(s, t)$.
+\end{notation}
+
+{\color{red} TODO: Prove some results about the concatenation of strings. For example, concatenation in the sema equivalence class, and concatenation from different equivalance clases.}
+
+The conditional function $\mid : \mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ is a binary function that satisfy the following properties:
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Axiom 15] $\forall s, t \in \mathcal{B}^\ast$ we have that $\mid(s, t) \in \mathcal{B}^\ast$.
+\item[Axiom 16] $\forall s \in \mathcal{B}^\ast$ we have that $\mid (s, \lambda) = \mid( \lambda, s) = s$.
+\item[Axiom 17] $\forall r, s, t \in \mathcal{B}^\ast$ we have that $\mid (\mid (r, s), t) = \mid (r, \mid (s, t))$.
+\end{description}
+
+$\mathcal{B}^\ast$ together with the conditional operation $\mid$ forms a free monoid.
+
+\begin{notation}
+We will use the infix notation of the conditional function, that is, we will write $s \mid t$ instead of the $\mid(s, t)$.
+\end{notation}
+
+Next axiom states how the operation of concatenation relates to nescience (recall that $\mathcal{B}^{+}$ denotes $\mathcal{B}^\ast-\{\lambda\}$):
+
+\vskip 0.25cm
+
+\begin{description}
+\item[Axiom 11] Let $t \in \mathcal{B}^\ast$ be a non-minimal element, then at least one of the following is true
+\begin{enumerate}
+\item there exist a $s \in \mathcal{B}^{+}$ such that $s \oplus t <_N s$ or $t \oplus r <_N t$,
+\item there exists a $t, \alpha, \beta \in \mathcal{B}^{+}$ in the form $r = \alpha \oplus t \oplus \beta$ such that $t <_N r$,
+\item thre exists $s in \mathcal{B}^{+}$ such that $t \mid s <_n s$.
+\end{enumerate}
+\end{description}
+
+\vskip 0.25cm
+
+{\color{red} TODO: 1 characterizes inaccuracy, 2 miscoding, and 3 surfeit.}
 
 {\color{red} TODO: Explain what happens with $\lambda$, the class it belongs to, and its role as a minimal element.}
 
@@ -192,17 +207,6 @@ The relation between the machine $\mathcal{U}$ and the concatenation of strings 
 
 That is, we require that descriptions have to be self-delimited, for example, by being prefix-free.
 
-The conditional function $\mid : \Sigma^\ast \times \Sigma^\ast \rightarrow \Sigma^\ast$ is a binary function that satisfy the following properties:
-
-\vskip 0.25cm
-
-\begin{description}
-\item[Axiom 15] $\forall s, t \in \Sigma^\ast$ we have that $\mid(s, t) \in \Sigma^\ast$.
-\item[Axiom 16] $\forall s \in \Sigma^\ast$ we have that $\mid (s, \lambda) = \mid( \lambda, s) = s$.
-\item[Axiom 17] $\forall r, s, t \in \Sigma^\ast$ we have that $\mid (\mid (r, s), t) = \mid (r, \mid (s, t))$.
-\end{description}
-
-Since this point we will use the infix notation of the conditional function, that is, we will write $s \mid t$ instead of the $\mid (s, t)$.
 
 The relation between the machine $\mathcal{U}$ and conditional $\mid$ is given by the following axiom:
 
@@ -225,7 +229,7 @@ The relation between the machine $\mathcal{U}$ and the nescience is given by the
 The relation of the nescience ordering and the conditional function is given through the application of the machine:
 
 \begin{description}
-\item[Axiom 20] Let $s \in \Sigma^\ast$ such that $U(s) \uparrow$, then we have that $U(s \mid t) <_N U(s)$ for all $t \in \Sigma^\ast-\{\lambda\}$.
+\item[Axiom 20] Let $s \in \Sigma$ such that $U(s) \uparrow$, then we have that $\not U(s) <_N U(s \mid t)$ for all $t \in \Sigma$.
 \end{description}
 
 {\color{red} TODO: Pending, axiom of distributive law}
@@ -303,10 +307,12 @@ where $\mu_i$ is the average topic of class $S_i$.
 
 {\color{red} TODO: Explain the consequences of requiring to be well-founded.}
 
-% 
 
-\subsection{Type Theory}
+\begin{remark}
+In this section we have provided a formalization of the theory of nescience based in set theory and first order logic. However, set theory is not the only available framework in which mathematics can be formalized. We could have used instead type theory or category theory. It would be very interesting to provide a collection of axioms of the theory of nescience in the context of these theories. Having meanifull axioms of our theory in set theory, type theory and category theory will convince us that nescience is a fundamental concept of mathematics, and not an artifact of a particular formalization theory.
 
+Type theory has also some advantages over set theory. The most important is that it is a constructive theory, which means that all of proved theorems have an equivalent computer program, and so, that there exists algorithms to solve all the posed problems (no need to resort to an abstract, uncomputable, oracle). Moreover, the lambda terms defined by type theory are, by definition, computable functions, so our models would be native elements of the theory, and not added artifacts. Type theory itself would be our universal Turing machine, and so, no need to axiomatically define one. Finally, there are some implementation of type therory, like th Coq language, based on the calculus of constructions. This will allow us to mechanically verify the correctness of our theory.
+\end{remark}
 
 %
 % Section: Scientific Method

@@ -1021,12 +1021,19 @@ Where \texttt{[attrs]} is the list of attributes used, and only those used in th
 
 \section{Time Series}
 
-Finally, we are going to see the concept of miscoding applied to a feature and a delayed version of itself as a function of this delay, what we call auto-miscoding, and the miscoding of a feature applied over a delayed version of the target (or another feature), what we call cross-miscoding.
+Finally, 
 
-Auto-miscoding is intended to detect the repetitive patterns in a time series (see Section \ref{sec:intro_time_series}), for example, the presence of cycles. Auto-miscoding computes the miscoding of a time series (a vector) at time $t=0$, , with a lagged version of itself at time $t=i$, and repeat this process for a given number $n$ of lagging periods:
-\[
-\hat\mu(\mathbf{x}^{t=0}$, $\mathbf{x}^{t=i}) \quad i=1,\ldots,n
-\]
+\subsection{Automiscoding, Crossmiscoding and Partial Automiscoding}
+
+In this section we are going to study the application of the concept of miscoding to a time series and a delayed version of itself, or to a delayed version of a second time series.
+
+Automiscoding is the application of miscoding to a time series and a delayed version of itself, as a function of this delay. Automiscoding is intended to estimate up to what extend previous observations of the time series can explain (or can be used to forecast) future observations. In this sense, automiscoding has a similar objective than autocorrelation in classical time series analysis (see Section \ref{sub:autocorrelation}).
+
+\begin{definition}
+Let $\{\mathbf{x}_t\}$ be a time series composed by $n$ samples. We define lag $k$ \emph{regular automiscoding} of $\{\mathbf{x}_t\}$ as $\hat\mu(\mathbf{x}_{x_{k+1}, x_{k+2}, \ldots, x_n}, \mathbf{x}_{x_0, x_1, \ldots, x_{(n-k)}})$. We define in the same way the concepts of \emph{adjusted automiscoding} and \emph{partial automiscoding}.
+\end{definition}
+
+On the contrary of what happened with the concept of autocorrelation, automiscoding is defined for all time series, including time series with a trend. Moreover, automiscoding is intepretable even in case of having a trending time series, for example, for the identification of seasonal components without requiring to apply a decomposition.
 
 \begin{example}
 In this example we are going to study the presence of cycles in the number of passengers of a US airline. In Figure \ref{figure:air_passengers} is depicted a time series of monthly passengers from 1949 to 1960 (AirPassenger dataset, see References section bellow). As we can observe, there is a clear cycle that repeats every twelve months. We can apply the concept of auto-miscoding to validate analytically that this is the case.
@@ -1040,18 +1047,18 @@ In this example we are going to study the presence of cycles in the number of pa
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
-from fastautoml.fastautoml import Miscoding
+from nescience.timeseries import TimeSeries
 
 data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"], parse_dates=True)
 X = np.array(data["#Passengers"]).reshape(-1, 1)
 
-miscoding = Miscoding()
-miscoding.fit(X, y=None)
-mscd = miscoding.auto_miscoding(attribute=0, max_lag=36, mode='adjusted')
+ts = TimeSeries(auto=False)
+ts.fit(data)
+mscd = ts.auto_miscoding(max_lag=36)
 \end{verbatim}}
 \end{sourcecode}
 
-As we can see in Figure \ref{figure:auto-miscoding} there is a peak on the value of auto-miscoding every twelve months. That means that the distance of the time series is minimal with respect to a yearly lagged versions of itself.
+As we can see in Figure \ref{figure:auto-miscoding} there is a peak on the value of adjusted automiscoding every twelve months (the distance between both time series is minimal when we the lag is a multple of a year).
 
 \begin{figure}[h]
 \centering
@@ -1062,10 +1069,11 @@ As we can see in Figure \ref{figure:auto-miscoding} there is a peak on the value
 
 \end{example}
 
-Cross-miscoding computes the inter-relation between a time series and a lagged version of a second time series. The objective is to detect if the first time series has a temporal predictive power over the second. Given a candidate predictive feature $\mathbf{x}$ and a target $\mathbf{y}$ (or a second feature), cross-miscoding computes the following quantity:
-\[
-\hat\mu(\mathbf{x}^{t=0}, \mathbf{y}^{t=i}) \quad i=1,\ldots,n
-\]
+Crossmiscoding computes the inter-relation between a time series and a lagged version of a second time series. The objective is to detect if the first time series has a temporal predictive power over the second.
+
+\begin{definition}
+Let $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ be two time series composed by $n$ samples each. We define lag $k$ \emph{regular crossmiscoding} of $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ as $\hat\mu(\mathbf{x}_{x_{k+1}, x_{k+2}, \ldots, x_n}, \mathbf{y}_{x_0, x_1, \ldots, x_{(n-k)}})$. We define in the same way the concepts of \emph{adjusted crossmiscoding} and \emph{partial crossmiscoding}.
+\end{definition}
 
 \begin{example}
 We are interested to determine if it possible to predict the energy consumption of the appliances of a house. The data set to study (appliances energy prediction dataset, see References below) is composed by the temperature and humidity conditions measured in the different rooms of the house every ten minutes, and the energy consumption of the appliances. The dataset also includes some information about the current weather, from a nearby weather station.

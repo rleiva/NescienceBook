@@ -335,30 +335,59 @@ Let's $x$ and $y$ two time series. The cross covariance function of $x$ and $y$ 
 \end{definition}
 
 %
-% Autocorrelation, Cross-correlation and Partial Autocorrelation
+% Autocorrelation, Crosscorrelation and Partial Autocorrelation
 % 
 \subsubsection{Autocorrelation, Cross-correlation and Partial Autocorrelation}
+\label{sub:autocorrelation}
 
 Autocorrelation measures the (Pearson) correlation of a time series with a delayed version of itself, and as a function of that delay. Autocorrelation is intended to estimate the degree of similarity of an observation with respect to previous observations.
 
 \begin{definition}
-Let $\{\mathbf{X}_t\}$ be a time series with mean $\mu$ and varianze $\sigma^2$. The lag $k$ \emph{autocorrelation} function, denoted by $\rho$, is defined as:
+Let $\{\mathbf{X}_t\}$ be a time series with mean $\mu$ and varianze $\sigma^2$. The \emph{autocorrelation} function, denoted by $\rho$, is defined as:
 \[
-\rho(k) = \frac{E\left[\left(x_{t}-\mu\right)\left(x_{t+k}-\mu\right)\right]}{\sigma^{2}}
+\rho_x(k) = \frac{E\left[\left(x_{t}-\mu\right)\left(x_{t+k}-\mu\right)\right]}{\sigma^{2}}
 \]
+The value $k$ is called \emph{lag}.
 \end{definition}
 
 The autocorrelation function is not defined for all time series, because the mean may not exist (time series with a trend), or the variance may be zero (constant time series). A time series for which the autocorrelation is defined is called \emph{second order stationary}.
 
 The \emph{sample autocorrelation} is computed in practice by:
 \[
-\hat{\rho}(k) = \frac{ \frac{1}{n}\sum_{t=1}^{n-k}\left(x_{t}-\bar{x}\right)\left(x_{t+k}-\bar{x}\right) }{ \left( \frac{1}{n}\sum_{t=1}^{n}\left(x_{t}-\bar{x}\right) \right)^2 }
+\hat{\rho}_x(k) = \frac{ \frac{1}{n}\sum_{t=1}^{n-k}\left(x_{t}-\bar{x}\right)\left(x_{t+k}-\bar{x}\right) }{ \left( \frac{1}{n}\sum_{t=1}^{n}\left(x_{t}-\bar{x}\right) \right)^2 }
 \]
 On the contrary of what happened with autocorrelation, sample autocorrelation is defined in case of time series with a trend. However, we must be carefull about the interpretation of the results. In general, sample autocorrelation is applied over the residuals of a time series once the trend and the seasonal components have been removed.
 
 A correlogram is a plot of the sample autocorrelations $\hat{\rho}(k)$ versus time lags $k$ (see Figure {\color{red} XXX}). The dotted lines are drawn at $-\frac{1}{n}\pm\frac{2}{\sqrt{n}}$. If $\hat{\rho}(k)$ is outside these lines for a value of $k$ we have evidence against the null hypothesis that $\hat{\rho}(k)=0$ at the $5\%$ level (See Section {\color{red} XXX}). It is expected that $5\%$ of the estimates $\hat{\rho}(k)$ fall outside these lines.
 
+\begin{example}
 {\color {red} TODO: Insert Figure. If the example is drawn using matplotlib.pyplot.acorr, the above paragraph is not true. Investigate how the shared areas in the correlogram used by matplotlib are computed.}
+\end{example}
+
+Crosscorrelation measures ...
+
+\begin{definition}
+Let $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ be time series with means $\mu_x$ and $\mu_y$ and variances $\sigma_x^2$ and $\sigma_y^2$. The \emph{crosscorrelation} function, denoted by $\rho$, is defined as:
+\[
+\rho_{x,y}(k) = \frac{E\left[\left(x_{t+k}-\mu_x\right)\left(y_t-\mu_y\right)\right]}{\sigma_x \sigma_y}
+\]
+The value $k$ is called \emph{lag}.
+\end{definition}
+
+If the crosscorrelation is defined it is said that the combined model is \emph{second order stationary}.
+
+The \emph{sample crosscorrelation} is computed in practice by:
+\[
+\hat{\rho}_{x,y}(k) = \frac{ \frac{1}{n}\sum_{t=1}^{n-k}\left(x_{t}-\bar{x}\right)\left(y_{t+k}-\bar{y}\right) }{ \frac{1}{n}\sum_{t=1}^{n}\left(x_{t}-\bar{x}\right) \frac{1}{n}\sum_{t=1}^{n}\left(y_{t}-\bar{y}\right) }
+\]
+
+In general, sample crosscorrelation is applied over the residuals of both time series once trends and the seasonal components have been removed.
+
+In the same way we draw a correlogram we can plot a crosscorrelogram of the crosscorrelation between to time series.
+
+\begin{example}
+{\color {red} TODO: Insert Figure. If the example is drawn using matplotlib.pyplot.acorr, the above paragraph is not true. Investigate how the shared areas in the correlogram used by matplotlib are computed.}
+\end{example}
 
 %
 % Minimum Message Length

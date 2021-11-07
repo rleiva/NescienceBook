@@ -29,49 +29,106 @@ Since the time of David Hilbert, mathematics is about the study of the propertie
 
 \section{The Axioms of Science}
 
-In this section we propose a collection of axioms that formalize the concept of science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory with equality (see Appendix \ref{apx:foundations_mathematics}). We also prove some basic results and show how the axioms relate to the concepts we have introduced in the previous chapters.
+In this section we are going to propose a collection of axioms that formalize science and the scientific method. Our axioms are based on first-order logic and the ZFC axioms of set theory with equality (see Appendix \ref{apx:foundations_mathematics}). We will also prove some basic results and explain how these axioms match the new ideas we have introduced in this book. In our axiomatization we are not going to follow the approach described in the previous chapters, that is, we are not going to explicitly definine the quantities of miscoding, surfeit and inaccuracy. Instead, we will introduce the junction and conditional operations, list their fundamental properties, and explain how nescience is afected by them. The remaining concepts follow naturally from these basic axioms.
 
-Let $\mathcal{B}^\ast$ be the set of finite binary strings. We call \emph{science} to the first-order logic structure $(\mathcal{B}^\ast \mid \lambda, \mathcal{O}, <_n, \oplus, \mid)$ where:
+\begin{definition}
+
+Let $\mathcal{B}^\ast$ be the set of all finite binary strings. We define \emph{science} as the first-order logic structure $(\mathcal{B}^\ast \mid \lambda, \mathcal{O}, <_N, \oplus, \mid)$ where:
 
 \vskip 0.25cm
 
 \begin{enumerate}[label=(\roman*)]
 \item $\lambda \in \Sigma$ is the empty string.
 \item $\mathcal{O}$ is a relation called \emph{oracle},
-\item $<_n$ is a relation called \emph{nescience},
+\item $<_N$ is a relation called \emph{nescience},
 \item $\oplus$ is a binary function called \emph{joint}, and
 \item $\mid$ is a binary function called \emph{conditional}
 \end{enumerate}
 
 \vskip 0.25cm
 
-The oracle $\mathcal{O}$ is an equivalence relation:
+that satisfies the following axioms:
 
 \vskip 0.25cm
 
-\begin{description}
-\item[Axiom 1] $\forall t \in \mathcal{B}^\ast \; t \mathcal{O} t$.
-\item[Axiom 2] $\forall s , t \in \mathcal{B}^\ast$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
-\item[Axiom 3] $\forall r, s , t \in \mathcal{B}^\ast$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
-\end{description}
+\begin{itemize}
 
-\vskip 0.25 cm
-
-The oracle equivalence relation $\mathcal{O}$ partitions the set of strings $\mathcal{B}^\ast$ into the quotient set $\mathcal{B}^\ast / \mathcal{O}$. Each equivalence class $[e] \in \mathcal{B}^\ast / \mathcal{O}$ corresponds to an entity, and it contains all possible representations and descriptions of that entity (including the wrong ones). However, the entities themselves are not part of the set $\mathcal{B}^\ast$. This abstract oracle is the only tool we have at our disposal to match entities and their string based representations. The actual schema used internally by the oracle to relate entities and its representations is irrelevant in this axiomatization. For the rest of this section, when we talk about entities, we refer to the equivalence classes defined by $\mathcal{B}^\ast / \mathcal{O}$.
-
-The nescience relation $<_N$ is a strict partial order:
+% Oracle
+\item[A1] $\forall t \in \mathcal{B}^\ast \; t \mathcal{O} t$.
+\item[A2] $\forall s , t \in \mathcal{B}^\ast$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
+\item[A3] $\forall r, s , t \in \mathcal{B}^\ast$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
 
 \vskip 0.25cm
 
-\begin{description}
-\item[Axiom 4] $\forall t \in \mathcal{B}^\ast$ we have that $\lnot t <_N t$.
-\item[Axiom 5] $\forall s , t \in \mathcal{B}^\ast$ if $s <_N t$ then $\lnot t <_N s$.
-\item[Axiom 6] $\forall r , s, t \in \mathcal{B}^\ast$ if $r <_N s$ and $s <_N t$ then $r <_N t$.
-\end{description}
+% Nescience
+\item[A4] $\forall t \in \mathcal{B}^\ast$ $\lnot t <_N t$.
+\item[A5] $\forall s , t \in \mathcal{B}^\ast$ if $s <_N t$ then $\lnot t <_N s$.
+\item[A6] $\forall r , s, t \in \mathcal{B}^\ast$ if $r <_N s$ and $s <_N t$ then $r <_N t$.
 
 \vskip 0.25cm
 
-We cannot provide a quantitative measure of nescience, since numbers are not part of our axiomatic structure. Instead what we have defined is a relative ordering of the different elements of $\mathcal{B}^\ast$ according to how much we do not known given those strings. The ordering has to be partial, i.e. not every pair of elements of $\mathcal{B}^\ast$ can be compared, and strict, i.e. nescience equality is not defined\footnote{The problem of assuming a non-strict total order for nescience $\leq_N$ is that if $s \leq_N t$ and $t \leq_N s$ then $s = t$, that is, if two strings have the same nescience, they must be the same string, and this is not necessarily the case. A non-strict total order matching our intuitive notion of nescience would require to include natural numbers in the axioms, and to distinguish between the symbols $=$ for equality of strings and $=_N$ for the equality of nescience.}. Within our axioms, nescience equality is just a notational convention.
+% Concatenation
+\item[A8] $\forall s, t \in \mathcal{B}^\ast$ $\oplus(s, t) \in \mathcal{B}^\ast$.
+\item[A9] $\forall s \in \mathcal{B}^\ast$ $\oplus(s, \lambda) = \oplus( \lambda, s) = s$.
+\item[A10] $\forall r, s, t \in \mathcal{B}^\ast$ $\oplus(\oplus(r, s), t) = \oplus(r, \oplus(s, t))$.
+
+\vskip 0.25cm
+
+% Conditional
+\item[A11] $\forall s \in \mathcal{B}^\ast$ $\mid (s, \lambda) = s$.
+\item[A12] $\forall s, t \in \mathcal{B}^\ast$ $\lnot s <_N \mid (s, t)$
+
+\end{itemize}
+
+\end{definition}
+
+Axioms A1, A2 and A3 state that the oracle $\mathcal{O}$ is an equivalence relation; this equivalence relation partitions the set of strings into a quotient set, in which each equivalence corresponds to an entity. The nescience relation $<_N$, described by Axioms A4, A5 and A6 is a strict partial order that compares the relative unknowns of pairs of strings. The concatenation operation $\oplus$ of Axioms A8, A9 and A10 contains the usual properties of the contatenation of strings; $\oplus$ together with $\mathcal{B}^\ast$ forms a free monoid; concatenation formalizes the exploratory part of science. Finally, Axioms A11 and A12 deal with the exploitation part of science, by defining the behaviour of the conditional operator $\mid$. 
+
+We still need one more axiom, A13, that explains how we can decrease the nescience of a particular entity. But fist we have to introduce some additional definitions and notations.
+
+\begin{definition}
+Let $\mathcal{B}^\ast / \mathcal{O}$ be the quotation set defined by the oracle relation over the set of strings. We call \emph{entity}, denoted by $[e]$, to each class of this quotation set, that is, $[e] \in \mathcal{B}^\ast / \mathcal{O}$.
+\end{definition}
+
+Every entity contains at least one minimal strings. Those are the strings in which we are interested, since they minimize our unknown about that entity.
+
+\begin{proposition}
+For all $[e] \in \mathcal{B}^\ast / \mathcal{O}$ there exists at least one $r \in [e]$ such that it is minimal with respect to $<_N$, that is, it does not exists an $s \in [e]$ such that $s <_N r$.
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+An entity can have more than one minimal element with respect to the nescience ordering. The axioms do not require the nescience relation to have a global minimum element for $\mathcal{B}^\ast$, nor minimum elements for the individual equivalence classes.
+
+
+\begin{proposition}
+{\color{red} TODO: Prove the exploration part, or perhaps we need an additional axiom.}
+\end{proposition}
+
+
+\begin{proposition}
+{\color{red} TODO: Explain how concatenation and conditional can be combined into a single equation, something like a distributive law.}
+\end{proposition}
+
+
+\begin{definition}[Axiom A13]
+Let $t \in \mathcal{B}^\ast$ be a non-minimal element, then at least one of the following is true:
+\begin{enumerate}[label=(\roman*)]
+\item there exist $s \in \mathcal{B}^\ast$ such that $s \oplus t <_N s$ or $t \oplus s <_N t$,
+\item there exists $s, \alpha, \beta \in \mathcal{B}^\ast$ in the form $t = \alpha \oplus s \oplus \beta$ such that $s <_N t$,
+\item there exists $s \in \mathcal{B}^\ast$ such that $t \mid s <_N t$.
+\end{enumerate}
+\end{definition}
+
+
+
+
+
+
+
+
+
+
 
 \begin{notation}
 Let $[e]$ be an entity, and $s, t \in [e]$ two strings. We denote by $ s =_N t$ the case that $(s, t) \notin <_N$.
@@ -79,21 +136,6 @@ Let $[e]$ be an entity, and $s, t \in [e]$ two strings. We denote by $ s =_N t$ 
 
 We want the symbol $=_N$ to represent the case that our unknown given the strings $s$ and $t$ is the same. Given the axioms, this can be only done if both strings belong to the same equivalence class.
 
-{\color{red} TODO: Next axiom is in fact a consequence of the above. Prove it!}
-
-Every equivalence class defined by $\mathcal{O}$ has at least one minimal element with respect to the relation $<_N$:
-
-\vskip 0.25cm
-
-\begin{description}
-\item[Axiom 7] For all $[e] \in \mathcal{O} / <_N$ there exists at least one $r \in [e]$ such that it does not exists an $s \in [e]$ such that $s <_N r$.
-\end{description}
-
-\vskip 0.25cm
-
-A class could have more than one minimal element with respect to the nescience ordering. The axioms do not require the nescience relation to have a global minimum element for $\mathcal{B}^\ast$, nor minimum elements for the individual equivalence classes.
-
-{\color{red} TODO: Clarify how those minimal elements relate to representations and descriptions.}
 
 The concatenation function $\oplus : \mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ is a binary function that satisfy the following properties:
 
@@ -113,7 +155,13 @@ $\mathcal{B}^\ast$ together with the concatenation operation $\oplus$ forms a fr
 We will use the infix notation of the concatenation function, that is, we will write $s \oplus t$ instead of the $\oplus(s, t)$.
 \end{notation}
 
-{\color{red} TODO: Prove some results about the concatenation of strings. For example, concatenation in the sema equivalence class, and concatenation from different equivalance clases.}
+Concatenation is intended to capture the concept of creativity in the theory of nescince. Next axiom introduces this capability in the theory.
+
+\begin{description}
+\item[Axiom XX] Let $[e]$ be an entity, and $t \in [e]$ and $s \notin [e]$ two arbitrary strings, then we have that $s <_N \oplus(s, t)$ and $t <_N \oplus(s, t)$.
+\end{description}
+
+Concatenation is the process that allow us to discover new entities: concatenating two strings that belong to different entities might lead to a new, previously unknown, entity. Concatenation implements the exploration part in this schema of exploration/exploitation in which science is characterized. 
 
 The conditional function $\mid : \mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ is a binary function that satisfy the following properties:
 
@@ -313,6 +361,23 @@ In this section we have provided a formalization of the theory of nescience base
 
 Type theory has also some advantages over set theory. The most important is that it is a constructive theory, which means that all of proved theorems have an equivalent computer program, and so, that there exists algorithms to solve all the posed problems (no need to resort to an abstract, uncomputable, oracle). Moreover, the lambda terms defined by type theory are, by definition, computable functions, so our models would be native elements of the theory, and not added artifacts. Type theory itself would be our universal Turing machine, and so, no need to axiomatically define one. Finally, there are some implementation of type therory, like th Coq language, based on the calculus of constructions. This will allow us to mechanically verify the correctness of our theory.
 \end{remark}
+
+
+%
+% Things to cover in the interpretation
+%
+
+\subsection{Interpretation of the Axioms}
+
+{\color{red} TODO: Things to cover in the interpretation of the axioms.}
+
+Oracle: Each equivalence class corresponds to an entity, and it contains all possible representations
+and descriptions of that entity, including the wrong ones. Fron an axiomatic point of view,
+reprsentations and descriptions are indistinguishable. The entities themselves are not part of the
+set. This abstract oracle is the only tool we have at our disposal to match entities and their
+string based representations. The actual schema used internally by the oracle to relate entities and
+its representations is irrelevant in this axiomatization. All possible strings belong to at least on
+entity, and one string cannot be part of two entities.
 
 %
 % Section: Scientific Method

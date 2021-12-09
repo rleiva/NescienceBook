@@ -1,5 +1,5 @@
 %
-% Appendix D.- Properties of Logarithms
+% Appendix: Advanced Mathematics
 %
 
 \chapterimage{TuringMachine.pdf} % Chapter heading image
@@ -37,6 +37,266 @@ with the equality if, and only if, $x=1$.
 
 {\color{red} TODO: The length of the canonical encoding of integers using logs.}
 
+\section{Distinctiveness of Metrics}
 
+Let's $\mathbf{X}$ be a dataset composed by m samples, $\mathbf{y}$ a response variable that can take two possible vales $1$ or $-1$, $\hat{f}$ a model trained using a supervised machine learning algorithm, and $\hat{\mathbf{y}}$ the vector of predicted values by $\hat{f}$ when given as input $\mathbf{X}$ (that is, $\hat{y}=\hat{f}\left(\mathbf{X}\right)$). There exists multiple ways to measure the quality of the predicted values $\hat{\mathbf{y}}$, like for example accuracy, precision, recall, F1 score, etc. In this technical report we are interested in compare the \emph{distinctiveness} [REF], that is, the capacity to discriminate between multiple candidate $\hat{\mathbf{y}}$, of the different error metrics. The closer to the theoretical limit of $2^{m}$ possible values, the better is the metric for model training purposes, since the risk of getting stuck in a local minima is smaller [REF].
 
+A \emph{confusion matrix} [REF] is a table that allows to visualize the performance of a trained model. Each row of the matrix represents the number of instances in a predicted class of $\hat{\mathbf{y}}$ while each column represents the number of instances in an actual class of $\mathbf{y}$.
 
+[Fix Table]
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+\multicolumn{1}{|c}{\multirow{2}{*}{}} &  & \multicolumn{2}{c|}{Actual Class}\tabularnewline
+\cline{3-4} 
+ &  & Positive & Negative\tabularnewline
+\hline 
+\multirow{2}{*}{Predicted Class} & Positive & $tp$ & $fp$\tabularnewline
+\cline{2-4} 
+ & Negative & $fn$ & $tn$\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+We denote by p be the number of $1$ in $\mathbf{y}$, and by n the number of $-1$ (we have that $m=p+n$). The following figure depicts a graphical representation of these concepts. The left area of the square correspond to the positive training values, and the right to the negative. The dark gray area represent the values predicted as positive, and the light gray area the values predicted as negative.
+
+(insert figure)
+
+For an easier comparison between metrics we will simplify the distinctiveness of each metric using $big-\mathcal{O}$ (asymptotic) notation. Recall that a function $f\left(a\right)$ is of order $\mathcal{O}\left(g\left(a\right)\right)$ if there exists a positive constant $c$ such that $0 \leq f\left(a\right)\leq cg\left(a\right)$, for sufficiently large $a$.
+
+\section{Distinctiveness of Metrics}
+
+\subsection{Accuracy}
+
+Accuracy is the ratio between the number of correct predictions and the total number of testing values.
+
+\begin{definition}
+The accuracy of the predictions $\hat{\mathbf{y}}$ with respect to the training values $\mathbf{y}$ is given by:
+\[
+acc = \frac{tp+tn}{tp+fp+tn+fn}
+\]
+\end{definition}
+
+\begin{proposition}
+The total number of possible values for the metric accuracy is given by:
+\[
+\#acc = m+1
+\]
+\end{proposition}
+\begin{proof}
+The denominator $tp+fp+tn+fn$ is fixed to the value m, meanwhile the numerator could go from no values correctly predicted to all values correctly predicted, and so, accuracy could take one of the following $m+1$ possible values:
+\[
+\frac{0}{m},\frac{1}{m},\ldots,\frac{m}{m}
+\]
+\end{proof}
+
+\begin{corollary}
+The order of total number of possible values for the metric accuracy is:
+\[
+\mathcal{O}\left(m\right)
+\]
+\end{corollary}
+\begin{proof}
+Given Proposition [prop:Accuracy].
+\end{proof}
+
+\subsection{Precision}
+
+Precision is the ratio between the correctly predicted positive values and the total number of predicted positive values.
+
+\begin{definition}
+The precision of the predictions $\hat{\mathbf{y}}$ with respect to the testing values $\mathbf{y}$ is defined as:
+\[
+pre=\frac{tp}{tp+fp}
+\]
+\end{definition}
+
+\begin{proposition}
+The total number of possible values for the metric precision is given by:
+\[
+\#pre\leq\left(p+1\right)\left(n+1\right)
+\]
+\end{proposition}
+\begin{proof}
+$tp$ can take $p+1$ different values (from no true positives to $p$ true positives), and $fp$ can take $n+1$ different values (from no false positive to $n$ false positives), being the two values independent of each other. Precision can take at most $\left(p+1\right)\left(n+1\right)$ possible values, since some of these fractions can be simplified into a common distinctive value (how many fractions can be simplified depends on the function $\pi\left(q\right)$, that is, the number of primes less than $q$, which is unknown.)
+\end{proof}
+
+\begin{corollary}
+The order of total number of possible values for the metric precision is:
+\[
+\mathcal{O}\left(m^{2}\right)
+\]
+\end{corollary}
+\begin{proof}
+Given Proposition [prop:Precision].
+\end{proof}
+
+\subsection{Recall}
+
+Recall measures the ratio between the number of correctly predicted positive values and the total number of positives.
+
+\begin{definition}
+The recall of the predictions $\hat{\mathbf{y}}$ with respect to the testing values $\mathbf{y}$ is defined as:
+\[
+rec=\frac{tp}{tp+fn}
+\]
+\end{definition}
+
+\begin{proposition}
+The total number of possible values for the metric recall is given by:
+\[
+\#rec=(p+1)
+\]
+\end{proposition}
+\begin{proof}
+Given that
+\[
+rec=\frac{tp}{tp+fn}=\frac{tp}{p}
+\]
+and that $tp$ can take $p+1$ different values (from no true positives to all true positives).
+\end{proof}
+
+\begin{corollary}
+The order of total number of possible values for the metric recall is:
+\[
+\mathcal{O}\left(m\right)
+\]
+\end{corollary}
+\begin{proof}
+Given Proposition [prop:Recall].
+\end{proof}
+
+\subsection{F1}
+
+F1 is the harmonic mean between precision and recall.
+
+\begin{definition}
+The $F_{1}$ score of the predictions $\hat{\mathbf{y}}$ with respect to the testing values $\mathbf{y}$ is defined as:
+\[
+F_{1}=\frac{2}{\frac{1}{pre}+\frac{1}{rec}}
+\]
+\end{definition}
+
+\begin{proposition}
+The total number of possible values for the metric F1 is given by:
+\[
+\#F1\leq\left(n+1\right)\frac{\left(p+2\right)\left(p+1\right)}{2}
+\]
+\end{proposition}
+\begin{proof}
+It is a well know property that
+\[
+F_{1}=\frac{2}{\frac{1}{pre}+\frac{1}{rec}}=\frac{2\times pre\times rec}{pre+rec}=\frac{2tp}{2tp+fp+fn}
+\]
+$tp$ can take $p+1$ different values (from no true positives to $p$ true positives), and $fp$ can take $n+1$ different values (from no false positive to $n$ false positives), being this two values independent. Fixed a $tp$ the number of $fn$ is $p-tp+1$, so the total number of $tp$ and $fn$ is given by:
+\[
+\sum_{tp=0}^{p}\left(p-tp+1\right)	=p\left(p+1\right)-\frac{p\left(p+1\right)}{2}+\left(p+1\right)=
+	\frac{2p\left(p+1\right)-p\left(p+1\right)+2\left(p+1\right)}{2}=\frac{\left(p+2\right)\left(p+1\right)}{2}
+\]
+Then, $F_{1}$ can take at most $\left(n+1\right)\frac{\left(p+2\right)\left(p+1\right)}{2}$ possible values, since some of these fractions can be simplified into a common distinctive value.
+\end{proof}
+
+\begin{corollary}
+Corollary 12. The order of total number of possible values for the metric F1 is:
+\[
+\mathcal{O}\left(m^{3}\right)
+\]
+\end{corollary}
+\begin{proof}
+Given Proposition [prop:F1].
+\end{proof}
+
+\subsection{Area under the ROC curve}
+
+The area under the Receiver Operating Characteristic (AUC) measures how well our model differentiates between the distributions of the two classes.
+
+\begin{definition}
+The area under the Receiver Operating Characteristic (AUC) score of the predictions $\hat{\mathbf{y}}$ with respect to the testing values $\mathbf{y}$ is defined as:
+\[
+F_{1}=\frac{2}{\frac{1}{pre}+\frac{1}{rec}}
+\]
+\end{definition}
+
+\begin{proposition}
+The total number of possible values for the metric F1 is given by:
+\[
+\#F1\leq\left(n+1\right)\frac{\left(p+2\right)\left(p+1\right)}{2}
+\]
+\end{proposition}
+\begin{proof}
+The area under the Receiver Operating Characteristic (AUC) for the binary case can be computed as:
+\[
+AUC=\frac{\sum_{i=1}^{p}\left(r_{i}-1\right)}{pn}
+\]
+The different values for the numerator $\sum_{i=1}^{p}\left(r_{i}-1\right)$ correspond to the number of possibles ways in which the p values could appear in the testing dataset, that is given by
+\[
+{m \choose p}=\frac{m!}{n!p!}=\frac{m\left(m-1\right)\cdots\left(m-p+1\right)}{p\left(p-1\right)\cdots\text{1}}.
+\]
+The denominator is the constant $m$.
+\end{proof}
+
+\begin{corollary}
+Corollary 15. The order of total number of possible values for the metric AUC is:
+\[
+\mathcal{O}\left(AUC\right)=m^{\left(m/2\right)}
+\]
+\end{corollary}
+\begin{proof}
+Given Proposition [prop:AUC].
+\end{proof}
+
+\subsubsection{Kolmogorov Inaccuracy}
+
+Kolmogorov inaccuracy is a measure of the distance between the predicted values and the real values.
+
+\begin{definition}
+The Kolmogorov inaccuracy of the predictions $\hat{\mathbf{y}}$ with respect to the testing values $\mathbf{y}$ is defined as:
+\[
+kol=NCD(\mathbf{y},\hat{\mathbf{y}})
+\]
+\end{definition}
+
+\begin{proposition}
+The total number of possible values for the metric Kolmogorov inaccuracy is given by:
+\[
+\#kol\leq\frac{\left(p+2\right)\left(p+1\right)\left(n+2\right)\left(n+1\right)}{2}
+\]
+\end{proposition}
+\begin{proof}
+Proof. The normalized compression distance between two vectors $\mathbf{y}$ and $\hat{\mathbf{y}}$ is given by \[
+NCD(\mathbf{y},\hat{\mathbf{y}})=\frac{\hat{K}_{C}(\mathbf{\hat{y}},\mathbf{y})-\min\{\hat{K}_{C}(\mathbf{\hat{y}}),\hat{K}_{C}(\mathbf{y})\}}{\max\{\hat{K}_{C}(\mathbf{\hat{y}}),\hat{K}_{C}(\mathbf{y})\}}
+\]
+using as compressor a code with optimal length, the Kolmogorov inaccuracy is given by:
+\[
+\frac{-tp\log_{2}\frac{tp}{m}-fp\log_{2}\frac{fp}{m}-tn\log_{2}\frac{tn}{m}-fn\log_{2}\frac{fn}{m}}{\max\{-(tp+fp)\log_{2}\frac{(tp+fp)}{m}-(tn+fn)\log_{2}\frac{(tn+fn)}{m},-p\log_{2}\frac{p}{m}-n\log_{2}\frac{n}{m}\}}	
+-\frac{\min\{-(tp+fp)\log_{2}\frac{(tp+fp)}{m}-(tn+fn)\log_{2}\frac{(tn+fn)}{m},-p\log_{2}\frac{p}{m}-n\log_{2}\frac{n}{m}\}}{\max\{-(tp+fp)\log_{2}\frac{(tp+fp)}{m}-(tn+fn)\log_{2}\frac{(tn+fn)}{m},-p\log_{2}\frac{p}{m}-n\log_{2}\frac{n}{m}\}}	
+\]
+$tp$ can take $p+1$ different values (from no true positives to $p$ true positives), and $tn$ can take $n+1$ different values (from no true negative to $n$ true negatives), being this two values independent. Fixed a $tp$ the number of $fn$ is $p-tp+1$, so the total number of $tp$ and $fn$ is given by:
+\[
+\sum_{tp=0}^{p}\left(p-tp+1\right)	=p\left(p+1\right)-\frac{p\left(p+1\right)}{2}+\left(p+1\right)=
+	\frac{2p\left(p+1\right)-p\left(p+1\right)+2\left(p+1\right)}{2}=\frac{\left(p+2\right)\left(p+1\right)}{2}
+\]
+and fixed a $tn$ the number of $fp$ is $n-tn+1$, so the total number of $tn$ and $fp$ is given by:
+\[
+\sum_{tn=0}^{n}\left(n-fp+1\right)	=n\left(n+1\right)-\frac{n\left(n+1\right)}{2}+\left(n+1\right)=
+	\frac{2n\left(n+1\right)-n\left(n+1\right)+2\left(n+1\right)}{2}=\frac{\left(n+2\right)\left(n+1\right)}{2}
+\]
+Combining both expression, and taking into account that some of these fractions can be simplified into a common distinctive value, we get the desired result.
+\end{proof}
+
+\begin{corollary}
+The order of total number of possible values for the metric Kolmogorov Accuracy is:
+\[
+\mathcal{O}\left(m^{4}\right)
+\]
+\end{corollary}
+\begin{proof}
+Given Proposition [prop:Accuracy].
+\end{proof}
+
+Conclusion
+
+In this technical report we have derived exact formulas for the distinctiveness of the most common metrics used in binary classification algorithms, and the novel metric of Kolmogorov inaccuracy. The highest value of distinctiveness is achieved with the Kolmogorov inaccuracy, followed by the F1 metric. The lowest values are for accuracy and recall.
+
+Perhaps, an easier way to compare the different metrics in terms of distinctiveness would be to use asymptotic notation. In this sense, accuracy and recall will have a distinctiveness of $\mathcal{O}\left(m\right)$, precision of $\mathcal{O}\left(m^{2}\right)$, F1 of $\mathcal{O}\left(m^{3}\right)$, and Kolmogorov inaccuracy of $\mathcal{O}\left(m^{4}\right)$. This result is in line with the intuition, since accuracy and recall depend on only one parameter, precision on two, F1 on three, and Kolmogorov inaccuracy on four.

@@ -74,6 +74,99 @@ $Pr(\theta)$ is called the prior distribution because it is the distribution of 
 
 ... conditionoal distribution of the parameter $\theta$ given the observed data $x$ ...
 
+{\color{red} 
+
+\begin{proposition}
+Suppose that the $n$ random variables $X_1, \ldots, X_n$ form a random sample from a distribution for which the p.d.f. or de p.f. is $f \left( x \mid \theta \right)$. Suppose also that the value of the parameter $\theta$ is unknonw and the prior p.d.f. or p.f. of $\theta$ is $\psi \left( \theta \right)$. Then the posterior p.d.f. or p.f. of $\theta$ is
+\[
+\xi\left(\theta\mid\mathbf{x}\right)=\frac{f\left(x_{1}\mid\theta\right)\cdots f\left(x_{n}\mid\theta\right)\xi\left(\theta\right)}{g_{n}\left(\mathbf{x}\right)}\quad for\;\theta\in\Omega
+\]
+where $g_{n}$ is the marginal distribution of $X_{1},\ldots,X_{n}$
+\[
+g_{n}\left(\mathbf{x}\right)=\int_{\Omega}f_{n}\left(\mathbf{x}\mid\theta\right)\xi\left(\theta\right)d\theta
+\]
+\end{proposition}
+
+}
+
+{\color{red} If they are required in the text, extend this section with the following topics: How to estimate priors (maximum likelihood, uninformative, and maximum entropy). Conjugate priors. Sensitivity analysis.}
+
+{\color{red} Log-likelihood [...] natural logarithm is a monotonically increasing function [...] ensures that the maximum value of the log of the probability occurs at the same point as the original probability function [...]}
+
+{\color{red} An estimator of a parameter is some function of the data that we hope is close to the parameter.}
+
+{\color{red}
+
+\begin{definition}
+Let $X_1, \ldots, X_n$ be observable data whose joint distribution is indexed by a parameter $\theta$ taking values in a subset $\Omega$ of the real line. An \emph{estimator} of the parameter $\theta$ is a real-valued function $\delta \left( X_1, \ldots, X_n \right)$. If $X_1=x_1, \ldots, X_n=x_n$ are observed, then $\delta \left( X_1, \ldots, X_n \right)$ is called the \emph{estimate} of $\theta$.
+\end{definition}
+
+TODO: Relate the concepts of statistic and estimator. Provide a more generic definition of estimator.
+
+The estimator itself is a random variable, and its probability distribution can be derived from the joint distribution of $X_1, \ldots, X_n$ if desired.
+
+\begin{definition}
+
+A \emph{loss function} is a real-valued function of two variables, $L \left( \theta, a \right)$, where $\theta \in \Omega$ and $a$ is a real number. The interpretation is that the statistician loses $L \left( \theta, a \right)$ if the parameter equal $\theta$ and the estimate equals $a$.
+
+\end{definition}
+
+TODO: How this definiton relates to other definitions of loss functions?
+
+Let $\psi \left( \theta \right)$ deonote the prior p.d.f. of $\theta$ on the set $\Omega$. If the statistician choses a particular estimate $a$, then her expected loss will be
+\[
+E\left[L\left(\theta,a\right)\right]=\int_{\Omega}L\left(\theta,a\right)\xi\left(\theta\right)d\theta
+\]
+The statistician wishes to choose an estimate $a$ for which the expected loss is a minimum.
+}
+
+% Bayesian Inference
+
+\subsection{Bayesian Inference}
+
+In Bayesian statistical inference we assume that probabilistic knowledge about the data source is available before collecting observations, what it is called \emph{prior probability}. Let $\Theta$ be a family of models with a discrete parameter $\left\{ \theta_1,\theta_2,\ldots \right\}$ and with prior probabilities $Pr\left(\theta_i \right)$. {\color{red} $\theta_i$ could be a single scalar value, or a vector value.} We also assume that the likelihood $Pr\left(x \mid \theta_i \right)$ is known. Applying Bayes' theorem we have that the posterior probability $Pr\left(\theta_i \mid x\right)$ is given by
+\[
+    Pr\left(\theta_i \mid x\right) = \frac{Pr\left(x\mid\theta_i\right) Pr\left(\theta_i \right)}{Pr\left(x\right)} \quad \forall \theta_i \in \Theta
+\]
+
+where $Pr\left(x\right)$ is the marginal data probability $Pr\left( x \right) = \sum_{\theta_i} Pr\left( x \mid \theta_i \right) Pr\left( \theta_i \right)$. The value $Pr\left(x\right)$ is just a normalizing constant to be sure that $Pr\left(\theta_i \mid x\right)$ is a probability between $0$ and $1$. We usually remove this value an make the following approximation $Pr\left(\theta_i \mid x\right) \propto Pr\left(x\mid\theta_i\right) Pr\left(\theta_i \right)$. If we need a single estimated value for $\theta$, we use the mode of $Pr(\theta)$, what it is called the Maximum a Posteriori, or MAP, estimation. When our prior distribution $Pr\left(\theta_i \right)$ is the uniform distribution, MLE and MAP provide the same result.
+
+{\color{red} A Bayes estimator is an estimator that is chosen to minimize the posterior mean of some measure of how far the estimator is from the parameters, such as squared error or absolute error.}
+
+{\color{red} 
+
+Suppose we can observe the value $\mathbf{x}$ of the random vector $\mathbf{X}$ before estimating $\theta$, and let $\xi\left(\theta\mid\mathbf{x}\right)$ denote the posterior p.d.f. of $\theta$ on $\Omega$. For each estimate a the expected loss will be
+\[
+E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]=\int_{\Omega}L\left(\theta,a\right)\xi\left(\theta\mid\mathbf{x}\right)d\theta
+\]
+
+\begin{definition}
+Let $L\left(\theta,a\right)$ be a loss function. For each possible value $\mathbf{x}$ of $\mathbf{X}$, let $\delta^{\ast}\left(\mathbf{x}\right)$ be a value of a such that $E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]$ is minimized. Then $\delta^{\ast}$ is called a \emph{Bayes estimator} of $\theta$. Once $\mathbf{X=\text{\ensuremath{\mathbf{x}}}}$ is observed, $\delta^{\ast}\left(\mathbf{x}\right)$ is called a \emph{Bayes estimate} of $\theta$.
+\end{definition}
+
+Another way to describe a Bayes estimator $\delta^{\ast}$ is to note that, for each possible value $\mathbf{x}$ of $\mathbf{X}$, the value $\delta^{\ast}\left( \mathbf{x} \right)$ is chosen so that
+\[
+E\left[L\left(\theta, \delta^{\ast}\left(\mathbf{x}\right) \right)\mid \mathbf{x} \right] = \min_{\forall a} E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]
+\]
+
+The Bayes estimator will depend on both the loss function that is used in the problem and the prior distribution that is assigned to $\theta$.
+
+\begin{example}
+The loss function $L\left(\theta,a\right)=\left(\theta-a\right)^{2}$ is called squared error loss. Let $\theta$ be a real-valued parameter. Suppose that the squared error loss function is used and that the posterior mean of $\theta$, $E\left(\theta\mid\mathbf{X}\right)$, is finite. Then, a Bayes estimator of $\theta$ is $\delta^{\ast}\left(\mathbf{X}\right)=E\left(\theta\mid\mathbf{X}\right)$.
+
+The loss function $L\left(\theta,a\right)=\left|\theta-a\right|$ is called absolute error loss. When the absolute error loss function is used, a Bayes estimator of a real-valued parameter $\delta^{\ast}\left(\mathbf{X}\right)$ equal to a median of the posterior distribution of $\theta$.
+\end{example}
+
+\begin{definition}
+A sequence of estimators that converges in probability to the unknown value of the parameter being estimated, as $n \rightarrow \infty$, is called a consistent sequence of estimators.
+\end{definition}
+
+Under fairly general conditions and for a wide class of loss functions, the Bayes estimators of some parameters $\theta$ will form a consistent sequence of estimators as the sample size $n \rightarrow \infty$.
+
+The theory of Bayes estimators provies a satisfactory and coherent theory for the estimation of parameters. To apply the theory, it is necessary to specify a particular loss function, and also a prior distribution for the parameter. It is specially difficult to specify a meaningful prior distribution on the multidimensional parameter space $\Omega$.
+
+}
+
 % Non-Bayesian Inference
 
 \subsection{Non-Bayesian Inference}
@@ -88,20 +181,9 @@ We would like to infer a statement about which model, or which parameters for a 
 
 Let $\Theta$ be a family of models (probability distributions) with a discrete parameter $\left\{ \theta_1,\theta_2,\ldots \right\}$ and with prior probabilities $Pr\left(\theta_i \right)$, $\theta_i$ could be a single scalar value or a vector value, and let $x$ the data collected {\color{red} iid}. For each model $\theta$, we assume the probability of getting data x given model $\theta$, $Pr\left(x\mid\theta\right)$, is known. The \emph{Maximum Likelihood Estimator}, or MLE, selects as best estimate the value of $\theta$ that maximizes the likelihood $f\left(x\mid\theta\right)$.
 
-{\color{red} Log-likelihood [...] natural logarithm is a monotonically increasing function [...] ensures that the maximum value of the log of the probability occurs at the same point as the original probability function [...]}
 
-% Bayesian Inference
 
-\subsection{Bayesian Inference}
 
-In Bayesian statistical inference we assume that probabilistic knowledge about the data source is available before collecting observations, what it is called \emph{prior probability}. Let $\Theta$ be a family of models with a discrete parameter $\left\{ \theta_1,\theta_2,\ldots \right\}$ and with prior probabilities $Pr\left(\theta_i \right)$. {\color{red} $\theta_i$ could be a single scalar value, or a vector value.} We also assume that the likelihood $Pr\left(x \mid \theta_i \right)$ is known. Applying Bayes' theorem we have that the posterior probability $Pr\left(\theta_i \mid x\right)$ is given by
-\[
-    Pr\left(\theta_i \mid x\right) = \frac{Pr\left(x\mid\theta_i\right) Pr\left(\theta_i \right)}{Pr\left(x\right)} \quad \forall \theta_i \in \Theta
-\]
-
-where $Pr\left(x\right)$ is the marginal data probability $Pr\left( x \right) = \sum_{\theta_i} Pr\left( x \mid \theta_i \right) Pr\left( \theta_i \right)$. The value $Pr\left(x\right)$ is just a normalizing constant to be sure that $Pr\left(\theta_i \mid x\right)$ is a probability between $0$ and $1$. We usually remove this value an make the following approximation $Pr\left(\theta_i \mid x\right) \propto Pr\left(x\mid\theta_i\right) Pr\left(\theta_i \right)$. If we need a single estimated value for $\theta$, we use the mode of $Pr(\theta)$, what it is called the Maximum a Posteriori, or MAP, estimation. When our prior distribution $Pr\left(\theta_i \right)$ is the uniform distribution, MLE and MAP provide the same result.
-
-    {\color{red} If they are required in the text, extend this section with the following topics: How to estimate priors (maximum likelihood, uninformative, and maximum entropy). Conjugate priors. Sensitivity analysis.}
 
 %
 % Section: Machine Learning

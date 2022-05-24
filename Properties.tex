@@ -182,12 +182,70 @@ implements the exploration part in this schema of exploration/exploitation in wh
 characterized.
 
 
-\begin{remark}
-In this section we have provided a formalization of the theory of nescience based in set theory and first order logic. However, set theory is not the only available framework in which mathematics can be formalized. We could have used instead type theory or category theory. It would be very interesting to provide a collection of axioms of the theory of nescience in the context of these theories. Having meanifull axioms of our theory in set theory, type theory and category theory will convince us that nescience is a fundamental concept of mathematics, and not an artifact of a particular formalization theory.
+\subsection{Type Theory}
 
-Type theory has also some advantages over set theory. The most important is that it is a constructive theory, which means that all of proved theorems have an equivalent computer program, and so, that there exists algorithms to solve all the posed problems (no need to resort to an abstract, uncomputable, oracle). Moreover, the lambda terms defined by type theory are, by definition, computable functions, so our models would be native elements of the theory, and not added artifacts. Type theory itself would be our universal Turing machine, and so, no need to axiomatically define one. Finally, there are some implementation of type therory, like th Coq language, based on the calculus of constructions. This will allow us to mechanically verify the correctness of our theory.
-\end{remark}
+In the previous section we have provided a formalization of the theory of nescience based in set theory and first order logic. However, set theory is not the only available framework in which mathematics can be formalized. We could have used instead type theory or category theory. Having meanifull axioms of our theory in set theory, type theory and category theory will provide a solid evidence that nescience is a fundamental concept of mathematics, and not an artifact of a particular formalization theory.
 
+In this section we are going to provide a collection of axioms of the theory of nescience in the context of type theory. Type theory has some advantages over set theory. The most important is that it is a constructive theory, which means that all of proved theorems have an equivalent computer program, and so, that there exists algorithms to solve all the posed problems (no need to resort to an abstract, uncomputable, oracle). Moreover, the lambda terms defined by type theory are, by definition, computable functions, so our models would be native elements of the theory, and not added artifacts. Type theory itself would be our universal Turing machine, and so, no need to axiomatically define one. Finally, there are some implementation of type therory, like th Coq language, based on the calculus of constructions. This will allow us to mechanically verify the correctness of our theory.
+
+We start by introducing a new type, called \texttt{String}. The type string is defined recursively in the following way: the empty string, called \texttt{sigma}, is a string, and the sucessor of a string, given the function \texttt{S}, is also a string. Basically, for us strings are just a list of sigmas, and we consider the collection of all finite strings $\{ \sigma, \sigma \sigma, \sigma \sigma \sigma, \ldots \}$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Inductive String : Set :=
+  | sigma : String
+  | S     : String -> String.
+\end{verbatim}}
+\end{sourcecode}
+
+Before to introduce the main concepts of the theory of nescience, we have to define a helper funcion called \texttt{Difference}. The \texttt{Difference} function computes the absolute difference between two strings, that is, the excess of sigmas of the longer string with respect to the shortest one. For example, if we have the strings $\sigma \sigma$ and $\sigma \sigma \sigma$, the difference would be the string $\sigma$. Given two strings $r$ and $s$, the \texttt{Difference} is defined recursively as:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Fixpoint Difference (r s : String) : String :=
+  match r, s with
+  | sigma, sigma  => sigma
+  | sigma, s      => s
+  | r     , sigma => r
+  | S r'  , S s'  => Difference r' s'
+  end.
+\end{verbatim}}
+\end{sourcecode}
+
+We say that a string $r$ has smaller \emph{surfeit} than a string $s$ if the string $r$ is shorter, in terms of number of sigmas, than the string $s$. Given two strings $r$ and $s$, the \texttt{Surfeit} function is defined recursively, and returns \texttt{true} if the string $r$ has less sigmas than the string $s$. 
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Fixpoint Surfeit (r s : String) : bool :=
+  match r, s with
+  | sigma, sigma  => false
+  | sigma, _      => true
+  | _     , sigma => false
+  | S r', S s'    => Surfeit r' s' 
+  end.
+\end{verbatim}}
+\end{sourcecode}
+
+The \emph{inaccuracy} of a string $r$ with respect to a target string $t$ is based on the absolute difference between the two strings, that is, how close is the string to the target. Given two strings $r$ and $s$, and a target string $t$, the \texttt{Inaccuracy} function returns \texttt{true} if the absolute difference between the strings $r$ and $t$ contains less sigmas than the absolute difference between the strings $s$ and $t$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Definition Inaccuracy (r s : String) (t : String) : bool :=
+  Surfeit (Difference r t) (Difference s t).\end{verbatim}}
+\end{sourcecode}
+
+\emph{Nescience} will be based on the concepts of surfeit and inaccuracy. Intitively, we are looking for very short models (low surfeit) and with very low error (low inaccuracy). The \texttt{Nescience} function gets as input five strings: $mr$, $ms$, $r$, $s$ and $e$, and returns \emph{true} if $mr$ is a shorter string than $ms$, and the inaccuracy of $r$ is smaller than the inaccucay of $s$ with respect to $e$. Intuitively, $mr$ and $ms$ would be a string-based representations of our models (in our case, lamda-terms), $r$ and $s$ are the string-based outputs of these models, and $e$ is a string-based representation of an entity.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Definition Nescience (mr ms : String) (r s : String) (e : String) : bool :=
+  andb (Surfeit mr ms) (Inaccuracy r s e).
+\end{verbatim}}
+\end{sourcecode}
+
+In the remaining of this section we will see how we can derive our theory of nescience using only these fundamental concepts. We will also prove the most significant results, and we will derive algorithms for the application of the theory in practice.
+
+\subsubsection*{Properties of Strings}
 
 
 %

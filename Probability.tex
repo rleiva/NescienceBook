@@ -306,6 +306,20 @@ The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
 
 The Cumulative Distribution Function
 
+{\color{red} Introduce the concept of random sample}
+
+The concept of random sample plays a very important role in the area of statistical learning. Assuming that a collection of random variables form a random sample simplifies the mathematics behind inference methods. However, the requirements behind random samples are not always satisfied in practice.
+
+\begin{definition}
+Let $f$ be a probability distribution, and let $X_1, X_2, \ldots, X_n$ be $n$ random variables. It is said that the variables $X_1, X_2, \ldots, X_n$ form a \emph{random sample} for the distribution $f$ if they are independent, and the marginal distribution of each of them is $f$. 
+\end{definition}
+
+If the random variables $X_1, X_2, \ldots, X_n$ form a random sample for the distribution $f$, it is said that they are \emph{independent and identically distributed}, abbreviated \emph{i.i.d}. The number $n$ is called the \emph{sample size}. The joint distribution $g$ of the random sample is given by:
+\[
+g \left( x_1, x_2, \ldots, x_n \right) = f \left( x_1 \right) f \left( x_2 \right) \ldots f \left( x_n \right)
+\]
+for all the points $\left( x_1, x_2, \ldots, x_n \right) \in \mathcal{R}$.
+
 % Bivariate Distributions
 
 \subsection{Bivariate Distributions}
@@ -331,6 +345,12 @@ Let $X$ and $Y$ have a discrete joint distribution. If $\left(x,y\right)$ is not
 Finally, for each $C$ of ordered pairs $Pr\left[\left(X,Y\right)\in C\right]=\sum_{\left(x,y\right)\in C}f\left(x,y\right)$
 
 {\color{red} Any function that satisfied the two displayed formulas is the joint p.d.f. for some probability distribution.}
+
+A particular interesting case of bivariate distribution is given by the sum of two random variables. This is a highly confusing scenario, since we are not adding two probability distributions, as the notation $X + Y$ might suggest. Instead, we are defining a new random variable over the cartesian product of the original sample spaces.
+
+\begin{definition}
+Let $X : \Omega_X \rightarrow \mathbb{R}$ and $Y : \Omega_Y \rightarrow \mathbb{R}$ be two random variables. The sum distribution of $X$ and $Y$, denoted by $X + Y$, is defined as the random variable $X + Y : \Omega_X \times \Omega_Y \rightarrow \mathbb{R}$ that assigns to each pair $\left( a, b \right) \in \Omega_X \times \Omega_Y$ the number $X(a) + Y(b)$.
+\end{definition}
 
 % Marginal Distribution
 
@@ -484,7 +504,21 @@ E \left( X_1 \right) \cdot \ldots \cdot E \left( X_n \right)
 
 The expectation of the product of non-independent random variables is not necesarily equal to the product of their individual expectations.
 
+In the area of statistical inference it is also highly convenient to compute the sample mean, as the average of $n$ random variables. In particular, we will compute the sample mean of random samples.
+
+\begin{definition}
+Let $X_1, X_2, \ldots, X_n$ be $n$ random variables. The \emph{sample mean}, denoted by $\bar{X}_n$, is defined as:
+\[
+\bar{X}_n = \frac{1}{n} \sum_{i=1}^n X_i
+\]
+\end{definition}
+
+Do not confuse $\frac{1}{n} \left( X_1 + X_2 + \ldots + X_n \right)$, which is a probability distribution, with $E \left( X_1 + X_2 + \ldots + X_n \right)$, which is a real number.
+
 % The Median
+
+\subsubsection*{The Median}
+
 
 We have seen that the mean of a probability distribution is the center of gravity of that distribution. The actual center of the distribution is called  the \emph{median}.
 
@@ -637,3 +671,43 @@ If $X_{1},\ldots,X_{n}$ are uncorrelated random variables, then $Var\left(\sum_{
 \section{Large Random Samples}
 \label{sec:probability_random_samples}
 
+{\color{red} Introduce the following definition}
+
+\begin{definition}
+A sequence $Z_1, Z_2, \ldots$ of random variables converges to $b$ in probability, denoted by $Z_n \overset{p}{\rightarrow} b$, if for every number $\varepsilon>0 \lim_{n\rightarrow\infty}Pr\left(\left|Z_{n}-b\right|<\varepsilon\right)=1$.
+\end{definition}
+
+% Law of Large Numbers
+
+\subsubsection*{Law of Large Numbers}
+
+{\color{red} The law of large numbers gives a mathematical foundation to the intuition that the average of a large sample of i.i.d. random variables should be close to their mean.}
+
+{\color{red} In probability theory, the law of large numbers (LLN) is a theorem that describes the result of performing the same experiment a large number of times. According to the law, the average of the results obtained from a large number of trials should be close to the expected value and tends to become closer to the expected value as more trials are performed.}
+
+\begin{theorem}[Law of Large Numbers]
+Let $X_1, \ldots, X_n$ be a random sample from a distribution $f$ for which the mean is $\mu$ and the variance is finite. Then we have that
+\[
+\overline{X}_n \overset{p}{\rightarrow} \mu
+\]
+\end{theorem}
+\begin{proof}
+\end{proof}
+
+{\color{red} Stress the point in the requirements: i.i.d., finite mean and variance}
+
+{\color{red} Since $\overline{X}_{n}$ converges to $\mu$ in probability, it follows that there is high probability that $\overline{X}_{n}$ will be close to $\mu$ if the sample size n is large.}
+
+\begin{example}
+
+{\color{red} For example, a fair coin toss is a Bernoulli trial. When a fair coin is flipped once, the theoretical probability that the outcome will be heads is equal to 1⁄2. Therefore, according to the law of large numbers, the proportion of heads in a "large" number of coin flips "should be" roughly 1⁄2. In particular, the proportion of heads after n flips will almost surely converge to 1⁄2 as n approaches infinity.}
+
+{\color{red} Although the proportion of heads (and tails) approaches 1⁄2, almost surely the absolute difference in the number of heads and tails will become large as the number of flips becomes large. That is, the probability that the absolute difference is a small number approaches zero as the number of flips becomes large. Also, almost surely the ratio of the absolute difference to the number of flips will approach zero. Intuitively, the expected difference grows, but at a slower rate than the number of flips.}
+
+\end{example}
+
+% Central Limit Theorem
+
+\subsubsection{Central Limit Theorem}
+
+{\color{red} The central limit theorem gives us a way to approximate the probability that the sample average is close to the mean.}

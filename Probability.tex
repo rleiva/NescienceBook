@@ -56,6 +56,8 @@ A \emph{probability}\index{Probability} is a real number $P(A) \in \mathbb{R}$ a
 \item [Axiom 2] $P(\Omega) = 1$.
 \item [Axiom 3] For every finite sequence of disjoint events $A_1, A_2, \ldots, A_n$ we have that $P(\cup_{i=1}^n) = \sum_{i=1}^n P(A_i)$.
 \end{description}
+
+The triple $\left( \Omega, \mathcal{A} \right, P)$ is called a \emph{probability space}. 
 \end{definition}
 
 A problem with these axioms is that they cannot be reduced to first-order logic (See Appendix \ref{apx:foundations_mathematics}), since real numbers cannot be described in terms of this logic. Also, no information is contained in the axioms about how probabilites can be assigned to events. {\color{red} TODO: split the two ideas in two separate paragraphs and extend a little bit. Perhaps mention model theory.}
@@ -122,6 +124,12 @@ The following formula generalizes to the case of $n$ events $A_1, \ldots, A_n$ {
 P \left( \bigcup_{i=1}^n A_i \right) = \sum_{i=1}^n P \left( A_i \right) - \sum_{i<j} P \left( A_i \cap A_j \right) + \sum_{i<j<k} P \left( A_i \cap A_j \cap A_k \right) - \\
  - \sum_{i<j<k<l} P \left( A_i \cap A_j \cap A_k \cap A_l \right) + \ldots +  (-1)^{n+1} P \left( A_1 \cap A_2 \cap \ldots \cap A_n \right) 
 \end{multline}
+
+A probability mass funciton is a function that assigns to each possible event its probability.
+
+\begin{definition}
+Let $\left( \Omega, \mathcal{A} , P \right)$ be a discrete probability space. A \emph{probability mass function}\index{Probability mass function} is a real value funcion $f : \mathcal{A} \rightarrow \mathbb{R}$ such that for each $A \in \mathcal{A}$ we have that $f \left( A \right) = P(A)$.
+\end{definition}
 
 %
 % Section: Conditional Probability
@@ -221,41 +229,35 @@ P\left(A_{i}\mid B\right)=\frac{P\left(B\mid A_{i}\right) P\left(A_{i}\right)}{\
 \section{Random Variables}
 \label{sec:probability_random_variables}
 
-{\color{red} Say something intelligent here}
-
-% Random Variables and Discrete Distributions
-
-\subsection{Random Variables and Discrete Distributions}
-
-{\color{red} Definition of Random Variable}
-
-{\color{red} Introduce the concept of random variable}
+A random variable is a function that asigns a real number to the outcomes of an experiment. In this sense, a random variable acts as a numerical description of the experiment. Random variables are useful because they allow us to quantify the results of the experiments and study their properties from a mathematical point of view. In fact, they are so useful that most of statisticians only think in terms of  random variables.
 
 \begin{definition}
-Let $\Omega$ be the sample space for an experiment. A random variable is a real-valued function $X : \Omega \rightarrow \mathbb{R}$, where the probability of having the value $x \in \mathbb{R}$, denoted by $P(X=x)$, is given by $P(\{ \omega \in \Omega : X(\omega) = x\})$.
+Let $\Omega$ be the sample space for an experiment. A random variable is a real-valued function $X : \Omega \rightarrow \mathbb{R}$, such that the probability of having $x \in \mathbb{R}$, denoted by $P(X=x)$, is given by $P(\{ \omega \in \Omega : X(\omega) = x\})$.
 \end{definition}
 
-{\color{red} Eplain why "random variable" is a terrible name}
+The name random variable could be a little bit misleading. First, because random variables are not variables in the ususal sense in algebra, since they are functions. And second, because they are not random, what it is random is the experiment they describe. As always, we will stay true to standard terminology.
 
-{\color{red} Am I right about the interpretation of the concept of random variable?}
-
-{\color{red} Introduce the concept of probability distribution. Recall we are only considering discrete distributions.}
+Random variables are more useful when they describe properties of the experiments: if our sample space is composed by the students of a school, a random variable could assign to each student its height. Random variables allow us also to reasign the elements of the sample space into new events: if we throw two dices, a random variable could be the sum of the values of the dices. Be aware that we are free to assing a random variable to any sample space, even if that assignment does not make too much sense. For example, we could assign a number to each possible colour of a deck of cards, then pick up two cards at random, and sum their numbers; although sums do not have a meaningful interpretion, we can compute all sort of probabilities over them.
 
 \begin{definition}
-Let $X$ be a random variable. The distribution of $X$ is the collection of all probabilities of the form $P\left(X\in C\right)$ for all sets $C$ of the real numbers such that $\left\{ X\in C\right\}$  is an event. The Distribution of a Random Variable. Let $C$ be a subset of the real line such that $\left\{ X\in C\right\}$  is an event, and let $P\left(X\in C\right)$ denote the probability that the value of $X$ will belong to the subset $C$, then $P\left(X\in C\right)=P\left(\left\{ s\,:\,X\left(s\right)\in C\right\} \right)$
-
-The \emph{probability mass function}\index{Probability mass function} of a discrete random variable $X$ with range $\{ x_1, x_2, \ldots, x_i, \ldots \}$ is defined as the function $f$ such that $f(x_i) = P(X=x_i)$.
+Let $X$ be a discrete random variable. The distribution of $X$ is the collection of all probabilities of the form $P\left(X\in C\right)$ for all sets $C$ of the real numbers such that $\left\{ X\in C\right\}$  is an event. The Distribution of a Random Variable. Let $C$ be a subset of the real line such that $\left\{ X\in C\right\}$  is an event, and let $P\left(X\in C\right)$ denote the probability that the value of $X$ will belong to the subset $C$, then $P\left(X\in C\right)=P\left(\left\{ s\,:\,X\left(s\right)\in C\right\} \right)$
 \end{definition}
 
-{\color{red} The distribution of $X$ is itself a probability measure on the set of real numbers.}
+Definition {\color{red} XX} introduced the concept of probability distribution. We could apply the same concept to a discrete random variable, and derived what it is called a probability mass function.
+
+\begin{definition}
+Let $X$ be a discrete random variable that can takes the values $\{ x_1, x_2, \ldots, x_i, \ldots \}$. The \emph{probability mass function}\index{Probability mass function} is defined as the function $f$ such that $f(x_i) = P(X=x_i)$.
+\end{definition}
+
+In the rest of this book we will use the name probability distribution to mean a probability distribution of a experiment or the probability mass function of a discrete random variable.
+
+\begin{example}
+{\color{red} It is possible for two random variables to have identical distributions but to differ in significant ways; for instance, they may be independent.}
+\end{example}
 
 {\color{red} Is it too early for this?} A \emph{parametric random variable} $X$, denoted by $f\left(X \mid \theta \right)$, is a distribution that belongs to a family of functions parameterized by $\theta$, where $\theta$ can be a single parameter, or a vector of several parameters. 
 
 {\color{red} If a random variable $X$ has a discrete distribution, the probability function (abbreviated p.f.) of $X$ is defined as the function $f$ such that for every real number $x$, $f\left(x\right)=P\left(X=x\right)$}
-
-\begin{example}
-A random variable $Z$ that takes only two values $0$ and $1$ with $P\left(Z=1\right)=p$ has the Bernoulli distribution with parameter $p$. We also say that $Z$ is a Bernoulli random variable with parameter $p$.
-\end{example}
 
 {\color{red} The closure of the set $\left\{ x\,:\,f\left(x\right)>0\right\}$  is called the support of (the distribution of) $X$. Probability functions are also known as probability mass functions (p.m.f.).}
 
@@ -296,25 +298,6 @@ If $X$ has the uniform distribution on the integers $a,\ldots,b$, the p.f. of $X
 
 {\color{red} Random variables can have the same distribution without being the same random variable. (this is also mentioned in the masures of centrality section}.
 
-Binomial Distributions
-
-\begin{example}
-Suppose we perform $N$ independent trials where each trial either succeeds or fails with probability of success $p$, and let $X$ the random variable defined by the number of successes. The probability of having exactly $n$ successes $P(X=n)$ follows a \emph{binomial distribution} with parameters $N, p$, defined by:
-\[
-f(n\mid N, p) = \binom{N}{n} p^n (1-p)^{(N-n)}
-\]
-\end{example}
-
-\begin{definition}
-The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
-{n \choose x}p^{x}\left(1-p\right)^{n-x} & for\,x=0,1,\ldots,n\\
-0 & otherwise
-\end{cases}$
-\end{definition}
-
-{\color{red} is called the binomial distribution with parameters $n$ and $p$.}
-
-{\color{red} Consider a general experiment that consists of observing $n$ independent trials with only two possible results for each trial: success and failure. Then the distribution of the number of trials that result in success will be binomial with parameters $n$ and $p$, where $p$ is the probability of success on each trial.} 
 
 The Cumulative Distribution Function
 
@@ -332,9 +315,9 @@ g \left( x_1, x_2, \ldots, x_n \right) = f \left( x_1 \right) f \left( x_2 \righ
 \]
 for all the points $\left( x_1, x_2, \ldots, x_n \right) \in \mathcal{R}$.
 
-% Bivariate Distributions
+% Multivariate Distributions
 
-\subsection{Bivariate Distributions}
+\subsection{Multivariate Distributions}
 
 \begin{definition}
 Let $X$ and $Y$ be random variables. The joint distribution or bivariate distribution of $X$ and $Y$ is the collection of all probabilities of the form $Pr\left[\left(X,Y\right)\in C\right]$ for all sets $C$ of pairs of real numbers such that $\left[\left(X,Y\right)\in C\right]$ is an event.
@@ -366,7 +349,7 @@ Let $X : \Omega_X \rightarrow \mathbb{R}$ and $Y : \Omega_Y \rightarrow \mathbb{
 
 % Marginal Distribution
 
-\section{Marginal Distribution}
+\subsection{Marginal Distribution}
 
 {\color{red} Often, we start with a joint distribution of two random variables and we then want to find the distribution of just one of them, called the marginal distribution.}
 
@@ -674,6 +657,33 @@ If $X_{1},\ldots,X_{n}$ are uncorrelated random variables, then $Var\left(\sum_{
 
 \section{Distributions}
 \label{sec:probability_distributions}
+
+\subsection{Bernoulli Distributions}
+
+\begin{example}
+A random variable $Z$ that takes only two values $0$ and $1$ with $P\left(Z=1\right)=p$ has the Bernoulli distribution with parameter $p$. We also say that $Z$ is a Bernoulli random variable with parameter $p$.
+\end{example}
+
+\subsection{Binomial Distributions}
+
+\begin{example}
+Suppose we perform $N$ independent trials where each trial either succeeds or fails with probability of success $p$, and let $X$ the random variable defined by the number of successes. The probability of having exactly $n$ successes $P(X=n)$ follows a \emph{binomial distribution} with parameters $N, p$, defined by:
+\[
+f(n\mid N, p) = \binom{N}{n} p^n (1-p)^{(N-n)}
+\]
+\end{example}
+
+\begin{definition}
+The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
+{n \choose x}p^{x}\left(1-p\right)^{n-x} & for\,x=0,1,\ldots,n\\
+0 & otherwise
+\end{cases}$
+\end{definition}
+
+{\color{red} is called the binomial distribution with parameters $n$ and $p$.}
+
+{\color{red} Consider a general experiment that consists of observing $n$ independent trials with only two possible results for each trial: success and failure. Then the distribution of the number of trials that result in success will be binomial with parameters $n$ and $p$, where $p$ is the probability of success on each trial.} 
+
 
 
 %

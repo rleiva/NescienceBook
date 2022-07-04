@@ -181,52 +181,63 @@ that belong to different entities might lead to a new, previously unknown, entit
 implements the exploration part in this schema of exploration/exploitation in which science is
 characterized.
 
+%
+% Axioms based on Type Theory
+%
 
 \subsection{Type Theory}
 
-In the previous section we have provided a formalization of the theory of nescience based in set theory and first order logic. However, set theory is not the only available framework in which mathematics can be formalized. We could have used instead type theory or category theory. Having meanifull axioms of our theory in set theory, type theory and category theory will provide a solid evidence that nescience is a fundamental concept of mathematics, and not an artifact of a particular formalization theory.
+In the previous section we have provided a formalization of the theory of nescience based in set theory and first order logic. Set theory is not the only available framework in which mathematics can be formalized. We could have used type theory or category theory instead. Having meaniful axioms of our theory in multiple formalization frameworks, such as set theory, type theory, and category theory, will constitute strong evidence that nescience is a fundamental concept in mathematics, and not a mere artifact of a particular formalization.
 
-In this section we are going to provide a collection of axioms of the theory of nescience in the context of type theory. Type theory has some advantages over set theory. The most important is that it is a constructive theory, which means that all of proved theorems have an equivalent computer program, and so, that there exists algorithms to solve all the posed problems (no need to resort to an abstract, uncomputable, oracle). Moreover, the lambda terms defined by type theory are, by definition, computable functions, so our models would be native elements of the theory, and not added artifacts. Type theory itself would be our universal Turing machine, and so, no need to axiomatically define one. Finally, there are some implementation of type therory, like th Coq language, based on the calculus of constructions. This will allow us to mechanically verify the correctness of our theory.
+In this section we are going to provide a formalization of the theory of nescience in the context of type theory (see Section \ref{sec:lambda_calculus}). Type theory has some advantages over set theory. The most important is that it is a constructive theory, which means that we do not assume the existence of abstract mathematical entities that satisfy some properties, but we show how to construct those entities. For example, there is no need to resort to an abstract, uncomputable, oracle. In type theory, all propositions and proven theorems have an equivalent computable function or algorithm, and thus, we can provide computer programs to solve all problems addressed by our theory (see Section \ref{sec:nescience_library} for a practical implementation of some of these algorithms in the form of a software library).
 
-We start by introducing a new type, called \texttt{String}. The type string is defined recursively in the following way: the empty string, called \texttt{sigma}, is a string, and the sucessor of a string, given the function \texttt{S}, is also a string. Basically, for us strings are just a list of sigmas, and we consider the collection of all finite strings $\{ \sigma, \sigma \sigma, \sigma \sigma \sigma, \ldots \}$.
+A second advantage of type theory is that the lambda terms used in the theory are by definition computable functions, and that lambda calculus is a Turing machine capable of universal computation. In the theory of nesciece we require that our models be lambda terms, and that our universal Turing machine be the lambda calculus. In this sense, our models are native elements within the theory, not external artifacts based on an arbitrary, axiomatically defined, universal machine. The models that describe entities are lambda terms executed in the univeral Turing machine of lambda calculus.
+
+The third advantage is that there are software implementations of type theory, such as the Coq proof assistant (see Section \ref{apx:coq}), which allow us to mechanically verify the correctness of our theory. In the rest of this section, we will use the coq syntax for definitions, propositions and theorems so that interested readers can use a computer and a Coq interpreter to verify by themselves that the proofs are correct. We have also included an appendix where we briefly describe the Coq language, so that those readers who prefer traditional mathematics can translate the Coq scripts into classical mathematical definitions and propositions.
+
+% Foundamental Concepts
+
+\subsubsection*{Foundamental Concepts}
+
+We start by introducing a new type, called \texttt{String}. The type string is defined recursively in the following way: the empty string, called \texttt{lambda}\footnote{Do not confuse the $\lambda$ symbol with a $\lambda$-term.}, is a string, and the sucessor of a string, given the function \texttt{S}, is also a string. For us strings are just a list of lambdas, and our theory is based on the collection of all finite strings $\{ \lambda, \lambda \lambda, \lambda \lambda \lambda, \ldots \}$. Both descriptions and representations will be finite strings of lambdas.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
 Inductive String : Set :=
-  | sigma : String
-  | S     : String -> String.
+  | lambda : String
+  | S      : String -> String.
 \end{verbatim}}
 \end{sourcecode}
 
-Before to introduce the main concepts of the theory of nescience, we have to define a helper funcion called \texttt{Difference}. The \texttt{Difference} function computes the absolute difference between two strings, that is, the excess of sigmas of the longer string with respect to the shortest one. For example, if we have the strings $\sigma \sigma$ and $\sigma \sigma \sigma$, the difference would be the string $\sigma$. Given two strings $r$ and $s$, the \texttt{Difference} is defined recursively as:
+Before to introduce the main concepts of the theory of nescience, we have to define a helper funcion called \texttt{Difference}. The \texttt{Difference} function computes the absolute difference between two strings, that is, the excess of lambdas of the longer string with respect to the shortest one. For example, if we have the strings $\lambda \lambda$ and $\lambda \lambda \lambda$, the difference would be the string $\lambda$. Given two strings $r$ and $s$, \texttt{Difference} is defined recursively as:
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
 Fixpoint Difference (r s : String) : String :=
   match r, s with
-  | sigma, sigma  => sigma
-  | sigma, s      => s
-  | r     , sigma => r
-  | S r'  , S s'  => Difference r' s'
+  | lambda, lambda  => lambda
+  | lambda, s       => s
+  | r     , lambda  => r
+  | S r'  , S s'    => Difference r' s'
   end.
 \end{verbatim}}
 \end{sourcecode}
 
-We say that a string $r$ has smaller \emph{surfeit} than a string $s$ if the string $r$ is shorter, in terms of number of sigmas, than the string $s$. Given two strings $r$ and $s$, the \texttt{Surfeit} function is defined recursively, and returns \texttt{true} if the string $r$ has less sigmas than the string $s$. 
+We say that a string $r$ has smaller \emph{surfeit} than a string $s$ if the string $r$ is shorter, in terms of number of lambdas, than the string $s$. Given two strings $r$ and $s$, the \texttt{Surfeit} function is defined recursively, and returns \texttt{true} if the string $r$ has less lambdas than the string $s$.  Applied to descriptionss, we prefer those with the smaller number of lamdas.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
 Fixpoint Surfeit (r s : String) : bool :=
   match r, s with
-  | sigma, sigma  => false
-  | sigma, _      => true
-  | _     , sigma => false
-  | S r', S s'    => Surfeit r' s' 
+  | lambda, lambda => false
+  | lambda, _      => true
+  | _     , lambda => false
+  | S r', S s'     => Surfeit r' s' 
   end.
 \end{verbatim}}
 \end{sourcecode}
 
-The \emph{inaccuracy} of a string $r$ with respect to a target string $t$ is based on the absolute difference between the two strings, that is, how close is the string to the target. Given two strings $r$ and $s$, and a target string $t$, the \texttt{Inaccuracy} function returns \texttt{true} if the absolute difference between the strings $r$ and $t$ contains less sigmas than the absolute difference between the strings $s$ and $t$.
+The \emph{inaccuracy} of a string $r$ with respect to a target string $t$ is based on the absolute difference between the two strings, that is, how close is the string to the target. Given two strings $r$ and $s$, and a target string $t$, the \texttt{Inaccuracy} function returns \texttt{true} if the absolute difference between the strings $r$ and $t$ contains less lambdas than the absolute difference between the strings $s$ and $t$. Inaccuracy will be applied to the ouput of the models.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
@@ -234,7 +245,7 @@ Definition Inaccuracy (r s : String) (t : String) : bool :=
   Surfeit (Difference r t) (Difference s t).\end{verbatim}}
 \end{sourcecode}
 
-\emph{Nescience} will be based on the concepts of surfeit and inaccuracy. Intitively, we are looking for very short models (low surfeit) and with very low error (low inaccuracy). The \texttt{Nescience} function gets as input five strings: $mr$, $ms$, $r$, $s$ and $e$, and returns \emph{true} if $mr$ is a shorter string than $ms$, and the inaccuracy of $r$ is smaller than the inaccucay of $s$ with respect to $e$. Intuitively, $mr$ and $ms$ would be a string-based representations of our models (in our case, lamda-terms), $r$ and $s$ are the string-based outputs of these models, and $e$ is a string-based representation of an entity.
+\emph{Nescience} will be based on the concepts of surfeit and inaccuracy. Intitively, we are looking for very short descriptions (low surfeit) and with very low error (low inaccuracy). The \texttt{Nescience} function gets as input five strings: $mr$, $ms$, $r$, $s$ and $e$, and returns \emph{true} if $mr$ is a shorter string than $ms$, and the inaccuracy of $r$ is smaller than the inaccucay of $s$ with respect to $e$. Intuitively, $mr$ and $ms$ would be a string-based representations of our models (in our case, lambda-terms), $r$ and $s$ are the string-based outputs of these models, and $e$ is a string-based representation of an entity.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
@@ -243,10 +254,450 @@ Definition Nescience (mr ms : String) (r s : String) (e : String) : bool :=
 \end{verbatim}}
 \end{sourcecode}
 
-In the remaining of this section we will see how we can derive our theory of nescience using only these fundamental concepts. We will also prove the most significant results, and we will derive algorithms for the application of the theory in practice.
+In practice, we generally do not know a string-based representation $e$ of the entity we are interested in, so an indirect approach must be used to study that entity. \emph{Miscoding} is this approach, and it will be introduced in a later section.
+
+Instead of defining the new type \texttt{String} we could have reused the concept of natural number, that is, we could have introduced descriptions and representations as numbers. In that case, the \texttt{Difference} between two strings $r$ and $s$ would be the absolutute difference $\mid r - s \mid$ between the numbers $r$ and $s$, and the \texttt{Surfeit} could be based on the the strict order relation between numbers $<$. The concepts of \texttt{Inaccuracy} and \texttt{Nescience} would have been defined in the same way with numbers. However, natural numbers require additional properties that are not needed for the theory of nescience. For example, the multiplication of two natural numbers does not make any sense in our theory.  Reusing natural numbers would have made our theory unnecerarily complex.
+
+In the rest of this section, we will see how we can derive our theory of nescience using only these fundamental concepts. We will also prove the most significant results and derive algorithms for applying the theory in practice.
+
+% Surfeit
+
+\subsubsection*{Surfeit}
+
+Surfeit allow us to compare two strings. Recall that the surfeit of two strings $r$ and $s$ is true if, and only if, $s$ is composed by more lambdas than $r$. Surfeit allow us to order the models (string based representations of the models) by its length. We are interested in those models with the lowest possible complexity. In the rest of this section we are going to review the properties of surfeit.
+
+The surfeit of a string does not increases when we conditions that string to another one. Intuitively, assuming some previous background knowledge already known as true allow us to reduce the complexity of our models.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition SurfeitConditional : forall r s : String, 
+  Surfeit r (r |c s) = false.
+Proof.
+intros.
+induction r as [| r' IHr'].
+- simpl.
+  reflexivity.
+-
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+From a theoretical point of view, the limit to the proccess of conditioning would be to assume as true the current model.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition SurfeitConditionalLambda : forall r s: String, 
+  Surfeit lambda (r |c r) = false.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+The surfeit of a string does not decreases when it is concatenated with another string. Intuitively, the concatenation of two models increases our uknown. This process of concatenating models can be used as an exploratory mechanism to discover new research topics (previously unknown entities).
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition SurfeitConcatenation : forall r s : String, 
+  Surfeit r (r <+> s) = false.
+Proof.
+intros.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+From the point of view of surfeit, the operation of concatenation can be distributed over the operation of conditioning, as next proposition shows ({\color{red} TODO: provide the intuition behind this distributive law}).
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DistributiveLawSurfeit : forall r s t  : String,
+  Surfeit ((r |c s) <+> t) ((r <+> t) |c (s <+> t)) = true.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+% Inaccuracy
+
+\subsubsection*{Inaccuracy}
+
+{\color{red} Definition and results about inaccuracy}
+
+{\color{red} Inaccuracy does not increases with conditional}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition InaccuracyConditional : forall r s e : String, 
+  Inaccuracy r (r |c s) e = false.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red}  The limit would be conditioning a string to itself}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition InaccuracyConditionalLambda : forall r s: String, 
+  Inaccuracy lambda (r |c r) = false.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red} Distributive Law}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DistributiveLawInaccuracy : forall r s t  : String,
+  Inaccuracy ((r |c s) <+> t) ((r <+> t) |c (s <+> t)) = true.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+% Entities, Representations and Descriptions
+
+\subsubsection*{Entities, Representations and Descriptions}
+
+After we have described the fundamental concepts of the theory of nescience, in this section we are going to introduce the remaining elements of the theory, that is, the concepts of entity, representation and description.
+
+We introduce the concept of \emph{entity} recursively as a finite list of strings. Those strings correspond to the valid representations of the entity. We consider that the empty entity, denoted by \emph{nil}, is also an entity.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Inductive Entity : Set :=
+  | nil       : Entity
+  | add_repr : String -> Entity -> Entity.
+\end{verbatim}}
+\end{sourcecode}
+
+A \emph{universe} is a finite list of entities. A universe correspond to the particular reasearch area in which we are interested. We consider that the empty universe, denoted by \emph{empty}, is also a universe. The recursive definition of universe is given by:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Inductive Universe : Set :=
+  | empty      : Universe
+  | add_entity : Entity -> Universe -> Universe.
+\end{verbatim}}
+\end{sourcecode}
+
+A description is a pair composed by a recursive funcion (a $\lambda$-term) from strings to strings, what we call a \emph{model}, and an input string to that model.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Definition Description (model : String -> String) (input : String) : String :=
+  model input.\end{verbatim}}
+\end{sourcecode}
+
+% Miscoding
+
+\subsubsection*{Miscoding}
+
+{\color{red} Definition and results about miscoding}
+
+
+% Properties of Strings
 
 \subsubsection*{Properties of Strings}
 
+Before we move into the details of the theory of nescience, we are going to prove some basic properties that our concept of string satisfies. Also, besides to the already introduced concept of string difference, we are going to introduce two other strings operators: concatenation and conditional.
+
+We say that two strings are \emph{equal} if, and only if, they have the same number of sigmas. String equality is defined recursively as follows:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Fixpoint Equality (r s : String) : bool :=
+  match r, s with
+  | lambda, lambda => true
+  | lambda, _      => false
+  | _     , lambda => false
+  | S r'  , S s'   => Equality r' s'
+  end.
+\end{verbatim}}
+\end{sourcecode}
+
+It is convenient to introduce a new infix operator to represent the string equality concept. That will helps us to simplify new definitions and proofs.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Notation "x =? y"  := (Equality x y)
+\end{verbatim}}
+\end{sourcecode}
+
+In the same way, we introduce another infix operator to represent the concept of string difference.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Notation "x <d> y"  := (Difference x y)
+\end{verbatim}}
+\end{sourcecode}
+
+Strings with the difference operator form an abelian group. That is: it has a neutral element, it is conmutative, associative and has an inverse element.
+
+The neutral element for strings is the $\lambda$ symbol. That $\lambda$ is the neutral elment with respect to the operation of difference is a direct consequence of the definitions of string and difference.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DifferenceNeutral : forall r : String,
+  r <d> lambda = r /\ lambda <d> r = r.
+Proof.
+intros.
+split.
+- destruct r.
+  * reflexivity.
+  * reflexivity.
+- destruct r.
+  * reflexivity.
+  * reflexivity.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+The property of being conmutative of the difference operator is proved by ... {\color{red} TODO}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DifferenceConmutative : forall r s : String,
+  r <d> s = s <d> r.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+In the same way, the property of being conmutative is shown by ... {\color{red} TODO}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DifferenceAsociative  : forall r s t  : String,
+  r <d> (s <d> t) = (r <d> s) <d> t.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+Given an arbitrary string $r$, its inverse element is the string itself, as next proposition shows. The proposition is proved by induction over $r$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DifferenceInverse : forall r : String,
+  r <d> r = lambda.
+Proof.
+intros.
+induction r as [| r' IHr'].
+- reflexivity.
+- simpl.
+  apply IHr'.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+The operation of \emph{concatenation} of two strings returns a new string composed by one of the strings appened at the end of the other. The operation of concatenation is defined recursively as:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Fixpoint Concatenate (r s : String) : String :=
+  match r, s with
+  | lambda, _     => s
+  | S r'  , _     => S (Concatenate r' s)
+  end.
+\end{verbatim}}
+\end{sourcecode}
+
+The infix notation for the concatenation operation is given by:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Notation "x <+> y" := (Concatenate x y)
+\end{verbatim}}
+\end{sourcecode}
+
+The pair composed by strings and the concatenation operation form a conmutative monoid. That is, it has a neural element, and it satisfies the properties of being conmutative and associative.
+
+The neutral element of the operation of concatenation is $\lambda$. In order to prove that $\lambda$ is indeed the neutral element we ... {\color{red} TODO}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Lemma s_plus_lambda : forall s : String,
+  s <+> lambda = s.
+Proof.
+intros.
+induction s as [| s' IHs'].
+- simpl.
+  reflexivity.
+- simpl.
+  rewrite -> IHs'.
+  reflexivity.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+Given the above lemma we can now prove that $\lambda$ is the neutral element ... {\color{red} TODO}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition ConcatenationNeural : forall r : String,
+  r <+> lambda = r /\ lambda <+> r = r.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red} TODO: string concatenation is conmutative, and its proof requires to additional lemmas.}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Lemma plus_r_Ss : forall r s: String,
+  S (r <+> s) = r <+> S s.
+Proof.
+intros.
+induction r as [| r' IHr'].
+- simpl.
+  reflexivity.
+- simpl.
+  rewrite -> IHr'.
+  reflexivity.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Lemma S_equal : forall n m : String,
+  n = m -> S n = S m.
+Proof.
+intros.
+induction m as [| m' IHm'].
+- rewrite -> H.
+  reflexivity.
+- rewrite -> H.
+  reflexivity.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition ConcatenationConmutative : forall r s : String,
+  r <+> s = s <+> r.
+Proof.
+intros.
+induction s as [| s' IHs'].
+- simpl.
+  apply s_plus_lambda.
+- simpl.
+  rewrite <- IHs'.
+  rewrite <- plus_r_Ss.
+  reflexivity.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red} Associative property of concatenation ... }
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition ConcatenationAsociative  : forall r s t  : String,
+  r <+> (s <+> t) = (r <+> s) <+> t.
+Proof.
+intros.
+induction r as [| r' IHr'].
+- simpl.
+  reflexivity.
+- simpl.
+  rewrite <- IHr'.
+  reflexivity.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red} Introduce the operator of string conditional, as a recursive definition.}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Fixpoint Conditional (r s : String) : String :=
+  match r, s with
+  | lambda, _      => lambda
+  | s     , lambda => s
+  | S r'  , S s'   => Conditional r' s
+  end.
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red} Infix notation.}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Notation "x |c y"  := (Conditional x y).
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red} Algebraic structure of the conditional operator.}
+
+{\color{red} Left Neutral Element}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition ConditionalLeftNeutral : forall r : String,
+  r |c lambda = r.
+Proof.
+intros.
+destruct r.
+- reflexivity.
+- reflexivity.
+Qed.
+\end{verbatim}}
+\end{sourcecode}
+
+{\color{red} Inverse Element}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition ConditionalInverse : forall r : String,
+  r |c r = lambda.
+Proof.
+intros.
+induction r as [| r' IHr'].
+- simpl.
+  reflexivity.
+- simpl.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+Having introduced the operations of difference, concatenation and conditional, we can study which of these operators can be distributed over the others, since not all possible combinations are valid. In fact, only three distributive laws are true in our theory of nescience.
+
+The operation of concatenation can be distributed to the operation of conditional, as the next proposition shows. The proposition is proved by ... {\color{red} TODO}.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DistributiveConditionalConcatenation : forall r s t  : String,
+  Surfeit ((r |c s) <+> t) ((r <+> t) |c (s <+> t)) = true.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+The concatenation operator can also be distributed to the difference operator. The proposition is proved by ... {\color{red} TODO}.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DistributiveDifferenceConcatenation : forall r s t  : String,
+  Surfeit ((r <d> s) <+> t) ((r <+> t) <d> (s <+> t)) = true.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
+
+Finally, we have a third distributive law, that says that the difference operator can be distributed to the concatenation. Th proposition is proved by ... {\color{red} TODO}.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Proposition DistributiveConcatenationDifference : forall r s t  : String,
+  Surfeit ((r <+> s) <d> t) ((r <d> t) <+> (s <d> t)) = true.
+Proof.
+Admitted.
+\end{verbatim}}
+\end{sourcecode}
 
 %
 % Section: Scientific Method

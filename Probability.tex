@@ -37,7 +37,7 @@ Currently, the concept of probabilty is defined axiomatically (\emph{axiomatic i
 Probability theory is about assigning a number to some events from a sample space. The word "event" is a little bit misleading in this context because it suggests that something happened, which is not always the case {\color{red} TODO: provide an example}. However, to avoid confusion, we will keep calling events to what are essentially subsets.
 
 \begin{definition}
-Let $\left( \Omega, \mathcal{A} \right)$ be a field over a non-empty discrete set. $\Omega$ is called the \emph{sample space}\index{Sample space}, its elements \emph{outcomes}\index{Outcome}, and the elements of $\mathcal{A}$ events. In particular, $\Omega$ is called the \emph{certain event}\index{Certain event} and $\varnothing$ the \emph{impossible event}\index{Impossible event}.
+Let $\left( \Omega, \mathcal{A} \right)$ be a field over a non-empty discrete set. $\Omega$ is called the \emph{sample space}\index{Sample space}, its elements \emph{outcomes}\index{Outcome}, and the elements of $\mathcal{A}$ \emph{events}. In particular, $\Omega$ is called the \emph{certain event}\index{Certain event} and the empty set $\varnothing$ the \emph{impossible event}\index{Impossible event}.
 \end{definition}
 
 As we saw in Section \ref{sec:sets}, given that $\left( \Omega, \mathcal{A} \right)$ is a field, we have that $\Omega \in \mathcal{A}$ and that $\varnothing \in \mathcal{A}$. Moreover, the union of a finite collection of events is an event $A_1 \cup A_2 \cup \ldots \cup A_n \in \mathcal{A}$, and that the intersection of a fine collection of events is also an event $A_1 \cap A_2 \cap \ldots \cap A_n \in \mathcal{A}$.
@@ -63,6 +63,7 @@ The triple $\left( \Omega, \mathcal{A}, P \right)$ is called a \emph{probability
 A problem with these axioms is that they cannot be reduced to first-order logic (See Appendix \ref{apx:foundations_mathematics}), since real numbers cannot be described in terms of this logic. Also, no information is contained in the axioms about how probabilites can be assigned to events. {\color{red} TODO: split the two ideas in two separate paragraphs and extend a little bit. Perhaps mention model theory.}
 
 \begin{example}
+\label{ex:discrete_sample_space}
 Let $\Omega$ a sample space containing $n$ elements equally probable. If $A \subset \Omega$ is an event with $d(A) = m$, then we have that $P(A) = m/n$.
 \end{example}
 
@@ -125,11 +126,21 @@ P \left( \bigcup_{i=1}^n A_i \right) = \sum_{i=1}^n P \left( A_i \right) - \sum_
  - \sum_{i<j<k<l} P \left( A_i \cap A_j \cap A_k \cap A_l \right) + \ldots +  (-1)^{n+1} P \left( A_1 \cap A_2 \cap \ldots \cap A_n \right) 
 \end{multline}
 
-A probability mass function is a function that assigns to each possible event its probability.
+A probability mass function is a function that assigns to each possible event of a sample space its probability.
 
 \begin{definition}
-Let $\left( \Omega, \mathcal{A} , P \right)$ be a discrete probability space. A \emph{probability mass function}\index{Probability mass function} is a real value funcion $f : \mathcal{A} \rightarrow \mathbb{R}$ such that for each $A \in \mathcal{A}$ we have that $f \left( A \right) = P(A)$.
+\label{def:probability_function}
+Let $\left( \Omega, \mathcal{A} , P \right)$ be a discrete probability space. A \emph{probability mass function}\index{Probability mass function} is a real value funcion $f : \mathcal{A} \rightarrow [0, 1]$ such that for each $A \in \mathcal{A}$ we have that $f \left( A \right) = P \left( A \right)$.
 \end{definition}
+
+In the particular case of discrete probability spaces, we can also define the probability mass functions by assigning to each outcome of the sample space its probability, that is $f \left( \omega \right) = P \left( \omega \right)$ for all $\omega \in \Omega$.
+
+Probability mass functions are the primary means we have to specify the distribution of probabilities in a probability space.
+
+\begin{example}
+In Example \ref{ex:discrete_sample_space} we introduced a probability space $\left( \Omega, \mathcal{A}, P \right)$ containing $n$ elements equally probable. The probability mass function associated with this experiment will be the function $f : \mathcal{A} \rightarrow [0, 1]$ defined as $f \left( A \right) = d\left( A \right)/n$, for all $A \in \mathcal{A}$.
+\end{example}
+
 
 %
 % Section: Conditional Probability
@@ -217,6 +228,8 @@ P(E \mid +) = \frac{P(+ \mid E) P(E)}{P(+)} = \frac{P(+ \mid E) P(E)}{P(+ \mid E
 That is, although the test only fails once per thousand applications, it is still very unlikely we have the disease in the case of a positive result. This counterintuitive result is explained because the probability of failure of the test $10^{-3}$ is much higher than the probability of having the disease $10^{-6}$. In practice we solve this problem by applying a second test to those who got a positive result, since the probability of having the disease after two positives is $0.5$ (assuming that the successive repetitions of the test are independent).
 \end{example}
 
+{\color{red} Somewhere we should provide a second example in which the Bayes' theorem is meaningless.}
+
 Bayes theorem can be generalized to the case of multiple events: let's the events $A_{1}, \ldots, A_{k}$ ($P\left( A_{j} \right)>0$ for $j=1, \ldots, k$) form a partition of the sample space $\Omega$, and let $B$ be an event such that $P\left(B\right)>0$, then for $i=1, \ldots, k$ we have that
 \[
 P\left(A_{i}\mid B\right)=\frac{P\left(B\mid A_{i}\right) P\left(A_{i}\right)}{\sum_{j=1}^{k} P\left(B \mid A_{j}\right) P\left(A_{j}\right)}
@@ -229,37 +242,50 @@ P\left(A_{i}\mid B\right)=\frac{P\left(B\mid A_{i}\right) P\left(A_{i}\right)}{\
 \section{Random Variables}
 \label{sec:probability_random_variables}
 
-A random variable is a function that asigns a real number to the outcomes of an experiment. In this sense, a random variable acts as a numerical description of the experiment. Random variables are useful because they allow us to quantify the results of the experiments and study their properties from a mathematical point of view. In fact, they are so useful that most of statisticians only think in terms of  random variables.
+A random variable is a function that asigns a real number to the outcomes of an experiment. In this sense, a random variable acts as a numerical description of the experiment. Random variables are useful because they allow us to quantify the results of the experiments and study their properties from a mathematical point of view. In fact, they are so useful that most of statisticians only think in terms of random variables.
 
 \begin{definition}
-Let $\Omega$ be the sample space for an experiment. A random variable is a real-valued function $X : \Omega \rightarrow \mathbb{R}$, such that the probability of having $x \in \mathbb{R}$, denoted by $P(X=x)$, is given by $P(\{ \omega \in \Omega : X(\omega) = x\})$.
+Let $\left( \Omega, \mathcal{A} , P \right)$ be a probability space. A \emph{random variable} is a real-valued function $X : \Omega \rightarrow \mathbb{R}$.
 \end{definition}
 
-The name random variable could be a little bit misleading. First, because random variables are not variables in the ususal sense in algebra, since they are functions. And second, because they are not random, what it is random is the experiment they describe. As always, we will stay true to standard terminology.
+The name random variable could be a little bit misleading. First, because random variables are not variables in the ususal sense in algebra, they are functions. And second, because they are not random, what it is random is the experiment they describe. We will stay true to standard terminology.
 
-Random variables are more useful when they describe properties of the experiments: if our sample space is composed by the students of a school, a random variable could assign to each student its height. Random variables allow us also to reasign the elements of the sample space into new events: if we throw two dices, a random variable could be the sum of the values of the dices. Be aware that we are free to assing a random variable to any sample space, even if that assignment does not make too much sense. For example, we could assign a number to each possible colour of a deck of cards, then pick up two cards at random, and sum their numbers; although sums do not have a meaningful interpretion, we can compute all sort of probabilities over them.
+Random variables are more useful when they describe properties of the experiments: if our sample space is composed by the students of a school, a random variable could assign to each student its height. Random variables allow us also to reasign the elements of the sample space into new events: if we throw two dices, a random variable could be the sum of the values of the dices. Be aware that we are free to assing a random variable to any sample space, even if that assignment does not make too much sense. For example, we could assign a number to each possible colour of a deck of cards, then pick up two cards at random, and sum their numbers; although the results do not have a meaningful interpretion, we could compute all sort of probabilities over them.
 
 \begin{definition}
-Let $X$ be a discrete random variable. The distribution of $X$ is the collection of all probabilities of the form $P\left(X\in C\right)$ for all sets $C$ of the real numbers such that $\left\{ X\in C\right\}$  is an event. The Distribution of a Random Variable. Let $C$ be a subset of the real line such that $\left\{ X\in C\right\}$  is an event, and let $P\left(X\in C\right)$ denote the probability that the value of $X$ will belong to the subset $C$, then $P\left(X\in C\right)=P\left(\left\{ s\,:\,X\left(s\right)\in C\right\} \right)$
+Let $X : \Omega \rightarrow \mathbb{R}$ be a random variable, and let $C \subset \mathbb{R}$ be a subset such that $\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\}$ is an event. The probability that $X$ belongs to $C$, denoted $P\left(X \in C \right)$, is given by $P\left( X \in C \right)=P \left( \left\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\right\} \right)$.
 \end{definition}
 
-Definition {\color{red} XX} introduced the concept of probability distribution. We could apply the same concept to a discrete random variable, and derived what it is called a probability mass function.
+In case of discrite probability spaces we could also compute the probability that $X$ is equal to a single value $x \in \mathbb{R}$ as $P(X = x) = P(\{ \omega \in \Omega : X(\omega) = x\})$.
+
+The probability distribution of a random variable describes how the probabilities are assigned to the values of the random variable. 
 
 \begin{definition}
-Let $X$ be a discrete random variable that can takes the values $\{ x_1, x_2, \ldots, x_i, \ldots \}$. The \emph{probability mass function}\index{Probability mass function} is defined as the function $f$ such that $f(x_i) = P(X=x_i)$.
+Let $X : \Omega \rightarrow \mathbb{R}$ be a random variable. The \emph{probability distribution} of the random variable $X$ is the collection of probabilities $P\left( X \in C \right)$ for all subsets $C \subset \mathbb{R}$ such that $\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\}$ is an event.
 \end{definition}
 
-In the rest of this book we will use the name probability distribution to mean a probability distribution of a experiment or the probability mass function of a discrete random variable.
+The probability distribution of a random variable $X$ defines a probability space over the real numbers (over the range of $X$). 
 
 \begin{example}
-{\color{red} It is possible for two random variables to have identical distributions but to differ in significant ways; for instance, they may be independent.}
+{\color{red} TODO }
 \end{example}
 
-{\color{red} Is it too early for this?} A \emph{parametric random variable} $X$, denoted by $f\left(X \mid \theta \right)$, is a distribution that belongs to a family of functions parameterized by $\theta$, where $\theta$ can be a single parameter, or a vector of several parameters. 
+If $X$ is a random variable whose range is discrete, it is said that $X$ is a discrete random variable or that $X$ has a discrete distribution. In this book we will consider only discrete random variables, and we will use the name probability distribution to mean either the set of probabilities of a discrete probability space, or the distribution of a discrete random variable.
 
-{\color{red} If a random variable $X$ has a discrete distribution, the probability function (abbreviated p.f.) of $X$ is defined as the function $f$ such that for every real number $x$, $f\left(x\right)=P\left(X=x\right)$}
+Definition \ref{def:probability_function} introduced the concept of probability mass function for discrete probability spaces. We could extend the same concept to random variables.
 
-{\color{red} The closure of the set $\left\{ x\,:\,f\left(x\right)>0\right\}$  is called the support of (the distribution of) $X$. Probability functions are also known as probability mass functions (p.m.f.).}
+\begin{definition}
+Let $X$ be a random variable over a discrete probability space, and let $\{ x_1, x_2, \ldots, x_i, \ldots \}$ be the range of $X$. The \emph{probability mass function}\index{Probability mass function} of the random variable $X$ is defined as the function $f : range \left( X \right) \rightarrow [0, 1]$ such that $f \left( x_i \right) = P \left( X = x_i \right)$.
+\end{definition}
+
+The set of points for which the probability mass function is greater than zero, that is $\left\{ x \, : \, f \left( x \right) > 0 \right\}$, is called the \emph{support} of the distribution of $X$.
+
+It is possible for two random variables to have identical probability mass functions but to differ in significant ways; for instance, they may be independent, as next example shows.
+
+\begin{example}
+{\color{red} Random variables can have the same distribution without being the same random variable. (this is also mentioned in the masures of centrality section}.
+\end{example}
+
 
 {\color{red} Introduce the following proposition}
 
@@ -269,6 +295,8 @@ Let $X$ be a discrete random variable with p.f. $f$. If $x$ is not one of the po
 \begin{proof}
 \end{proof}
 
+{\color{red} Any function that satisfied the two displayed formulas is the joint p.d.f. for some probability distribution.}
+
 {\color{red} The p.f. of a discrete random variable characterizes its distribution.}
 
 \begin{proposition}
@@ -277,29 +305,31 @@ If $X$ has a discrete distribution, the probability of each subset $C$ of the re
 \begin{proof}
 \end{proof}
 
-{\color{red} Uniform Distribution on Integers}
+{\color{red} Introduce the concept of Cumulative Distribution Function}
 
 \begin{definition}
-Let $a \leq b$ be integers. Suppose that the value of a random variable $X$ is equally likely to be each of the integers $a, \ldots, b$. Then we say that $X$ has the uniform distribution on the integers $a, \ldots, b$.
+The distribution function or cumulative distribution function, abbreviated c.d.f.) $F$ of a random variable $X$ is the function $F(x)=Pr(X\leq x)\qquad-\infty<x<\infty$
 \end{definition}
 
-{\color{red} Introduce the following propostion}
+{\color{red}
+The function $F\left(x\right)$ is nondecreasing as $x$ increases, that is, if $x_{1}<x_{2}$ then $F\left(x_{1}\right)\leq F\left(x_{2}\right)$. Also, $\lim_{x\rightarrow-\infty}F\left(x\right)=0$ and $\lim_{x\rightarrow\infty}F\left(x\right)=1$.
+}
+
+{\color{red}
+Suppose that X has a discrete distribution with the p.f. $f\left(x\right)$. $F\left(x\right)$ must have the following form: $F\left(x\right)$ will have a jump of magnitude $f\left(x_{i}\right)$ at each possible value $x_{i}$ of $X$, and $F\left(x\right)$ will be constant between every pair of successive jumps.
+}
 
 \begin{proposition}
-If $X$ has the uniform distribution on the integers $a,\ldots,b$, the p.f. of $X$ is $f\left(x\right)=\begin{cases}
-\frac{1}{b-a+1} & for\,x=a,\ldots,b\\
-0 & otherwise
-\end{cases}$
+For every value $x$ $Pr\left(X>x\right)=1-F\left(x\right)$
 \end{proposition}
 \begin{proof}
 \end{proof}
 
-{\color{red} The uniform distribution on the integers $a, \ldots, b$ represents the outcome of an experiment that is often described by saying that one of the integers $a, \ldots, b$ is chosen at random. A uniform distribution cannot be assigned to an infinite sequence of possible values}
-
-{\color{red} Random variables can have the same distribution without being the same random variable. (this is also mentioned in the masures of centrality section}.
-
-
-The Cumulative Distribution Function
+\begin{proposition}
+For all values $x_{1}$ and $x_{2}$ such that $x_{\text{1}}<x_{2}$ $Pr\left(x_{1}<X\leq x_{2}\right)=F\left(x_{2}\right)-F\left(x_{1}\right)$
+\end{proposition}
+ \begin{proof}
+\end{proof}
 
 {\color{red} Introduce the concept of random sample}
 
@@ -319,23 +349,25 @@ for all the points $\left( x_1, x_2, \ldots, x_n \right) \in \mathcal{R}$.
 
 \subsection{Multivariate Distributions}
 
+{\color{red} Multivariate distributions show comparisons between two or more measurements and the relationships among them [...]  For discrete random variables, multivariate distribution and described by joint probabilities.}
+
+We will start by introducing bivariate distributions and studying their properties, and then we will generalize to the case of multivariate distributions. A bivariate distribution is the simplest form of multivariate distribution, it is comprised by a pair of random variables.
+
 \begin{definition}
-Let $X$ and $Y$ be random variables. The joint distribution or bivariate distribution of $X$ and $Y$ is the collection of all probabilities of the form $Pr\left[\left(X,Y\right)\in C\right]$ for all sets $C$ of pairs of real numbers such that $\left[\left(X,Y\right)\in C\right]$ is an event.
+Let $X_1 : \Omega_1 \rightarrow \mathbb{R}$ and $X_2 : \Omega_2 \rightarrow \mathbb{R}$ be two random variables. The \emph{joint probability distribution} or \emph{bivariate probability distribution} of $X_1$ and $X_2$ is defined as the collection of all probabilities of the form $Pr\left( \left( X_1, X_2 \right) \in C \right)$ for all sets $C \subset \mathbb{R} \times \mathbb{R}$ of pairs of real numbers such that $\left( \left( \omega_1, \omega_2 \right) \in \Omega_1 \times \Omega_2: \left( X_1 \left( \omega_1 \right), X_2 \left( \omega_2 \right) \right) \in C \right)$ is an event.
 \end{definition}
 
-{\color{red} This joint distribution is itself a probability measure on the set of ordered pairs of real numbers.}
-
-\begin{proposition}
-Suppose that two random variables $X$ and $Y$ each have a discrete distribution. Then $X$ and $Y$ have a discrete joint distribution.
-\end{proposition}
+The joint probability distribution of two random variables $X_1$ and $X_2$ defines a probability space in $\mathbb{R}^2$. If the random variables $X_1$ and $X_2$ each have a discrete distribution, then the joint distribution is also a discrete distribution.
 
 \begin{definition}
-The joint probability function, or the joint p.f of $X$ and $Y$ is defined as the function f such that for every point $\left(x,y\right)$ in the $xy$-plane $f\left(x,y\right)=Pr\left[X=x\enskip and\enskip Y=y\right]$
+Let $X_1$ and $X_2$ be two random variables over discrete probability spaces. The \emph{joint probability mass function} of the random variables $X_1$ and $X_2$ is defined as the function $f : range \left( X_1 \right) \times range \left( X_2 \right) \rightarrow [0, 1]$ such that $f \left( x_1, x_2 \right) = P \left( X_1 = x_1, X_2 = x_2 \right)$.
 \end{definition}
 
 \begin{proposition}
 Let $X$ and $Y$ have a discrete joint distribution. If $\left(x,y\right)$ is not one of the possible values of the pair $\left(X,Y\right)$, then $f\left(x,y\right)=0$. Also, $\sum_{\left(x,y\right)}f\left(x,y\right)=1$
 \end{proposition}
+\begin{proof}
+\end{proof}
 
 Finally, for each $C$ of ordered pairs $Pr\left[\left(X,Y\right)\in C\right]=\sum_{\left(x,y\right)\in C}f\left(x,y\right)$
 
@@ -346,6 +378,8 @@ A particular interesting case of bivariate distribution is given by the sum of t
 \begin{definition}
 Let $X : \Omega_X \rightarrow \mathbb{R}$ and $Y : \Omega_Y \rightarrow \mathbb{R}$ be two random variables. The sum distribution of $X$ and $Y$, denoted by $X + Y$, is defined as the random variable $X + Y : \Omega_X \times \Omega_Y \rightarrow \mathbb{R}$ that assigns to each pair $\left( a, b \right) \in \Omega_X \times \Omega_Y$ the number $X(a) + Y(b)$.
 \end{definition}
+
+{\color{red} TODO: Generalization to $n$ random variables.}
 
 % Marginal Distribution
 
@@ -655,8 +689,29 @@ If $X_{1},\ldots,X_{n}$ are uncorrelated random variables, then $Var\left(\sum_{
 % Section: Distribution
 %
 
-\section{Distributions}
+\section{Common Distributions}
 \label{sec:probability_distributions}
+
+
+\subsection{Uniform Distribution}
+
+\begin{definition}
+Let $a \leq b$ be integers. Suppose that the value of a random variable $X$ is equally likely to be each of the integers $a, \ldots, b$. Then we say that $X$ has the uniform distribution on the integers $a, \ldots, b$.
+\end{definition}
+
+{\color{red} Introduce the following propostion}
+
+\begin{proposition}
+If $X$ has the uniform distribution on the integers $a,\ldots,b$, the p.f. of $X$ is $f\left(x\right)=\begin{cases}
+\frac{1}{b-a+1} & for\,x=a,\ldots,b\\
+0 & otherwise
+\end{cases}$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+{\color{red} The uniform distribution on the integers $a, \ldots, b$ represents the outcome of an experiment that is often described by saying that one of the integers $a, \ldots, b$ is chosen at random. A uniform distribution cannot be assigned to an infinite sequence of possible values}
+
 
 \subsection{Bernoulli Distributions}
 
@@ -693,24 +748,22 @@ The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
 \section{Large Random Samples}
 \label{sec:probability_random_samples}
 
-{\color{red} Introduce the following definition}
+{\color{red} The law of large numbers gives a mathematical foundation to the intuition that the average of a large sample of i.i.d. random variables should be close to their mean. The central limit theorem gives us a way to approximate the probability that the sample average is close to the mean.}
 
-\begin{definition}
-A sequence $Z_1, Z_2, \ldots$ of random variables converges to $b$ in probability, denoted by $Z_n \overset{p}{\rightarrow} b$, if for every number $\varepsilon>0 \lim_{n\rightarrow\infty}Pr\left(\left|Z_{n}-b\right|<\varepsilon\right)=1$.
-\end{definition}
+{\color{red} In probability theory, the law of large numbers (LLN) is a theorem that describes the result of performing the same experiment a large number of times.}
 
 % Law of Large Numbers
 
-\subsubsection*{Law of Large Numbers}
+\subsection{Law of Large Numbers}
 
 {\color{red} The law of large numbers gives a mathematical foundation to the intuition that the average of a large sample of i.i.d. random variables should be close to their mean.}
 
-{\color{red} In probability theory, the law of large numbers (LLN) is a theorem that describes the result of performing the same experiment a large number of times. According to the law, the average of the results obtained from a large number of trials should be close to the expected value and tends to become closer to the expected value as more trials are performed.}
+{\color{red} According to the law, the average of the results obtained from a large number of trials should be close to the expected value and tends to become closer to the expected value as more trials are performed.}
 
 \begin{theorem}[Law of Large Numbers]
-Let $X_1, \ldots, X_n$ be a random sample from a distribution $f$ for which the mean is $\mu$ and the variance is finite. Then we have that
+Let $X_1, \ldots, X_n$ be a random sample from a distribution $f$ for which the mean is $\mu$ and the variance is finite. Then we have that for every number $\varepsilon>0$
 \[
-\overline{X}_n \overset{p}{\rightarrow} \mu
+ \lim_{n \rightarrow \infty} Pr \left( \left| X_{n} - \mu \right| < \varepsilon \right) = 1
 \]
 \end{theorem}
 \begin{proof}
@@ -726,10 +779,37 @@ Let $X_1, \ldots, X_n$ be a random sample from a distribution $f$ for which the 
 
 {\color{red} Although the proportion of heads (and tails) approaches 1⁄2, almost surely the absolute difference in the number of heads and tails will become large as the number of flips becomes large. That is, the probability that the absolute difference is a small number approaches zero as the number of flips becomes large. Also, almost surely the ratio of the absolute difference to the number of flips will approach zero. Intuitively, the expected difference grows, but at a slower rate than the number of flips.}
 
+It is also important to note that the LLN only applies to the average. Therefore, while
+
+% {\displaystyle \lim _{n\to \infty }\sum _{i=1}^{n}{\frac {X_{i}}{n}}={\overline {X}}}{\displaystyle \lim _{n\to \infty }\sum _{i=1}^{n}{\frac {X_{i}}{n}}={\overline {X}}}
+other formulas that look similar are not verified, such as the raw deviation from "theoretical results":
+
+% {\displaystyle \sum _{i=1}^{n}X_{i}-n\times {\overline {X}}}{\displaystyle \sum _{i=1}^{n}X_{i}-n\times {\overline {X}}}
+not only does it not converge toward zero as n increases, but it tends to increase in absolute value as n increases.
+
 \end{example}
 
 % Central Limit Theorem
 
-\subsubsection{Central Limit Theorem}
+\subsection{Central Limit Theorem}
 
-{\color{red} The central limit theorem gives us a way to approximate the probability that the sample average is close to the mean.}
+The Central Limit Theorem is a fundamental concept in probability theory used in statistical analysis and inference. It states that the average of a random sample will closely resemble the mean of the population, as the sample sizes increases, and regardless of the shape of the population distribution. More especifically, if we take a random sample of size $n$ from an arbitrary distribution with mean $\mu$ and variance $\sigma^{2}$, the sample average $\overline{X}_{n}$ will have a distribution that is approximately normal with mean $\mu$ and variance $\sigma^{2}/n$.
+
+\begin{theorem}[Central Limit Theorem]
+Let $X_{1}, \ldots, X_{n}$ be a random sample of size $n$ from a distribution with mean $\mu$ and a finite variance $\sigma^{2}$. Then  for each fixed number $\varepsilon > 0$ we have that
+\[
+\lim_{n \rightarrow \infty} Pr \left( \frac{\overline{X}_{n}-\mu}{\sigma/n^{1/2}} \leq \varepsilon \right) = \Phi \left( x \right)
+\]
+where $\Phi \left( x \right)$ denotes the cumulative distribution function of the standard normal distribution.
+\end{theorem}
+\begin{proof}
+{\color{red} Perhaps is too complex for this book to give a proof of the theorem.}
+\end{proof}
+
+The central limit theorem allows us to compute the probability that the sample average is close to the distribution mean. It is important to recall the conditons for the central limit theorem to be true: the samples must be independent and identically distributed, the original distribution has to have a finite variance, and the sample size must be sufficiently large.
+
+\begin{example}
+{\color{red} Start with a uniform distribution, for example, throwing a dice. Explain and show how the aritmethic mean can be described with a binomial distribution. Explain that going to the limit results in the normal distribution.}
+\end{example}
+
+{\color{red} Elaborate in the fact the central limit theorem does not help if our target metric is not the arithmetic mean, and implications.}

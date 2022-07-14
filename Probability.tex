@@ -756,11 +756,48 @@ The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
 
 \subsection{Law of Large Numbers}
 
-{\color{red} In probability theory, the law of large numbers (LLN) is a theorem that describes the result of performing the same experiment a large number of times. According to the law, the average of the results obtained from a large number of trials should be close to the expected value and tends to become closer to the expected value as more trials are performed.}
+The \emph{law of large numbers} is a theorem that states that the average of a large sample of independent and identically distributed random variables should be close to their mean, and that the more variables we add, the closer will be to that value. In practice, the law of large numbers allow us to describe the expected value of performing the same experiment a large number of times.
 
-{\color{red} The law of large numbers gives a mathematical foundation to the intuition that the average of a large sample of i.i.d. random variables should be close to their mean.}
+In this section we are going to prove the weak version of law of large numbers. {\color{red} Explain the difference between the weak and the strong versions of the law.}
 
-{\color{red} According to the law, the average of the results obtained from a large number of trials should be close to the expected value and tends to become closer to the expected value as more trials are performed.}
+Before to prove the law of large numbers we need to prove two other related propostions: Markov's inequality and Chebyshev's inequality. Markov's inequality puts a bound on how much arbitrarily large can be the values of a nonnegative random variable given its mean. 
+
+\begin{proposition}[Markov's Inequality]
+Let $X$ be a nonnegative random variable, i.e. $P\left( X \geq 0 \right) = 1$ with mean $\mu$. Then for every real number $t>0$ we have that 
+\[
+P \left( X \geq t \right) \leq \frac{\mu}{t}
+\]
+\end{proposition}
+\begin{proof}
+Let $f$ be the probability mass function of $X$. The mean $\mu$ of $X$ is given by $\mu = \sum_{x} x f \left( x \right)$, but since $X$ is non-negative we have that $\mu = \sum_{x>0} x f \left( x \right)$. Then
+% \begin{multline}
+\[
+\mu = \sum_{x>0} x f \left( x \right) = \sum_{x=0}^{t} x f \left( x \right) + \sum_{x=t}^{\infty} x f \left( x \right) \geq
+\sum_{x=t}^{\infty} x f \left( x \right) \geq \sum_{x=t}^{\infty} t f \left( x \right) = t \sum_{x=t}^{\infty} f \left( x \right) =
+t P \left( X \geq t \right)
+\]
+% \end{multline}
+that is, $\mu \geq t P \left( X \geq t \right)$.
+\end{proof}
+
+Chebyshev's inequality uses the variance to bound on how much arbitrarily large can be the values of the random variable given its mean. Chebyshev's inequality does not require the random variable to be nonnegative.
+
+\begin{corollary}[Chebyshev's inequality]
+ Let $X$ be a random variable with mean $\mu$ and variance $\sigma^2$. Then for every real number $t > 0$ we have that
+\[
+P \left( \left| X - \mu \right| \geq t \right) \leq \frac{\sigma^2}{t^2}
+\]
+\end{corollary}
+\begin{proof}
+Applying Markov's inequality we have that
+\[
+P \left( \left| X - \mu \right| \geq t \right) = P \left( \left( X - \mu \right)^2 \geq t^2 \right) \leq \frac{E \left( \left( X - \mu \right)^2 \right)}{t^2} = \frac{\sigma^2}{t^2}
+\]
+\end{proof}
+
+The last element we need to formally prove the law of large numbers is to introduce the concept of convergence in probability for random variables.
+
+{\color{red} TODO: Explain what "convergence in probability" means.}
 
 \begin{theorem}[Law of Large Numbers]
 Let $X_1, \ldots, X_n$ be a random sample from a distribution $f$ for which the mean is $\mu$ and the variance is finite. Then we have that for every number $\varepsilon>0$
@@ -769,25 +806,26 @@ Let $X_1, \ldots, X_n$ be a random sample from a distribution $f$ for which the 
 \]
 \end{theorem}
 \begin{proof}
+{\color{red} TODO: Proof using Chebyshev's inequality assuming finite variance.}
 \end{proof}
 
 {\color{red} Stress the point in the requirements: i.i.d., finite mean and variance}
 
 {\color{red} Since $\overline{X}_{n}$ converges to $\mu$ in probability, it follows that there is high probability that $\overline{X}_{n}$ will be close to $\mu$ if the sample size n is large.}
 
+ {\color{red} It is also important to note that the LLN only applies to the average. Therefore, while
+\[
+\lim_{n \to \infty} \sum_{i=1}^{n} \frac {X_{i}}{n} = \overline {X}
+\]
+other formulas that look similar are not verified, such as the raw deviation from "theoretical results":
+\[
+\sum_{i=1}^{n} X_{i} - n \times \overline {X}
+\]
+not only does it not converge toward zero as n increases, but it tends to increase in absolute value as n increases.}
+
 \begin{example}
 
 {\color{red} For example, a fair coin toss is a Bernoulli trial. When a fair coin is flipped once, the theoretical probability that the outcome will be heads is equal to 1⁄2. Therefore, according to the law of large numbers, the proportion of heads in a "large" number of coin flips "should be" roughly 1⁄2. In particular, the proportion of heads after n flips will almost surely converge to 1⁄2 as n approaches infinity.}
-
-{\color{red} Although the proportion of heads (and tails) approaches 1⁄2, almost surely the absolute difference in the number of heads and tails will become large as the number of flips becomes large. That is, the probability that the absolute difference is a small number approaches zero as the number of flips becomes large. Also, almost surely the ratio of the absolute difference to the number of flips will approach zero. Intuitively, the expected difference grows, but at a slower rate than the number of flips.}
-
-It is also important to note that the LLN only applies to the average. Therefore, while
-
-% {\displaystyle \lim _{n\to \infty }\sum _{i=1}^{n}{\frac {X_{i}}{n}}={\overline {X}}}{\displaystyle \lim _{n\to \infty }\sum _{i=1}^{n}{\frac {X_{i}}{n}}={\overline {X}}}
-other formulas that look similar are not verified, such as the raw deviation from "theoretical results":
-
-% {\displaystyle \sum _{i=1}^{n}X_{i}-n\times {\overline {X}}}{\displaystyle \sum _{i=1}^{n}X_{i}-n\times {\overline {X}}}
-not only does it not converge toward zero as n increases, but it tends to increase in absolute value as n increases.
 
 {\color{red} Although the proportion of heads (and tails) approaches 1⁄2, almost surely the absolute difference in the number of heads and tails will become large as the number of flips becomes large. That is, the probability that the absolute difference is a small number approaches zero as the number of flips becomes large. Also, almost surely the ratio of the absolute difference to the number of flips will approach zero. Intuitively, the expected difference grows, but at a slower rate than the number of flips.}
 

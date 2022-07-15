@@ -17,7 +17,15 @@ Bertrand Russell
 \end{quote}
 \bigskip
 
-{\color{red} Find a header image. Find a quote. Introduce the chapter. Mention that we will cover only discrete probability, and explain why.}
+{\color{red} TODO: Change image and quote.}
+
+Probability theory is the branch of mathematics that studies random experiments and random phenomena. Probability assigns a numerical description to all the possible outcomes of an experiment, according to how likely is that these outcomes will occur. Even if the outcome of an experiment cannot be determined in advance, we can study its properties with probability theory and come to relevant results and conclusions. For example, we cannot predict the next number that will appear in a lottery game, but probability theory can help us to understand why it is not a good strategy to spend all our savings on lottery tickets with the goal of becoming rich.
+
+Probability theory provides the mathematical foundations for statistical inference, one of the most relevant aproaches we have today for gathering knowledge based on the analysis of the results of carefully designed experiments. Probability theory also provides the foundation of machine learning, that is, the analysis of large volumes of data to derive intelligent algorithms.
+
+In this chapter we are going to focus in the area of discrete probability. In this version of the theory, the possible outcomes of an event are finite, or at most, countably infinite. We are interested in the area of discrete probability, first because its applications in practice to the area of learning from data, and second, because discrete probability has some very interesting connections to theories used in this book: the length of optimal codes, the probability that a random machine will halt, and the derivation of universal distributions based on Kolmogorov complexity. All of these connection are relevant in our theory of nescience. We are going to study probability theory from a formal, axiomatic, point of view. We will start by formulating a very basic collection of fundamental axioms, and then we will derive the major results and properties from them. 
+
+This chapter is a very brief overview of probability theory. We will cover only the most important techniques and results. The contents have been selected based on their applicability to the theory of nescience. For example, moment generating functions are not covered. For a more comprehensive introduction to probability theory, see the References section at the end of the Chapter.
 
 %
 % Section: Foundations
@@ -748,9 +756,9 @@ The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
 \section{Large Random Samples}
 \label{sec:probability_random_samples}
 
-{\color{red} The law of large numbers gives a mathematical foundation to the intuition that the average of a large sample of i.i.d. random variables should be close to their mean. The central limit theorem gives us a way to approximate the probability that the sample average is close to the mean.}
+The law of large numbers provides the mathematical foundation to the intuition that the average of a large sample of independent and identically distributed random variables should be close to their mean. The central limit theorem is a practical method that allow us to approximate the probability that the sample average is close to the true mean.
 
-{\color{red} In probability theory, the law of large numbers (LLN) is a theorem that describes the result of performing the same experiment a large number of times.}
+{\color{red} Write a more elaborated introduction to the section.}
 
 % Law of Large Numbers
 
@@ -795,51 +803,52 @@ P \left( \left| X - \mu \right| \geq t \right) = P \left( \left( X - \mu \right)
 \]
 \end{proof}
 
-The last element we need to formally prove the law of large numbers is to introduce the concept of convergence in probability for random variables.
+The last element we need to formally prove the law of large numbers is to introduce the concept of convergence in probability for random variables. A sequence of random variables converges in probability to a value $b$ if $X_n$ lies in all the intervals around $b$.
 
-{\color{red} TODO: Explain what "convergence in probability" means.}
+\begin{definition}
+Let $X_{1}, X_{2}, \ldots$ be a sequence  of random variables. It is said that the sequence $X_{1}, X_{2}, \ldots$ \emph{converges in probability} to $b$ , denoted by $X_{n} \overset{p}{\rightarrow}b$, if for every positive real number $\varepsilon>0$ we have that
+\[
+\lim_{n \rightarrow \infty} P \left( \left| X_{n} - b \right| < \varepsilon \right) = 1
+\]
+\end{definition}
+
+Given the above definitions and partial results, we can now formally introduce and proove the law of large numbers.
 
 \begin{theorem}[Law of Large Numbers]
-Let $X_1, \ldots, X_n$ be a random sample from a distribution $f$ for which the mean is $\mu$ and the variance is finite. Then we have that for every number $\varepsilon>0$
+Let $X_1, \ldots, X_n$ be a random sample with finite mean $E \left( X_i \right) = \mu <\infty$ for all $i$ and finite variance $Var \left( X_i \right) = \sigma^2 <\infty$ for all $i$, and let $\overline {X}_n = \frac {1}{n} \left( X_1 + \ldots + X_n \right)$ be the sample mean. Then we have that
 \[
- \lim_{n \rightarrow \infty} Pr \left( \left| X_{n} - \mu \right| < \varepsilon \right) = 1
+X_n \overset{p}{\rightarrow} \mu
 \]
 \end{theorem}
 \begin{proof}
-{\color{red} TODO: Proof using Chebyshev's inequality assuming finite variance.}
+Since the variables $X_1, \ldots, X_n$ are independent and identically distributed, we have that the variance of the sample mean is $Var \left( \overline {X}_n \right) = \frac{\sigma^2}{n}$ and that the mean is $E \left( \overline {X}_n \right) = \mu$ (see XX). Applying the Chebyshev's inequality to the random variable $\overline {X}_n$ we have that
+\[
+P \left( \left| \overline {X}_n- \mu \right| \geq \varepsilon \right) \leq \frac{\sigma ^2}{n \varepsilon^2}.
+\]
+From there we can obtain
+\[
+P \left( \left| \overline {X}_n - \mu \right| < \varepsilon \right) = 1 - P \left( \left| \overline {X}_n - \mu \right| \geq \varepsilon \right) \geq 1 - \frac{\sigma ^2}{n \varepsilon^2}.
+\]
+As n approaches infinity, the above expression approaches 1. Aplying the definition of convergence in probability, we have that
+\[
+\overline{X}_n \overset{p}{\rightarrow} \mu
+\]
 \end{proof}
 
-{\color{red} Stress the point in the requirements: i.i.d., finite mean and variance}
+It is very important to note that the law of large numbers only works in case that the random variables are independent and identicaly distributed. Also, that the law is true only in the limit. If we have a finite number of random variables, the sample mean will be close to the distribution mean, but not necesarily equal.
 
-{\color{red} Since $\overline{X}_{n}$ converges to $\mu$ in probability, it follows that there is high probability that $\overline{X}_{n}$ will be close to $\mu$ if the sample size n is large.}
-
- {\color{red} It is also important to note that the LLN only applies to the average. Therefore, while
-\[
-\lim_{n \to \infty} \sum_{i=1}^{n} \frac {X_{i}}{n} = \overline {X}
-\]
-other formulas that look similar are not verified, such as the raw deviation from "theoretical results":
-\[
-\sum_{i=1}^{n} X_{i} - n \times \overline {X}
-\]
-not only does it not converge toward zero as n increases, but it tends to increase in absolute value as n increases.}
+Also it is important to mention that the law refers to the average of the sample mean, that is, $\sum_{i=1}^{n} \frac {X_{i}}{n}$ and it is not necesarily true for other formulas, like for example, the deviation from the theoretical values $\sum_{i=1}^{n} X_{i} - n \times \overline {X}$ which not only it does not convers, but that it inscrases in absolute value as $n$ increases (see Example \ref{ex:gambler's_fallacy}).
 
 \begin{example}
-
-{\color{red} For example, a fair coin toss is a Bernoulli trial. When a fair coin is flipped once, the theoretical probability that the outcome will be heads is equal to 1⁄2. Therefore, according to the law of large numbers, the proportion of heads in a "large" number of coin flips "should be" roughly 1⁄2. In particular, the proportion of heads after n flips will almost surely converge to 1⁄2 as n approaches infinity.}
-
-{\color{red} Although the proportion of heads (and tails) approaches 1⁄2, almost surely the absolute difference in the number of heads and tails will become large as the number of flips becomes large. That is, the probability that the absolute difference is a small number approaches zero as the number of flips becomes large. Also, almost surely the ratio of the absolute difference to the number of flips will approach zero. Intuitively, the expected difference grows, but at a slower rate than the number of flips.}
-
+\label{ex:gambler's_fallacy}
+If we toss a fair coin, the probability that the outcome will be head is equal to $1/2$. According to the law of large numbers, the proportion of heads in a large number of coin tosses will be close to $1/2$. However, the difference between the number of heads and tails will not be close to zero. In fact, the larger the number of coin tosses, the larger will be this difference. This is a highly conterintuitive fact, since most of the people think that the more we toss the coin, the closer will be the number of heads to the number of tails, which is not true.
 \end{example}
-
-{\color{red} Shall we cover the gambler's fallacy?}
 
 % Central Limit Theorem
 
 \subsection{Central Limit Theorem}
 
-{\color{red} Explain the relation to the law of large numbers}
-
-The Central Limit Theorem is a fundamental concept in probability theory used in statistical analysis and inference. It states that the average of a random sample will closely resemble the mean of the population, as the sample sizes increases, and regardless of the shape of the population distribution. More especifically, if we take a random sample of size $n$ from an arbitrary distribution with mean $\mu$ and variance $\sigma^{2}$, the sample average $\overline{X}_{n}$ will have a distribution that is approximately normal with mean $\mu$ and variance $\sigma^{2}/n$.
+Let $X_1, \ldots, X_n$ be a sample of $n$ independent and identically distributed random variables with mean $\mu$ and variance $\sigma^2$. As we saw in the previous section, the law of large numbers states that the sample average $\overline {X}_n$ converges in probability to $\mu$ as $n$ increases. The central limit theorem states that the distribution of the difference between the sample average $\overline {X}_n$ and the population mean $\mu$, when multiplied by the factor $\sqrt {n}$ approximates to the normal distribution with mean $0$ and variance $\sigma^2 / n$. The theorem is true regardless of the shape of the original random vairables.
 
 \begin{theorem}[Central Limit Theorem]
 Let $X_{1}, \ldots, X_{n}$ be a random sample of size $n$ from a distribution with mean $\mu$ and a finite variance $\sigma^{2}$. Then  for each fixed number $\varepsilon > 0$ we have that
@@ -852,10 +861,12 @@ where $\Phi \left( x \right)$ denotes the cumulative distribution function of th
 {\color{red} Perhaps is too complex for this book to give a proof of the theorem.}
 \end{proof}
 
-The central limit theorem allows us to compute the probability that the sample average is close to the distribution mean. It is important to recall the conditons for the central limit theorem to be true: the samples must be independent and identically distributed, the original distribution has to have a finite variance, and the sample size must be sufficiently large.
+{\color{red} TODO: Use a formulation of the theorem that does not uses the cumulative distribution}
+
+The Central Limit Theorem is a fundamental concept in probability theory used in statistical analysis and inference. It allows us to compute the probability that the sample average is close to the distribution mean. It is important to recall the conditons for the central limit theorem to be true: the samples must be independent and identically distributed, the original distribution has to have a finite variance, and the sample size must be sufficiently large.
 
 \begin{example}
 {\color{red} Start with a uniform distribution, for example, throwing a dice. Explain and show how the aritmethic mean can be described with a binomial distribution. Explain that going to the limit results in the normal distribution.}
 \end{example}
 
-{\color{red} Elaborate in the fact the central limit theorem does not help if our target metric is not the arithmetic mean, and implications.}
+{\color{red} Elaborate in the fact the central limit theorem, and the law of large numbers, do not help too much if our target metric is not the arithmetic mean. Mention the implications, for example, in machine learning.}

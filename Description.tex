@@ -24,6 +24,8 @@ The final step, once we have found a way to properly encode the original set of 
 
 In this chapter we will formalize all these concepts: entities, representations, descriptions, and many others. We will also see what we mean by perfect knowledge, how to compute the combined representation of multiple entities, and the description of a representation assuming a perfect knowledge of another one.
 
+{\color{red} Is perfect knowledge covered in the chapter? If not, remove this sentence.}
+
 %
 % Section: Entities
 %
@@ -151,6 +153,8 @@ An alternative way to deal with the problem described in Example \ref{ex:shannon
 
 One of the problems of science, and in general of any human intellectual activity, is that people tend to confuse symbols with what they represent. The theory of nescience has been carefully designed to avoid this problem, by means of clearly stating the difference between research entities and the representation of entities. However, keeping this distinction always explicit in the explanations would make the book very difficult to read. We have tried to find a compromise between clarity in the exposition and rigor in the definitions. Sometimes, during the introduction of new ideas we talk in general about a \emph{topics}, meaning an entity, a representation, or both, an entity and its representation. But, in the mathematical definitions and propositions we always make this difference unequivocal. In case of doubt about what we mean, please take the mathematical definitions as the authoritative reference. 
 
+{\color{red} Perhaps we could mention that one entity can have more than one style of representation.}
+
 %
 % Section: Joint Representations
 %
@@ -199,6 +203,9 @@ Let $t_1, t_2, \ldots, t_n \in \mathcal{B}^\ast$ be a finite collection of repre
 
 It is easy to show that $t_1 t_2 \ldots t_n \in \mathcal{B}^\ast$ for all $t_1, t_2, \ldots, t_n \in \mathcal{B}^\ast$, that is, $\mathcal{B}^\ast$ is closed under the operation of concatenation of multiple, finite, topics.
 
+{\color{red} Clarify why concatenation has to be conmutative.}
+
+
 %
 % Section: Descriptions
 %
@@ -206,126 +213,146 @@ It is easy to show that $t_1 t_2 \ldots t_n \in \mathcal{B}^\ast$ for all $t_1, 
 \section{Descriptions}
 \label{sec:descriptions_models}
 
-So far, our aim with the strings of $\mathcal{B}^\star$ has been to provide an enconding, or representation, as complete and detailed as possible of the entities of $\mathcal{E}$, no matter its length. However, as we have said in the preface of this book, human understanding requires the derivation of concise models for those entities, since human reasoning cannot be based on long representations.
+So far, our aim with the strings of $\mathcal{B}^\ast$ has been to provide an enconding, or representation, as complete and detailed as possible of the entities of $\mathcal{E}$, no matter its length. However, as we have said in the preface of this book, human understanding requires the derivation of concise models for those entities, since human reasoning cannot be based on long representations.
 
 \begin{example}
-In Example \ref{ex:lung_cancer} we have shown that a good representation for the entity "lung cancer" could be a sample dataset in which we measure different risk factors. If someone decides to quit smooking is not because they know and understand this large sample dataset, but because they know the much simpler derived model "smooking increases the risk of lung cancer".
+In Example \ref{ex:lung_cancer} we have shown that a good representation for the entity "lung cancer" could be a sample dataset in which we measure different risk factors. If someone decides to quit smooking is not because they know and understand this large sample dataset, but because they know and understand the much simpler derived model "smooking increases the risk of lung cancer".
 \end{example}
 
-A model\footnote{In the theory of nescience use the words "description" and "model" interchangeably.} is a finite binary string mapped to a representation of an entity. In this case we require that models must be computable, so we can fully and effectively reconstruct the original representation given its model. The requirement of computability allows us to clearly state the limits of the concept of "model". For example, the problem of self-referential descriptions, like the Berry paradox\index{Berry paradox}\footnote{The Berry paradox proposes to consider "the smallest positive integer not describable in fewer than twelve words". The paradox arises because we have just described this number with only eleven words.}, can be addressed in the scope of the limits of computation.
+A description or model\footnote{In the theory of nescience use the words "description" and "model" interchangeably.} is a finite binary string mapped to a representation of an entity (recall Figure \ref{fig:entities_topics_models} from Chapter \ref{chap:Introduction}). Descriptions do not model entities (target systems) directly, they do so through string based representations.
 
-From an otological point of view, models are just string based representations that satisfy some additional requirements, like for example, the requirement of being computable. In this sense, models are a subset of the possible representations. Please note that, in the theory of nescience, models do not represent entities (target systems) directly, they do through string based representations (problem of style).
+In the theory of nescience we require that descriptions must be computable, so we can fully and effectively reconstruct the original representations given their descriptions. The requirement of computability allows us to clearly state the limits of the concept of "description". For example, the problem of self-referential descriptions, like the Berry paradox\index{Berry paradox}, can be addressed in the scope of the limits of computation.
 
 \begin{definition} [Model]
 \label{def:descriptions_model}
-Let $m \in \mathcal{B}^\ast$ be a binary string in the form $m = \langle TM,a \rangle$, where $TM$ is the encoding of a prefix free Turing machine and $a$ is the input string to that machine. If $TM(a)$ is defined, we call $m$ a \emph{model}\index{Model}. Let $t \in \mathcal{T}$ be a topic, if $TM(a) = t$ we say that $m$ is a \emph{valid model of the topic}\index{Model of a topic} $t$.
+Let $d \in \mathcal{B}^\ast$ be a binary string in the form $d = \langle TM,a \rangle$, where $TM$ is the encoding of a prefix free Turing machine and $a$ is the input string to that machine. If $TM(a)$ is defined, we say that $d$ is a \emph{description}\index{Description}. 
 \end{definition}
 
-\begin{notation}
-In case of dealing with multiple topics and models, and in order to avoid ambiguity, we could denote by $m_t$ a model for the topic $t$.
-\end{notation}
-
-Intuitively, a model is composed by two parts, a Turing machine that should compress all the regularities found in the topic, and a string containing a literal description of what is left, that is, the non-compressible part.
-
-Note that not all possible strings are models, and that not all possible models describe topics.
+The output of the description $TM(a)$ is a string, that is, the representation of an entity. Intuitively, a description is composed by two parts, a Turing machine that compresses all the regularities found in this representation, and a string containing what is left, that is, the non-compressible part. From an otological point of view, descriptions are just string based representations that satisfy some additional requirements, like being computable. In this sense, descriptions are also representations themselves, i.e., the set of descriptions is a subset of the set of representations.
 
 \begin{definition}
 \label{def:descriptions_model}
-We define the \emph{set of models}\index{Set of valid models}\index{Valid models}, denoted by $\mathcal{M}$, as:
+We define the \emph{set of descriptions}\index{Set of descriptions}, denoted by $\mathcal{D}$, as:
 \[
-\mathcal{M} = \{ m \in \mathcal{B}^\ast : m = \langle TM,a \rangle \wedge TM(a) \downarrow \}.
+\mathcal{D} = \{ d \in \mathcal{B}^\ast : d = \langle TM,a \rangle \wedge TM(a) \downarrow \}.
 \]
-Let $\mathcal{T}$ be a set of topics. We define the set of all \emph{valid models of $\mathcal{T}$}, denoted by $\mathcal{M}_{\mathcal{T}}$, as:
+Let $r \in \mathcal{B}^\ast$ be a representation. We define the set of \emph{descriptions for $r$}, denoted by $\mathcal{D}_r$, as:
 \[
-\mathcal{M}_{\mathcal{T}} = \{ m \in \mathcal{M} : \exists t \in \mathcal{T},\, TM(a) = t \}.
+\mathcal{D}_r = \{ d \in \mathcal{D} : TM(a) = r \}.
 \]
-Finally, given a topic $t \in \mathcal{T}$, we define the set of \emph{valid models} of $t$, denoted by $\mathcal{M}_t$, as:
+Finally, given an entity $e \in \mathcal{E}$, we define the set of \emph{descriptions for $e$}, denoted by $\mathcal{D}_e$, as:
 \[
-\mathcal{M}_t = \{ m \in \mathcal{M}_{\mathcal{T}} : TM(a) = t \}.
+\mathcal{D}_e = \{ d \in \mathcal{D} : \exists r \in \mathcal{R}_e,\, TM(a) = r \}.
 \]
 \end{definition}
 
-\begin{example}
-\label{ex:topics_models_graph}
-Consider the set of all possible finite graphs\index{Graph}. Since graphs are abstract mathematical objects, we need a way to represent them as strings, for example, by using a binary encoding of their adjacency matrices (see Section \ref{sec:Graphs} for an introduction to graphs). The model $m = \langle TM, t \rangle$, where $t$ is the representation of a graph and $TM$ is a Turing machine that just halts, will be part of $\mathcal{M}_t$ since $TM(t) = t$. On the contrary of what happened in Section \ref{sec:descriptions_topics}, in this case we are concerned about the fact that this model may not be shortest possible description of $t$.
-\end{example}
+Given that descriptions are representations themselves, there exists descriptions that describe descriptions. From a practical point of view it is not a good idea to use descriptions as the representation of entities, since what we are looking for in a good representation is that they contain as much inforformation as possible about the original entities, not an encoding as concise as possible. Working with descriptions in the role of representations would make the job of scientific discovery very difficult.
 
-As Example \ref{ex:topics_models_graph} pointed it out, in general there is little value on models that are longer than the topics they describe.
+\begin{notation}
+In case of dealing with multiple represenations and descriptions, and in order to avoid ambiguity, we will denote by $d_r$ the description $d$ for the representation $r$.
+\end{notation}
+
+Since each description describes one, and only one, representation, we can define a function that maps descriptions into representations. Given that descriptions are Turing machines, it is natural to use as description function a universal Turing machine. Consequently, not only the individual descriptions of representations are computable, but also the function that maps descriptions into representations is computable.
 
 \begin{definition}
-\label{def:trivial_model}
-Let $t \in \mathcal{T}$ be a topic, and $m \in \mathcal{M}_t$ one of its models. If $l(m) \geq l(t)$, we say that $m$ is a \emph{trivial model}\index{Trivial model} of the topic $t$.
+We call \emph{description function}\index{Description function}, denoted by $\delta$, to any universal Turing machine $\delta : \mathcal{D} \rightarrow \mathcal{B}^\ast$ that maps descriptions to their corresponding representations.
 \end{definition}
 
-We could have considered that a model $m$ for a topic $t$ such that $l(m) = l(t)$ is a non-trivial model, since it might happen that there is no shortest possible description of that topic than the topic itself, for example when the topic is a random string. However, it does not make any sense to do research about random topics, since it is not possible to find short models, and so, we can not apply the results of our theory to them. This is why those models are considered trivial. In the same line, we could ask what happens if we replace each element of $\mathcal{T}$ by its shortest possible model (or the shortest known model) since they describe the same entity. The answer is that we cannot do that, since in general, this is no the expected behavior of the oracle $f_\mathcal{E}$.
+If $d$ is a description of the representation $r$, then we have that $\delta \left( d \right) = \delta \left( \langle TM, a \rangle \right) = TM(a) = r$.
 
-Since each valid model describes one, and only one, topic, we can define a function that maps models into topics. Given that models are Turing machines, it is natural to use as description function a universal Turing machine. Consequently, not only the individual models of topics are computable, but also it is computable the function that maps models into topics.
-
-\begin{definition}
-We call \emph{description function}\index{Description function}, denoted by $\delta$, to any universal Turing machine $\delta : \mathcal{M} \rightarrow \mathcal{T}$ that maps models to their corresponding topics.
-\end{definition}
-
-If $m$ is a model of topic $t$, then we have that $\delta \left( m \right) = \delta \left( \langle TM,a\rangle \right) = TM(a) = t$.
-
-Inspired by the Occam's razor principle\index{Occam's razor principle}\footnote{The Occam's razor principle refers to the number of assumptions of an explanation, not to the length of the explanation itself.}, if two explanations are indifferent, we should prefer the shortest one. Therefore, the limit of what can be known (understand) about a topic, that is, its perfect model, is given by the shortest model that allows us to reconstruct the topic.
+Inspired by the Occam's razor principle\index{Occam's razor principle}\footnote{The Occam's razor principle refers to the number of assumptions of an explanation, not to the length of the explanation itself.}, if two explanations are indifferent, we should prefer the shortest one. Therefore, the limit of what can be known (understand) about a representation, that is, its perfect model, is given by the shortest description that allows us to reconstruct this representation. Of course, what we know about the original entity is conditional to the quality of the representation.
 
 \begin{definition}
 \label{def:descriptions_perfect_model}
-Given the set of models $\mathcal{M}_t$ of a topic $t \in \mathcal{T}$, let $m^{\star} \in \mathcal{M}_t$ be the shortest possible model of $t$ using the standard shortlex ordering. We call $m^{\star}$ the \emph{perfect model}\index{Perfect model} of topic $t$.
+Given the set of descriptions $\mathcal{D}_r$ of a representaton $r \in \mathcal{B}^\ast$, let $d_r^{\star} \in \mathcal{D}_r$ be the shortest possible description of $r$ using the standard shortlex ordering. We call $d_r^{\star}$ the \emph{perfect description}\index{Perfect description} of the representation $r$.
 \end{definition}
 
-Unfortunately, the perfect model of a topic is in general not known and, as Proposition \ref{prop:nescience-kolmogorov} shows, there exist no algorithm to compute it. In practice what we have to do is to use an approximation to estimate how far our current best model is from the perfect model, that is, how much we do not know about a particular topic.
+Unfortunately, the perfect description of a representation is in general not known and, as Proposition \ref{prop:nescience-kolmogorov} shows, there exist no algorithm to compute it. In practice what we have to do is to use an approximation to estimate how far our current best description is from the perfect one, that is, how much we do not know about a particular representation for an entity (see Chapter \ref{chap:Redundancy}).
 
 \begin{proposition}
 \label{prop:nescience-kolmogorov}
-Given a topic $t \in \mathcal{T}$, we have that $l \left(m^{\star} \right) = K\left( t \right)$.
+Given a representation $r \in \mathcal{B}^\ast$, we have that $l \left( d_r^{\star} \right) = K\left( r \right)$.
 \end{proposition}
 \begin{proof}
 Apply Definition \ref{def:Kolmogorov-Complexity} and the fact that we require that the Turing machines $TM$ used in definitions $\langle TM,a\rangle$ must be prefix-free.
 \end{proof}
 
-The length of a model $l \left( m \right)$ for a topic $t$ is something that depends on how we encode Turing machines. The encoding method is given by the description function $\delta$ used. Fortunately, if we replace our description function by another one, the length of perfect models do not change (up to a constant that does not depend on the topics themselves).
+The actual length of a description $l \left( d \right)$ for a representation $r$ is something that depends on the particular enconding of Turing machines used. The encoding method is given by the description function $\delta$ used. Fortunately, if we replace our description function by a different one, the length of perfect models do not change (up to an additive constant that does not depend on the representations themselves).
 
 \begin{corollary}
-Let $t \in \mathcal{T}$ be a model, $\delta$ and $\dot{\delta}$ two different description functions, and $m^{\star}$ the perfect model of $t$ using $\delta$ and $\dot{m}^{\star}$ the perfect model using $\dot{\delta}$, then we have that $l \left( m^{\star} \right) \leq l \left( \dot{m}^{\star} \right) + c$ where $c$ is a constant that does not depend on $t$.
+Let $r \in \mathcal{B}^\ast$ be a representation, $\delta$ and $\dot{\delta}$ two different description functions, and $d_r^{\star}$ the perfect description of the representation $r$ using $\delta$ and $\dot{d}_r^{\star}$ the perfect description using $\dot{\delta}$, then we have that $l \left( d_r^{\star} \right) \leq l \left( \dot{d}_r^{\star} \right) + c$ where $c$ is a constant that does not depend on $r$.
 \end{corollary}
 \begin{proof}
 Apply Theorem \ref{prop:nescience-kolmogorov} and Theorem \ref{def:Invariance-theorem}.
 \end{proof}
 
-For the rest of this book we will assume that $\delta$ is fixed to a reference universal Turing machine. Alternatively, the reader could consider that all the theorems provided in this book that deal with the length of shortest models are valid up to a constant that does not depend on the topics themselves.
+In general, in the theory of nescience we are not interested in computing the actual value of the nescience about an entity given a description and a representation. Instead what we are interested is in the ordering of the different possible pairs of descriptions and representations given their nescience. In this sense, the details of the particular universal Turing machine used in practice are not relevant\footnote{Do not confuse the inner workings of the universal Turing machine that maps descriptions to representations, in which we are not interested, with the inner workings of the universal oracle Turing machine that maps representations to entities, in which we are interested, since this knowledge is critical to understand how things work.}. For the rest of this book we will assume that $\delta$ is fixed to a reference universal Turing machine. For example, in Section \ref{sub:ax_type_theory} we use as univeral Turing machine the lambda calculus. Alternatively, the reader could consider that all the theorems provided in this book that deal with the length of shortest models are valid up to an additive constant that does not depend on the topics themselves.
 
-{\color{red} TODO: Explain we are not interested in the actual values of the nescience, just the ordering of topics according to nescience, and so, the details of the particular universal Turing machine selected are not relevant.}
+A remarkable consequence of Proposition \ref{prop:nescience-kolmogorov} is that perfect descriptions must be incompressible, that is, \emph{perfect knowledge implies randomness} (see Section \ref{sec:incompressibility_randomness}).
 
-A remarkable consequence of Proposition \ref{prop:nescience-kolmogorov} is that perfect models must be incompressible, that is, \emph{perfect knowledge implies randomness} (see Section \ref{sec:incompressibility_randomness}). The converse, in general, does not hold, since we could have a random model that it is not the shortest possible one, that is, a model $m$ such that $l(m) = K(m)$ but $l(m^{\star}) < l(m)$.
+\begin{corollary}
+Let $d_r^{\star}$ be the perfect description of a representation $r$, then we have that $K \left( d_r^{\star} \right) = l \left( d_r^{\star} \right)$.
+\end{corollary}
+\begin{proof}
+Having $K \left( d_r^{\star} \right) < l \left( d_r^{\star} \right)$ would be a contradiction with the fact that $d_r^{\star}$ is the shortest possible description of $r$.
+\end{proof}
 
-{\color{red} TODO: That should be a corollary.}
+The converse, in general, does not hold, since we could have a random description that it is not the shortest possible one, that is, a description $d$ for a reprsentation $r$ such that $l(d) = K(d)$ but $l(d_r^{\star}) < l(d)$.
 
 \begin{example}
 \label{ex:description_neural}
 We could define a deep neural network\index{Neural network} with an input layer of one thousands nodes, ten hidden layers of fifty thousands nodes each, and an output layer of one thousand nodes, and then train the network to output a fixed string of one thousand 1's for any given input string. The Kolmogorov complexity of this neural network is much higher that the complexity of a string of one thousand 1's.
 \end{example}
 
+There is little value on a descriptions that is longer than the representation it describes.
+
+\begin{definition}
+\label{def:trivial_model}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}_r$ one of its descriptions. If $l(d) \geq l(r)$, we say that $d$ is a \emph{pleonastic description}\index{Pleonastic description} of the representation $r$.
+\end{definition}
+
+\begin{example}
+\label{ex:topics_models_graph}
+Consider the set of all possible finite graphs\index{Graph}. Since graphs are abstract mathematical objects, we need a way to represent them as strings, for example, by using a binary encoding of their adjacency matrices (see Section \ref{sec:Graphs} for an introduction to graphs). The description $d = \langle TM, r \rangle$, where $r$ is the representation of a graph and $TM$ is a Turing machine that just halts, will be part of $\mathcal{D}_r$ since $TM(r) = r$. We are concerned about the fact that this description may not be shortest possible description of $r$.
+\end{example}
+
+It might happen that there is no shortest possible description of a representation than the representation itself. This is the case when representations are random, or incompressible, strings. And, as we have seen in Section \ref{sec:incompressibility_randomness} the overhelming majority of strings are incompressible. It does not make any sense to do research about random representation, since it is not possible to find shorter models for that representation.
+
+The concept of perfect description can be generalized from individual representations to entities. This generalization allow us to study the nature and properties of these entities.
+
+\begin{definition}
+\label{def:entities_perfect_model}
+Given the set of descriptions $\mathcal{D}_e$ of an entity $e \in \mathcal{E}$, let $d_e^{\star} \in \mathcal{D}_e$ be the shortest possible description of $\mathcal{D}_e$ using the standard shortlex ordering. We call $d_e^{\star}$ the \emph{perfect model}\index{Perfect model} of entity $e$.
+\end{definition}
+
+For each possible representation $r$ of $e$ we can compute its perfect description $d_r^{\star}$. Then, the perfect description $d_e^{\star}$ for $e$ would be the shortest of this collection of perfect descriptions of the representations.
+
+An interesting case is when all the descriptions that compose $\mathcal{D}_e$ are pleonastics, that is, there is no model that it is shorter than the representation for all the possible representations of the entity. That would the case if all the representations of the entity $e$ are random strings. In this particular case, scientific research would be doomed, since it is not possible to find a suitable model for $e$. The fact that we can understand and make predictions about $e$ will be limited by the length of the non-compressible representations of $e$.
+
+{\color{red} Elaborate a little bit more over the concept of perfect description of an entity.}
+
 %
-% Section: Models for Joint Topics
+% Section: Models for Joint Representations
 %
 
-\section{Models for Joint Topics}
-\label{sec:descriptions_joint_model}
+\section{Descriptions for Joint Representations}
+\label{sec:description_joint_represenation}
 
-In Section \ref{sec:descriptions_joint_topic} we introduced the concept of joint topic $ts$ of two topics $t$ and $s$. In this section we are interested in to study how the length of the optimal model of a joint topic relates to the length of the optimal models of the individual topics.
+In Section \ref{sec:descriptions_joint_topic} we introduced the concept of joint representation $ts$ of two individual representations $t$ and $s$. In this section we are interested in to study how the length of the optimal description of a joint representation relates to the length of the optimal descriptions of the individual representations.
 
-The length of the perfect model of a joint topic is greater or equal than the length of the perfect model of any of the individual topics. Intuitively, the more topics we add to our research, the longer will take to describe them.
+The length of the perfect description of a joint representation is greater or equal than the length of the perfect description of any of the individual representations. That is, the more information we include in a representation, the longer will take to describe it. 
 
 \begin{proposition}
 \label{prop:joint_length}
-Given any two topics $t,s \in \mathcal{T}$, we have that $l \left( m_{ts}^{\star} \right) \geq l \left( m_{t}^{\star} \right)$ and $l \left( m_{ts}^{\star} \right) \geq l \left( m_{s}^{\star} \right)$.
+Given any two representations $t,s \in \mathcal{B}^\ast$, we have that $l \left( m_{ts}^{\star} \right) \geq l \left( m_{t}^{\star} \right)$ and $l \left( m_{ts}^{\star} \right) \geq l \left( m_{s}^{\star} \right)$, where $m_{t}^{\star}$, $m_{s}^{\star}$ and $m_{ts}^{\star}$ are the perfect descriptions of the representatons $t$, $s$ and the joint representation $ts$ respectively.
 \end{proposition}
 \begin{proof}
 The statement $l \left( m_{ts}^{\star} \right) \geq l \left( m_{t}^{\star} \right)$ is equivalent to $K(t,s) \geq K(t)$. Then apply Proposition \ref{prop:excess_kolmogorov}.
 \end{proof}
 
-If the selected two models partially overlap, we could take advantage of this fact to come up with a shorter description. In the worst case, the perfect model of a joint topic would be just the concatenation of the perfect models of the involved topics.
+Intuitively, adding more information to a representation is a good thing if this information is relevant to describe the entity in which we are interested. But adding non-relevant information will make our model unnecessarily long.
+
+If the selected two representations partially overlap, we could take advantage of this fact to come up with a shorter description. In the worst case, the perfect description of a joint represenation would be just the concatenation of the perfect descriptions of the involved representations.
 
 \begin{proposition}
 \label{prop:joint_sum}
@@ -335,21 +362,25 @@ Given any two topics $t,s \in \mathcal{T}$, we have that $l \left( m_{ts}^{\star
 The statement $l \left( m_{ts}^{\star} \right) \leq l \left( m_{t}^{\star} \right) + l \left( m_{s}^{\star} \right)$ is equivalent to $K(t,s) \leq K(t) + K(s)$, then apply Proposition \ref{prop:additive_kolmogorov}.
 \end{proof}
 
-Finally, next proposition proves that the order of the topics in the perfect model of a joint topic does not change its length.
+Another interpretation of the above proposition would be to consider a representation $r$ that is the concatenation of two, partially overlapping, representations $s$ and $t$, that is, $r = st$. In this sense, Proposition \ref{prop:joint_sum} says that including redundant information in a description is not a problem from the proint of view of finding the shortes possible description. Compare with Proposition \ref{prop:joint_length} that states that adding non-relevant information to a representation is a bad thing.
+
+Finally, next proposition proves that the order of the representations in the perfect description of a joint representation does not change its length.
 
 \begin{proposition}
 \label{prop:joint_order}
-Given any two topics $t,s \in \mathcal{T}$, we have that $l \left( m_{ts}^{\star} \right) = l \left( m_{st}^{\star} \right) + c$.
+Given any two representations $t, s \in \mathcal{B}^\ast$, we have that $l \left( m_{ts}^{\star} \right) = l \left( m_{st}^{\star} \right) + c$.
 \end{proposition}
 \begin{proof}
-The statement $l \left( m_{ts}^{\star} \right) = l \left( m_{st}^{\star} \right) + c$ is equivalent to $K(t,s) = K(s,t) + c$, then apply Proposition \ref{prop:kolmogorov_order}.
+The statement $l \left( m_{ts}^{\star} \right) = l \left( m_{st}^{\star} \right) + c$ is equivalent to $K(ts) = K(st) + c$, then apply Proposition \ref{prop:kolmogorov_order}.
 \end{proof}
 
-Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:joint_order} can be generalized to any arbitrary, but finite, collection of topics $t_1, t_2, \ldots, t_n$.
+Of course, given the concatenated $ts$ we cannot infer the original $t$ and $s$, since they are not self-delimited repsentations. But this fact is not relevant to the problem of finding the shortest possible description of the concatenated string.
+
+Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:joint_order} can be generalized to any arbitrary, but finite, collection of representations $t_1, t_2, \ldots, t_n$.
 
 \begin{proposition}
 \label{prop:joint_multiple_topics}
-Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ be a finite collection of topics. Then, we have that:
+Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ be a finite collection of representations. Then, we have that:
 
 \renewcommand{\theenumi}{\roman{enumi}}
 \begin{enumerate}

@@ -16,9 +16,9 @@ Gregory Chaitin
 \end{quote}
 \bigskip
 
-For the majority of the scientific disciplines, the set $\mathcal{E}$ of entities under consideration will be composed by abstract elements, or other kind of objects, that cannot be directly studied. If we want to understand them we have to use an indirect method. As we have seen in the previous chapter, the approach proposed by the theory of nescience is to work with representations (i.e. strings of symbols) instead of using the original entities; what we call the set $\mathcal{R}$ of representations. Unfortunately, proceeding in this way introduce new problems: since we do not fully understand the elements of $\mathcal{E}$, otherwise we will not be doing research, the representations used probably will not be as complete and accurate as they should. This limitation has serious implications, since an error in the representation of an entity will induce an error in the model we use to describe that entity. It is of utmost importance to characterize this type error, and to understand its implications.
+For the majority of the scientific disciplines, the set $\mathcal{E}$ of entities under consideration will be composed by abstract elements, or other kind of difficult objects, that cannot be directly studied. If we want to understand them we have to use an indirect method. As we have seen in the previous chapter, the approach proposed by the theory of nescience is to work with representations (i.e. strings of symbols) instead of using the original entities; what we call the set $\mathcal{R}$ of representations. Unfortunately, proceeding in this way introduce new problems: since we do not fully understand the elements of $\mathcal{E}$, otherwise we will not be doing research, the representations used probably will not be as complete and accurate as they should. This limitation has serious implications, since an error in the representation of an entity will induce an error in the model we use to describe that entity. It is of utmost importance to characterize this type error, and to understand its implications.
 
-Miscoding is a quantity that measures the error due to the use of bad encodings for entities. We propose a definition of miscoding based on the length of the shortest computer program that can print a correct representation given an incorrect one. Intuitively, miscoding quantifies the effort (measured as the length of a program) required to fix an incorrect representation. Unfortunately, in practice, the ideal representations of the entities are unknown (otherwise we whould be using them), and so, we cannot compute how far our current representations are from those strings. From a theoretical point of view we could take advantage of the oracle machine used to characterize the set $\mathcal{E}$, since that (abstract) machine knows the valid representation for all the entities. However, there are some limitations with respect to the kind of questions we can ask to the oracle that have to take into account. For example, we cannot query the oracle about a particular entity for which we do not have a valid representation.
+Miscoding is a quantity that measures the error due to the use of bad encodings for entities. We propose a definition of miscoding based on the length of the shortest computer program that can print a correct representation given an incorrect one. Intuitively, miscoding quantifies the effort (measured as the length of a program) required to fix an incorrect representation. Unfortunately, in practice, the ideal representations of the entities are unknown (otherwise we whould be using them), and so, we cannot compute how far our current representations are from those strings. From a theoretical point of view we could take advantage of the oracle machine used to characterize the set $\mathcal{E}$, since that (abstract) machine knows the valid representation for all the entities. However, there are some limitations with respect to the kind of questions we can ask to the oracle that we have to take into account. For example, we cannot query the oracle about a particular entity for which we do not have a valid representation.
 
 {\color{red} TODO: Review this paragraph once the chapter is finished.} In this chapter we will formally introduce the concept of miscoding and study its properties. We will also see how miscoding behaves when dealing with joint representations, and how to compute the miscoding of categories and research areas.
 
@@ -28,27 +28,41 @@ Miscoding is a quantity that measures the error due to the use of bad encodings 
 \section{Miscoding}
 \label{sec:miscoding}
 
-Miscoding refers to the fact that our current representation of the entity $e \in \mathcal{E}$ might not be the right one, that is, instead of working with a string $r_e \in \mathcal{R}_e$ that perfectly encodes $e$, it might happen we are studying another string $r \in \mathcal{R}$ that it is, hopefully, close to $r_e$ but not necessarily equal. We are interested in to compute the distance between the string $r$ and the perfect one $r_e$ as a quantitative measure of the error we are introducing due to the use of a wrong encoding of the entity $e$. Unfortunately, we do not know $r_e$, since, in general, it does not exists a computable function from $\mathcal{R}$ to $\mathcal{E}$. Recall that the only thing we have to our disposal is an abstract oracle machine $f_\mathcal{E}$ that knows which strings represents each entity (see Section \ref{sec:representations}).
+Miscoding refers to the fact that our current representation of the entity $e \in \mathcal{E}$ might not be a valid one, that is, instead of working with a string $r \in \mathcal{B}^\ast$ that perfectly encodes $e$, it might happen we are studying another string $r' \in \mathcal{B}^\ast$ that it is, hopefully, close to $r$ but not necessarily equal. We are interested in to compute the distance between the string $r'$ and the perfect one $r$ as a quantitative measure of the error we are introducing due to the use of a wrong encoding of the entity $e$. Unfortunately, we do not know $r$, since, in general, it does not exists a computable function from $\mathcal{E}$ to $\mathcal{B}^\ast$. Recall that the only thing we have to our disposal is an abstract oracle machine $f_\mathcal{E}$ that knows which strings represents each entity (see Section \ref{sec:representations}).
 
-We start by distinguishing between valid representations, that is strings that contain all the information required by the oracle to reconstruct an entity, and non-valid representations.
+We start by distinguishing between valid representations, that is strings that contain all the relevant information required by the oracle to reconstruct an entity, and non-valid representations.
 
 \begin{definition}
-Let $\mathcal{E}$ be a collection of entities, and $f_\mathcal{E}$ and encoding function. We define the set of valid representations for $\mathcal{E}$, denoted by $\mathcal{R}_\mathcal{E}$, as the domain of $f_\mathcal{E}$.
+Let $\mathcal{E}$ be a collection of entities, and $f_\mathcal{E}$ and encoding function. We define the set of \emph{valid} representations for $\mathcal{E}$, denoted by $\mathcal{R}^\star_\mathcal{E}$, as the subset of representations that perfectly encode an entity of $\mathcal{E}$, according to $f_\mathcal{E}$.
 \end{definition}
 
-We can safely assume (it is free from logical contradictions) that the oracle machine also knows how far is $r$ from $r_e$, for all $r \in \mathcal{R}$ and all $r_e \in \mathcal{R}_\mathcal{E}$. Unfortunately, if we ask the oracle how far is a particular string $r$ from perfectly encoding the entity in which we are interested, the oracle will require from us to specify the entity in which we are interested. And the only way have to our disposal to tell the oracle which one is that entity is by means of using $r_e$, which, of course, we do not know. The work around we propose to solve this problem is to ask to the oracle how far is $r$ from encoding \emph{any} of the entities of $\mathcal{E}$.
+What it is a valid representation is something that depends on the particular oracle $f_\mathcal{E}$ selected, and in general, it is unknown. Intuitively, a representation is valid if it contains all the required information so that the oracle can reconstruct the original entity without requiring the use of additional details. A valid representation cannot include wrong information, or non-relevant information, since we cannot guarantee that the oracle is able to filter out that information. Finding what it is exactly a valid representation, that is, how the oracle works internally, is part of the scientific research activity.
+
+We can define the set of valid representations of a single entity $e$, in the same way.
+
+\begin{definition}
+We define the set of valid representations for an entity $e \in \mathcal{E}$, denoted by $\mathcal{R}^\star_e$, as the subset of representations that perfectly encode the entity $e$, that is, $\mathcal{R}^\star_e = \mathcal{R}^\star_\mathcal{E} \cap \mathcal{R}_e$.
+\end{definition}
+
+It might happen that for some entities there is more than one valid representation. Those representations correspond to the different styles or ways to represent the entity (see Section \ref{sec:scientific_representation}). Moreover, different oracles will produce different sets of valid represenatations. It might also happen that the set of valid representation is empty, that is, there is no valid representation for the entity. This might happen even in case that the entity is knowable. In the theory of nescience, knowable means that we can derive some knowlege for an entity, but a perfect knowledge is not guaranteed.
+
+\begin{notation}
+We denoted by $r^\star_e$ the fact that $r$ is a valid representation of the entity $e$.
+\end{notation}
+
+We can safely assume (it is free from logical contradictions) that the oracle machine not only knows which representations encode which entities, but also how far is a representation $r$ from a valid representation $r^\star_e$, for all $r \in \mathcal{B}^\ast$ and all $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$. Unfortunately, if we ask the oracle how far is a particular string $r$ from perfectly encoding the entity in which we are interested, the oracle will require from us to specify the entity in which we are interested. And the only way we have to our disposal to tell the oracle which one is that entity is by means of using $r^\star_e$, which, of course, we do not know. The work around we propose to solve this problem is to ask to the oracle how far is $r$ from encoding \emph{any} of the entities of $\mathcal{E}$. Something that can be answerd by the oracle, at least in theory.
 
 \begin{definition} [Miscoding]
 \label{def:miscoding}
-Let $r \in \mathcal{R}$ be a representation. We define the \emph{miscoding} of $r$, denoted by $\mu(r)$, as:
+Let $r \in \mathcal{B}^\ast$ be a representation. We define the \emph{miscoding} of $r$, denoted by $\mu(r)$, as:
 \[
-\mu(r) = \overset{o}{ \underset{s \in \mathcal{R}_\mathcal{E}} \min} \frac{ \max\{ K(r \mid s), K(s \mid r) \} } { \max\{ K(r), K(s) \} }
+\mu(r) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} } { \max\{ K \left( r \right), K \left( r^\star_e \right) \} }
 \]
 \end{definition}
 
-Where the quantity $\overset{o}{ \underset{s \in \mathcal{R}_\mathcal{E}} \min}$ has to be computed by the oracle. Intuitively, the more ignorant we are about an entity, the bigger will be the miscoding of our current representation, since a better understanding of that entity means that we should be able to provide an encoding closer to a perfect one.
+Where the quantity $\overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min}$ has to be computed by the oracle. Intuitively, the more ignorant we are about an entity, the bigger will be the miscoding of our current representation, since a better understanding of that entity means that we should be able to provide an encoding closer to a perfect one. Recall that in our thory, all possible strings, even the most simplest ones, represent an entity.
 
-Miscoding is computed using a two-way approach: we require the oracle to compute the length of the shortest computer program that can print the string $s$ that encodes the closest entity given our representation $r$, and the other way around, that is, to compute the length of the shortest computer program that can print $r$ given the string $s$. That is, a valid representation has to include all the information required to reconstruct an entity, even if it is redundant, but it cannot include wrong, or irrelevant, information. Miscoding is about including only relevant symbols (accurate), meanwhile surfeit (see Chapter \ref{chap:Redundancy}) is about including only those symbols that are needed (concise).
+Miscoding is computed using a two-way approach: we require the oracle to compute the length of the shortest computer program that can print the string $r^\star_e$ that encodes the closest entity given our representation $r$, and the other way around, that is, to compute the length of the shortest computer program that can print $r$ given the string $r^\star_e$. That is, a valid representation has to include all the information required to reconstruct an entity, even if it is redundant, but it cannot include wrong, or irrelevant, information. Miscoding is about including only relevant symbols (accurate), meanwhile surfeit (see Chapter \ref{chap:Redundancy}) is about including only those symbols that are needed (concise).
 
 In our definition of miscoding we have used a relative measure, instead of the absolute one, because besides to compare the miscoding of different encodings for the same entity, we are also interested in comparing the miscoding of different entities.
 
@@ -56,39 +70,36 @@ The miscoding of a representation $r$ is always a number between $0$ and $1$.
 
 \begin{proposition}
 \label{prop:range_miscoding}
-We have that $0 \leq \mu(r) \leq 1$ for all $r \in \mathcal{R}$.
+We have that $0 \leq \mu(r) \leq 1$ for all $r \in \mathcal{B}^\ast$.
 \end{proposition}
 \begin{proof}
-Given that $0 \leq \frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } \leq 1$ for all $t \in \mathcal{T}$ and all $s \in \mathcal{T}_\mathcal{E}$, since $\mathcal{T}_\mathcal{E} \subseteq \mathcal{T}$ and Proposition {\color{red} XX}.
+Given that $0 \leq \frac{ \max\{ K(x \mid y), K(y \mid x) \} } { \max\{ K(x), K(y) \} } \leq 1$ for all $x, y \in \mathcal{B}^\ast$ according to Proposition {\color{red} XX}.
 \end{proof}
 
 Miscoding is equal to zero if, and only if, the representation $r$ is one of the possible valid representation of an entity $e$.
 
 \begin{proposition}\label{prop:perfect_encoding}
-Let $t \in \mathcal{T}$ a topic, we have that $\mu(t) = 0$ if, and only if, $t \in \mathcal{T}_\mathcal{E}$.
+Let $e \in \mathcal{E}$ be an entity, we have that $\mu(r) = 0$ if, and only if, $r \in \mathcal{R}^\star_\mathcal{E}$.
 \end{proposition}
 \begin{proof}
-Let $t \in \mathcal{T}_\mathcal{E}$, then by Proposition {\color{red} XX} we have that $K(t \mid t) = 0$ and so, $\mu(t) = 0$. In the same way, let's assume that $\mu(t) = 0$, then there exists at least one $s \in \mathcal{T}_\mathcal{E}$ such that $\frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } = 0$, and given Proposition {\color{red} XX} we have that $t = s$.
+{\color{red} TODO}
 \end{proof}
 
-According to Proposition \ref{prop:perfect_encoding}, if the miscoding of $t$ is equal to 0 we can conclude that $t$ perfectly encodes an entity $e$. The problem is that there is no way to know which one is the entity encoded by $t$. Of course, given our scientific intuition, we could guess the entity encoded, but from a mathematical point of view, we can not prove we are right. Moreover, with time and more research, it might happen that we change our mind about the nature of the encoded entity $e$ (see Example \ref{ex:phlogiston}).
+According to Proposition \ref{prop:perfect_encoding}, if the miscoding of $r$ is equal to 0 we can conclude that $r$ perfectly encodes an entity $e$. The problem is that there is no way to know which one is the entity encoded by $r$. Of course, given our scientific intuition, we could guess the entity encoded, but from a mathematical point of view, we can not prove we are right. Moreover, with time and more research, it might happen that we change our mind about the nature of the encoded entity $e$ (see Example \ref{ex:polywater}).
 
 An entity $e \in \mathcal{E}$ can have multiple representations, given by the set $\mathcal{R}_e$. Fortunately, miscoding is a quantity that does not depend on the representation selected (see the problem of style in Section \ref{sec:scientific_representation}).
 
 \begin{proposition}
-Let $t \in \mathcal{R}$ be a representation with $\mu(t) = \mu_t$, then we have that
-\[
-\mu_t \leq \frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } \quad \textrm{for all} \quad s \in \mathcal{T}_\mathcal{E}
-\]
+Let $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$ be a valid representation, then we have that $\mu\left( r^\star_e \right) \leq \mu\left( r \right)$ for all $r \in \mathcal{B}^\star$.
 \end{proposition}
 \begin{proof}
-The existence of an $s \in \mathcal{R}_\mathcal{E}$ such that $\frac{ \max\{ K(s \mid t), K(t \mid s) \} } { \max\{ K(s), K(t) \} } < \mu_t$ is a contradiction with the fact that $\mu_t$ is the minimum reached for all possibles $s \in \mathcal{T}_\mathcal{E}$.
+Given that $\mu\left( r^\star_e \right) = 0$ and $\mu\left( r \right) \leq 0$ for all $r \in \mathcal{B}^\star$.
 \end{proof}
 
-Given an entity $e$, we have seen that all the representations that belong to $\mathcal{R}_e$ are equally good form the point of view of miscoding, since all of them have a miscoding of $0$. The question is which one we should use in our research? From a practical point of view, we should select that representation that makes it easier to gather new knowledge about the original entity, that is, to reduce the inaccuracy and surfeit of candidate models (see Section {\color{red} XX}).
+Given an entity $e$, we have seen that all the valid representations that belong to $\mathcal{R}^\star_e$ are equally good form the point of view of miscoding, since all of them have a miscoding of $0$. The question that aries is which one we should use in our research. From a practical point of view, we should select that representation that makes it easier to gather new knowledge about the original entity, that is, to derive models with low inaccuracy and surfeit.
 
 \begin{example}
-Assume we have a time series $ts$ composed $m$ measurements $x_1, \ldots, x_m$ collected at fixed time intervals from a physical phenomena with a sinusoidal behavior, and assume we have trained a neural network $nn$ that perfectly fits the data, that is, given a time $t$ as input it returns $x_t$. Both representations have the same miscoding, that is $\mu(ts) = \mu(nn)$. An analysis of the cycles of the time series will allow us to discover that the best model for this particular physical phenomena seem to be a sine function, however, no currently known machine learning approach will arrive at the same conclusion having as input the architecture of the neural network (number of layers, sizes, and trained weights). Of course, the oracle is so smart that, in fact, it did it.
+{\color{red} Find a better example.} Let $\mathbf{X}_t$ be a time series composed $m$ measurements $x_1, \ldots, x_m$ collected at fixed time intervals from a physical phenomena with a sinusoidal behavior, and assume we have trained a neural network $nn$ that perfectly fits the data, that is, given a time $t$ as input it returns $x_t$. Both representations have the same miscoding, that is $\mu(\mathbf{X}_t) = \mu(nn)$. An analysis of the cycles of the time series will allow us to discover that the best model for this particular physical phenomena seem to be a sine function, however, no currently known machine learning approach will arrive at the same conclusion having as input the architecture of the neural network (number of layers, sizes, and trained weights). Of course, the oracle is so smart that, in fact, it can do it.
 \end{example}
 
 %

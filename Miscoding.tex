@@ -103,112 +103,101 @@ Given an entity $e$, we have seen that all the valid representations that belong
 \end{example}
 
 %
-% Section: Reducing Miscoding
+% Section: Miscoding of Joint Representations
 %
-\section{Reducing Miscoding}
-
-As we have seen in Section \ref{sec:descriptions_joint_topic}, a possible way to imporove the quality of our current representations, is by adding, or removing, symbols from our current representation.
-
-\begin{theorem}
-Let $r \in \mathcal{R}$ be a representation such that $\mu(r) >0$, then at least one of the following cases is true:
-\begin{enumerate}[label=(\roman*)]
-\item there exist a $s \in \Sigma^{+}$ such that $r \oplus s <_N s$ or $s \oplus r <_N s$,
-\item there exists a $t \in \Sigma^{+}$ in the form $r = \alpha \oplus t \oplus \beta$ with $\alpha, \beta \in \Sigma^\ast$ such that $t <_N r$.
-\end{enumerate}
-\end{theorem}
-\begin{proof}
-{\color{red} TODO}
-\end{proof}
-
-
-%
-% Section: Joint Miscoding
-%
-\section{Joint Miscoding}
+\section{Miscoding of Joint Representations}
 \label{sec:joint_miscoding}
 
+As we have seen in Section {\color{red} XXX} if $s, t \in \mathcal{B}^\ast$ are two representations, the concatenation $st$ of those strings is also a representation, called joint representation. In this section we are interested in to study the miscoding of joint representations and their properties.
 
-{\color{red} TODO: Extend}
-
-A similar approach could be used to discover new unknown entities, by means of combining the (possible approximate) representations of the already known entities.
-
-In both cases, we require the concatenation of strings. In this section we study how the concept of miscoding behaves when we concatenate two representations.
-
-\begin{definition}
-Let $r, s \in \mathcal{R}$ two different representations. We define the \emph{joint miscoding} of the representations $r$ and $s$, denoted by $\mu(r, s)$, as:
+Given that the joint representation $st$ is also a representation, its miscoding will be given by:
 \[
-\mu(r, s) =  \overset{o}{ \underset{t_e \in \mathcal{T}_\mathcal{E}} \min} \frac{ \max\{ K(t_e \mid ts), K(ts \mid t_e) \} } { \max\{ K(t_e), K(ts) \} }
+\mu(st) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( st \mid r^\star_e \right), K \left( r^\star_e \mid st \right) \} } { \max\{ K \left( st \right), K \left( r^\star_e \right) \} }
 \]
-\end{definition}
 
-Explain ...
-
-\begin{example}
-{\color{red} PENDING}
-\end{example}
-
-$\mu(r, s) = \mu(rs)$
-
-The joint miscoding of two representations is always a number between $0$ and $1$. This allow us to compare the joint miscoding of unrelated entities.
+As expected, the miscoding of a joint representation is a number between 0 and 1.
 
 \begin{proposition}
-We have that $0 \leq \mu(t,s) \leq 1$ for all $t, s \in \mathcal{T}$.
+Let $s, t \in \mathcal{B}^\ast$ be two representations. We have that $0 \leq \mu(st) \leq 1$.
 \end{proposition}
 \begin{proof}
-Given Definition \ref{def:descriptions_extended_topics} apply Proposition \ref{prop:range_miscoding}.
+It is a direct consequence of Proposition \ref{prop:range_miscoding}.
 \end{proof}
 
-When dealing with the concept of joint miscoding, the order in which the representations are listed is not relevant.
+The miscoding of a joint representation is smaller than the sum of the miscoding of the individual representations.
 
 \begin{proposition}
-We have that $\mu(t,s) = \mu(s,t)$ for all $t,s \in \mathcal{T}$.
+Let $s, t \in \mathcal{R}_e$ be two representations of an entity $e$. We have that $\mu( st ) \leq \mu(s) + \mu(t)$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+\begin{example}
+{\color{red} Provide an example of how this theorem can be used in practice.}
+\end{example}
+
+When dealing with the concept of miscoding of joint representations, the order in which these representations are listed is not relevant.
+
+\begin{proposition}
+Let $s, t \in \mathcal{R}_e$ be two representations. We have that $\mu(ts) = \mu(st)$.
 \end{proposition}
 \begin{proof}
 {\color{red}: Apply Propositions \ref{prop:kolmogorov_order} and \ref{prop:joint_order}.}
 \end{proof}
 
-This is not true ...
+It does not happen that $\mu(ts) \geq \mu(t)$ or $\mu(ts) \geq \mu(s)$ as next counterexample shows.
 
-The joint miscoding of two representations is greater or equal than the miscoding of any of them isolated. Intuitively, this allow us to move ourselves into an unknown area, with the hope of discovering new research entities.
+\begin{example}
+{\color{red} Provide a counterexample.}
+\end{example}
 
-\begin{proposition}
-Let $t, s \in \mathcal{T}$ two different topics. We have that $\mu(t,s) \leq \mu(t)$ and that $\mu(t,s) \leq \mu(s)$.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO: Pending}
-\end{proof}
-
-The joint miscoding of two topics is smaller than the sum of the miscoding of the individual topics. Intuitively, we are looking for new entities by creating new representations that are different from the representations we already know, but not too far so that that the new representations are close enough to the representations of a valid entities.
-
-\begin{proposition}
-We have that $\mu(t,s) \leq \mu(t) + \mu(s)$ for all $t, s \in \mathcal{T}$.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO: Pending}
-\end{proof}
-
-We can extend the concept of joint miscoding to any finite collection of topics.
+We can extend the concept of miscoding of joint representations to any finite collection of representations.
 
 \begin{definition}
-Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. We define the \emph{joint miscoding of} $t_1, t_2, \ldots, t_n$, denoted by $\mu(t_1, t_2, \ldots, t_n)$, as:
+Let $r_1, r_2, \ldots, r_n \in \mathcal{B}^\star$ a finite collection of representations. We define the miscoding of the joint representation $r_1 r_2, \ldots r_n$, denoted by $\mu(r_1 r_2 \ldots r_n)$, as:
 \[
-\mu(t_1, t_2, \ldots, t_n) = \overset{o}{ \underset{t_e \in \mathcal{T}_\mathcal{E}} \min} \frac{ \max\{ K(t_e \mid t_1 t_2 \ldots t_n), K(t_1 t_2 \ldots t_n \mid t_e) \} } { \max\{ K(t_e), K(t_1 t_2 \ldots t_n) \} }
+\mu(r_1 r_2 \ldots r_n) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r_1 r_2 \ldots r_n \mid r^\star_e \right), K \left( r^\star_e \mid r_1 r_2 \ldots r_n \right) \} } { \max\{ K \left( r_1 r_2 \ldots r_n \right), K \left( r^\star_e \right) \} }
 \]
 \end{definition}
 
-Next propostion shows that the concept of joint miscoding can be generalized to multiple representations.
+Next propostions shows the properties of the concept of joint miscoding generalized to multiple representations.
 
 \begin{proposition}
-Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. Then, we have that:
-
-\renewcommand{\theenumi}{\roman{enumi}}
-\begin{enumerate}
-\item $0 \leq \mu(t_1, t_2, \ldots, t_n) \leq 1$
-\item $\mu(t_1, t_2, \ldots, t_n) \leq \mu(t_1) + \ldots + \mu(t_n)$
-\item $\mu(t_1, t_2, \ldots, t_n) \geq \mu(t_i) \; \forall \, 0 \leq i \leq n$,
-\item $\mu(t_1, \ldots, t_i, \ldots, t_j, \ldots, t_n) = \mu(t_1, \ldots, t_j, \ldots, t_i, \ldots, t_n) \; \forall \, 0 \leq i \leq j \leq n$.
-\end{enumerate}
+Let $r_1, r_2, \ldots, r_n \in \mathcal{B}^\star$ a finite collection of representations. Then, we have that $0 \leq \mu(r_1, r_2, \ldots, r_n) \leq 1.$
 \end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+\begin{proposition}
+Let $r_1, r_2, \ldots, r_n \in \mathcal{R}^e$ a finite collection of representations of an entity $e$. Then, we have that $\mu(r_1, r_2, \ldots, r_n) \leq \mu(r_1) + \ldots + \mu(r_n)$
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+We have seen that the contatenation of multiple representations of the same entity can help us to find a better representation. A similar approach could be used to discover new, unknown, entities, by means of combining the representations of the already known entities. Intuitively, we are looking for new entities by creating new representations that are different from the representations we already know, but not too far so that that the new representations are close enough to the representations of a valid entities.
+
+{\color{red} TODO: Formalize this idea with a proposition.}
+
+{\color{red} TODO: Provide an example of how it can be applied in practice.}
+
+
+%
+% Section: Reducing Miscoding
+%
+\section{Reducing Miscoding}
+
+We have seen in Section {\color{red} XXX} that a valid representation contains all the information needed to reconstruct by the oracle the studied entity, and only that information. If the representation of an entity is non-valid, that is, its miscoding is greater than zero, it could be due to the fact that some critical information is missing from the representation, or that the representation contains information that it is non-relevan or even wrong with respect to the selected entity. According, if the miscoding of a representation is non-zero, we could reduce the miscondig by adding the missing information, or by removing the wrong information from the representation. This intuition is formalized by the following Theorem.
+
+\begin{theorem}
+Let $r \in \mathcal{B}^\ast$ be a representation such that $\mu(r) >0$, then at least one of the following cases is true:
+\begin{enumerate}[label=(\roman*)]
+\item there exist a $s \in \mathcal{B}^\ast$ such that $\mu(rs) < \mu(r)$ or $\mu(sr) < \mu(r)$,
+\item there exists a $s \in \mathcal{B}^\ast$ in the form $r = \alpha s \beta$ with $\alpha, \beta \in \mathcal{B}^\ast$ such that $\mu(r) < \mu(s)$.
+\end{enumerate}
+\end{theorem}
 \begin{proof}
 {\color{red} TODO}
 \end{proof}
@@ -218,7 +207,7 @@ Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. Then,
 %
 \section{Miscoding of Areas}
 
-{\color{red} TODO: Extend this section.}
+{\color{red} TODO: Review and extend this section.}
 
 The concept of miscoding can be extended to research areas in order to quantitative measure the amount of effort required to fix an inaccurate representation of the area.
 
@@ -229,3 +218,4 @@ Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A} = \{t_1, t_2, 
 \]
 \end{definition}
 
+{\color{red} TODO: Say something about the concept of intradisciplinary and interdisciplinary in the context of miscoding and provide a reference to the chapter of computational creativity.}

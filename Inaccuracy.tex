@@ -16,7 +16,7 @@ Saki
 \end{quote}
 \bigskip
 
-In Section \ref{sec:descriptions_models} we defined the concept of description, or model, of an entity as a computer program that, when executed, recreates one of the representations that encode that entity. More specifically, a description $d$ of a representation $r$ for an entity $e$ is a Turing machine that, when interpreted by a universal Turing machine $\delta$, prints out the string $r$. However, since our knowledge about the entity $e$ under study is usually incomplete, the description $\delta(d)$ will transcribe a different string $r'$, which will be similar to $r$, but not equal. In this chapter we are going to study the error induced by bad models, i.e. how close the string $r'$ is to the original string $r$. We refer to this type of error as the inaccuracy of the description $d$.
+In Section \ref{sec:descriptions_models} we defined the concept of description, or model, of an entity as a computer program that, when executed, recreates one of the representations that encode that entity. More specifically, a description $d$ of a representation $r$ for an entity $e$ is a Turing machine that, when interpreted by a universal Turing machine $\Gamma$, prints out the string $r$. However, since our knowledge about the entity $e$ under study is usually incomplete, the description $Gamma(d)$ will transcribe a different string $r'$, which will be similar to $r$, but not equal. In this chapter we are going to study the error induced by bad models, i.e. how close the string $r'$ is to the original string $r$. We refer to this type of error as the inaccuracy of the description $d$.
 
 Inaccuracy is the second element we will use to characterize how well we understand a research entity. The intuition is that the more accurate our model is, the better we know the entity. From a formal point of view, we compute the inaccuracy of a description $d$ as the normalized information distance between the original representation $r$ and the representation $r'$ produced by our description $d$. That is, inaccuracy is masured as the length of the shortest computer program that can fix the incorrect output of our model.
 
@@ -30,18 +30,15 @@ In this chapter we will introduce formally the concept of inaccuracy and we will
 \section{Inaccuracy}
 \label{sec:inaccuracy:inaccuracy}
 
-When studying an entity $e \in \mathcal{E}$ through a representation $r \in \mathcal{R}_e$, it might happen that our candidate description $d$ is not a valid description for $r$, that is, $d \notin \mathcal{D}_r$ (see Definition \ref{def:descriptions_model}). In that case, the universal Turing machine $\Gamma$, when given as input $d$, will print out a string $r'$ different from the expected string $r$. Intuitively, we could claim that $d$ is an inaccurate description of the entity $e$. However, since descriptions describe entities indirectly though representations, our formal definition of the concept of inaccuracy has to be given with respect to the representations in use, not with respect to the original entities, and we should take into account that representations might be themselves wrong (something that has been already addressed with the concept of miscoding). Given the above considerations, we propose the following definition of the concept of inaccurate description.
+When studying an entity $e \in \mathcal{E}$ through a representation $r \in \mathcal{R}_e$, it might happen that our candidate description $d$ is not a valid description for $r$, that is, $d \notin \mathcal{D}_r$ (see Definition \ref{def:descriptions_model}). In that case, the universal Turing machine $\Gamma$, when given as input $d$, will print out a string $r'$ different from the expected string $r$. Intuitively, we can say that $d$ is an inaccurate description of the entity $e$. However, since descriptions describe entities indirectly though representations, our formal definition of the concept of inaccuracy has to be given with respect to the representations in use, not with respect to the original entities, and we should take into account that representations might be themselves wrong (something that has been already addressed with the concept of miscoding). Given the above considerations, we propose the following definition of the concept of inaccurate description.
 
 \begin{definition}
 Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}$ a description, with $ d = \langle TM, a \rangle$. If $TM(a) = r'$, such that $r \neq r'$, we say that $d$ is an \emph{inaccurate} description for $r$.
 \end{definition}
 
-A candidate description $d$ could belong, or not, to the valid descriptions $\mathcal{D}_r$ of $r$,
-and the representation $r$ could belong, or not, to the valid $\mathcal{R}_e$ representations of $e$. Moreover, it might happen that the string $r'$ produced by the description $d$ belong the representations $\mathcal{R}_e$ of $e$ but that $d$ does not to belong to the descriptions $\mathcal{D}_r$ of $r$, in which case we should reconsider if $r$ is the best representation of $e$ to consider (see Section \ref{sec:representations}).
+Our candidate description $d$ might not belong to the set of valid descriptions $\mathcal{D}_r$ of $r$ (positive inaccuracy), and the representation $r$ might not belong to the set of valid $\mathcal{R}^\star_e$ representations of $e$ (positive miscoding).
 
-If our description is inaccurate, we would like to have a quantitative measure of how far we are from having the right description. In terms of machines, a natural way to define this measure would be by means of computing how difficult is to transform the wrong representation $r'$ produced by our description into the original representation $r$, that is, to compute the normalized information distance between $r'$ and $r$ .
-
-{\color{red} And the other way around and why}.
+If our description is inaccurate, we would like to have a quantitative measure of how far we are from the right description. In terms of machines, a natural way to define this measure would be by means of computing how difficult is to transform the wrong representation $r'$ produced by our description into the original representation $r$, that is, to compute the normalized information distance between $r'$ and $r$ .
 
 \begin{definition} [Inaccuracy]
 \label{def:inaccuracy:inaccuracy:inaccuracy}
@@ -53,8 +50,12 @@ Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}$ a desc
 
 Having a relative measure of inaccuracy instead of an absolute one allow us to compare the inaccuracy of different descriptions for the same representation, and the inaccuracy of different descriptions for different representations.
 
+Inaccuracy, as it was the case of miscoding (see Definition \ref{def:miscoding}), is computed using a two-way approach: we compute the length of the shortest computer program that can print the correct representation $r$ given the wrong one $r'$, and the other way around, that is, to compute the length of the shortest computer program that can print $r'$ given the string $r$. That is, a valid description has to include all the information required to reconstruct an entity (and no more as we will see in Chapter \ref{chap:Redundancy}), and it cannot include wrong, or irrelevant, information.
+
+Being based in the concept of Kolmogorov complexity, inaccuracy is a quantity that cannot be computed in practice for the general case, and so, it must be approximated. How to approximate the concept of inaccuracy is something that depends on the characteristics of the entities under study and their representations.
+
 \begin{example}
-{\color{red} TODO: Pending.}
+{\color{red} TODO: A convenient example to illustrate the concept of miscoding.}
 \end{example}
 
 The inaccuracy of a description is, conveniently, a number between $0$ and $1$, as next proposition shows.
@@ -69,7 +70,14 @@ We have that $0 \leq \iota(d, r) \leq 1$ for all representations $r \in \mathcal
 
 The above proposition holds for all possible descriptions $d$ and all possible representations $r$, even in the case that a description $d$ is not intended as a model for the representation $r$, in which case the inaccuracy would be close to one.
 
-Being based in the concept of Kolmogorov complexity, inaccuracy is a quantity that cannot be computed in practice for the general case, and so, it must be approximated. How to approximate the concept of inaccuracy is something that depends on the characteristics of the entities under study and their representations. In Part III of this book we will see several examples of approximations.
+Inaccuracy is equal to zero if, and only if, the description $d$ is one of the possible valid descriptions of the representation $r$.
+
+\begin{proposition}\label{prop:perfect_description}
+Let $d \in \mathcal{D}$ be a description for a representation $r \in \mathcal{B}^\ast$, we have that $\iota(d, r) = 0$ if, and only if, $d \in \mathcal{D}_r$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
 
 %
 % Section: Joint Inaccuracy
@@ -79,20 +87,20 @@ Being based in the concept of Kolmogorov complexity, inaccuracy is a quantity th
 
 In Section \ref{sec:descriptions_joint_topic} we introduced the concept of joint representation as a exploratory mechanism to discover new research entities, and in Section \ref{sec:joint_miscoding} we saw how the metric of miscoding changes when concatenate two representations. In this section we are going to study how inaccuracy varies when concatenating representations.
 
-Given two representations $r$ and $s$, we want to know the inaccuracy of the model $m$ when describing the joint representation $rs$. Since we required that $rs$ must be a valid representation (see Definition \ref{def:descriptions_extended_topics}), the formalization of the concept of joint inaccuracy is straightforward:
+Given two representations $r$ and $s$, we want to know the inaccuracy of the model $d$ when describing the joint representation $rs$. Since we required that $rs$ must be a valid representation (see Definition \ref{def:descriptions_extended_topics}), the formalization of the concept of inaccuracy to joint representation is straightforward:
 
 \begin{definition}
 \label{def:inaccuracy_joint_representation}
-Let $r, s \in \mathcal{R}$ be two different representations, and $m$ a description. We define the joint inaccuracy of the model $m$ for the joint topic $rs$, denoted by $\iota(m, rs)$, as:
+Let $r, s \in \mathcal{B}^\ast$ be two different representations, and $d$ a description. We define the inaccuracy of the model $d$ for the joint topic $rs$, denoted by $\iota(d, rs)$, as:
 \[
-\iota(m, rs) = \frac{ \max\{ K \left(rs \mid \Gamma(m) \right), K \left( \Gamma(m) \mid rs \right) \} } { \max\{ K(rs), K \left(\Gamma(m) \right) \} }
+\iota(d, rs) = \frac{ \max\{ K \left(rs \mid \Gamma(d) \right), K \left( \Gamma(d) \mid rs \right) \} } { \max\{ K(rs), K \left(\Gamma(d) \right) \} }
 \]
 \end{definition}
 
 {\color{red} TODO: Introduce the following propostion}
 
 \begin{proposition}
-Let $r \in \mathcal{R}$ be a representation and $m \in \mathcal{M}$ be a model, then we have that $0 \leq \iota(m, r) \leq 1$.
+Let $r, s \in \mathcal{B}^\ast$ be two different representations and $d \in \mathcal{D}$ be a description, then we have that $0 \leq \iota(d, rs) \leq 1$.
 \end{proposition}
 \begin{proof}
 {\color{red} TODO}
@@ -101,9 +109,9 @@ Let $r \in \mathcal{R}$ be a representation and $m \in \mathcal{M}$ be a model, 
 {\color{red} TODO: Introduce the following propostion}
 
 \begin{proposition}
-Let $r, s \in \mathcal{R}$ be two different representations, and $m \in \mathcal{M}$ be a model, then we have that:
+Let $r, s \in \mathcal{B}^\ast$ be two different representations, and $d \in \mathcal{D}$ be a description, then we have that:
 \[
-\iota(m, rs) \leq \iota(m, r) + \iota(m, s)
+\iota(d, rs) \leq \iota(d, r) + \iota(d, s)
 \]
 \end{proposition}
 \begin{proof}
@@ -113,9 +121,9 @@ Let $r, s \in \mathcal{R}$ be two different representations, and $m \in \mathcal
 {\color{red} TODO: Introduce the following propostion}
 
 \begin{proposition}
-Let $r, s \in \mathcal{R}$ be two different representations, and $m \in \mathcal{M}$ be a model, then we have that:
+Let $r, s \in \mathcal{B}^\ast$ be two different representations, and $d \in \mathcal{D}$ be a description, then we have that:
 \[
-\iota(m, rs) \leq \iota(m, r), \iota(m, rs) \leq \iota(m, s)
+\iota(d, rs) \leq \iota(d, r), \iota(d, rs) \leq \iota(d, s)
 \]
 \end{proposition}
 \begin{proof}
@@ -127,9 +135,9 @@ Let $r, s \in \mathcal{R}$ be two different representations, and $m \in \mathcal
 {\color{red} TODO: Introduce the following propostion}
 
 \begin{proposition}
-Let $r \in \mathcal{R}$ be a representation and $m \in \mathcal{M}$ be a model, then we have that:
+Let $r, s \in \mathcal{B}^\ast$ be two different representations, and $d \in \mathcal{D}$ be a description, then we have that:
 \[
-\iota(m, rs) = \iota(m, sr)
+\iota(d, rs) = \iota(d, sr)
 \]
 \end{proposition}
 \begin{proof}
@@ -172,70 +180,12 @@ Let $t_1, t_2, \ldots, t_n \in \mathcal{T}$ a finite collection of topics. Then,
 {\color{red} TODO}
 \end{proof}
 
-% Inaccuracy of Joint Models
-
-\subsection{Inaccuracy of Joint Models}
-
-{\color{red} TODO: Do we need this concept?}
-
-Given two topics $t$ and $s$, instead of talking about the inaccuracy of the joint topic $ts$, we prefer to deal with the joint inaccuracy of the individual topics.
-
-\begin{definition}
-Let $t, s \in \mathcal{T}$ be two different topics. We define the \emph{joint inaccuracy of the topics $t$ and $s$ given the models $m_s$ and $m_s$}, denoted by $\iota(m_t, m_s)$, as:
-\[
-\iota( m_t, m_s ) = \frac{ K(ts \mid  \langle m_t, m_s \rangle ) } {K(ts)}.
-\]
-\end{definition}
-
-As it was the case of the concept of miscoding, joint inaccuracy is a number between $0$ and $1$.
-
-\begin{proposition}
-We have that $0 \leq \iota(m_t, m_s) \leq 1$ for all $t, s \in \mathcal{T}$ and all $m_t, m_s$.
-\end{proposition}
-\begin{proof}
-{\color{red} Review}
-Given that $K \left( \langle t, s \rangle \mid d_{t,s} \right)>0$ and that $K \left( \langle t, s \rangle \right)>0$, since they are the lengths of non-empty strings, and that $K \left( \langle t, s \rangle \mid d_{t,s} \right)  \geq K \left( \langle t, s \rangle \right)$ as it was proved in Proposition \ref{prop:kolmogorov_conditional}.
-\end{proof}
-
-{\color{red} TODO: Introduce the following propostion}
-
-\begin{proposition}
-Let $t$ and $s$ be two different topics, and $m_t$ and $m_s$ two models. We have that:
-\[
-\iota(m_t, m_s) \leq \iota(m_t) + \iota(m_s)
-\]
-\end{proposition}
-\begin{proof}
-{\color{red} TODO}
-\end{proof}
-
-{\color{red} TODO: Introduce the following propostion}
-
-\begin{proposition}
-Let $t$ and $s$ be two different topics, and $m_t$ and $m_s$ two models. We have that:
-\[
-\iota(m_t, m_s) \geq \iota(m_t)
-\]
-\end{proposition}
-\begin{proof}
-{\color{red} TODO}
-\end{proof}
-
-When dealing with the joint inaccuracy of two topics, the order in which the topics are listed is not relevant.
-
-\begin{proposition}
-We have that $\iota(m_t, m_s) = \iota(m_s, m_t)$ for all $t,s \in \mathcal{T}$ and all $m_t, m_s$.
-\end{proposition}
-\begin{proof}
-{\color{red} Review}
-Apply Propositions \ref{prop:kolmogorov_order} and \ref{prop:joint_order}.
-\end{proof}
 
 %
-% Section: Conditional Inaccuracy
+% Section: Inaccuracy of Conditional Descriptions
 %
 
-\section{Conditional Inaccuracy}
+\section{Inaccuracy of Conditional Descriptions}
 
 We are also interested into study the inaccuracy of a topic given a perfect knowledge of another topic. That is, we would like to know the \emph{conditional inaccuracy} of a topic.
 

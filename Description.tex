@@ -396,33 +396,33 @@ Apply Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:j
 \end{proof}
 
 %
-% Section: Conditional Models
+% Section: Conditional Descriptions
 %
 
-\section{Conditional Models}
+\section{Conditional Descriptions}
 
-{\color{red} TODO: Review this section.}
+Sometimes it is cumbersome to include all the information needed to reconstruct an entity in its description, since that would require very large strings. In those cases, it is usually more convenient to assume some already existing background knowledge, and compute how much we do not know about an entity given that background, what we call conditional descriptions.
 
-Sometimes it is cumbersome to include all the information needed to reconstruct a topic in its model, since that would require very large strings. In those cases, it is usually more convenient to assume some already existing background knowledge, and compute how much we do not know about a topic given that background, what we call conditional models.
-
-{\color{red} TODO: clafify that conditional models are out proposed method to do reasearch.}
+Conditional descriptions also play a very important role in the discovery of new knowledge, since if by conditioning a description to some background knowledge we significantly reduce our inaccuracy, that would mean that this prior knowledge is important to understand this entity.
 
 \begin{definition}
-Let $t,s \in \mathcal{T}$ be two different topics. We say that the string $\langle TM,a \rangle$ is a \emph{valid conditional model}\index{Conditional model} of the topic $t$ given a perfect model of $s$, or a conditional model of $t$ given $s$ for short, denoted by $m_{t \mid s^\star}$, if $TM \left(\langle m_s^\star, a \rangle \right) = t$.
+Let $r, d, s \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the string $s$, denoted by $d \mid s$, if $d$ is a description $\langle TM, a \rangle$, and $TM \left(\langle a, s \rangle \right) = r$.
 \end{definition}
 
-From a practical point of view, perhaps it would have been a better idea to define the conditional model of a topic $t$ given any model of topic $s$ instead of its perfect model, that is, by using $TM \left( \langle m_s, a \rangle \right)$ instead of $TM \left( \langle m_s^\star, a \rangle \right)$. However, it is very difficult to say anything useful about how much we do not know about topic $t$ assuming an incomplete background knowledge of $s$.
+{\color{red} Explain the intuition behind the above definition. In particular, $s$ could be itself a valid description.}
+
+{\color{red} From a practical point of view, perhaps it would have been a better idea to define the conditional model of a topic $t$ given any model of topic $s$ instead of its perfect model, that is, by using $TM \left( \langle m_s, a \rangle \right)$ instead of $TM \left( \langle m_s^\star, a \rangle \right)$. However, it is very difficult to say anything useful about how much we do not know about topic $t$ assuming an incomplete background knowledge of $s$.}
 
 \begin{example}
-For each topic $t \in \mathcal{T}$ there always exists a conditional model $m_{t \mid s^\star}$ that describes $t$ independently of the topic $s \in \mathcal{T}$. For example, we can use a Turing machine that given the input $\langle m_s^\star, a \rangle$ safely ignores the $m_s^\star$ substring.
+For each representation $r \in \mathcal{B}^\ast$ there always exists a conditional description $d \mid s$ that describes $r$. For example, we can use a description based on a Turing machine that given the input $\langle a, s \rangle$ safely ignores the $s$ string.
 \end{example}
 
-Note that $m_{t \mid s^\star}$ does not belong to $\mathcal{M}_t$, since $m_s^\star$ is required to compute the topic $t$, but it is not part of the conditional model itself. A new definition is required to capture this concept.
+Note that the conditional description $d \mid s$ does not belong to the set of valid description $\mathcal{D}^\star_r$ for the representation $r$, since $s$ is required to compute the representation $r$, but it is not part of the description itself. A new definition is required to capture this concept.
 
 \begin{definition}
-Given topics $t,s \in \mathcal{T}$, we define the \emph{set of conditional models}\index{Set of conditional models} of $t$ given the perfect model of $s$, denoted by $\mathcal{M}_{t \mid s^\star}$, as:
+Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string, we define the \emph{set of conditional descriptions}\index{Set of conditional descriptions} of $r$ given $s$, denoted by $\mathcal{D}_{r \mid s}^\star$, as:
 \[
-\mathcal{M}_{t \mid s^\star} = \{ m \in \mathcal{M}_{\mathcal{T}} : TM \left(\langle m_s^\star, a \rangle \right) = t \}.
+\mathcal{D}_{r \mid s}^\star = \{ d \in \mathcal{D}, d = \langle TM, a \rangle : TM \left(\langle a, s \rangle \right) = r \}.
 \]
 \end{definition}
 

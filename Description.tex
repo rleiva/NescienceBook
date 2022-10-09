@@ -22,9 +22,7 @@ The second step is to provide a method to encode the set of identified entities 
 
 The final step, once we have found a way to properly encode the original set of entities as string-based representations, is to provide a description, as accurate and succinct as possible, of what we already know about those representations. In the theory of nescience we require that descriptions must be computable, that is, given a description, a computer should be able to fully reconstruct the original representation. A difficult problem that arise with descriptions is that they characterize representations, that is, the encoding of entities, not the entities themselves, and so, the quality of a description for an entity is conditional to the quality of the representation used.
 
-In this chapter we will formalize all these concepts: entities, representations, descriptions, and many others. We will also see what we mean by perfect knowledge, how to compute the combined representation of multiple entities, and the description of a representation assuming a perfect knowledge of another one.
-
-{\color{red} Is perfect knowledge covered in the chapter? If not, remove this sentence.}
+In this chapter we will formalize all these concepts: entities, representations, descriptions, and many others. We will also see what we mean by a perfect description, how to compute the combined representation of multiple entities, and the description of a representation assuming a perfect description of another one. The concept of research area, and its properties, will be also investigated.
 
 %
 % Section: Entities
@@ -36,21 +34,21 @@ In this chapter we will formalize all these concepts: entities, representations,
 What exactly is a research entity is a difficult, still unsolved, philosophical problem. Our approach to address this complex issue is eminently practical. Our theory starts by assuming there exists a non-empty collection of \emph{entities}\index{Entities} we would like to understand.
 
 \begin{notation}
-Denote by $\mathcal{E}$ the set of research entities.
+We denote by $\mathcal{E}$ the set of research entities in which we are interested.
 \end{notation}
 
-The exact elements that compose $\mathcal{E}$ is something that depends on the particular domain in which the theory of nescience is being applied, but they usually corresponds to an area or subarea of knowledge. Examples of sets of entities could be: research elements in mathematics (abstract); the kingdom of animalia (living things); known and unknown human needs (abstract); all possible computer programs (strings), etc. Technically speaking $\mathcal{E}$ is not a well defined set, since in general we cannot tell what is and what is not a member of this set.
+The exact elements that compose $\mathcal{E}$ is something that depends on the particular domain in which the theory of nescience is being applied, but they usually corresponds to an area of knowledge. Examples of sets of entities could be: research elements in mathematics (abstract); the kingdom of animalia (living things); known and unknown human needs (abstract); all possible computer programs (strings), etc. Technically speaking $\mathcal{E}$ is not a well defined set, since in general we cannot tell what is and what is not a member of this set.
 
 The abstract nature of $\mathcal{E}$ has some advantages, but also introduces important limitations. The main limitation is that our definition of nescience is, in general, a non-computable quantity, and so, it must be approximated in practice. The main advantage is that we can apply the new concepts and methods introduced in this book to other problems, not only to the discovery of new scientific knowledge.
 
-In the theory of nescience we do not allow universal sets, that is, we cannot assume the existence of a set $\xi$ that contains everything. The problem of universal sets is that they violate Cantor's theorem (see Example \ref{cantor_theorem}). Cantor's theorem states that the power set $\mathcal{P}(\xi)$ composed by all the possible subsets of $\xi$ has more elements than the original set $\xi$, and this is a contradiction with the fact that $\xi$ contains everything. In the theory of nescience the set $\mathcal{E}$ must be the set of "something".
+In the theory of nescience we do not allow universal sets, that is, we cannot assume the existence of a set $\xi$ that contains everything. The problem with universal sets is that they violate Cantor's theorem (see Example \ref{cantor_theorem}). Cantor's theorem states that the power set $\mathcal{P}(\xi)$ composed by all the possible subsets of $\xi$ has more elements than the original set $\xi$, and this is a contradiction with the fact that $\xi$ contains everything. In the theory of nescience the set $\mathcal{E}$ must be the set of something.
 
 \begin{example}[Cantor's theorem]
 \label{cantor_theorem}
 The Cantor's theorem states that for every set $A$ we have that $d(A) < d\left(\mathcal{P}(A)\right)$. Let $f: A \rightarrow \mathcal{P}(A)$ a function that maps every element of $x \in A$ to the set $\{x\} \in \mathcal{P}(A)$; clearly $f$ is injective, and so, $d(A) \leq d\left(\mathcal{P}(A)\right)$. In order to prove that the inequality is strict assume there exist a surjective function $g: A \rightarrow \mathcal{P}(A)$, and consider the set $B = \{ x \in A : x \notin g(x) \}$. Since $g$ is surjective there must exists an $y \in A$ such that $g(y) = B$. However this rises the contraction $y \in B \Leftrightarrow y \notin g(y) = B$. Consequently, the function $g$ does not exists, and so $d(A) < d\left(\mathcal{P}(A)\right)$.
 \end{example}
 
-Not all possible sets are valid sets in the theory of nescience, because some sets lead us to paradoxes. For example, the Russel paradox propose to consider the set $R$ composed by all those sets that are not members of themselves; the paradox arises when we try to answer the question of whether $R$ is a member of itself (see Example \ref{ex:russell_paradox}). In order to avoid these kind of problems, the theory of nescience is based on the Zermelo-Fraenkel set of axioms together with the axiom of choice (see Appendix \ref{apx:math}). Russell's paradox is due to a misuse of the set builder notation $\{ : \}$. The \emph{axiom of separation} (if $P$ is a property with parameter $p$, then for any set $x$ and parameter $p$ there exists a set $y=\{u \in x : P(u) \}$ that contains all those sets $u \in x$ that have property $P$) only allows the use of this notation to construct sets that are subsets of already existing sets. A more general \emph{axiom of comprehension} (if $P$ is a property, the there exist a set $y=\{u : P(u) \}$) would be required to allow sets like the one proposed by Russell's paradox. In the ZFC axioms, and in the theory of nescience, the axiom of comprehension is considered to be false.
+Not all possible sets are valid sets in the theory of nescience, because some sets lead to paradoxes. For example, the Russel paradox propose to consider the set $R$ composed by all those sets that are not members of themselves; the paradox arises when we try to answer the question of whether $R$ is a member of itself (see Example \ref{ex:russell_paradox}). In order to avoid these kind of problems, the theory of nescience is based on the Zermelo-Fraenkel set of axioms together with the axiom of choice (see Appendix \ref{apx:math}). Russell's paradox is due to an abuse of the set builder notation $\{ : \}$. The \emph{axiom of separation} (if $P$ is a property with parameter $p$, then for any set $x$ and parameter $p$ there exists a set $y=\{u \in x : P(u) \}$ that contains all those sets $u \in x$ that have property $P$) only allows the use of this notation to construct sets that are subsets of already existing sets. A more general \emph{axiom of comprehension} (if $P$ is a property, the there exist a set $y=\{u : P(u) \}$) would be required to allow sets like the one proposed by Russell's paradox. In the ZFC axioms, and in the theory of nescience, the axiom of comprehension is considered to be false.
 
 \begin{example}[Russell's Paradox]
 \label{ex:russell_paradox}
@@ -59,7 +57,7 @@ Let $R$ be the set composed by all sets that are not members of themselves, that
 
 In the theory of nescience we do not deal with classical ontological questions, that is, about the classes of things that there exists in the world and that can be known. Also, we do not try to answer any kind of epistemological issues, like for example, how scientific knowledge is validated by appeal to evidence, or what it is the nature of that evidence.
 
-Once we have selected a set $\mathcal{E}$ of entities, the next step is to uniquely encode their elements as strings of symbols, otherwise it would not be possible to properly describe them (unless entities are strings of symbols themselves). How to properly perform this encoding is described in the next section.
+Once we have selected a set $\mathcal{E}$ of entities, the next step is to uniquely encode their elements as strings of symbols, otherwise it would not be possible to describe them (unless entities are strings of symbols themselves). How to properly perform this encoding is described in the next section.
 
 %
 % Section: Representations
@@ -68,22 +66,26 @@ Once we have selected a set $\mathcal{E}$ of entities, the next step is to uniqu
 \section{Representations}
 \label{sec:representations}
 
-How to represent the, possibly abstract, entities of a set $\mathcal{E}$ is a difficult epistemological problem that has been the subject of research for more than two thousand years (see Section \ref{sec:scientific_representation} for a short review of problems and open questions). In this section we describe a novel solution to this problem, and we will study its advantages and drawbacks. We propose to split the scientific representation problem it two complementary subproblems: how descriptions characterize representations, and how representations encode entities. In this sense, scientific descriptions are models of entities by virtue of an indirect relation through representations. In this section we will focus on the encoding part, and Section \ref{sec:descriptions_models} will be about descriptions.
+How to represent the, possibly abstract, entities of a set $\mathcal{E}$ is a difficult epistemological problem that has been the subject of research for more than two thousand years (see Section \ref{sec:scientific_representation} for a short review of problems and open questions). In this section we describe a possible solution to this problem, and we will study its advantages and drawbacks. We propose to split the scientific representation problem it two complementary subproblems: how descriptions characterize representations, and how representations encode entities. In this sense, scientific descriptions are models of entities by virtue of an indirect relation through representations. In this section we will focus on the encoding part, and Section \ref{sec:descriptions_models} will be about descriptions.
 
-In the discipline of Kolmogorov complexity, researchers solve the problem of representation by assuming that the set $\mathcal{E}$ is well defined, countable, and that there exists a total encoding function $f:\mathcal{E} \rightarrow \mathbb{N}$ from the set of entities to the set of natural numbers (a kind of Gödel numbering). In the theory of nescience we borrow this idea of encoding entities with numbers, or equivalently, strings of symbols. The main difference is that we address the problem of encoding any arbitrary set $\mathcal{E}$ by turning it around, that is, by defining a function $f_\mathcal{E}:\mathcal{S}^\ast \rightarrow \mathcal{E}$ from the well defined set $\mathcal{S}^\ast$ of all possible finite strings from an alphabet $\mathcal{S}$ to the, perhaps not countable and even not well defined, set $\mathcal{E}$ of entities under study.
+In the discipline of Kolmogorov complexity, researchers solve the problem of representation by assuming that the set $\mathcal{E}$ is well defined, countable, and that there exists a total encoding function $f:\mathcal{E} \rightarrow \mathbb{N}$ from the set of entities to the set of natural numbers (a kind of Gödel numbering). In the theory of nescience we borrow this idea of encoding entities with numbers, or equivalently, strings of symbols. The main difference is that we address the problem of encoding an arbitrary set $\mathcal{E}$ by turning it around, that is, by defining a total function $f_\mathcal{E}:\mathcal{S}^\ast \rightarrow \mathcal{E}$ from the well defined set $\mathcal{S}^\ast$ of all possible finite strings from an alphabet $\mathcal{S}$ to the, perhaps not countable and even not well defined, set $\mathcal{E}$ of entities under study.
 
-Our function $f_\mathcal{E}$, that depends on the set $\mathcal{E}$, is a kind of oracle (inspired by the concept of oracle Turing machine from Definition \ref{def:Oracle-Turing-Machine}) that is able to fully reconstruct the entity $f_\mathcal{E} (x) \in \mathcal{E}$ given its encoding $x \in \mathcal{S}^\ast$, without requiring any external information. Of course, this oracle is a conceptual idea that has no equivalence in the real world for the majority of the sets $\mathcal{E}$, but assuming its existence will allow us to explain and prove important properties of how the process of scientific discovery works. We assume that there exists a single, unique, physical world, that world is independent of observers, and that for some collections of entities $\mathcal{E}$ there exists an oracle $f_\mathcal{E}$ (scientific representation problem).
+Our function $f_\mathcal{E}$, that depends on the set $\mathcal{E}$, is a kind of oracle (inspired by the concept of oracle Turing machine from Definition \ref{def:Oracle-Turing-Machine}) that is able to fully reconstruct the entity $f_\mathcal{E} (x) \in \mathcal{E}$ given its encoding string $x \in \mathcal{S}^\ast$, without requiring any additional information. Of course, this oracle is a conceptual idea that has no equivalence in the real world for the majority of the sets $\mathcal{E}$, but assuming its existence will allow us to explain and prove important properties of how the process of scientific discovery works. We assume that there exists a single, unique, physical world, that is independent of observers. We also assume that for some collections of entities $\mathcal{E}$ there exists an oracle $f_\mathcal{E}$ (see the scientific representation problem in Section \ref{sec:scientific_representation}).
 
 Without any loss of generality, for the rest of this book we will only consider binary strings as encoding of entities.
 
 \begin{definition}
 \label{def:descriptions_topic}
-Let $\mathcal{E}$ be a set of entities, and let $f_\mathcal{E}:\mathcal{B}^\ast \rightarrow \mathcal{E}$ be the an oracle, called \emph{representation function}, from the set $\mathcal{B}^\ast$ of all possible finite binary strings to the set $\mathcal{E}$ of entities under study.
+Let $\mathcal{E}$ be a set of entities. A \emph{representation function}, or \emph{oracle}, is a function $f_\mathcal{E}:\mathcal{B}^\ast \rightarrow \mathcal{E}$ from the set $\mathcal{B}^\ast$ of all possible finite binary strings to the set $\mathcal{E}$ of entities under study.
 \end{definition}
 
-Only the elements of the set $\mathcal{B}^\ast$, that is, binary strings, can serve as representations (problem of ontology). We do not allow drawings, or any other form of physical models, unless they are converted into binary strings. We do not make any distinction between a scientific representations and any other kind of representations (demarcation problem). It is up to the oracle to decide if a string is a representation or not of a given entity. It is also important to note that the function $f_\mathcal{E}$ is total, that is, all possible strings represent entities (no targetless models allowed).
+Only the elements of the set $\mathcal{B}^\ast$, that is, binary strings, can serve as representations of entities (problem of ontology). We do not allow drawings, or any other form of physical models, unless they are converted into binary strings. We do not make any distinction between a scientific representations and any other kind of representations (demarcation problem). It is up to the oracle to decide which entity is encoded by a representation. It is also important to note that the function $f_\mathcal{E}$ is total, that is, all possible strings represent entities (no targetless models allowed).
 
-According to the theory of nescience, scientific research would be not only about figuring out how to properly encode entities, but also about discovering the inner workings of decoding oracle. The capacity of the oracle of reconstruct the original entities is what justifies the fact that we can formulate hypotheses about entities given their representations (surrogative reasoning).
+\begin{example}
+Given a set of entities $\mathcal{E}$, if a representation function $f_\mathcal{E}$ exists, it is not unique. For example, a binary not oracle (transform zeros into ones and the other way around) that assigns to each string $x \in \mathcal{B}^\ast$ the entity $f_\mathcal{E} \left( \neg x \right)$ would be also a representation function. Which oracle is the best is something that depends on the area in which the theory of nescience is being applied.
+\end{example}
+
+According to the theory of nescience, scientific research would be not only about figuring out how to properly encode entities, but also about discovering the inner workings of the decoding oracle. The capacity of the oracle of reconstruct the original entities is what justifies the fact that we can formulate hypotheses about entities given their representations (surrogative reasoning).
 
 The entities of $\mathcal{E}$ might be encoded in multiple ways (problem of style). Our oracle $f_\mathcal{E}$ admits all the possible encodings of an entity as representations of that entity, including the wrong representations and the incomplete ones.
 
@@ -91,12 +93,10 @@ The entities of $\mathcal{E}$ might be encoded in multiple ways (problem of styl
 When the topics under study are animals we could use as encodings a detailed description of the body of those animals. In this case, the oracle would be an hypothetical machine that given its description is able to reproduce the original animal. An alternative encoding we could consider is to use the DNAs of the animals. Both encodings are possible representations from the point of view of the oracle.
 \end{example}
 
-Some strings are better representations of an entity than others (standard of accuracy). The more information is missing from a representation, the harder is the work of the oracle. We are interested in those representations that make the work of the oracle as easy as possible.
-
-We must be careful with those representations that do not capture all the details about the original entities, since the results of our analyses could present some bias. In Chapter \ref{chap:Miscoding} we will study in detail the problem of errors due to the miscoding of abstract entities, and we will see that not only representations are about entities, but also we require that entities should be about representations (requirement of directionality).
+Some strings are better representations of an entity than others (standard of accuracy). We are interested in those representations that make the work of the oracle as easy as possible. {\color{red} All possible strings represent an entity, even the incomplete ones.} The more information is missing from a representation, the harder would be for us to understand how the oracle works. We must be careful with those representations that do not capture all the details about the original entities, since the results of our analyses could present some bias. In Chapter \ref{chap:Miscoding} we will study in detail the problem of errors due to the miscoding of abstract entities, and we will see that not only representations are about entities, but also we require that entities should be about representations (requirement of directionality).
 
 \begin{example}
-The data used in time of Ptolomeo about the position of celestial bodies along the year was a misencoding of the entity "position of celestial bodies". A better encoding was the data provided by Tycho Brahe. Today, we have even betters encoding.
+The data used in time of Ptolomeo about the position of celestial bodies along the year was a misencoding of the entity "position of celestial bodies". A better encoding was the data provided by Tycho Brahe. Today, we have even better encodings.
 \end{example}
 
 Ideally, from a theoretical point of view, the oracle should be just a universal machine, and representations should include all the instructions required to reconstruct the original entities. Unfortunately, in practice, that would be impossible for the majority of entities, and so, we require additional intelligence from the side of the oracle. Moreover, the oracle has also to deal with incomplete, and even wrong, representations.
@@ -401,21 +401,13 @@ Apply Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:j
 
 \section{Conditional Descriptions}
 
-Sometimes it is cumbersome to include all the information needed to reconstruct an entity in its description, since that would require very large strings. In those cases, it is usually more convenient to assume some already existing background knowledge, and compute how much we do not know about an entity given that background, what we call conditional descriptions.
-
-Conditional descriptions also play a very important role in the discovery of new knowledge, since if by conditioning a description to some background knowledge we significantly reduce our inaccuracy, that would mean that this prior knowledge is important to understand this entity.
+Sometimes it is cumbersome to include all the information needed to reconstruct an entity in its description, since that would require very large strings. In those cases, it is usually more convenient to assume some already existing background knowledge, and compute how much we do not know about an entity given that background, what we call \emph{conditional descriptions}. Conditional descriptions also play a very important role in the discovery of new knowledge: if by conditioning a description on some prior knowledge we manage to significantly reduce the inaccuracy, that would mean this prior knowledge is important for understanding the entity.
 
 \begin{definition}
 Let $r, d, s \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the string $s$, denoted by $d \mid s$, if $d$ is a description $\langle TM, a \rangle$, and $TM \left(\langle a, s \rangle \right) = r$.
 \end{definition}
 
-{\color{red} Explain the intuition behind the above definition. In particular, $s$ could be itself a valid description.}
-
-{\color{red} From a practical point of view, perhaps it would have been a better idea to define the conditional model of a topic $t$ given any model of topic $s$ instead of its perfect model, that is, by using $TM \left( \langle m_s, a \rangle \right)$ instead of $TM \left( \langle m_s^\star, a \rangle \right)$. However, it is very difficult to say anything useful about how much we do not know about topic $t$ assuming an incomplete background knowledge of $s$.}
-
-\begin{example}
-For each representation $r \in \mathcal{B}^\ast$ there always exists a conditional description $d \mid s$ that describes $r$. For example, we can use a description based on a Turing machine that given the input $\langle a, s \rangle$ safely ignores the $s$ string.
-\end{example}
+The conditional description $\langle d, s \rangle$ is based on two strings $a$ and $s$, that play very different roles. The string $a$ is the input to the Turing machine $TM$,  and it should contain the non-compresible part of the representation $r$. The string $s$ should be the description, or representation, of another entity whose knowledge can helps to understand the entity in which we are interested. For example, as we will see in Chapter \ref{chap:Redundancy}, the string $s$ is not taken into account when computing the surfeit of a conditional description.
 
 Note that the conditional description $d \mid s$ does not belong to the set of valid description $\mathcal{D}^\star_r$ for the representation $r$, since $s$ is required to compute the representation $r$, but it is not part of the description itself. A new definition is required to capture this concept.
 
@@ -426,67 +418,79 @@ Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an
 \]
 \end{definition}
 
-Again, we are interested in the concept of perfect conditional model. The perfect conditional model of a topic given the perfect model of a second topic is the shortest possible string that allow us to fully reconstruct the topic given the perfect model of the second one.
+For each representation $r \in \mathcal{B}^\ast$ there always exists a conditional description $d \mid s$ that describes $r$, as next proposition shows.
+
+\begin{proposition}
+Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string. If $d \in \mathcal{D}_{r}^\star$ then $d \in \mathcal{D}_{r \mid s}^\star$.
+\end{proposition}
+\begin{proof}
+We can use a conditional description $\langle \langle TM, a \rangle, s \rangle$ based on a Turing $TM$ machine that given the input $\langle a, s \rangle$ safely ignores the $s$ string.
+\end{proof}
+
+We are interested in the concept of perfect conditional description. The perfect conditional description of a representation given a prior knowledge is the shortest possible string that allow us to fully reconstruct the representation assuming this prior knowledge.
 
 \begin{definition}
-Let $t,s \in \mathcal{T}$ be two topics, and let $m_{t \mid s^\star}^{\star} \in \mathcal{M}_{t \mid s^\star}$ be the shortest possible conditional model of $t$ given a perfect model of $s$ using the standard shortlex ordering. We call $m_{t \mid s^\star}^{\star}$ the \emph{perfect conditional model}\index{Perfect conditional model} of topic $t$ given a perfect model of topic $s$, or perfect conditional model of $t$ given $s$ for short.
+Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star \mid s$ be the shortest possible description of $r$ given the string $s$. We call $d^\star \mid s$ the \emph{perfect conditional description} of the representation $r$ given the string $s$, or perfect conditional description of $r$ given $s$ for short.
 \end{definition}
 
-The length of perfect conditional model is equal or shorter that their unconditional counterparts. That is, assuming some already existing background knowledge could reduce the effort required to describe a topic.
+The length of perfect conditional description is equal or shorter that their unconditional counterparts. That is, assuming some already existing background knowledge could reduce the effort required to describe a representation.
 
 \begin{proposition}
 \label{prop:description_conditional_inequality}
-For any topic $t \in \mathcal{T}$ we have that $l \left( m_{t \mid s^\star}^{\star} \right) \leq l \left(m^\star_t\right)$ for all $s \in \mathcal{T}$.
+For any representation $r \in \mathcal{B}^\ast$ we have that $l \left( d^\star \mid s \right) \leq l \left( d^\star \right)$ for all $s \in \mathcal{B}^\ast$.
 \end{proposition}
 \begin{proof}
-The statement $l \left( m_{t \mid s^\star}^{\star} \right) \leq l \left(m^\star_t\right)$ is equivalent to $K(t \mid s^\star) \leq K(t)$, then apply Proposition \ref{prop:kolmogorov_conditional}.
+The statement $l \left( d^\star \mid s \right) \leq l \left( d^\star \right)$ is equivalent to $K(r \mid s) \leq K(r)$, then apply Proposition \ref{prop:kolmogorov_conditional}.
 \end{proof}
 
-Next proposition shows the relation between the lengths of models, join models and conditional models.
+Next proposition shows the relation between the lengths of descriptions, join descriptions and conditional descriptions.
 
 \begin{proposition}
 \label{prop:description_conditional_joint}
-Let $t, s \in \mathcal{T}$ two different topics. We have that:
+Let $r, s \in \mathcal{B}^\ast$ two different representations. We have that:
 \[
-l \left( m_{t \mid s^\star}^{\star} \right) \leq l \left( m_t^\star \right) \leq l \left( m_{ts}^\star \right)
+l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{rs} \right)
 \]
 \end{proposition}
 \begin{proof}
-The statement $l \left( m_{t \mid s^\star}^{\star} \right) \leq l \left( m_t^\star \right) \leq l \left( m_{ts}^\star \right)$ is equivalent to $K(t | s^\star ) \leq K(t)$ and $K(t) \leq K(t, s)$, then apply Proposition \ref{prop:kolmogorov_relations}.
+The statement $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{rs} \right)$ is equivalent to $K(r | s ) \leq K(r)$ and $K(r) \leq K(r, s)$, then apply Proposition \ref{prop:kolmogorov_relations}.
 \end{proof}
 
-As it was the case of joint models, the concept of conditional model can be extended to finite collections of topics.
+As it was the case of joint descriptions, the concept of conditional description can be extended to finite collections of topics.
 
 \begin{definition}
-Let $t, s_1, s_2, \ldots, s_n \in T$ be a finite collection of topics. We say that the string $\langle TM,a \rangle$ is a \emph{valid conditional model} of topic $t$ given the perfect models of topics $s_1, s_2, \ldots, s_n$, or conditional model of $t$ given $s_1, s_2, \ldots, s_n$ for short, and denoted by $m_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}$, if
-\[
-TM \left(\langle m_{s_1}^\star, m_{s_2}^\star, \ldots, m_{s_n}^\star, a \rangle \right) = t
-\]
+Let $r, d, s_1, s_2, \ldots, s_n \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s_1, s_2, \ldots, s_n \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the strings $s_1, s_2, \ldots, s_n$, denoted by $d \mid s_1, s_2, \ldots, s_n$, if $d$ is a description $\langle TM, a \rangle$, and $TM \left(\langle a, s_1, s_2, \ldots, s_n \rangle \right) = r$.
 \end{definition}
 
-In the next definition we provide the generalization of the concept of perfect conditional models.
+In the next definition we provide the generalization of the concept of perfect conditional descriptions.
 
 \begin{definition}
-Let $\mathcal{M}_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}$ be the set of conditional models of topic $t$ given the perfect models of topics $s_1, s_2, \ldots, s_n$, and let $m_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}^\star \in \mathcal{M}_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}$ be its shortest possible conditional model using the standard shortlex ordering. We call $m_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}^\star$ the \emph{perfect conditional model} of topic $t$ given the perfect models of topics $s_1, s_2, \ldots, s_n$, or the perfect model of $t$ given $s_1, s_2, \ldots, s_n$ for short.
+Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star \mid s_1, s_2, \ldots, s_n$ be the shortest possible description of $r$ given the strings $s_1, s_2, \ldots, s_n$. We call $d^\star \mid s_1, s_2, \ldots, s_n$ the \emph{perfect conditional description} of the representation $r$ given the string $s_1, s_2, \ldots, s_n$, or perfect conditional description of $r$ given $s_1, s_2, \ldots, s_n$ for short.
 \end{definition}
 
-Next proposition generalizes Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to any arbitrary, but finite, collection of topics $s_1, s_2, \ldots, s_n$. Moreover, the proposition shows that the more background knowledge we assume for a research topic, the shorter is the perfect model for that topic.
+Next proposition generalizes Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to any arbitrary, but finite, collection of strings $s_1, s_2, \ldots, s_n$. Moreover, the proposition shows that the more background knowledge we assume for a representation, the shorter is the perfect description for that representation.
 
 \begin{proposition}
-\label{prop:joint_multiple_topics}
-Let $t, s_1, s_2, \ldots, s_n, s_{n+1} \in T$ be a finite collection of topics. Then, we have that:
-
-\renewcommand{\theenumi}{\roman{enumi}}
-\begin{enumerate}
-\item $l \left( m_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}^\star \right) \leq l \left( m^\star_t \right)$,
-\item $l \left( m_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}^\star \right) \leq m_t^\star \leq l(m_{t_1 s_1 \ldots s_n}^\star)$,
-\item $l \left( m_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star}^\star \right) \geq l \left( m_{t \mid s_1^\star, s_2^\star, \ldots, s_n^\star, s_{n+1}^\star}^\star \right)$.
-\end{enumerate}
+Let $r, s_1, s_2, \ldots, s_n \in \mathcal{B}^\ast$ be a finite collection of strings. Then, we have that:
+\[
+l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{r,s_1, s_2, \ldots, s_n} \right)
+\]
 \end{proposition}
 \begin{proof}
-Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of topics $i$ and $j$.
+{\color{red} TODO Review} Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
 \end{proof}
 
+{\color{red} TODO: Introduce the following proposition.}
+
+\begin{proposition}
+Let $r, s_1, s_2, \ldots, s_n, s_{n+1} \in \mathcal{B}^\ast$ be a finite collection of strings. Then, we have that:
+\[
+l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n, s_{n+1}} \right) \leq l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n} \right)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO Review} Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
+\end{proof}
 
 %
 % Section: Areas
@@ -495,77 +499,83 @@ Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:d
 \section{Research Areas}
 \label{sec:areas}
 
-{\color{red} TODO: Review this section.}
-
-Topics can be grouped into research areas. The concept of area is useful as long as all the topics included in the area share a common property. The particular details of grouping properties depend on the practical applications in which the theory of nescience is being used.
+Entities can be grouped into research areas. The concept of area is useful as long as all the entities included in the area are related to a common knolewdge subdomain. The particular details of the grouping criteria depend on the practical applications in which the theory of nescience is being used.
 
 \begin{definition}
-Given a set of topics $\mathcal{T}$, we define a \emph{research area}\index{Research area} $A$ as a subset of topics $A \subset \mathcal{T}$.
+Given a set of entities $\mathcal{E}$, we define a \emph{research area}\index{Research area} $\mathcal{A}$ as a subset of entities $\mathcal{A} \subset \mathcal{E}$.
 \end{definition}
 
-If we want to know how much we do not know about a research area, first we have to provide a model for that area. Unfortunately, in general, areas are infinite, but our knowledge is finite, and so, we can only partially describe them.
+If we want to know how much we do not know about a research area, first we have to provide a representation for that area. In general areas are infinite, but the number of known representations is finite, and so, we can only describe the areas with respect to our current knowledge.
 
 \begin{definition}
-Let $A \subset \mathcal{T}$ be an area. We define the \emph{known subset of the area}\index{Known subset of an area} $A$, denoted by $\hat{A}$, as the set composed by those topics $t_1, t_2, \ldots, t_n \in A$ for which at least one non-trivial model is known.
+Let $A \subset \mathcal{E}$ be an area. We define the \emph{known subset of the area}\index{Known subset of an area} $\mathcal{A}$, denoted by $\hat{\mathcal{A}}$, as the set composed by those entities $e_1, e_2, \ldots, e_n \in A$ for which at least one non-trivial model is known.
 \end{definition}
 
-As our understanding of a research area changes, the number of topics included in its known subset changes as well. The properties of areas studied in this book will be always relative to our current knowledge.
+We have to distinguish between the knowable subset of $\mathcal{A}$, composed by those entities for which there exists a representation, and the know subset of $\mathcal{A}$, composed by those entities for which we know a non-trivial model, that is, those entities for which somebody has already done some research about them. Of course, the set of known entities is a subset of the set of knowable entities.
+
+As our understanding of a research area changes, the number of entities included in its known subset changes as well. The properties of areas studied in this book will be always relative to our current knowledge.
 
 \begin{definition}
-Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A}$. We call a \emph{model of the area $A$} given the known subset $\hat{A}$, abbreviated as \emph{model of $A$}, and denoted by $m_{\hat{A}}$, to any string in the form $\langle TM, a\rangle$ such that $TM(a) = \langle t_1, t_2, \ldots, t_n\rangle$, where $\{t_1, t_2, \ldots, t_n\} = \hat{A}$.
+Let $\mathcal{A} \subset \mathcal{E}$ be an area with known subset $\hat{\mathcal{A}} = \{ e_1, e_2, \ldots, e_n \}$, and let  $R = \{ r_1, r_2, \ldots, r_n \}$ a set of representations, such that $r_i \in \mathcal{R}_{e_i}$. We call $R_{\hat{\mathcal{A}}}$ a \emph{representation of the area $\mathcal{A}$} given the known subset $\hat{\mathcal{A}}$, abbreviated as \emph{representation of $A$}.
 \end{definition}
 
-Since our definition of model requires that the Turing machine halts at some point, we cannot provide models for infinite areas. In case of an infinite area we will always refer to its finite known subset.
+In the same way, we can introduce the concept of description of an area.
 
 \begin{definition}
-Given the set of topics $\mathcal{T}$ and an area $A \subset \mathcal{T}$, we define the set of \emph{valid models of the area $A$} given the known subset $\hat{A}$\index{Set of models of an area}, denoted by $\mathcal{M}_{\hat{A}}$, as:
+Let $R_{\hat{\mathcal{A}}} = \{ r_1, r_2, \ldots, r_n \}$ be the representation of an area $\mathcal{A}$. We call a \emph{description of the area $\mathcal{A}$} given the known subset $\hat{\mathcal{A}}$, abbreviated as \emph{description of $\mathcal{A}$}, and denoted by $d_{\hat{\mathcal{A}}}$, to any string in the form $\langle TM, a\rangle$ such that $TM(a) = \langle r_1, r_2, \ldots, r_n\rangle$.
+\end{definition}
+
+We can also define the set of descriptions of an area.
+
+\begin{definition}
+Let $R_{\hat{\mathcal{A}}} = \{ r_1, r_2, \ldots, r_n \}$ be the representation of an area $\mathcal{A}$. We define the set of \emph{descriptions for $R_{\hat{\mathcal{A}}}$}, denoted by $\mathcal{D}_{R_{\hat{\mathcal{A}}}}$, as:
 \[
-\mathcal{M}_{\hat{A}} = \{ m \in \mathcal{M} : TM \left(\langle m, a \rangle \right) = \hat{A} \}.
+\mathcal{D}_{R_{\hat{\mathcal{A}}}} = \{ d \in \mathcal{D} : TM(a) = \langle r_1, r_2, \ldots, r_n\rangle \}.
 \]
 \end{definition}
 
-Finally, we are interested in the perfect model for a research area, that is, the shortest possible model that fully describes its known subset. According to Definition \ref{def:trivial_model}, if we are aware of the existence of a topic $t \in A$, that topic should be part of $\hat{A}$, even in the case we have not started yet to do research about that particular topic.
+Finally, we are interested in the perfect model for a research area, that is, the shortest possible string that fully describes its known subset. According to Definition \ref{def:trivial_model}, if we are aware of the existence of a entity $e \in A$, that entity should be part of $\hat{A}$, even in the case we have not started yet to do research about that particular topic.
 
 \begin{definition}
-Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A}$, and let $m_{\hat{A}}^{\star} \in \mathcal{M}_{\hat{A}}$ be the shortest possible model of $A$ using the standard shortlex ordering. We call  $m_{\hat{A}}^{\star}$ the \emph{perfect model of the area $A$} given the known subset $\hat{A}$\index{Perfect model of an area}, abbreviated as \emph{perfect model of $A$}.
+Let $A \subset \mathcal{E}$ be an area with known subset $\hat{A}$, and let $d_{\hat{A}}^{\star} \in \mathcal{M}_{\hat{A}}$ be the shortest possible description of $A$. We call  $d_{\hat{A}}^{\star}$ the \emph{perfect description of the area $A$} given the known subset $\hat{A}$\index{Perfect description of an area}, abbreviated as \emph{perfect description of $A$}.
 \end{definition}
 
-Next proposition shows the relation between the model of an area, and the models of the topics that compose the known subset of that area. In general, the models for an area are different from the collection of models of the individual topics.
+Next proposition shows the relation between the description of an area, and the descriptions of the entities that compose the known subset of that area. In general, the models for an area are different from the collection of models of the individual topics.
 
 \begin{proposition}
-Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A} = \{t_1, t_2, \ldots, t_n\}$, then we have that $l \left( m_{\hat{A}}^{\star} \right) \leq l(m_ {t_1}^\star) + l(m_ {t_2}^\star) + \ldots + l(m_ {t_n}^\star)$.
+Let $A \subset \mathcal{E}$ be an area with known subset $\hat{A} = \{e_1, e_2, \ldots, e_n\}$, then we have that $l \left( d_{\hat{A}}^{\star} \right) \leq l(d_ {e_1}^\star) + l(d_ {e_2}^\star) + \ldots + l(d_ {e_n}^\star)$.
 \end{proposition}
 \begin{proof}
 Apply Proposition \ref{prop:joint_multiple_topics}-ii. 
 \end{proof}
 
-Also, as it was proved in Proposition \ref{prop:joint_multiple_topics}, the order in which the topics are listed in the description of an area is not relevant when dealing with the perfect model for that area.
+Also, as it was proved in Proposition \ref{prop:joint_multiple_topics}, the order in which the representations are listed in the description of an area is not relevant when dealing with the perfect model for that area.
 
 Areas can overlap, that is, given two areas $A$ and $B$ it might happen that $A \cap B \neq \varnothing$. Moreover, areas can be subsets of other areas, creating an hierarchy of areas. We are interested in the length of perfect models of areas in relation to the length of perfect models of other areas.
 
 \begin{proposition}
-Let $A, B \subset \mathcal{T}$ be two areas such that $A \subset B$, and let $\hat{A}$ and $\hat{B}$ be their know subsets respectively, then we have that $l \left( m_{\hat{A}}^{\star} \right) \leq l \left( m_{\hat{B}}^{\star} \right)$.
-\end{proposition}
-\begin{proof}
-If $t \in \hat{A}$ there exists a non-trivial model $m_t$ for $t$, and given that $A \subset B$, $m_t$ is also a non-trival model for $B$, and so $t \in \hat{B}$. Finally, we apply \ref{prop:joint_multiple_topics}-iv.
-\end{proof}
-
-Next proposition \label{prop:areas_union} shows how the length of the shortest possible model of areas relate to the union and intersection of such areas.
-
-\begin{proposition}
-\label{prop:areas_union}
-Let $A, B \subset \mathcal{T}$ be two areas with know subsets $\hat{A}$ and $\hat{B}$ respectively, then we have that $l \left( m_{\hat{A} \cup \hat{B}}^{\star} \right) = l \left( m_{\hat{A}}^{\star} \right) + l \left( m_{\hat{B}}^{\star} \right) - l \left( m_{\hat{A} \cap \hat{B}}^{\star} \right)$.
+Let $A, B \subset \mathcal{E}$ be two areas such that $A \subset B$, and let $\hat{A}$ and $\hat{B}$ be their know subsets respectively, then we have that $l \left( d_{\hat{A}}^{\star} \right) \leq l \left( d_{\hat{B}}^{\star} \right)$.
 \end{proposition}
 \begin{proof}
 {\color{red} TODO}
 \end{proof}
 
-A consequence of Proposition \label{prop:areas_union} is that $l \left( m_{\hat{A} \cup \hat{B}}^{\star} \right) \leq l \left( m_{\hat{A}}^{\star} \right) + l \left( m_{\hat{B}}^{\star} \right)$, that is, when we combines two different research areas, how much we do not know about these areas decreases.
-
-In the same way we introduced a chain rule for entropy in Proposition \ref{prop:chain_rule_entropy}, we can provide a chain rule for the shortest length for a model of a research area.
+Next proposition \label{prop:areas_union} shows how the length of the shortest possible description of areas relate to the union and intersection of such areas.
 
 \begin{proposition}
-Let $A, B \subset \mathcal{T}$ be two areas with know subsets $\hat{A}$ and $\hat{B}$, then we have that $l \left( m_{\hat{A} \cup \hat{B}}^{\star} \right) = l \left( m_{\hat{A}}^{\star} \right) + l \left( m_{\hat{B} \backslash \hat{A}}^{\star} \right)$.
+\label{prop:areas_union}
+Let $A, B \subset \mathcal{E}$ be two areas with know subsets $\hat{A}$ and $\hat{B}$ respectively, then we have that $l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) = l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B}}^{\star} \right) - l \left( d_{\hat{A} \cap \hat{B}}^{\star} \right)$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+A consequence of Proposition \label{prop:areas_union} is that $l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) \leq l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B}}^{\star} \right)$, that is, when we combines two different research areas, how much we do not know about these areas decreases.
+
+In the same way we introduced a chain rule for entropy in Proposition \ref{prop:chain_rule_entropy}, we can provide a chain rule for the shortest length for a description of a research area.
+
+\begin{proposition}
+Let $A, B \subset \mathcal{E}$ be two areas with know subsets $\hat{A}$ and $\hat{B}$, then we have that $l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) = l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B} \backslash \hat{A}}^{\star} \right)$.
 \end{proposition}
 \begin{proof}
 {\color{red} TODO}
@@ -575,11 +585,23 @@ Let $A, B \subset \mathcal{T}$ be two areas with know subsets $\hat{A}$ and $\ha
 % Section: References
 %
 
-\section*{References}
+\section{References}
 
 {\color{red} TODO: Review this section.}
 
 For more information about Russell's paradox, Cantor theorem and universal sets refer, for example, to \cite{jech2013set}. The idea of using a function to assigns to each symbol and well-formed formula of some formal language a unique natural number (Gödel number) was introduced by Kurt Gödel for the proof of his incompleteness theorems \cite{godel1931formal}. A detailed description of the Berry paradox from the point of view of computability can be found at \cite{chaitin1995berry}. For a detailed account of the implications of Kolmogorov complexity being true up to a constant, please refer to \cite{li2013introduction}. That oracle machines are not mechanical was stated by Turing when he introduced the concept of oracle machine in \cite{turing1939systems}.
 
+\begin{itemize}
+\item Intro to ontology: the things we can know about
+\item Intro to epistemology: the problem of representation
+\item What it is a representtaion: reference to oxford philosophy article
+\item Reference to the concept of what it is research topic
+\item The problem of representation in Kolmogorov complexity
+\item Godel numbering
+\item single, unique, physical world -> what it is thing called
+\item Cantor theorem
+\item Rusell paradox
+\item Oracle Turing machine
+\end{itemize}
 
 

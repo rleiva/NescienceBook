@@ -167,11 +167,18 @@ One of the problems of science, and in general of any human intellectual activit
 \section{Joint Representations}
 \label{sec:descriptions_joint_topic}
 
-We have seen in the previous section that usually there exists more than one possible representation of an entity $e \in \mathcal{E}$, what we have called the set $\mathcal{R}_e$. Some of these representations have a high quality, in the sense that they contain all the information required by the oracle to reconstruct (in whatever way the oracle manages to do that) the original entity. But also, in the set $\mathcal{R}_e$ there exists low quality representations, that is, representations that lack many of the details needed to fully reconstruct the entity\footnote{As we have said, the oracle cannot query an external service to retrieve the information missing from a representation. Instead, what the oracle does is to find the closest representation to the string provided that is complete, and assume that both describe the same entity (see Chapter \ref{chap:Miscoding}).}. If we want to increase our knowledge about an entity, that is, decrease our nescience, we have to find the best possible representation. One way to do that is to simply try different strings until we come up with a good enough representation. A more efficient method would be to complement our current bad representation with more symbols, or by combining those known representations that contain partial information. These two latter approaches require the introduction of the concept of joint representation.
+We have seen in the previous section that there exists more than one possible representation of an entity $e \in \mathcal{E}$, what we have called the set $\mathcal{R}_e$ of representations of the entity $e$. Some of these representations have a high quality, in the sense that they contain all the information required by the oracle to reconstruct (in whatever way the oracle manages to do that) the original entity. But also, in the set $\mathcal{R}_e$ there exists low quality representations, that is, representations that lack many of the details needed to fully reconstruct the entity. Furthermore, the set $\mathcal{R}_e$ can contain representations that include information that is sinply wrong, symbols that the oracle will ignore when reconstructing the original entity, but that will mislead us when understanding this entity. In Chapter \ref{chap:Miscoding} we will study in detail the errors due to incomplete and wrong representations.
+
+If we want to increase our knowledge about an entity, we have to find the best possible representation for that entity, that is, a representation that is complete and correct. One way to do that is to simply try different strings until we come up with a high quality representation. However, that method could require a lot of time. A more efficient approach would be to complement our current bad representation with more (potentially missing) symbols, or by combining those known representations that contain partial information. These two methods require the introduction of the concept of joint representation.
 
 \begin{definition}
 Let $s, t \in \mathcal{B}^\ast$ be two different representations. We call the \emph{joint representation} of $s$ and $t$ to the concatenation string $st$.
 \end{definition}
+
+\begin{example}
+\label{ex:lung_cancer}
+Suppose that the research entity $e$ in which we are interested is the causes of lung cancer. In order to understand this entity, we have measured a collection of risk factors in a random sample of the population (smooking, exercise, diet, age, etc.). However, due to a problem with the sampling procedure, all the samples correspond to a subset of the population, for example, males. This dataset would be a representation $s$ for our entity $e$, but a very bad one, since it is biased. If we have a second representation, corresponding the sample data of females $t$, the joint representation $st$ will be a better one that any of them, $s$ or $t$, isolated.
+\end{example}
 
 The concatenation of any two arbitrary representations is also a representation.
 
@@ -179,37 +186,31 @@ The concatenation of any two arbitrary representations is also a representation.
 Let $s, t \in \mathcal{B}^\ast$ be two different representations and $st$ its joint representation, then $st$ is also a representation.
 \end{proposition}
 \begin{proof}
-As we have seen in Section \ref{sec:strings} the set $\mathcal{B}^\ast$ is closed under the operation of concatenation of strings.
+As we have seen in Section \ref{sec:strings} the set $\mathcal{B}^\ast$ is closed under the operation of concatenation of strings, and the representation function $\mathcal{O}_\mathcal{E}$ is total.
 \end{proof}
 
-Note that we do not require the set of representations $\mathcal{R}_e$ for a given entity $e \in \mathcal{E}$ to be closed under the operation of concatenation. That is, it might happen that $st \notin \mathcal{R}_e$, even if it is the case that $s \in \mathcal{R}_e$ and $t \in \mathcal{R}_e$.
+We do not require the set of representations $\mathcal{R}_e$ for a given entity $e \in \mathcal{E}$ to be closed under the operation of concatenation. It might happen that $st \notin \mathcal{R}_e$, even if it is the case that $s \in \mathcal{R}_e$ and $t \in \mathcal{R}_e$.
 
-\begin{example}
-\label{ex:lung_cancer}
-Suppose that the research entity $e$ in which we are interested is the causes of lung cancer. In order to understand this entity, we have measured a collection of risk factors in a random sample of the population (smooking, exercise, diet, age, etc.). However, due to a problem with the sampling procedure, all the samples correspond to a subset of the population, for example, males. This dataset would be a representation $s$ for our entity $e$, but a very bad one, since it is biased. If we have a second representation, corresponding the sample data of females $t$, the joint representation $st$ will be a better one that any of them, $s$ or $t$, isolated.
-\end{example}
+The concept of joint representation is defined for every pair of strings $s, t \in \mathcal{B}^\ast$, even if they do not belong to the same set of representations $\mathcal{R}_e$, in other words, when $\mathcal{O}_\mathcal{E} \left( s \right) \neq \mathcal{O}_\mathcal{E} \left( t \right)$. This process of joining representations from different entities will be very usefull in the discovery of new research entities hitherto unknown (see Section \ref{sec:New_Research_Topics}), recall that all possible strings must represent an entity.
 
-The operation of concatenation is associative, that is, $(rs)t = r(st)$, for all $r, s, t \in \mathcal{B}^\ast$.
+The operation of string concatenation is associative, that is, $(rs)t = r(st)$, for all $r, s, t \in \mathcal{B}^\ast$. This property defines the algebraic structure of the set of representations.
 
 \begin{proposition}
 The set $\mathcal{B}^\ast$ of representations together with the operation of concatenation has the structure of free monoid.
 \end{proposition}
 \begin{proof}
-As we have seen in Section \ref{sec:strings} the operation of concatenation is associative, and the empty string $\lambda$ plays the role of neutral element.
+As we have seen in Section \ref{sec:strings} the operation of string concatenation in $\mathcal{B}^\ast$ is associative, and the empty string $\lambda$ plays the role of neutral element.
 \end{proof}
 
-It might happen that there exists some research entities whose existence we do not know yet. That is, there are knowable entities in $\mathcal{E}$ (they can encoded by strings in $\mathcal{B}^\ast$) that we are not aware of their existence, since nobody has studied them. The collection of those entities is what we call the \emph{unknown unknown} (see Section \ref{sec:New_Research_Topics}). We are interested in to investigate if there exists a procedure to discover those unknown research entities. A possible approach could be by means of combining the representations of already known entities, since all possible strings represent something (see Section \ref{sec:New_Research_Topics}).
+We do no require the operation of joining representations to be conmutative with respect to the oracle function. Given the representations $s, t \in \mathcal{B}^\ast$ it might happen that the concatenation strings $st$ and $ts$ represent different entities, that is, $\mathcal{O}_\mathcal{E} \left( st \right) \neq \mathcal{O}_\mathcal{E} \left( ts \right)$.
 
-The concept of joint representation can be extended to any arbitrary, but finite, collection of representation. In this way, we could add multiple entities to our research, or to the process of discovering new entities.
+The concept of joint representation can be extended to any arbitrary, but finite, collection of representations. In this way, we could add multiple partial representations to our research, or use them in the process of discovering new entities.
 
 \begin{definition}
-Let $t_1, t_2, \ldots, t_n \in \mathcal{B}^\ast$ be a finite collection of representations. We call the \emph{joint representation} of $t_1, t_2, \ldots, t_n$ to the string $t_1 t_2 \ldots t_n$.
+Let $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$ be a finite collection of representations. We call the \emph{joint representation} of $r_1, r_2, \ldots, r_n$ to the string $r_1 r_2 \ldots r_n$.
 \end{definition}
 
-It is easy to show that $t_1 t_2 \ldots t_n \in \mathcal{B}^\ast$ for all $t_1, t_2, \ldots, t_n \in \mathcal{B}^\ast$, that is, $\mathcal{B}^\ast$ is closed under the operation of concatenation of multiple, finite, topics.
-
-{\color{red} Clarify why concatenation has to be conmutative.}
-
+It is easy to show that $r_1 r_2 \ldots r_n \in \mathcal{B}^\ast$ for all $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$, that is, $\mathcal{B}^\ast$ is closed under the operation of concatenation of multiple, finite, representations.
 
 %
 % Section: Descriptions

@@ -167,17 +167,17 @@ One of the problems of science, and in general of any human intellectual activit
 \section{Joint Representations}
 \label{sec:descriptions_joint_topic}
 
-We have seen in the previous section that there exists more than one possible representation of an entity $e \in \mathcal{E}$, what we have called the set $\mathcal{R}_e$ of representations of the entity $e$. Some of these representations have a high quality, in the sense that they contain all the information required by the oracle to reconstruct (in whatever way the oracle manages to do that) the original entity. But also, in the set $\mathcal{R}_e$ there exists low quality representations, that is, representations that lack many of the details needed to fully reconstruct the entity. Furthermore, the set $\mathcal{R}_e$ can contain representations that include information that is sinply wrong, symbols that the oracle will ignore when reconstructing the original entity, but that will mislead us when understanding this entity. In Chapter \ref{chap:Miscoding} we will study in detail the errors due to incomplete and wrong representations.
+We have seen in the previous section that there exists more than one way to encode an entity $e \in \mathcal{E}$, what we have called the set $\mathcal{R}_e$ of representations of the entity. Some of these representations have a high quality, in the sense that they contain all the information required by the oracle to reconstruct (in whatever way the oracle manages to do that) the original entity. But also, in the set $\mathcal{R}_e$ there exists low quality representations, that is, representations that lack many of the details needed to fully reconstruct the entity. Furthermore, the set $\mathcal{R}_e$ can contain representations that include information that is wrong, symbols that the oracle will automatically ignore during the reconstruction, but that they will mislead us when understanding the entity. In Chapter \ref{chap:Miscoding} we will study how to measure the error due to incomplete and wrong representations, and in this section we will introduce a mechanism to improve our currently known representations.
 
-If we want to increase our knowledge about an entity, we have to find the best possible representation for that entity, that is, a representation that is complete and correct. One way to do that is to simply try different strings until we come up with a high quality representation. However, that method could require a lot of time. A more efficient approach would be to complement our current bad representation with more (potentially missing) symbols, or by combining those known representations that contain partial information. These two methods require the introduction of the concept of joint representation.
+If we want to increase our knowledge about an entity, we have to find the best possible representation for that entity, that is, a representation that is complete and correct. One way to do that is simply try different strings until we come up with a high quality representation. However, that method could require a lot of time and it is impractical. A more efficient approach would be to complement our current bad representation with more (potentially missing) symbols, or by combining those known representations that contain partial information. These two methods require the introduction of the concept of joint representation.
 
 \begin{definition}
-Let $s, t \in \mathcal{B}^\ast$ be two different representations. We call the \emph{joint representation} of $s$ and $t$ to the concatenation string $st$.
+Let $s, t \in \mathcal{B}^\ast$ be two different representations. We call \emph{joint representation} of $s$ and $t$ to the concatenation string $st$.
 \end{definition}
 
 \begin{example}
 \label{ex:lung_cancer}
-Suppose that the research entity $e$ in which we are interested is the causes of lung cancer. In order to understand this entity, we have measured a collection of risk factors in a random sample of the population (smooking, exercise, diet, age, etc.). However, due to a problem with the sampling procedure, all the samples correspond to a subset of the population, for example, males. This dataset would be a representation $s$ for our entity $e$, but a very bad one, since it is biased. If we have a second representation, corresponding the sample data of females $t$, the joint representation $st$ will be a better one that any of them, $s$ or $t$, isolated.
+Suppose that the research entity $e$ in which we are interested is the causes of lung cancer. In order to understand this entity, we have measured a collection of risk factors in a random sample of the population (smooking, exercise, diet, age, etc.). However, due to a problem with the sampling procedure, all the samples correspond to a subset of the population, for example, males. This dataset would be a representation $s$ for our entity $e$, but a very bad one, since it is strongly biased. If we have a second representation, corresponding the sample data of females $t$, the joint representation $st$ will be a better one that any of them, $s$ or $t$, isolated.
 \end{example}
 
 The concatenation of any two arbitrary representations is also a representation.
@@ -189,11 +189,11 @@ Let $s, t \in \mathcal{B}^\ast$ be two different representations and $st$ its jo
 As we have seen in Section \ref{sec:strings} the set $\mathcal{B}^\ast$ is closed under the operation of concatenation of strings, and the representation function $\mathcal{O}_\mathcal{E}$ is total.
 \end{proof}
 
-We do not require the set of representations $\mathcal{R}_e$ for a given entity $e \in \mathcal{E}$ to be closed under the operation of concatenation. It might happen that $st \notin \mathcal{R}_e$, even if it is the case that $s \in \mathcal{R}_e$ and $t \in \mathcal{R}_e$.
+We do not require the set of representations $\mathcal{R}_e$ for a given entity $e \in \mathcal{E}$ to be closed under the operation of concatenation. That is, it might happen that $st \notin \mathcal{R}_e$, even if it is the case that $s \in \mathcal{R}_e$ and $t \in \mathcal{R}_e$.
 
-The concept of joint representation is defined for every pair of strings $s, t \in \mathcal{B}^\ast$, even if they do not belong to the same set of representations $\mathcal{R}_e$, in other words, when $\mathcal{O}_\mathcal{E} \left( s \right) \neq \mathcal{O}_\mathcal{E} \left( t \right)$. This process of joining representations from different entities will be very usefull in the discovery of new research entities hitherto unknown (see Section \ref{sec:New_Research_Topics}), recall that all possible strings must represent an entity.
+The concept of joint representation is defined for every pair of strings $s, t \in \mathcal{B}^\ast$, even if they do not belong to the same set of representations $\mathcal{R}_e$, in other words, when $\mathcal{O}_\mathcal{E} \left( s \right) \neq \mathcal{O}_\mathcal{E} \left( t \right)$. This process of joining representations from different entities will be very usefull for the discovery of new research entities hitherto unknown (see Section \ref{sec:New_Research_Topics} and recall that all possible strings in $\mathcal{B}^\ast$ represent an entity).
 
-The operation of string concatenation is associative, that is, $(rs)t = r(st)$, for all $r, s, t \in \mathcal{B}^\ast$. This property defines the algebraic structure of the set of representations.
+The operation of string concatenation is associative, that is, $(rs)t = r(st)$, for all $r, s, t \in \mathcal{B}^\ast$. This property defines the algebraic structure of the sets of representations.
 
 \begin{proposition}
 The set $\mathcal{B}^\ast$ of representations together with the operation of concatenation has the structure of free monoid.
@@ -207,7 +207,7 @@ We do no require the operation of joining representations to be conmutative with
 The concept of joint representation can be extended to any arbitrary, but finite, collection of representations. In this way, we could add multiple partial representations to our research, or use them in the process of discovering new entities.
 
 \begin{definition}
-Let $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$ be a finite collection of representations. We call the \emph{joint representation} of $r_1, r_2, \ldots, r_n$ to the string $r_1 r_2 \ldots r_n$.
+Let $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$ be a finite collection of representations. We call \emph{joint representation} of $r_1, r_2, \ldots, r_n$ to the string $r_1 r_2 \ldots r_n$.
 \end{definition}
 
 It is easy to show that $r_1 r_2 \ldots r_n \in \mathcal{B}^\ast$ for all $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$, that is, $\mathcal{B}^\ast$ is closed under the operation of concatenation of multiple, finite, representations.
@@ -222,19 +222,17 @@ It is easy to show that $r_1 r_2 \ldots r_n \in \mathcal{B}^\ast$ for all $r_1, 
 So far, our aim with the strings of $\mathcal{B}^\ast$ has been to provide an enconding, or representation, as complete and detailed as possible of the entities of $\mathcal{E}$, no matter its length. However, as we have said in the preface of this book, human understanding requires the derivation of concise models for those entities, since human reasoning cannot be based on long representations.
 
 \begin{example}
-In Example \ref{ex:lung_cancer} we have shown that a good representation for the entity "lung cancer" could be a sample dataset in which we measure different risk factors. If someone decides to quit smooking is not because they know and understand this large sample dataset, but because they know and understand the much simpler derived model "smooking increases the risk of lung cancer".
+In Example \ref{ex:lung_cancer} we have shown that a good representation for the entity "lung cancer" could be a sample dataset in which we measure different risk factors. If smokers decide to quit smooking is not because they know and understand this large sample dataset, but because they know and understand the much simpler derived model "smooking increases the risk of lung cancer".
 \end{example}
 
-A description or model\footnote{In the theory of nescience use the words "description" and "model" interchangeably.} is a finite binary string mapped to a representation of an entity (recall Figure \ref{fig:entities_topics_models} from Chapter \ref{chap:Introduction}). Descriptions do not model entities (target systems) directly, they do so through string based representations.
-
-In the theory of nescience we require that descriptions must be computable, so we can fully and effectively reconstruct the original representations given their descriptions. The requirement of computability allows us to clearly state the limits of the concept of "description". For example, the problem of self-referential descriptions, like the Berry paradox\index{Berry paradox}, can be addressed in the scope of the limits of computation.
+A description or model\footnote{In the theory of nescience use the words "description" and "model" interchangeably.} is a finite binary string mapped to a representation of an entity (recall Figure \ref{fig:entities_topics_models} from Chapter \ref{chap:Introduction}). Descriptions do not model entities (target systems) directly, they do so through string based representations. In the theory of nescience we require that descriptions must be computable, so we can fully and effectively reconstruct the original representations given their descriptions. The requirement of computability allows us to clearly state the limits of the concept of "description". For example, the problem of self-referential descriptions, like the Berry paradox\index{Berry paradox}, can be addressed in the scope of the limits of computation.
 
 \begin{definition} [Model]
 \label{def:descriptions_model}
 Let $d \in \mathcal{B}^\ast$ be a binary string in the form $d = \langle TM,a \rangle$, where $TM$ is the encoding of a prefix free Turing machine and $a$ is the input string to that machine. If $TM(a)$ is defined, we say that $d$ is a \emph{description}\index{Description}. 
 \end{definition}
 
-The output of the description $TM(a)$ is a string, that is, the representation of an entity. Intuitively, a description is composed by two parts, a Turing machine that compresses all the regularities found in this representation, and a string containing what is left, that is, the non-compressible part. From an otological point of view, descriptions are just string based representations that satisfy some additional requirements, like being computable. In this sense, descriptions are also representations themselves, i.e., the set of descriptions is a subset of the set of representations.
+Intuitively, a description is composed by two parts, a Turing machine that should compresses all the regularities found in this representation, and a string containing what is left, that is, the non-compressible part. Descriptions that do not compress representations are useless, as we will see below in this section.
 
 \begin{definition}
 \label{def:descriptions_model}
@@ -252,19 +250,15 @@ Finally, given an entity $e \in \mathcal{E}$, we define the set of \emph{descrip
 \]
 \end{definition}
 
-Given that descriptions are representations themselves, there exists descriptions that describe descriptions. From a practical point of view it is not a good idea to use descriptions as the representation of entities, since what we are looking for in a good representation is that they contain as much inforformation as possible about the original entities, not an encoding as concise as possible. Working with descriptions in the role of representations would make the job of scientific discovery very difficult.
+From an otological point of view, descriptions are just string based representations that satisfy the additional requirement of being computable. In this sense, descriptions are also representations, and so, there exists descriptions that describe descriptions. In practice it is not a good idea to use descriptions as the representation of entities, since what we are looking for in a good representation is that they contain as many details as possible about the original entities, not a concise encoding. Working with descriptions in the role of representations would make the job of scientific discovery very difficult for humans.
 
-\begin{notation}
-In case of dealing with multiple represenations and descriptions, and in order to avoid ambiguity, we will denote by $d_r$ the description $d$ for the representation $r$.
-\end{notation}
-
-Since each description describes one, and only one, representation, we can define a function that maps descriptions into representations. Given that descriptions are Turing machines, it is natural to use as description function a universal Turing machine. Consequently, not only the individual descriptions of representations are computable, but also the function that maps descriptions into representations is computable.
+Since each description describes one, and only one, representation, we can define a function that maps descriptions into representations. Given that descriptions are Turing machines, it is natural to use as description function a universal Turing machine. Consequently, not only the individual descriptions of representations are computable, but also the function that maps descriptions into representations is also computable.
 
 \begin{definition}
 We call \emph{description function}\index{Description function}, denoted by $\delta$, to any universal Turing machine $\delta : \mathcal{D} \rightarrow \mathcal{B}^\ast$ that maps descriptions to their corresponding representations.
 \end{definition}
 
-If $d$ is a description of the representation $r$, then we have that $\delta \left( d \right) = \delta \left( \langle TM, a \rangle \right) = TM(a) = r$.
+If $d = \langle TM, a \rangle$ is a description of the representation $r$, then we have that $\delta \left( d \right) = \delta \left( \langle TM, a \rangle \right) = TM(a) = r$.
 
 Inspired by the Occam's razor principle\index{Occam's razor principle}\footnote{The Occam's razor principle refers to the number of assumptions of an explanation, not to the length of the explanation itself.}, if two explanations are indifferent, we should prefer the shortest one. Therefore, the limit of what can be known (understand) about a representation, that is, its perfect model, is given by the shortest description that allows us to reconstruct this representation. Of course, what we know about the original entity is conditional to the quality of the representation.
 
@@ -322,7 +316,7 @@ Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}_r$ one 
 Consider the set of all possible finite graphs\index{Graph}. Since graphs are abstract mathematical objects, we need a way to represent them as strings, for example, by using a binary encoding of their adjacency matrices (see Section \ref{sec:Graphs} for an introduction to graphs). The description $d = \langle TM, r \rangle$, where $r$ is the representation of a graph and $TM$ is a Turing machine that just halts, will be part of $\mathcal{D}_r$ since $TM(r) = r$. We are concerned about the fact that this description may not be shortest possible description of $r$.
 \end{example}
 
-It might happen that there is no shortest possible description of a representation than the representation itself. This is the case when representations are random, or incompressible, strings. And, as we have seen in Section \ref{sec:incompressibility_randomness} the overhelming majority of strings are incompressible. It does not make any sense to do research about random representation, since it is not possible to find shorter models for that representation.
+It might happen that there is no shortest possible description of a representation than the representation itself. This is the case when representations are random, or incompressible, strings. And, as we have seen in Section \ref{sec:incompressibility_randomness} the overhelming majority of strings are incompressible. It is useless to do research about random representation, since it is not possible to find shorter models for that representation.
 
 The concept of perfect description can be generalized from individual representations to entities. This generalization allow us to study the nature and properties of these entities.
 
@@ -335,7 +329,6 @@ For each possible representation $r$ of $e$ we can compute its perfect descripti
 
 An interesting case is when all the descriptions that compose $\mathcal{D}_e$ are pleonastics, that is, there is no model that it is shorter than the representation for all the possible representations of the entity. That would the case if all the representations of the entity $e$ are random strings. In this particular case, scientific research would be doomed, since it is not possible to find a suitable model for $e$. The fact that we can understand and make predictions about $e$ will be limited by the length of the non-compressible representations of $e$.
 
-{\color{red} Elaborate a little bit more over the concept of perfect description of an entity.}
 
 %
 % Section: Models for Joint Representations

@@ -399,15 +399,15 @@ Apply Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:j
 
 \section{Conditional Descriptions}
 
-It is usually cumbersome to include all the information needed to reconstruct an entity in its description, since that would require very large strings for the majority of the entities. It is more convenient to assume some already existing background knowledge, and compute how much we do not know about an entity given that background. In this section we are going to study the concept of \emph{conditional descriptions}, that is, computing a description assuming another description. Conditional descriptions also play a very important role in the discovery of new knowledge: if by conditioning a description to some prior knowledge we reduce significantly the inaccuracy of a model, that would mean this prior knowledge is relevant to understand the entity.
+It is usually cumbersome to include all the information needed to reconstruct an entity in its description, since that would require very large strings for the majority of the entities. It is more convenient to assume some already existing background knowledge, and compute how much we do not know about an entity given that background. In this section we are going to study the concept of \emph{conditional descriptions}, that is, computing a description given another description. Conditional descriptions also play a very important role in the discovery of new knowledge: if by conditioning a description to some prior knowledge we reduce significantly the inaccuracy of a model, that would mean this prior knowledge is relevant to understand the entity.
 
 \begin{definition}
-Let $r, d, s \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the string $s$, denoted by $d \mid s$, if $d = \langle TM, a \rangle$ is a description, and $TM \left(\langle a, s \rangle \right) = r$.
+Let $r, d, s \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the string $s$, denoted by $d_{r \mid s}$, if $d = \langle TM, a \rangle$ is a description, and $TM \left(\langle a, s \rangle \right) = r$.
 \end{definition}
 
-The conditional description $d \mid s$ is based on two strings $a$ and $s$, that play very different roles. The string $a$ is the input to the Turing machine $TM$,  and it should contain the non-compresible part of the representation $r$. The string $s$ should be the description, or representation, of another entity whose knowledge can helps to understand the entity in which we are interested. For example, as we will see in Chapter \ref{chap:Redundancy}, the string $s$ is not taken into account when computing the surfeit of a conditional description.
+The conditional description $d_{r \mid s}$ is based on two strings $a$ and $s$, that play very different roles. The string $a$ is the input to the Turing machine $TM$,  and it should contain the non-compresible part of the representation $r$. The string $s$ should be the description, or representation, of another entity whose knowledge can helps to understand the entity in which we are interested. For example, as we will see in Chapter \ref{chap:Redundancy}, the string $s$ is not taken into account when computing the surfeit of a conditional description.
 
-Note that the conditional description $d \mid s$ does not belong to the set of valid description $\mathcal{D}^\star_r$ for the representation $r$, since $s$ is required to compute the representation $r$, but it is not part of the description itself. A new definition is required to capture this new concept.
+Note that the conditional description $d_{r \mid s}$ does not belong to the set of valid description $\mathcal{D}$ for the representation $r$, since $s$ is required to compute the representation $r$, but it is not part of the description itself. A new definition is required to capture this new concept.
 
 \begin{definition}
 Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string, we define the \emph{set of conditional descriptions}\index{Set of conditional descriptions} of $r$ given $s$, denoted by $\mathcal{D}_{r \mid s}$, as:
@@ -416,7 +416,7 @@ Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an
 \]
 \end{definition}
 
-For each representation $r \in \mathcal{B}^\ast$ there always exists a conditional description $d \mid s$ that describes $r$, as next proposition shows.
+For each representation $r \in \mathcal{B}^\ast$ there always exists a conditional description $d_{r \mid s}$ that describes $r$, as next proposition shows.
 
 \begin{proposition}
 \label{prop:description_implies_conditional}
@@ -426,31 +426,27 @@ Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an
 We can use a conditional description $\langle \langle TM, a \rangle, s \rangle$ based on a Turing $TM$ machine that given the input $\langle a, s \rangle$ safely ignores the $s$ string.
 \end{proof}
 
-The converse of Proposition \ref{prop:description_implies_conditional} is not true. The fact that $d$ is a conditional description ($d \in \mathcal{D}_{r \mid s}$) does not implies that $d$ is also a description ($d \in \mathcal{D}_{r})$. {\color{red} Intuitively this means ...}
+The converse of Proposition \ref{prop:description_implies_conditional} is not true. The fact that $d$ is a conditional description ($d \in \mathcal{D}_{r \mid s}$) does not implies that $d$ is also a description ($d \in \mathcal{D}_{r})$. We require that $TM \left(\langle a, s \rangle \right) = r$ but $TM \left( a \right) = r$ is not required, and it might not be the case.
 
 We are interested in the concept of perfect conditional description. The perfect conditional description of a representation given a prior knowledge is the shortest possible string that allow us to fully reconstruct the representation assuming this prior knowledge.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star \mid s$ be the shortest possible description of $r$ given the string $s$. We call $d^\star \mid s$ the \emph{perfect conditional description} of the representation $r$ given the string $s$, or perfect conditional description of $r$ given $s$ for short.
+Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star_{r \mid s}$ be the shortest possible description of $r$ given the string $s$. We call $d^\star_{r \mid s}$ the \emph{perfect conditional description} of the representation $r$ given the string $s$, or perfect conditional description of $r$ given $s$ for short.
 \end{definition}
 
-{\color{red} Repeat egain that perfect knowledge does not depend on $s$}
+Note that $d^\star_{r \mid s}$ is a perfect description of the representation $r$ conditional to the string $s$. That is, it might happen that the string $s$ is not a perfect description itself, or it is a representation that contains non-relevant symbols. In that case, we would have reached a perfect knowledge with respect to the $d$ part, but not for the $s$ part, of the combined $\langle d, s \rangle$ string.
 
 The length of perfect conditional description is equal or shorter that their unconditional counterparts. That is, assuming some already existing background knowledge could reduce the effort required to describe a representation.
 
 \begin{proposition}
 \label{prop:description_conditional_inequality}
-Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string. We have that $l \left( d^\star \mid s \right) \leq l \left( d^\star \right)$.
+Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string. We have that $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right)$.
 \end{proposition}
 \begin{proof}
-The statement $l \left( d^\star \mid s \right) \leq l \left( d^\star \right)$ is equivalent to $K(r \mid s) \leq K(r)$, then apply Proposition \ref{prop:kolmogorov_conditional}.
+The statement $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right)$ is equivalent to $K(r \mid s) \leq K(r)$, then apply Proposition \ref{prop:kolmogorov_conditional}.
 \end{proof}
 
-{\color{red} What about an example?}
-
 Next proposition shows the relation between the lengths of descriptions, join descriptions and conditional descriptions.
-
-{\color{red} Say that this is a very important proposition}
 
 \begin{proposition}
 \label{prop:description_conditional_joint}
@@ -460,10 +456,8 @@ l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left
 \]
 \end{proposition}
 \begin{proof}
-The statement $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{rs} \right)$ is equivalent to $K(r | s ) \leq K(r)$ and $K(r) \leq K(r, s)$, then apply Proposition \ref{prop:kolmogorov_relations}.
+The statement $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{rs} \right)$ is equivalent to $K(r | s ) \leq K(r)$ and $K(r) \leq K(rs)$, then apply Proposition \ref{prop:kolmogorov_relations}.
 \end{proof}
-
-{\color{red} Explain the intuition behind the above proposition}
 
 As it was the case of joint descriptions, the concept of conditional description can be extended to finite collections of representations.
 
@@ -474,7 +468,7 @@ Let $r, d, s_1, s_2, \ldots, s_n \in \mathcal{B}^\ast$ be strings. We say that t
 In the next definition we provide the generalization of the concept of perfect conditional descriptions.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star \mid s_1, s_2, \ldots, s_n$ be the shortest possible description of $r$ given the strings $s_1, s_2, \ldots, s_n$. We call $d^\star \mid s_1, s_2, \ldots, s_n$ the \emph{perfect conditional description} of the representation $r$ given the string $s_1, s_2, \ldots, s_n$, or perfect conditional description of $r$ given $s_1, s_2, \ldots, s_n$ for short.
+Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star_{r \mid s_1, s_2, \ldots, s_n}$ be the shortest possible description of $r$ given the strings $s_1, s_2, \ldots, s_n$. We call $d^\star_{r \mid s_1, s_2, \ldots, s_n}$ the \emph{perfect conditional description} of the representation $r$ given the string $s_1, s_2, \ldots, s_n$, or perfect conditional description of $r$ given $s_1, s_2, \ldots, s_n$ for short.
 \end{definition}
 
 Next proposition generalizes Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to any arbitrary, but finite, collection of strings $s_1, s_2, \ldots, s_n$. Moreover, the proposition shows that the more background knowledge we assume for a representation, the shorter is the perfect description for that representation.
@@ -486,10 +480,10 @@ l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n} \right) \leq l \left( d^\star_r 
 \]
 \end{proposition}
 \begin{proof}
-{\color{red} TODO Review} Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
+Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
 \end{proof}
 
-{\color{red} TODO: Introduce the following proposition.}
+The following proposition generalizes the idea that assuming more background knowledge to a description cannot increase its length.
 
 \begin{proposition}
 Let $r, s_1, s_2, \ldots, s_n, s_{n+1} \in \mathcal{B}^\ast$ be a finite collection of strings. Then, we have that:
@@ -498,7 +492,7 @@ l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n, s_{n+1}} \right) \leq l \left( d
 \]
 \end{proposition}
 \begin{proof}
-{\color{red} TODO Review} Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
+Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
 \end{proof}
 
 %
@@ -508,7 +502,7 @@ l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n, s_{n+1}} \right) \leq l \left( d
 \section{Research Areas}
 \label{sec:areas}
 
-Entities can be grouped into research areas. The concept of area is useful as long as all the entities included in the area are related to a common knolewdge subdomain. The particular details of the grouping criteria depend on the practical applications in which the theory of nescience is being used.
+Entities can be grouped into research areas. The concept of area is useful as long as all the entities included in the area are related to a common knolewdge subdomain, or share a common property. The particular details of the grouping criteria depend on the practical applications in which the theory of nescience is being used.
 
 \begin{definition}
 Given a set of entities $\mathcal{E}$, we define a \emph{research area}\index{Research area} $\mathcal{A}$ as a subset of entities $\mathcal{A} \subset \mathcal{E}$.
@@ -517,10 +511,10 @@ Given a set of entities $\mathcal{E}$, we define a \emph{research area}\index{Re
 If we want to know how much we do not know about a research area, first we have to provide a representation for that area. In general areas are infinite, but the number of known representations is finite, and so, we can only describe the areas with respect to our current knowledge.
 
 \begin{definition}
-Let $A \subset \mathcal{E}$ be an area. We define the \emph{known subset of the area}\index{Known subset of an area} $\mathcal{A}$, denoted by $\hat{\mathcal{A}}$, as the set composed by those entities $e_1, e_2, \ldots, e_n \in A$ for which at least one non-trivial model is known.
+Let $\mathcal{A} \subset \mathcal{E}$ be an area. We define the \emph{known subset of the area}\index{Known subset of an area} $\mathcal{A}$, denoted by $\hat{\mathcal{A}}$, as the set composed by those entities $e_1, e_2, \ldots, e_n \in A$ for which at least one non-pleonastic description is known.
 \end{definition}
 
-We have to distinguish between the knowable subset of $\mathcal{A}$, composed by those entities for which there exists a representation, and the know subset of $\mathcal{A}$, composed by those entities for which we know a non-trivial model, that is, those entities for which somebody has already done some research about them. Of course, the set of known entities is a subset of the set of knowable entities.
+We have to distinguish between the knowable subset of $\mathcal{A}$, composed by those entities for which there exists a representation, and the know subset of $\mathcal{A}$, composed by those entities for which we know a non-pleonastic description, that is, those entities for which somebody has already done some research about them. Of course, the set of known entities is a subset of the set of knowable entities.
 
 As our understanding of a research area changes, the number of entities included in its known subset changes as well. The properties of areas studied in this book will be always relative to our current knowledge.
 

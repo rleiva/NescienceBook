@@ -715,54 +715,132 @@ For \emph{$L(M)$ we use the standard code for integers.}
     optimal. It has mostly been developed for model selection, estimation
     and prediction.}
 
+%
+% Section: Multiobjective Optimization
+%
+
 \section{Multiobjective Optimization}
+\label{sec:multiobjective_optimization}
 
-In the area of \emph{multiobjective optimization} we are interested in solving the following problem:
+Multiobjective optimization is the area of mathematics that deals with the problem of simultaneously optimizing two or more conflicting functions. Multiobjective optimization has been applied in many areas of science, including engineering, economics and logistics, where there is no single solution that simultaneously satisfies all objectives, so a decision must be made in the presence of trade-offs between the conflicting goals.
+
+From a formal point of view, we are interested in solving the following \emph{multiobjective optimization} problem:
 \begin{align*}
-     & \text{minimize}	   \quad \left\{f_1(x), f_2(x), \ldots, f_k(x) \right\} \\
-     & \text{subject\;to} \quad x \in S
+     & \text{minimize}	  \quad \left\{f_1(\mathbf{x}), f_2(\mathbf{x}), \ldots, f_k(\mathbf{x}) \right\} \\
+     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}
 \end{align*}
-where $f_i:\mathbb{R}^n \rightarrow \mathbb{R}$ are two or more objective \emph{objective functions}, and the nonempty set $S \subset \mathbb{R}^n$ is the \emph{feasible region}, whose elements $x=\left( x_1, x_2, \ldots, x_n \right)$ are \emph{decision vectors}. The image of the feasible region $f(S) \subset \mathbb{R}^k$ is called \emph{objective region}, and its elements $z = \left(f_1(x), f_2(x), \ldots, f_k(x) \right)$ \emph{objective vectors}.
+where $f_i:\mathbb{R}^n \rightarrow \mathbb{R}$, $i = 1, \ldots, k$, are two or more objective \emph{objective functions}, and the nonempty set $\mathbf{S} \subset \mathbb{R}^n$ is the \emph{feasible region}, whose elements $\mathbf{x} = \left( x_1, x_2, \ldots, x_n \right)$ are \emph{decision vectors}. The image of the feasible region $f(\mathbf{S}) \subset \mathbb{R}^k$, denoted by $\mathbf{Z}$, is called \emph{objective region}, and its elements $\mathbf{z} = \left(f_1(\mathbf{x}), f_2(\mathbf{x}), \ldots, f_k(\mathbf{x}) \right)$ \emph{objective vectors}. In some applications, the feasible region is formed by a collection of inequality constraints $\mathbf{S} = \{ \mathbf{x} \in \mathbb{R}^n \mid g(\mathbf{x}) = \left( g_1(\mathbf{x}), \ldots, g_m(\mathbf{x}) \right) \leq 0 \}$.
 
-In this book we will be dealing with nonlinear multiobjective optimization problems, where at at least one of the objective functions is not linear. Objective functions can be also incommensurable, that is, measured in different units.
+In this book we will be dealing with nonlinear multiobjective minimization problems, where at at least one of the objective functions, or the constraint functions, is not linear. Objective functions can be also incommensurable, that is, measured in different units or in different scales.
 
-An objective vector is optimal if none of its components can be improved without deteriorating at least one of the others. In multiobjective optimization the objective functions are usually conflicting, and so, it does not exist a single solution that is optimal with respect to every objective function.
+Since the objective functions are conflicting, it does not exist a single solution that is optimal with respect to every objective function (the objective region is partially ordered). We are interested in those objective vectors for which none of its individual components can be improved without deteriorating at least one of the others.
 
 \begin{definition}
-    A decision vector $x \in S$ is Pareto optimal if there does not exists another decision vector $y \in S$ such that $f_i(y) \leq f_i(x)$ for all $i = 1, \ldots, k$ and $f_j(y) < f_j(x)$ for at least one $j$. An objective vector $z \in f(S)$ is Pareto optimal if there does not exits another objective vector $w \in f(S)$ such that $w_i \leq z_i$ for all $i = 1, \ldots, k$ and $w_j < z_j$ for at least one $j$.
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{Pareto optimal} if there does not exists another decision vector $\mathbf{y} \in \mathbf{S}$ such that $f_i(\mathbf{y}) \leq f_i(\mathbf{x})$ for all $i = 1, \ldots, k$ and $f_j(\mathbf{y}) < f_j(\mathbf{x})$ for at least one $j$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is Pareto optimal if there does not exits another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $w_i \leq z_i$ for all $i = 1, \ldots, k$ and $w_j < z_j$ for at least one $j$.
 \end{definition}
 
-An objective vector is Pareto optimal if its corresponding decision vector is Pareto optimal.
+Pareto optimality can be studied from the point of view of decision variable space or objective space. An objective vector is Pareto optimal if its corresponding decision vector is Pareto optimal.
 
-    {\color{red} [...] the Pareto optimal set (consisting of the Pareto optimal solutions) can be nonconvex and disconnected [...]}
+The set of Pareto optimal solutions, which could be infinite, is called the \emph{Pareto optiomal set} or the \emph{Pareto frontier}.
 
-    {\color{red} TODO: Add an example}
+Sometimes, in practice, it is convenient to use a more restrictive definition of the concept of optimaily, in which we identify those vectors for which there does not exist any other vector that improves over all the components simultaneously.
 
-    {\color{red} [...] in practice, usually only one of these solutions is to be chosen [...] In multiobjective optimization, there are at least two equally important tasks: an optimization task for finding Pareto optimal solutions [...] and a decision-making task for choosing a single most preferred solution}
+\begin{definition}
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{weakly Pareto optimal} if there does not exist another decision vector $\mathbf{y} \in \mathbf{S}$ such that $f_i ( \mathbf{y} ) < f_i ( \mathbf{x} )$ for all $i = 1, \ldots, k$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is weakly Pareto optimal if there does not exists another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $w_i < z_i$ for all $i = 1, \ldots, k$.
+\end{definition}
 
-    {\color{red} [...] putting the preference articulation stage after optimization [...]}
+An objetive vector is weakly Pareto optimal if its corresponding decision vector is weakly Pareto optimal. Oviously, the Pareto optimal set is a subset of the weakly Pareto optimal set.
 
-    {\color{red} TODO: Introduce the following concepts: locally Pareto optimal, weak Pareto optimality}
+\begin{example}
+\label{ex:pareto}
+\begin{figure}[h]
+\centering\includegraphics[scale=0.3]{pareto.jpg}
+\caption{\label{fig:pareto}Pareto optimality.}
+\end{figure}
+In figure \ref{fig:pareto} we have depicted a sample of the objective region of a multiobjetive optimization problem composed by two real-valued objective functions $f_1$ and $f_2$ that we are interested in minimizing. White points are not weakly Pareto optimal since there exist points that improve both components at the same time (for example, point $\mathbf{B}$ improves point $\mathbf{C}$ in both functions). Black points are weakly Pareto optimal since there is no point that improves both components at the same time. Point $\mathbf{A}$ is not Pareto optimal since point $\mathbf{B}$ improves one component without deteriorating the other.
+\end{example}
 
-    {\color{red} TODO: Introduce the following concepts: ideal vector (lower bound), nadir (upper bound), utopian}
+Mathematically speaking all the solutions that compose the Pareto optimal set are equally good. However, for the majority of the practical applications, it is highly desirable to have a single solution. Finding this solution requires additional information not included in the definition of the optimization problem. The relation of preference between objective function values is expresed using a \emph{decision maker}, that it is supposed to have additional insights about the problem to solve. In this sense, solving a multiobjective optimization problem would require to find those feasible decision vectors that it are Pareto optimal and that satisfy the additional requirements imposed by the decision maker.
 
-    {\color{red} TODO: Indroduce the following concept: Decision Maker [...] because Pareto optimal solutions cannot be ordered completely, we need extra preference information coming from a decision maker [...] explicit preference model [...]}
+In practice, we assume that the preferences of the decision maker can be expressed using a value function.
 
-    {\color{red} [...]there is no DN and his preference information available and in those cases we must use so-called no-preference methods. Then, the task is to find some neutral compromise solution without any additional preference information. This means that instead of asking the DM for preference information, some assumptions are made about what a "reasonable" compromise could be}
+\begin{definition}
+A \emph{value function} is a function $U : \mathbb{R}^k \rightarrow \mathbb{R}$ that assigns t each objective vector $\mathbf{z} = \left( z_1, \ldots, z_k \right)$ a single real value $U(\mathbf{z})$.
+\end{definition}
+
+Value functions allow us to order the vectors of the objective region $\mathbf{Z}$. We are interested in applying the value function to the Pareto optimal subset to find a unique solution to the multiobjective optimization problem.
+
+% Subsection: Range of the Solutions
+
+\subsection{Range of the Solutions}
+
+We are intersted in investigating the range of the solutions included in the Pareto optimal set. To do that, we have to find the lower and upper bounds of this set. In the rest of this section, we assume that the objective functions are bounded over the feasible region $\mathbf{S}$.
+
+An objective vector that minimizes all objective functions is called an ideal objective vector.
+
+\begin{definition}
+A vector $\mathbf{z}^\star \in \mathbb{R}^k$ is called \emph{ideal} if each of its components $z_i$, minimizes the objective funcion $f_i \left( \mathbf{x} \right)$ subject that $\mathbf{x} \in \mathbf{S}$.
+\end{definition}
+
+If there exits an ideal objective vector that belongs to the feasible region, that is $\mathbf{z}^\star \in \mathbf{Z}$, then that vector would be a solution of the optimization problem, and that solution would be unique. Ideal vectors are lower bounds to the Pareto set.
+
+The upper bound of the Pareto optimal set is given by the nadir objective vector. The nadir vector can be estimated using the decision vectors calculated when obtaining the objective ideal vector.
+
+\begin{definition}
+Let $\mathbf{z}^\star \in \mathbb{R}^k$ be an ideal objective vector. The set of decision vectors $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ used to compute $\mathbf{z}^\star$ is called the \emph{payoff table} for $\mathbf{z}^\star$. That is, if $\mathbf{z}^\star = \{ z^\star_1, \ldots, z^\star_k \}$, we have that $z^\star_i = f_i \left( \mathbf{x}^\star_i \right)$.
+\end{definition} 
+
+It turns out that $f_i \left( \mathbf{x}^\star_i \right)$ ($i = 1, \ldots, k$) is minimal for all for all the elements of the payoff table.
+
+Having the payoff table we can provide an estimation for the nadir vector. For simplicity, let's $f^\star_{ij}$ denote the value of the objective function $f_i$ computed over the vector $\mathbf{x}^\star_j$, where $i, j = 1, \ldots, k$.
+
+\begin{definition}
+Let $\mathbf{z}^\star \in \mathbb{R}^k$ be an ideal objective vector, and $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ its payoff table. The \emph{nadir} objective vector $\mathbf{z}^{nad} = \{ z^{nad}_1, \ldots, z^{nad}_k \}$ is given by $z^{nad}_i = \max_j f^\star_{ij}$.
+\end{definition}
+
+The ideal objective vector and the nadir objective vector may, or may not, be feasible. In figure \ref{fig:nadir} are depicted the ideal (vector $\mathbf{E}$) and nadir (vector $\mathbf{F}$) vectors of the multiobjective optimization problem of Example \ref{ex:pareto}.
+
+\begin{figure}[h]
+\centering\includegraphics[scale=0.3]{nadir.jpg}
+\caption{\label{fig:nadir}Ideal and Nadir vectors.}
+\end{figure}
+
+For some applications, the range of values of the objective functions can differ by orders of magnitude. In those situations, it is advisable to normalize them, so the values are in the same scale. We can use the ideal and nadir vector for this normalization process, by replacing each objective function $f_i (\mathbf{x}) (i = 1, \ldots, k)$ by the normalized function
+\[
+\frac{f_i(\mathbf{x}) - z^\star_i}{z^{nad}_i - z^\star_i}
+\]
+
+% Subsection: Trade-offs
 
 \subsection{Trade-offs}
 
-{\color{red} [...] a trade-off is an exchange, that is, a loss in one aspect of the problem, in order to gain additional benefit in another aspect [...] a trade-off represents giving up in one of the objectives, which allows the improvement of another objective [...] how much must we give up of a certain objective in order to improve another one to a certain quantity}
+Since the functions we want to minimize are conflicting, sometimes we have to assume that the only way to gain a benefit in on aspect of the problem is to losse something in another aspect. How much we have to give up in one objective to improve a certain quantity in the other is called a trade-off.
 
-{\color{red} objective trade-off vs. subjective trade-off}
+\begin{definition}
+Let $\mathbf{x}^1, \mathbf{x}^2 \in \mathbf{S}$ be two decision vectors. The \emph{ratio of change} between the functions $f_i$ and $f_j$ for the vectors $\mathbf{x}^1, \mathbf{x}^2$, denoted by $\Delta_{ij}$, is defined as:
+\[
+\Delta_{ij} ( \mathbf{x}^1, \mathbf{x}^2 ) = \frac{f_i(\mathbf{x}^1) - f_i(\mathbf{x}^2)}{f_j(\mathbf{x}^1) - f_j(\mathbf{x}^2)}
+\] 
+for all $i, j = 1, \ldots, k$ such that $f_j(\mathbf{x}^1) - f_j(\mathbf{x}^2) \neq 0$.
+\end{definition}
 
-{\color{red}
+$\Delta_{ij}$ is called a \emph{partial trade-off}, involving $f_i$ and $f_j$ between $\mathbf{x}^1$ and $\mathbf{x}^2$ if $f_l(\mathbf{x}^1) = f_l(\mathbf{x}^2)$ for all $l = 1, \ldots, k$, $l \neq i, j$. If $f_l(\mathbf{x}^1) \neq f_l(\mathbf{x}^2)$ for at least one $l = 1, \ldots, k$, and $l \neq i, j$ then $\Delta_{ij}$ is called a \emph{total trade-off}.
 
-    \begin{definition}
-        Let us consider two feasible solutions $x^1$ and $x^2$, and the corresponding objective vectors $f(x^1)$ and $f(x^2)$. Then, the ratio of change between $f_i$ and $f_j$ is denoted by $T_{ij}$
-    \end{definition}
+If the trade-off between two objective functions is very small or very large, that is, if a small change in one aspect of the optimization problem has a significant impact in another aspect, we have a case that is similar to having a weakly Pareto solution that it is not Pareto optimal. In some practical applications is convenient to filter out those solutions that present this undesirable behaviour.
 
-}
+\begin{definition}
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{properly Pareto optimal} if it is Pareto optimal and if there exists a real number $M > 0$ such that for each $f_i$ and $\mathbf{y} \in \mathbf{S}$ satisfying $f_i ( \mathbf{y} ) < f_i ( \mathbf{x} )$, there exists at least one $f_j$ such that $f_j ( \mathbf{x} ) < f_j ( \mathbf{y} )$ and
+\[
+\frac{f_i ( \mathbf{x} ) - f_i ( \mathbf{y} )}{f_j ( \mathbf{y} ) - f_j ( \mathbf{x} )} \leq M
+\]
+An objective vector $\mathbf{z} \in \mathbf{Z}$ is properly Pareto optimal if the decision vector corresponding to it is properly Pareto optimal.
+\end{definition}
+
+A solution is properly Pareto optimal if there is at least one pair of objectives functions for which a small decrement in one objective is possible only at the expense of a large increment in the other objective.
+
+Note that the properly Pareto optimal set is a subset of the Pareto optimal set, and the Pareto optimal set is a subset of the weakly Pareto optimal set.
+
+% Optimization Methods
 
 \subsection{Optimization Methods}
 
@@ -779,4 +857,6 @@ An objective vector is Pareto optimal if its corresponding decision vector is Pa
  {\color{red} TODO: Add paper of Turing about AI.}
 
 The minimum message length principle was developed by Chris Wallace, published for first time in 1968 in \cite{wallace1968information}. The book \cite{wallace2005statistical}, written by the same author, contains a detailed description of the principle.
+
+A good introduction to the discipline of non-linear multiobjective optimization can be found in \cite{miettinen2012nonlinear}; Section \ref{sec:multiobjective_optimization} is largely based on this book.
 

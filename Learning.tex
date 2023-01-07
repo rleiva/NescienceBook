@@ -733,15 +733,26 @@ where $f_i:\mathbb{R}^n \rightarrow \mathbb{R}$, $i = 1, \ldots, k$, are two or 
 
 In this book we will be dealing with nonlinear multiobjective minimization problems, where at at least one of the objective functions, or the constraint functions, is not linear. Objective functions can be also incommensurable, that is, measured in different units or in different scales.
 
-Since the objective functions are conflicting, it does not exist a single solution that is optimal with respect to every objective function (the objective region is partially ordered). We are interested in those objective vectors for which none of its individual components can be improved without deteriorating at least one of the others.
+Since the objective functions are conflicting, it does not exist a single solution that is optimal with respect to every objective function (the objective region is partially ordered). 
 
 \begin{definition}
-A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{Pareto optimal} if there does not exists another decision vector $\mathbf{y} \in \mathbf{S}$ such that $f_i(\mathbf{y}) \leq f_i(\mathbf{x})$ for all $i = 1, \ldots, k$ and $f_j(\mathbf{y}) < f_j(\mathbf{x})$ for at least one $j$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is Pareto optimal if there does not exits another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $w_i \leq z_i$ for all $i = 1, \ldots, k$ and $w_j < z_j$ for at least one $j$.
+A decision vector $\mathbf{x} \in \mathbf{S}$ \emph{dominates} another decision vector $\mathbf{y} \in \mathbf{S}$ if $f_i(\mathbf{y}) \leq f_i(\mathbf{x})$ for all $i \in \{1, \ldots, k\}$ and $f_j(\mathbf{y}) < f_j(\mathbf{x})$ for at least one $j \in \{1, \ldots, k\}$. An objective vector $\mathbf{z} \in \mathbf{Z}$ \emph{dominates} another objective vector $\mathbf{w} \in \mathbf{Z}$ if $w_i \leq z_i$ for all $i \in \{1, \ldots, k\}$ and $w_j < z_j$ for at least one $j \in \{1, \ldots, k\}$.
 \end{definition}
 
-Pareto optimality can be studied from the point of view of decision variable space or objective space. An objective vector is Pareto optimal if its corresponding decision vector is Pareto optimal.
+Dominance can be studied from the point of view of decision variable space or objective space. An objective vector dominates another objective vector if, and only if, its corresponding decision vector also dominates the other decision vector.
 
-The set of Pareto optimal solutions, which could be infinite, is called the \emph{Pareto optiomal set} or the \emph{Pareto frontier}.
+We are interested in those objective vectors for which none of its individual components can be improved without deteriorating at least one of the others.
+
+\begin{definition}
+\label{def:pareto_optimal}
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{Pareto optimal} if there does not exists another decision vector $\mathbf{y} \in \mathbf{S}$ such that $\mathbf{y}$ dominates $\mathbf{x}$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is Pareto optimal if there does not exits another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $\mathbf{w}$ dominates $\mathbf{z}$.
+\end{definition}
+
+Pareto optimality can be also studied from the point of view of decision variable space or objective space. An objective vector is Pareto optimal if, and only if, its corresponding decision vector is Pareto optimal.
+
+\begin{definition}
+The set of Pareto optimal solutions, denoted by $\mathbf{P}_D$, is called the \emph{Pareto optiomal set}. The set of Pareto optimal solutions in the space of objectives, denoted by $\mathbf{P}_D$, is called the \emph{Pareto frontier}.
+\end{definition}
 
 Sometimes, in practice, it is convenient to use a more restrictive definition of the concept of optimaily, in which we identify those vectors for which there does not exist any other vector that improves over all the components simultaneously.
 
@@ -757,7 +768,7 @@ An objetive vector is weakly Pareto optimal if its corresponding decision vector
 \centering\includegraphics[scale=0.3]{pareto.jpg}
 \caption{\label{fig:pareto}Pareto optimality.}
 \end{figure}
-In figure \ref{fig:pareto} we have depicted a sample of the objective region of a multiobjetive optimization problem composed by two real-valued objective functions $f_1$ and $f_2$ that we are interested in minimizing. White points are not weakly Pareto optimal since there exist points that improve both components at the same time (for example, point $\mathbf{B}$ improves point $\mathbf{C}$ in both functions). Black points are weakly Pareto optimal since there is no point that improves both components at the same time. Point $\mathbf{A}$ is not Pareto optimal since point $\mathbf{B}$ improves one component without deteriorating the other.
+{\color{red} TODO: Provide an example based on a multi-variable function.} In figure \ref{fig:pareto} we have depicted a sample of the objective region of a multiobjetive optimization problem composed by two real-valued objective functions $f_1$ and $f_2$ that we are interested in minimizing. White points are not weakly Pareto optimal since there exist points that improve both components at the same time (for example, point $\mathbf{B}$ improves point $\mathbf{C}$ in both functions). Black points are weakly Pareto optimal since there is no point that improves both components at the same time. Point $\mathbf{A}$ is not Pareto optimal since point $\mathbf{B}$ improves one component without deteriorating the other.
 \end{example}
 
 Mathematically speaking all the solutions that compose the Pareto optimal set are equally good. However, for the majority of the practical applications, it is highly desirable to have a single solution. Finding this solution requires additional information not included in the definition of the optimization problem. The relation of preference between objective function values is expresed using a \emph{decision maker}, that it is supposed to have additional insights about the problem to solve. In this sense, solving a multiobjective optimization problem would require to find those feasible decision vectors that it are Pareto optimal and that satisfy the additional requirements imposed by the decision maker.
@@ -768,6 +779,8 @@ In practice, we assume that the preferences of the decision maker can be express
 A \emph{value function} is a function $U : \mathbb{R}^k \rightarrow \mathbb{R}$ that assigns t each objective vector $\mathbf{z} = \left( z_1, \ldots, z_k \right)$ a single real value $U(\mathbf{z})$.
 \end{definition}
 
+{\color{red} value functions are miximized}
+
 Value functions allow us to order the vectors of the objective region $\mathbf{Z}$. We are interested in applying the value function to the Pareto optimal subset to find a unique solution to the multiobjective optimization problem.
 
 % Subsection: Range of the Solutions
@@ -775,6 +788,8 @@ Value functions allow us to order the vectors of the objective region $\mathbf{Z
 \subsection{Range of the Solutions}
 
 We are intersted in investigating the range of the solutions included in the Pareto optimal set. To do that, we have to find the lower and upper bounds of this set. In the rest of this section, we assume that the objective functions are bounded over the feasible region $\mathbf{S}$.
+
+{\color{red} TODO: rewrite the concepts of nadir and ideal vector using the supremum and infimum.}
 
 An objective vector that minimizes all objective functions is called an ideal objective vector.
 
@@ -852,29 +867,71 @@ Note that the properly Pareto optimal set is a subset of the Pareto optimal set,
 
 {\color{red} [...] classify the methods according to the participation of the decision maker in the solution process. The classes are: 1) methods where no articulation of preference information is used (no-preference methods) 2) methods where a posteriory articulation of preference is used (a posteriory methods) 3) methods whre a priori articulation of preference information is used (a priory methods), and 4) methods whre progressive articulation of preference information is used (interactive methods).}
 
-{\color{red} In no-preference methods, where the opinion of the decision maker are not taken into consideration, the multiobjective optimization problem is solved using some relatively simple method and the solution obtained is presented to the decision maker [...] It seems quite unlikely that the solution best satisfying the decision maker coud be found with these methods. That is why no-preference methods are suitable for situation swhere the decision maker does not have any special expectations fo the solution he is satisfied simply with some optimal solution.}
+In no-preference methods, the knowledge of the decision maker is not taken into account, and the optimization problem is solved using a relatively simple method. In a posteriory methods, the set (or part of it) of Pareto optimal points is identified and then the decision maker select the preferred solution among the alternatives.
 
 \subsubsection{Global Criterion}
 
-The global criterion is a non-prefrence method in which the distance between some reference point and the fasible objective region is minimized. In this method, all the objective functions are considered to be equally important. As reference point it is usually used the ideal vector, and as metric, it is common to use a $L_p$-metrics. Under this assumptions, the goblal criterion methods become the following minimization problem:
-
-\begin{definition}
-An $L_p$-based global criterion ...
+The global criterion is a non-prefrence method in which the distance between some reference point and the fasible objective region is minimized. In this method, all the objective functions are considered to be equally important. As reference point it is usually used the ideal vector, and as metric it is common to use a $L_p$-metric. Under these assumptions, the goblal criterion method becomes the following minimization problem:
 \begin{align*}
-     & \text{minimize}    \quad \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - \mathbf{z}_i^\star \right) \right)^{\frac{1}{p}} \\
+     & \text{minimize}    \quad \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - z_i^\star \right)^p \right)^{\frac{1}{p}} \\
      & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}
 \end{align*}
-\end{definition}
-Different values for $p$ provides different solutions to this minimization problem. Common values for $p$ are $1$, $2$ or $\infty$. 
+Different values for $p$ result in different solutions to the minimization problem. Common values for $p$ are $1$, $2$ or $\infty$. 
 
 \begin{proposition}
 The solution of the $L_p$-based global criterion is Pareto optimal.
 \end{proposition}
 \begin{proof}
+Let $\mathbf{x}$ be a solution of the $L_p$-based global criterion problem, with $1 \leq p < \infty$, and assume that $\mathbf{x}$ is not Pareto optimal. Then, according to Definition \ref{def:pareto_optimal} there must exists a point $\mathbf{y} \in \mathbf{S}$ such that $f_i( \mathbf{y} ) \leq f_i( \mathbf{x} )$ for all $i = 1, \ldots, k$, and $f_j( \mathbf{y} ) < f_j( \mathbf{x} )$ for at least one $j$. Then we have that $( f_i(\mathbf{y}) - z_i^\star )^p \leq ( f_i(\mathbf{x}) - z_i^\star )^p$ for all $i \neq j$ and $( f_j(\mathbf{y}) - z_j^\star )^p < ( f_j(\mathbf{x}) - z^\star )^p$. Adding all these terms and raising to the $1/p$ power, we obtain
+\[
+\left( \sum_{i=1}^k \left( f_i(\mathbf{y}) - z_i^\star \right)^p \right)^{\frac{1}{p}} < \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - z_i^\star \right)^p \right)^{\frac{1}{p}} 
+\]
+which is a contradiction with the fact that $\mathbf{x}$ is a solution to the minimization problem.
+\end{proof}
+
+Although all the solutions selected by the $L_p$-based global criterion are Pareto optimal, as we have proved in previous proposition, there are solutions of the optimal Pareto set are that will never be selected by this method. In practice it is convenient to normalize the range of the objective values, so that those points closer to the ideal vector do not receives more importance. A common normalization term used in practice is $z_i^{nad} - z_i^\star$.
+
+\subsubsection{Weighting Method}
+
+{\color{red} The weighting method is a simple way to generate different Pareto optimal solutions.}
+
+{\color{red} In the weighting method [...] the idea is to associate each objective function with a weighting coefficient and minimize the weighted sum of the objectives. In this way, the multiple objective functions are transformed into a single objective function. We suppose that the weighting coefficients $w_i$ are real numbers such that $w_i \geq 0$ for all $i = 1, \ldots, k$. It is also usually supposed that the weights are normalized, that is $\sum_{i=1}^k w_i = 1$.}
+
+{\color{red} The multiobjective optimization problem is modified into the following problem, to be called a weighting problem:}
+\begin{align*}
+     & \text{minimize}    \quad \sum_{i=1}^k  w_i  f_i(\mathbf{x}) \\
+     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}
+\end{align*}
+{\color{red} where $w_i \geq 0$ for all $i = 1, \ldots, k$ and $\sum_{i=1}^k w_i = 1$.}
+
+{\color{red} [...] weighting coefficient zero makes no sense. It means that we hae included in the problem some objective function that has no significance at all.}
+
+{\color{red} The objective functions should be normalized or scaled so that their objective values are approximately of the same magnitude [...] Only in this way can one control and manoeuvre the method to produce solutions of a desirable nature in proportion to the ranges of the objective functions. Otherwise the role of the weighting coefficients may be greatly misleading.}
+
+\begin{proposition}
+{\color{red} The solution of weighting problem is Pareto optimal i the weighting coefficients are positive, that is $w_i > 0$ for all $i = 1, \ldots, k$.}
+\end{proposition}
+\begin{proof}
 {\color{red} TODO}
 \end{proof}
 
-In practice it is convenient to normalize the range of the objective values, so that those points closer tto the ideal vector do not receives more importance. A common normalization term is $\mathbf{z}_i^{nad} - \mathbf{z}_i^\star$.
+{\color{red} the solution of the weighting method is always Pareto optimal if the weighting coefficients are all positie or if the solution is unique [...] The weakness of the weighting method is that not all of the Pareto optimal solutions can be found.}
+
+{\color{red} the weighting method is used to generate Pareto optimal solutions}
+
+{\color{red} in practical calculations the contion $w_i \geq \varepsilon$, where $\varepsilon > 0$, must be used instead of the condition $w_i > 0$ for all $i = 1, \ldots, k$. This necessitates a correct choice as to the value of $\varepsilon$.}
+
+{\color{red} The weighting method can be used so that the decision maker specifies a weighting vector representing his preference information [...] In this case, the weighting problem can be considered (a negative of) a value function (remember that value functions are maximized.}
+
+{\color{red} If the weighting method is used as an a prioriy method one can ask what the weighting coefficients in fact represent. Ofthen, they are said to reflect the relative importance of the objective functions. However, it is not all clear what underlies this notion [... ] instead of relative importance, the weighting coefficients should represent the rate at which the decision maker is willing to trade off values of the objective functions}
+
+{\color{red} if some of the objective functions correlate with each other, then seemingly "good" weighting vectors may produce poor results and seemingly "bad" weighting vectors may produce useful results}
+
+{\color{red} Weighting coefficients are not easy to interpret and understand for average decision makers.}
+
+{\color{red} Employing the weighting method as an a priori method presumes that the decision maker's unerlying value function is or can be approximated by a linear function [...] it must be noted that altering the weighting vectors linearly does not have to mean that the values of the objective functions also change linearly. It is difficult to control the direction of the solutions by the weighting coefficients}
+
+{\color{red} Shall I explain the $\varepsilon$-Constraint method?}
 
 %
 % Section: References

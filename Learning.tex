@@ -321,25 +321,33 @@ The algorithms for the construction of decision trees usually work by recursivel
 \subsection{Time Series Analysis}
 \label{sec:intro_time_series}
 
-A time series is a sequence of measurements taken at successively equally spaced points in time, so there exists a natural ordering of the observations. Examples of time series include the daily closing prices of the Standard and Poor's 500 index, the monthly number of passengers of an airline, or the yearly gross domestic product of a particular country. Time series forecasting refers to the process of building a model to predict future values of the series based on the previously observed values. The observed values could be continuous, discrete or even categorical.
-
-{\color{red} Time series are analysed to understand the past and to predict the future [...] A time series analysis quantifies the main features in data and the random variation [...] When a variable is measured sequentially in time over or at a fixed interval, known as the sampling interval, the resulting data form a time series [...] we take a statistical approach in which the historical series are treated as realizations of sequences of random variables [...] referred to as a discrete-time stochastic process [...] The main features of many time series are trends and seasonal variations that can be modelled deterministically with mathematical functions of time. Another important feature of most time series is that observations close toghether in time tend to be correlated (serially dependent) [...] Once a good model is found and fitted to data, the analyst can use the model to forecast future values [...] Fitted models are also used as a basis for statistical tests. [...] Finally, a fitted statistical model provides a concise summary of the main characteristics of a time series. [...] The data may have been aggregated [...] or sampled [...] If data are sampled, the sampling interval must be short enough for the time series to provide a very close approximation to the original continuous signal when it is interpolated [...] a systematic change in a time series that does not appear to be periodic is known as a trend. [...] A repeating pattern [...] within any fixed period [...] is known as seasonal variation [...] cycles [...] do not correspond to some fixed natural period. [...] Forecasting relies on extrapolation, and forecast are generally based on assumption that present trends continue. We cannot check this assumption in any empirical way. [...] ouliers and erroneous vales [...] need to be handled differently in the analysis and must not be included as observation when fitting a model to data. [...] it may be appropiate to consider robust methods of fitting models, which reduce the influence of outliers. [...] it is usually appropiate to remove trends and seasonal effects before comparing multiple series. [...] trend [...] change direction in unpredictable times [...] stochastic trend [...] two unrelated time series will be correlated if they both contain a trend.}
+A time series is a sequence of measurements taken at successively equally spaced points in time, so there exists a natural ordering of the observations. Examples of time series include the daily closing prices of the Standard and Poor's 500 index, the monthly number of passengers of an airline, or the yearly gross domestic product of a country.
 
 \begin{definition}
-    A \emph{time series} of length $n \in \mathbb{N}$, denoted by $\{ x_t : t=1, \ldots, n \}$ or $\{ x_t \}$, is a sequence $\{ x_1, x_2, \ldots, x_n \}$.
+A \emph{time series} of length $n \in \mathbb{N}$, denoted by $\{ x_t : t=1, \ldots, n \}$ or $\{ x_t \}$, is a sequence $\{ x_1, x_2, \ldots, x_n \}$ of \emph{observed values}.
 \end{definition}
 
-The elements $x_i$ of the series correspond to values sampled at disrete times $1, 2, \ldots, n$, and they can be continuous or categorical. In statistics, a time series is usually modeled as a sequence of $n$ random variables, and a particular time series is a realization of the model. In this sense, $\{ x_t \}$ could represent a collection of random variables or the numerical observations of these random variables.
+The elements $x_i$ of the series correspond to values sampled at fixed time intervals $1, 2, \ldots, n$. The sampling interval must be short enough to provide a very close approximation to the original continuous signal. Observed values could be continuous, discrete or even categorical.
 
-{\color{red} We represent a time series of length $n$ by $\{ x_t : t=1,\ldots,n \} = \{x_1, x_2, \ldots, x_n \}$. It consists of $n$ values sampled at discrete times $1, 2, \ldots, n$. The notation will be abbreviated to $\{x_t\}$ when the length $n$ of the time series do not need to be specified. The tiem series model is a sequence of random variables, and the observed time series is considered a realizatin of the model.
-}
+In statistics, a time series is usually represented as a sequence of $n$ random variables, and a particular time series is a realization of this representation. In this sense, $\{ x_t \}$ would denote a collection of random variables. In this book, we do not follow this approach for time series formalization.
 
-{\color{red} The 'hat' notation will be used to represent a prediction or forecast. For example, with the series $\{ x_t : t=1,\ldots,n \}$, $\hat{x}_{t+k \mid t}$ is a forecast made at time $t$ for a future value at time $t+k$. A forecast is a predicted future value, and the number of time steps into the future is the lead time $k$ [...]
-}
+Time series forecasting refers to the process of building a model to predict future values of the series based on the previously observed values. Time series forecasting is based on identifying the mean features in data and the random variation, and it is generally based on the assumption that present characteristics will continue in the near future, something that cannot be validated in practice.
+
+\begin{notation}
+Given the time time series $\{ x_t : t=1, \ldots, n \}$ we denote $\hat{x}_{t+k \mid t}$ the forecast made at time $t$ for a future value at time $t+k$, where $k$ is the number of steps in the future.
+\end{notation}
 
 \subsubsection{Trends and Seasons}
 
 Many time series ... and a repeating seasonal component.
+
+{\color{red} a systematic change in a time series that does not appear to be periodic is known as a trend. [...] A repeating pattern [...] within any fixed period [...] is known as seasonal variation [...] cycles [...] do not correspond to some fixed natural period. [...]}
+
+{\color{red} trend [...] change direction in unpredictable times [...] stochastic trend [...]}
+
+{\color{red} The main features of many time series are trends and seasonal variations that can be modelled deterministically with mathematical functions of time.}
+
+{\color{red} it is usually appropiate to remove trends and seasonal effects before comparing multiple series.}
 
 \begin{definition}
     Let $\{ x_t \}$ be a time series, a \emph{simple additive model} is defined as
@@ -422,6 +430,10 @@ Let's $x$ and $y$ two time series. The cross covariance function of $x$ and $y$ 
 % 
 \subsubsection{Autocorrelation, Cross-correlation and Partial Autocorrelation}
 \label{sub:autocorrelation}
+
+{\color{red} Another important feature of most time series is that observations close toghether in time tend to be correlated (serially dependent)}
+
+{\color{red} two unrelated time series will be correlated if they both contain a trend}
 
 Autocorrelation measures the (Pearson) correlation of a time series with a delayed version of itself, and as a function of that delay. Autocorrelation is intended to estimate the degree of similarity of an observation with respect to previous observations.
 
@@ -515,6 +527,19 @@ where
 measurement equation and transition equation
 
 \end{definition}
+
+% Multivariate Time Series
+\subsubsection{Mulivariate Time Series}
+
+{\color{red} TODO: Introduce this section.}
+
+A time series could be multivariate, where a dependant variable $\{ x_{m+1} \}$ is sampled toghether with a collection of $m$ independent variables $\{ \mathbf{x}_i \}$.
+
+\begin{definition}
+A \emph{multivariate time series} of length $n \in \mathbb{N}$ composed by $m+1 \in \mathbb{N}$ variables, denoted by $\{ \mathbf{x}^i_t : i=1, \ldots, m+1 \; \text{and} \; t=1, \ldots, n\}$ or $\{ \mathbf{x}_t \}$, is a sequence $\{ \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n \}$ of \emph{observed vector values}. The time series $\{ \mathbf{x}^{m+1} \}$ is called the \emph{independent variable}, and the time series $\{ \mathbf{x}^i : i=1, \ldots m\}$ the \emph{dependant variables}.
+\end{definition}
+
+{\color{red} TODO: cross-correlation and partial cross-correlation.}
 
 %
 % Minimum Message Length

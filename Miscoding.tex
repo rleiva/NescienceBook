@@ -29,31 +29,7 @@ In this chapter we will formally introduce the concept of miscoding and study it
 \section{Miscoding}
 \label{sec:miscoding}
 
-Miscoding refers to the fact that our current representation of an entity $e \in \mathcal{E}$ might not be a valid one, that is, instead of working with a string $r \in \mathcal{B}^\ast$ that perfectly encodes $e$, it might happen we are studying another string $r' \in \mathcal{B}^\ast$ that it is, hopefully, close to $r$ but not necessarily equal. We are interested in to compute the distance between the string $r'$ and the perfect one $r$ as a quantitative measure of the error we are introducing due to the use of a wrong encoding. Unfortunately, we do not know $r$, since for the majority of the practical applications, it does not exists a computable function from $\mathcal{E}$ to $\mathcal{B}^\ast$. Recall that the only thing we have to our disposal is an abstract oracle machine $\mathcal{O}_\mathcal{E}$ that knows which strings represents each entity (see Section \ref{sec:representations}).
-
-We start by distinguishing between valid representations, that is strings that contain all the relevant information required by the oracle to reconstruct an entity, and non-valid representations.
-
-\begin{definition}
-Let $\mathcal{E}$ be a collection of entities, and $\mathcal{O}_\mathcal{E}$ and encoding function. We define the set of \emph{valid} representations for $\mathcal{E}$, denoted by $\mathcal{R}^\star_\mathcal{E}$, as the subset of representations that perfectly encode an entity of $\mathcal{E}$, according to $\mathcal{O}_\mathcal{E}$.
-\end{definition}
-
-What it is a valid representation is something that depends on the particular oracle $\mathcal{O}_\mathcal{E}$ selected, and in general, it is unknown. Intuitively, a representation is valid if it contains all the details required so that the oracle can reconstruct the original entity without requiring the use of external information. In some knowledge areas, finding what it is exactly a valid representation, that is, finding how the oracle works internally, will be part of the scientific research activity.
-
-A valid representation cannot include wrong information, or non-relevant information, even if the oracle is still able to reconstruct the original entity. As we have said, the oracle cannot query an external service to retrieve the information that is missing from the representation. In those cases, what the oracle does is to find the closest representation to the string provided that is valid, and assume that both strings describe the same entity.
-
-We can define the set of valid representations of a single entity $e$, in the same way.
-
-\begin{definition}
-We define the set of valid representations for an entity $e \in \mathcal{E}$, denoted by $\mathcal{R}^\star_e$, as the subset of representations that perfectly encode the entity $e$, that is, $\mathcal{R}^\star_e = \mathcal{R}^\star_\mathcal{E} \cap \mathcal{R}_e$.
-\end{definition}
-
-It might happen that for some entities there is more than one valid representation. Those representations correspond to the different styles or ways to represent the entity (see Section \ref{sec:scientific_representation}). Moreover, different oracles will produce different sets of valid represenatations. It might also happen that the set of valid representation is empty, that is, there is no valid representation for the entity. This might happen even in case that the entity is knowable. In the theory of nescience, knowable means that we can derive some knowlege about an entity, but perfect knowledge is not guaranteed.
-
-\begin{notation}
-We denoted by $r^\star_e$ the fact that $r$ is a valid representation of the entity $e$.
-\end{notation}
-
-We can safely assume (it is free from logical contradictions) that the oracle machine not only knows which representations encode which entities, but also how far is a representation $r$ from a valid representation $r^\star_e$, for all $r \in \mathcal{B}^\ast$ and all $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$. Unfortunately, if we ask the oracle how far is a particular string $r$ from perfectly encoding the entity in which we are interested, the oracle will require from us to specify the entity in which we are interested. And the only way we have to our disposal to tell the oracle which one is that entity is by means of using $r^\star_e$, which, of course, we do not know. The work around we propose to solve this problem is to ask to the oracle how far is $r$ from encoding \emph{any} of the entities of $\mathcal{E}$. Something that can be answerd by the oracle, at least in theory.
+It would be ideal to query the oracle how far a particular string $r$ is from perfectly encoding the entity $e$ of interest. Regrettably, this is not feasible as informing the oracle about the target entity requires the use of a valid representation $r^\star_e$, which are unknown. To circumvent this issue, we suggest asking the oracle about the shortest distance between $r$ and all the entities of $\mathcal{E}$.  As discussed in Section \ref{sec:invalid_representations}, this is a query that the oracle can (theoretically) answer.
 
 \begin{definition} [Miscoding]
 \label{def:miscoding}
@@ -63,9 +39,9 @@ Let $r \in \mathcal{B}^\ast$ be a representation. We define the \emph{miscoding}
 \]
 \end{definition}
 
-Where the quantity $\overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min}$ has to be computed by the oracle. Intuitively, the more ignorant we are about an entity, the bigger will be the miscoding of our current representation, since a better understanding of that entity means that we should be able to provide an encoding closer to a perfect one. Recall that in our theory, all possible strings, even the most simplest ones, represent an entity.
+In the above definition, the minimum $\overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min}$ has to be computed by the oracle. Intuitively, the more ignorant we are about an entity, the greater will be the miscoding of our current representation. A deeper understanding of the entity should allow for an encoding closer to a perfect one.
 
-Miscoding is computed using a two-way approach: we require the oracle to compute the length of the shortest computer program that can print the string $r^\star_e$ that encodes the closest entity given our representation $r$, and the other way around, that is, to compute the length of the shortest computer program that can print $r$ given the string $r^\star_e$. As expected, a good representation will include all the information required to reconstruct an entity, even if it is redundant, and it will not include wrong, or irrelevant, information. Miscoding is about including only relevant symbols (accurate), meanwhile surfeit (see Chapter \ref{chap:Redundancy}) is about including only those symbols that are needed (concise).
+Miscoding is computed using a two-way approach: we require the oracle to compute the length of the shortest computer program that can print the string $r^\star_e$ given our representation $r$, and the other way around, that is, to compute the length of the shortest computer program that can print $r$ given the string $r^\star_e$. As expected, a good representation will include all the information required to reconstruct an entity, and it will not include wrong, nor irrelevant, information. Miscoding is about including only relevant symbols, meanwhile surfeit (see Chapter \ref{chap:Redundancy}) is about including only those symbols that are needed.
 
 In our definition of miscoding we have used a relative measure, instead of the absolute one, because besides to compare the miscoding of different encodings for the same entity, we are also interested in comparing the miscoding of different entities.
 
@@ -79,7 +55,7 @@ We have that $0 \leq \mu(r) \leq 1$ for all $r \in \mathcal{B}^\ast$.
 Given that $0 \leq \frac{ \max\{ K(x \mid y), K(y \mid x) \} } { \max\{ K(x), K(y) \} } \leq 1$ for all $x, y \in \mathcal{B}^\ast$ according to Proposition \ref{prop:ncd_between_zero_and_one}.
 \end{proof}
 
-Miscoding is equal to zero if, and only if, the representation $r$ is one of the possible valid representation of an entity $e$.
+Miscoding is equal to zero if, and only if, the representation $r$ is one of the possible valid representations of an entity $e$.
 
 \begin{proposition}\label{prop:perfect_encoding}
 Let $r \in \mathcal{B}^\ast$ be a representation. We have that $\mu(r) = 0$ if, and only if, $r \in \mathcal{R}^\star_\mathcal{E}$.
@@ -88,9 +64,9 @@ Let $r \in \mathcal{B}^\ast$ be a representation. We have that $\mu(r) = 0$ if, 
 If $r \in \mathcal{R}^\star_\mathcal{E}$ then there exists an entity $e \in \mathcal{E}$ such that $r = r^\star_e$, and so, we have that $K \left( r \mid r^\star_e \right) = 0$ and $\mu(r) = 0$. If $\mu(r) = 0$ then there must exist an $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$ such that $K \left( r \mid r^\star_e \right) = 0$, which implies that $r = r^\star_e$ and $r \in \mathcal{R}^\star_\mathcal{E}$.
 \end{proof}
 
-According to Proposition \ref{prop:perfect_encoding}, if the miscoding of $r$ is equal to 0 we can conclude that $r$ perfectly encodes an entity $e$. The problem is that there is no way to know which one is the entity encoded by $r$. Of course, given our scientific intuition, we could guess the entity encoded, but from a mathematical point of view, we can not prove we are right. Moreover, with time and more research, it might happen that we change our mind about the nature of the encoded entity $e$ (see Example \ref{ex:polywater}).
+According to Proposition \ref{prop:perfect_encoding}, if the miscoding of $r$ is equal to 0 we can conclude that $r$ perfectly encodes an entity $e$. The problem is that there is no way to know which one is the entity encoded by $r$. Of course, given our scientific intuition, we could guess the entity encoded, but from a mathematical point of view, we can not prove we are right. Moreover, with time and more research, it might happen that we change our mind about the nature of the encoded entity (see Example \ref{ex:polywater}).
 
-An entity $e \in \mathcal{E}$ can have multiple valid representations, given by the set $\mathcal{R}^\star_e$. Fortunately, miscoding is a quantity that does not depend on the representation selected (see the problem of style in Section \ref{sec:scientific_representation}).
+As we have seen, an entity $e \in \mathcal{E}$ can have multiple valid representations, given by the set $\mathcal{R}^\star_e$. Fortunately, miscoding is a quantity that does not depend on the representation selected (see the problem of style in Section \ref{sec:scientific_representation}).
 
 \begin{proposition}
 Let $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$ be a valid representation, then we have that $\mu\left( r^\star_e \right) \leq \mu\left( r \right)$ for all $r \in \mathcal{B}^\star$.
@@ -99,11 +75,7 @@ Let $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$ be a valid representation, the
 Given that $\mu\left( r^\star_e \right) = 0$ and $\mu\left( r \right) \leq 0$ for all $r \in \mathcal{B}^\star$.
 \end{proof}
 
-Given an entity $e$, we have seen that all the valid representations that belong to $\mathcal{R}^\star_e$ are equally good form the point of view of miscoding, since all of them have a miscoding of $0$. The question that aries is which one we should use in our research. From a practical point of view, we should select that representation that makes it easier to gather new knowledge about the original entity, that is, to derive models with low inaccuracy and surfeit.
-
-\begin{example}
-Let $\mathbf{X}_t$ be a time series composed $m$ measurements $x_1, \ldots, x_m$ collected at fixed time intervals from a physical phenomena with a sinusoidal behavior, and assume we have trained a neural network $nn$ that perfectly fits the data, that is, given a time $t$ as input it returns $x_t$. Both representations have the same miscoding, that is $\mu(\mathbf{X}_t) = \mu(nn)$. An analysis of the cycles of the time series will allow us to discover that the best model for this particular physical phenomena seem to be a sine function, however, no currently known machine learning approach will arrive at the same conclusion having as input the architecture of the neural network (number of layers, sizes, and trained weights). Of course, the oracle is so smart that, in fact, it can do it.
-\end{example}
+Given an entity $e$, all the valid representations that belong to $\mathcal{R}^\star_e$ are equally good form the point of view of miscoding, since all of them have a miscoding of $0$. In practice, we should select the representation that makes it easier to gather new knowledge about the original entity, that is, to derive models that explain the entity.
 
 %
 % Section: Miscoding of Joint Representations
@@ -121,24 +93,17 @@ Given that the joint representation $st$ is also a representation, its miscoding
 
 The miscoding of a joint representation is a number between 0 and 1, $0 \leq \mu(st) \leq 1$, as a direct consequence of Proposition \ref{prop:range_miscoding}.
 
-Adding more symbols to an incomplete representation, i.e. a representation with positive miscoging, is not a guaratee that the misconding will decrease, since the added symbols migth be wrong. In the same way, it is not always the case that the miscoding will increase, because adding relevant symbols will decrease miscoding of an incomplete representation. In symbols, given two arbitrary representations $s, t \in \mathcal{B}^\ast$ none of the following relations will hold: $\mu(ts) \geq \mu(t)$, $\mu(ts) \leq \mu(t)$, $\mu(ts) \geq \mu(s)$ nor $\mu(ts) \leq \mu(s)$.
+Adding more symbols to an incomplete representation, i.e. a representation with positive miscoging, is not a guaratee that the misconding will decrease, since the added symbols migth be wrong. In the same way, it is not always the case that the miscoding will increase, because adding relevant symbols will decrease miscoding of an incomplete representation. Formally, given two arbitrary representations $s, t \in \mathcal{B}^\ast$ there is no guarantee that one of the following relations will hold: $\mu(ts) \geq \mu(t)$, $\mu(ts) \leq \mu(t)$, $\mu(ts) \geq \mu(s)$ nor $\mu(ts) \leq \mu(s)$.
 
-It is not either the case that the miscoding of a joint representation is smaller than the sum of the miscoding of the individual representations, that is, $\mu( st ) \leq \mu(s) + \mu(t)$. Not even in the case that both representations $t$ and $s$ encode the same entity, since it might happen that the joint presentation $ts$ encodes a totally different entity.
+It is not either the case that the miscoding of a joint representation is smaller than the sum of the miscoding of the individual representations, that is, $\mu( st ) \leq \mu(s) + \mu(t)$. Not even in the case that both representations $t$ and $s$ encode the same entity, since it might happen that the joint presentation $ts$ encodes a totally different entity than $t$ and $s$.
 
-Finally, since the operation of joining two representations is not conmutative, it is not guaranteed that $\mu(ts) = \mu(st)$. Again, it might happen that the strings $ts$ and $st$ encode different entities.
+Finally, since the operation of joining two representations is not conmutative, it is not guaranteed that $\mu(ts) = \mu(st)$. Again, it might happen that the strings $ts$ and $st$ encode two different entities.
 
 We can extend the concept of miscoding of joint representations to any finite collection of representations. If $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$ is a finite collection of representations, the miscoding of the joint representation $r_1 r_2, \ldots r_n$, will be given as:
 \[
 \mu(r_1 r_2 \ldots r_n) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r_1 r_2 \ldots r_n \mid r^\star_e \right), K \left( r^\star_e \mid r_1 r_2 \ldots r_n \right) \} } { \max\{ K \left( r_1 r_2 \ldots r_n \right), K \left( r^\star_e \right) \} }
 \]
-As it was the case of joining two representatoins, we have that $0 \leq \mu(r_1, r_2, \ldots, r_n) \leq 1$. But we cannot guarantee that  $\mu(r_1, r_2, \ldots, r_n) \leq \mu(r_1) + \ldots + \mu(r_n)$, nor nothing about the miscoding of a permutation of the representations included in the joint representation.
-
-We have seen that the contatenation of two or more representations of . This can even happen when the two representations to join encode the same entity.
-multiple representations of the same entity can help us to find a better representation. We can take advantage of this property to discover new, previously unknown entities, by means of combining the representations of the already known entities. Intuitively, we are looking for new entities by creating new representations that are different from the representations we already know.
-
-{\color{red} TODO: Formalize this idea with a proposition.}
-
-{\color{red} TODO: Provide an example of how it can be applied in practice.}
+As it was the case of joining two representatoins, we have that $0 \leq \mu(r_1, r_2, \ldots, r_n) \leq 1$. There is no guarantee that $\mu(r_1, r_2, \ldots, r_n) \leq \mu(r_i)$ nor $\mu(r_1, r_2, \ldots, r_n) \geq \mu(r_i)$ for $i = 1, \ldots, n$. Also, it is not always the case that $\mu(r_1, r_2, \ldots, r_n) \leq \mu(r_1) + \ldots + \mu(r_n)$. Finally, we cannot say anything about the miscoding of a permutation of the representations included in the joint representation with respect to the original miscoding.
 
 %
 % Section: Reducing Miscoding
@@ -146,7 +111,7 @@ multiple representations of the same entity can help us to find a better represe
 
 \section{Reducing Miscoding}
 
-We have seen that a valid representation of an entity is a string that contains all the information needed by the oracle to reconstruct the selected entity, and only that information. If the representation is non-valid, that is, its miscoding is greater than zero, it could be due to the fact that some critical information is missing, or that it contains information that is non-relevant or even wrong. Accordingly, if the miscoding of a representation is non-zero, we could reduce the miscondig by adding the missing information, or by removing the wrong information from the representation. However, a priory there is no way to know if some information is missing, or some symbols are wrong. But, as next Theorem shows, it must be necessarily one of these two cases. 
+A valid representation of an entity is a string that contains all the necessary information required by the oracle to reconstruct that entity and only that information. If the representation is non-valid, meaning its miscoding exceeds zero, it may be because some crucial information is missing, some symbols are incorrect, or it contains irrelevant symbols. To reduce the miscoding of a representation, we can add the missing information, or remove the incorrect or irrelevant symbols. We cannot know in advance if any information is missing or some symbols need to be removed. Fortunately, as the next theorem illustrates, it must be one of these two cases.
 
 \begin{theorem}
 \label{th:reduce_miscoding}
@@ -165,7 +130,9 @@ Assume that $\mu(r) >0$. We have that
 Let $r^\star_e = arg\,min \left( \mu(r) \right)$. We have that $\max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} > 0$. If $K \left( r \mid r^\star_e \right) > 0$ we have that $r$ contains non-relevant symbols. If $K \left( r^\star_e \mid r \right) > 0$ we have that $r$ is missing some relevant symbols.
 \end{proof}
 
+\begin{example}
 {\color{red} TODO: Provide a practical example.}
+\end{example}
 
 %
 % Section: Miscoding of Areas
@@ -173,14 +140,14 @@ Let $r^\star_e = arg\,min \left( \mu(r) \right)$. We have that $\max\{ K \left( 
 \section{Miscoding of Areas}
 \label{sec:miscoding_areas}
 
-{\color{red} TODO: Review and extend this section.}
+{\color{red} TODO: review and rewrite this section.}
 
 The concept of miscoding can be extended to research areas in order to quantitative measure the amount of effort required to fix an inaccurate representation of the area.
 
 \begin{definition}
-Let $A \subset \mathcal{T}$ be an area with known subset $\hat{A} = \{t_1, t_2, \ldots, t_n\}$. We define the \emph{miscoding of the area} given the known subset $d_{\hat{A}}$ as:
+Let $A \subset \mathcal{E}$ be an area with known subset $\hat{A} = \{e_1, e_2, \ldots, e_n\}$. We define the \emph{miscoding of the area} given the known subset $\hat{A}$ as:
 \[
-\mu(\hat{A}) = \min_{(t_{e_1}, t_{e_2}, \ldots, t_{e_n}) \in \mathcal{T}_\mathcal{E}^n}  \frac{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \mid \langle t_1, t_2, \ldots, t_n \rangle \right) }{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \right)}
+\mu(\hat{A}) = \min_{(r^\star_{e_1}, r^\star_{e_2}, \ldots, r^\star_{e_n}) \in \mathcal{R}^\star_\mathcal{E}}  \frac{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \mid \langle t_1, t_2, \ldots, t_n \rangle \right) }{K \left( \langle t_{e_1}, t_{e_2}, \ldots, t_{e_n} \rangle \right)}
 \]
 \end{definition}
 

@@ -98,6 +98,14 @@ We could have used an universal oracle machine instead of individual oracles. An
 When the topics under study are animals we could start using as encodings a detailed description of the body of those animals. In this case, the oracle would be an hypothetical machine that given its description is able to reproduce the original animal. As we get a better understanding of the biology of life we can consider to use an alternative encoding based on the DNAs of the animals. Both encodings are valid representations of the entities.
 \end{example}
 
+As it was shown in Example \ref{ex:not_unique_oracle} and Example \ref{ex:description_dna}, the entities of $\mathcal{E}$ might be encoded in multiple ways (problem of style). Different oracles will admit different encoding schemas. Some of those strings are better representations of an entity than others (standard of accuracy). Which representation is the best depends on the kind of questions we are interested to answer. Using a particular style of encoding entities with an oracle that expects another style could have unexpected consequences.  Our aim should be to use those representations that make the size of the oracle (the amount of inner knowledge we assume the oracle contains) as small as possible.
+
+\begin{example}
+Let $\mathbf{X}_t$ be a time series composed $m$ measurements $x_1, \ldots, x_m$ collected at fixed time intervals from a physical phenomena with a sinusoidal behavior, and assume we have trained a neural network $nn$ that perfectly fits the data, that is, given a time $t$ as input it returns $x_t$. An analysis of the cycles of the time series will allow us to discover that the best model for this particular physical phenomena seem to be a sine function, however, no currently known machine learning approach will arrive at the same conclusion having as input the architecture of the neural network (number of layers, sizes, and trained weights). Of course, the oracle is so smart that, in fact, it can do it.
+\end{example}
+
+Recall that the oracle is a total funcion, that is, all possible strings must represent an entity, including the incomplete ones. The more information is missing from a representation, the harder would be for us to understand how the oracle works. We must be careful with those representations that do not capture all the details about the original entities, since the results of our analyses could present some bias. In Chapter \ref{chap:Miscoding} we will study in detail the problem of errors due to the miscoding of abstract entities, and we will see that not only representations are about entities, but also we require that entities must be about representations (requirement of directionality).
+
 We use an oracle function instead of an oracle relation $\mathcal{R}_\mathcal{O} \subset \mathcal{B}^\ast \times \mathcal{E}$, because our aim is not about matching strings with their correspoding entities, but building an entity given its representation. The capacity of the oracle of reconstruct the original entities is what justifies the fact that we can formulate hypotheses about entities given their representations (surrogative reasoning). According to the theory of nescience, scientific research would be not only about figuring out how to properly encode entities, but also about discovering the inner workings of the decoding oracles. 
 
 The goal of encoding entities in the theory of nescience is different from that of Shannon's information theory, as Example \ref{ex:shannon_encoding} shows.
@@ -108,14 +116,6 @@ Consider a set $\mathcal{E}$ composed by two books, "The Ingenious Nobleman Sir 
 \end{example}
 
 An alternative way to deal with the problem described in Example \ref{ex:shannon_encoding}, where we used artificially short descriptions, would be to require the set $\mathcal{E}$ to be infinite, as Kolmogorov complexity does (we can not cheat an infinite number of times). However, even requiring the set of entities to be infinite, not every possible encoding schema can guarantee that the highly desirable property of surrogative reasoning is satisfied.
-
-As it was shown in Example \ref{ex:not_unique_oracle} and Example \ref{ex:description_dna}, the entities of $\mathcal{E}$ might be encoded in multiple ways (problem of style). Different oracles will admit different encoding schemas. Some of those strings are better representations of an entity than others (standard of accuracy). Which representation is the best depends on the kind of questions we are interested to answer. In ant case, our aim should be to use those representations that make the size of the oracle (the amount of inner knowledge we assume the oracle contains) as small as possible.
-
-Recall that the oracle is a total funcion, that is, all possible strings must represent an entity, including the incomplete ones. The more information is missing from a representation, the harder would be for us to understand how the oracle works. We must be careful with those representations that do not capture all the details about the original entities, since the results of our analyses could present some bias. In Chapter \ref{chap:Miscoding} we will study in detail the problem of errors due to the miscoding of abstract entities, and we will see that not only representations are about entities, but also we require that entities should be about representations (requirement of directionality).
-
-\begin{example}
-The data used in time of Ptolomeo about the position of celestial bodies along the year was a misencoding of the entity "position of celestial bodies". A better encoding was the data provided by Tycho Brahe. Today, we have even better encodings.
-\end{example}
 
 We distinguish between \emph{knowable} and \emph{unknowable} entities.
 
@@ -142,23 +142,86 @@ A consequence of working with finite strings as representations is that it might
 If the collection of entities under study are real numbers, it turns out that there exist numbers that can not be encoded using finite binary strings, since the set $\mathbb{R}$ has the cardinality of the continuum, and the set $\mathcal{B}^\ast$ is numerable.
 \end{example}
 
-Since our knowledge about the entities and the inner workings of the oracle are incomplete, in practice we will working with another set $\hat{\mathcal{R}}_e \subseteq \mathcal{B}^\ast$ of strings that we believe are close to the representations $\mathcal{R}_e$ that encode the entity $e$. The elements that belong to $\hat{\mathcal{R}}_e$ usually change over time, as we better understand the entities of $\mathcal{E}$, and how the oracle encode these entities as strings. The more abstract is our set of entities $\mathcal{E}$, the more difficult will be to approximate them as strings in $\hat{\mathcal{R}}_e$.
+Since our knowledge about the entities and the inner workings of the oracle are incomplete, in practice we will working with another set of strings that we believe are close to the representations $\mathcal{R}_e$ that encode the entity $e$. The elements that belong to this set usually change over time, as we better understand the entities of $\mathcal{E}$, and how the oracle encode these entities as strings. The more abstract is our set of entities, the more difficult will be to approximate them as strings (see Chapter \ref{chap:Miscoding}).
 
 \begin{example}
 \label{ex:luminiferous_ether}
 The entity "luminiferous ether" was a theoretical postulate about a hypothetical medium in which the light would propagate. The ether was used as an explanation of how a wave-based light could propagate through the empty space. In 1887, the results of the Michelson-Morley experiment suggested that the ether did not exist, and after Einstein formulated his special theory of relativity, that successfully explained how light propagates through empty space, the idea of ether was completely dropped.
 \end{example}
 
-A consequence of working with approximations (the set $\hat{\mathcal{R}}_e$) instead of the true representations (the set $\mathcal{R}_e$) is that some of the candidate strings currently in use might encode a different entity from what we were expecting.
+If the selected oracle is not minimal, finding what it is exactly a valid representation will require to understand how the oracle works internally. By non-minimal oracle we mean that part of the information required to reconstruct the original entity is hard-wired in the oracle itself, instead of encoded as symbols in the representations. Working with non-minimal oracles could make the research process easier.
+
+\begin{remark}
+One of the problems of science, and in general of any human intellectual activity, is that people tend to confuse symbols with what they represent. The theory of nescience has been carefully designed to avoid this problem, by means of clearly stating the difference between research entities and the representation of entities. However, keeping this distinction always explicit in the explanations would make the book very difficult to read. We have tried to find a compromise between clarity in the exposition and rigor in the definitions. Sometimes, during the introduction of new ideas we talk in general about a \emph{topics}, meaning an entity, a representation, or both, an entity and its representation. But, in the mathematical definitions and propositions we always make this difference unequivocal. In case of doubt about what we mean, please take the mathematical definitions as the authoritative reference. 
+\end{remark}
+
+%
+% Section: Invalid Representations
+%
+\section{Invalid Representations}
+\label{sec:invalid_representations}
+
+It might happen that the representation we are using for an entity $e \in \mathcal{E}$ is an incorrect one, that is, instead of working with a string $r \in \mathcal{B}^\ast$ that perfectly encodes $e$, we are studying another string $r' \in \mathcal{B}^\ast$ that it is, hopefully, close to $r$ but not necessarily equal. We are interested in to compute the distance between the string $r'$ and the perfect one $r$ as a quantitative measure of the error we are introducing due to the use of a wrong encoding. Unfortunately, we do not know $r$, since for the majority of the practical applications, it does not exists a computable function from $\mathcal{E}$ to $\mathcal{B}^\ast$. The only thing we have to our disposal is an abstract oracle machine $\mathcal{O}_\mathcal{E}$ that knows which strings represents each entity. Recall from Section \ref{sec:representations} that we propose to address the scientific representation problem by introducing an abstract oracle $\mathcal{O}_\mathcal{E}:\mathcal{B}^\ast \rightarrow \mathcal{E}$ from the set $\mathcal{B}^\ast$ of all possible finite binary strings to the set $\mathcal{E}$ of entities under study.
+
+We start by distinguishing between valid representations, that is strings that contain all the relevant information required by the selected oracle to reconstruct an entity, and non-valid representations.
+
+\begin{definition}
+Let $\mathcal{E}$ be a collection of entities, and $\mathcal{O}_\mathcal{E}$ an encoding function. We define the set of \emph{valid} representations for $\mathcal{E}$ given the encoding function $\mathcal{O}_\mathcal{E}$, denoted by $\mathcal{R}^\star_{\mathcal{O}_\mathcal{E}}$, as the subset of representations that perfectly encode an entity of $\mathcal{E}$, according to $\mathcal{O}_\mathcal{E}$.
+\end{definition}
+
+The set $\mathcal{R}^\star_{\mathcal{O}_\mathcal{E}}$ is, in general, unknown, since it is a subset of $\mathcal{B}^\ast$ whose definition depends on an abstract, not well defined, oracle. Intuitively, a representation is valid if it contains all the details required so that the oracle can reconstruct the original entity without requiring the use of external information. A valid representation cannot contain wrong symbols nor relevant information can be missing, since in that case the oracle would not be able to reconstruct the entity. Moreover, we require that the oracle is not only able to reconstruct an entity given a representation but it can also derive the set of valid representations given an entity. In this sense, an entity that contains non-relevant information cannot be valid, since that part of the string cannot be generated by the oracle given the entity.
+
+\begin{example}
+The data used in time of Ptolomeo about the position of celestial bodies along the year was a non-valid encoding of the entity "position of celestial bodies", since the data was inaccurate. A better encoding was the data collected by Tycho Brahe. Today, we have even better encodings. Adding to the dataset the name of the person who collected the data is an example of a representation that includes non-relevant information.
+\end{example}
+
+Recall that we do not allow other representations of entities except finite binary strings. Drawings, mathematical formulas, or datasets can be used as representations as long as they can be encoded as strings and are recognized as valid representations by the selected oracle. Each string represents one, and only one entity. Of course, different oracles will define different sets of valid representations. In general, we will assume that a particular representation oracle $\mathcal{O}_\mathcal{E}$ has been selected to encode the set $\mathcal{E}$ of entities in which we are interested.
+
+\begin{notation}
+We will denote the set of valid representations of $\mathcal{E}$ by $\mathcal{R}^\star_\mathcal{E}$ if there is no ambiguity about which oracle $\mathcal{O}_\mathcal{E}$ we are using.
+\end{notation}
+
+We can define the set of valid representations of a single entity $e$ in the same way.
+
+\begin{definition}
+We define the set of valid representations for an entity $e \in \mathcal{E}$, denoted by $\mathcal{R}^\star_e$, as the subset of representations that perfectly encode the entity $e$, that is, $\mathcal{R}^\star_e = \mathcal{R}^\star_\mathcal{E} \cap \mathcal{R}_e$.
+\end{definition}
+
+As we have seen in Example \ref{ex:description_dna} there could be more than one valid representation for some entities, even it the oracle is restricted to a particular style. It might also happen that the set of valid representations is empty, that is, there is no valid representation for that entity. In that case the entity will be unknowable.
+
+\begin{notation}
+We denoted by $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$ the fact that $r$ is a valid representation of the entity $e$.
+\end{notation}
+
+All possible strings represent an entity, even the non-valid representations, like wrong or incomplete ones. A consequence of working with approximations instead of the true representations is that some of the candidate strings currently in use might encode a different entity from what we were expecting.
 
 \begin{example}
 \label{ex:polywater}
 In 1961, the Soviet physicist Nikolai Fedyakin, performed a series of experiments resulting in what was seemingly a new form of water. The new water, called polywater, showed a higher boiling point, a lower freezing point, and much higher viscosity than ordinary water. Later experiment showed that polywater was nothing more than contaminated water with small amounts of impurities.
 \end{example}
 
-\begin{remark}
-One of the problems of science, and in general of any human intellectual activity, is that people tend to confuse symbols with what they represent. The theory of nescience has been carefully designed to avoid this problem, by means of clearly stating the difference between research entities and the representation of entities. However, keeping this distinction always explicit in the explanations would make the book very difficult to read. We have tried to find a compromise between clarity in the exposition and rigor in the definitions. Sometimes, during the introduction of new ideas we talk in general about a \emph{topics}, meaning an entity, a representation, or both, an entity and its representation. But, in the mathematical definitions and propositions we always make this difference unequivocal. In case of doubt about what we mean, please take the mathematical definitions as the authoritative reference. 
-\end{remark}
+{\color{red}
+
+We can safely assume (it is free from logical contradictions) that the oracle machine not only knows which representations encode which entities, but also how far is a string $r$ from being a valid representation $r^\star_e$, for all $r \in \mathcal{B}^\ast$ and all $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$. 
+
+If a representaton $r$ is non-valid, the oracle will find the closest possible representation that it is valid, and assume that they represent the same entity.
+
+The oracle defines an equivalence relation that splits the set $\mathcal{L}$ into equivalence classes. Each equivalence class corresponds to an entity of $\mathcal{E}$, and it might happens that not all entities of $\mathcal{E}$ have an associated class (what we have called the unknowable unknown). All the strings are related to some entity, and some of them would be better than others (i.e. lower nescience). No string can be part of two different entities. For each collection of $\mathcal{E}$ there could be more than one valid oracle.
+
+\begin{proposition}
+Axioms A1, A2 and A3 state that the oracle $\mathcal{O}$ is an equivalence relation
+\begin{itemize}
+\item[A1] $\forall t \in \mathcal{L} \; t \mathcal{O} t$.
+\item[A2] $\forall s , t \in \mathcal{L}$ if $s \mathcal{O} t$ then $t \mathcal{O} s$.
+\item[A3] $\forall r, s , t \in \mathcal{L}$ if $r \mathcal{O} s$ and $s \mathcal{O} t$ then $r \mathcal{O} t$.
+\end{itemize}
+\end{proposition}
+
+\begin{definition}
+Let $\mathcal{L} / \mathcal{O}$ be the quotation set defined by the oracle relation over the language set. We call \emph{entity}, denoted by $[e]$, to every class of this quotation set, that is, $[e] \in \mathcal{L} / \mathcal{O}$.
+\end{definition}
+
+}
 
 %
 % Section: Joint Representations
@@ -211,6 +274,18 @@ Let $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$ be a finite collection of repre
 \end{definition}
 
 It is easy to show that $r_1 r_2 \ldots r_n \in \mathcal{B}^\ast$ for all $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$, that is, $\mathcal{B}^\ast$ is closed under the operation of concatenation of multiple, finite, representations.
+
+{\color{red}
+
+We have seen that the contatenation of two or more representations of an entity can encode a different entity than the original one. This can even happen when the two representations to join encode the same entity.
+
+multiple representations of the same entity can help us to find a better representation. We can take advantage of this property to discover new, previously unknown entities, by means of combining the representations of the already known entities. Intuitively, we are looking for new entities by creating new representations that are different from the representations we already know.
+
+TODO: Formalize this idea with a proposition.
+
+Provide an example of how it can be applied in practice.
+
+}
 
 %
 % Section: Descriptions

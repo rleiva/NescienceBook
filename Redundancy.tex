@@ -9,8 +9,8 @@
 
 \begin{quote}
 \begin{flushright}
-\emph{If you can't explain it simply,\\
-you don't understand it well enough.}\\
+\emph{Everything should be made as simple as possible,\\
+but not simpler.}\\
 Albert Einstein 
 \end{flushright}
 \end{quote}
@@ -36,15 +36,23 @@ In this chapter we will introduce formally the concept of surfeit, and study its
 Given the length of a description of a representation for an entity, and the length of its shortest possible description, we can introduce a relative measure of how much unneeded effort we are using to explain the entity when using that description. We call this quantity \emph{surfeit}, and it will be part of our definition of nescience, that is, how much we do not know about that research entity.
 
 \begin{definition}[Surfeit]
-Given a representation $r \in \mathcal{B}^\ast$, and $d \in \mathcal{D}$ a non-pleonastic description for $r$, we define the \emph{surfeit of the description $d$ for the representation $r$}, denoted by $\sigma(d, r)$, as
+Given a representation $r \in \mathcal{B}^\ast$, and $d \in \mathcal{D}$ a description for $r$, we define the \emph{surfeit of the description $d$ for the representation $r$}, denoted by $\sigma(d, r)$, as
 \[
-\sigma (d, r) = 1 - \frac{K(r)}{l(d)}
+\sigma (d, r) = \frac{ | l(d) - K(r) |}{l(d)}
 \]
 \end{definition}
 
-In our definition of surfeit we have used a relative measure instead of an absolute one (i.e., $l(d) - K(r)$), because beside to compare the surfeit of different models for the same entity, we are also interested in to compare the surfeit of different entities. We prefer to use $K(r)$ instead of the equivalent $l \left( r^\star \right)$ in order to be consistent with the definition of inaccuracy provided in Section \ref{sec:inaccuracy:inaccuracy}.
+For the majority of the descriptions it will be the case that the length of the description $l(d)$ for $r$ is greater that the length of its shortest possible description $K(r)$. Intuitively, the more ignorant we are about an entity, the longer will be our description, since a better understanding of that entity means that we should be able to remove all the redundant elements from its description. However, it migth also be the case that the description is shorter than the optimal description. In that case, we are oversimplifying the problem, which is also a bad thing. This is why we use the absolute value $| l(d) - K(r) |$ instead of symply $l(d) - K(r)$. Of course, the description in use could be inaccurate, and the representation could be non-valid, but these issues have been already addressed by the metrics of inaccuracy and miscoding.
 
-Intuitively, the more ignorant we are about an entity, the longer will be our current best known description\footnote{The concept of \emph{current best description} will be introduced formally at Chapter \ref{chap:Nescience}.}, since a better understanding of that entity means that we should be able to remove all the redundant elements from that description. Of course, the quality of a description is conditional to the quality of the representation in use.
+In our definition of surfeit we have used a relative measure instead of an absolute one (i.e., $| l(d) - K(r) |$), because beside to compare the surfeit of different models for the same entity, we are also interested in to compare the surfeit of different entities. We prefer to use $K(r)$ instead of the equivalent $l \left( r^\star \right)$ in order to be consistent with the definition of inaccuracy provided in Section \ref{sec:inaccuracy:inaccuracy}.
+
+\begin{remark}
+We could have used the normalized information distance between our description and an optimal description as a measure of sufeit, trying to be consistant with the definitions of miscoding and inaccuracy. Since we do not want to favour one of the possible descriptions of $r$ over the other, we have to compute the minimum distance with respect to all possible minimal descriptions of $r$:
+\[
+\sigma (d, r) = { \underset{ d^\star \in d^\star_r } \min} \frac{ \max\{ K \left( d \mid d^\star \right), K \left( d^\star \mid d \right) \} } { \max\{ K \left( d \right), K \left( d^\star \right) \} }
+\]
+This definition has the potential to replace not only our current definition of surfeit, but also the entire concept of inaccuracy, since when the distance between our description and an optimal description is zero, inaccuracy will also be zero. However, this approach is difficult to implement in practice, since it requires to know all possible descriptions of $r$. Even if we fix one of the poosibles styles of $e$ admited by the oracle, that description is unknown.
+\end{remark}
 
 \begin{example}
 {\color{red} TODO: Provide an example to clarify the concept.}

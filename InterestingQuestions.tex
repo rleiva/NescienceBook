@@ -127,34 +127,27 @@ IP(t) = \sqrt{ \nu(t)^2 +  \bar{R}(t)^2 }
 
 \section{Applicability}
 
-As we mention in Example \ref{ex:fixed_point}, the fixed point theorem is not very interesting as a research problem by itself. However, it is a very important theorem, since it can be applied to prove many other theorems. In this section we are going to introduce the concept of \emph{applicability}, a new measure that allows us to identify which topics are important because they can be used as a tools.
+As mentioned in Example \ref{ex:fixed_point}, the fixed point theorem is not particularly compelling as a research problem on its own. However, it is an essential mathematical result since it has broad applications in proving many other theorems. In this section, we introduce the concept of \emph{applicability}, which is a novel measure enabling us to identify which topics are important since they can serve as as tools for understanding other topics. From a mathematical point of view, we say that a tool can be applied to a topic if the conditional nescience (see Section \ref{sec:conditional_nescience}) of the topic given the tool is smaller that the unconditionall nescience of the topic.
 
-In order to formally define the concept of applicability, first we have to introduce a new graph that describes which topics have been applied as tools in other topics.
+Before to formally define the concept of applicability, first we have to introduce a new bipartite graph that describes which topics has been applied as tools to other topics.
 
 \begin{definition}\index{Applicability graph}
 \label{def:applicability-graph}
-We define the \emph{applicability graph}, denoted by $AG$, as the directed graph $AG = (\mathcal{T}, E)$, where $\mathcal{T}$ is the set of research topics, and $E\subseteq\left\{ (i,j):i,j\in \mathcal{T} \right\} $. An arc $(i, j)$ belong to $E$ if, and only if, topic $t_i$ has been applied to topic $t_j$.
+We define the \emph{applicability graph}, denoted by $AG$, as the directed graph $AG = (\mathcal{T}, E)$, where $\mathcal{T}$ is the set of research topics, and $E\subseteq\left\{ (i,j):i,j\in \mathcal{T} \right\} $. An arc $(i, j)$ belong to $E$ if $N \left( t_i \mid t_j \right) < N \left( t_i \right)$. The weight of the arc $(i, j)$ is given by $w_{ij} = N \left( t_i \right) - N \left( t_i \mid t_j \right)$.
 \end{definition}
 
-For example, there is a direct link between the topics "graph theory" and "recommendation engines", since graph theory has been successfully applied to the problem of how to recommend purchase items to customers over Internet.
-
-{\color{red} TODO: Say something about how the applicability graph can be computed in practice.}
-
-{\color{red} TODO: Include a picture of applicability graph.}
+The applicability graph helps us identify those topics that can be pontentially used as tools to understand other topics. The following defintion formally introduces this idea.
 
 \begin{definition}\index{Applicability}
 \label{def:applicability}
-We define the \emph{applicability} of a topic $t\in T$, denoted by $A(t)$, as the outdegree of that node in the applicability graph, that is:
+Given the applicability graph $AG = (\mathcal{T}, E)$, the \emph{applicability} of a topic $t_i \in \mathcal{T}$, denoted by $A(t_i)$, is defined as the sum of the weights of the arcs in the outdegree of $t_i$, that is:
 \[
-A(t) = outdeg(t)
+A(t_i) = \sum_{(i, j) \in E} w_{ij}
 \]
+where $E$ is the set of arcs in the applicability graph, and $w_{ij}$ is the weight of the arc $(i, j)$.
 \end{definition}
 
-Intuitively, the higher the applicability of a topic, the higher is its potential as a tool that can be applied to solve new problems. If a tool has been already applied many times in the past to solve open problems, it is likely that it can be applied to solve other open problems as well.
-
-{\color{red} TODO: We should provide a normalized definition of applicability.}
-
-{\color{red} TODO: Mention here we can use other, alternative, centrality measures to compute applicability.}
+A topic with higher applicability will have a greater overall impact on the understanding of other topics, and intuitively, the higher the applicability of a topic, the higher its potential as a tool that can be applied to solve open problems. If a tool has been successfully applied multiple times in the past to address open problems, it is more likely that it can be effectively used to solve other open problems as well.
 
 Next proposition proves that the combination of two topics can only increase their applicability. That is, the more tools we have at our disposal, the more problems we could solve in principle.
 
@@ -165,38 +158,75 @@ Given any two topics $t_1, t_2 \in \mathcal{T}$, we have that $A(t_1) + A(t_2) \
 Use the same argument than in Proposition \ref{prop:nondecreasing_relevance}.
 \end{proof}
 
-to provide a new metric to measure how \emph{mature} is a topic.
+In order to better compare the applicability of different topics and understand their relative importance in a standardized way, it is useful to introduce a normalized version of the applicability measure.
+
+\begin{definition}\index{Normalized Aapplicability}
+\label{def:normalized-applicability}
+Given the applicability graph $AG = (\mathcal{T}, E)$, the \emph{normalized applicability} of a topic $t_i \in \mathcal{T}$, denoted by $A_n(t_i)$, is defined as the ratio of the applicability of $t_i$ to the maximum possible applicability value, expressed as:
+\[
+\tilde{A}(t_i) = \frac{A(t_i)}{\max_{t_k \in \mathcal{T}} A(t_k)}
+\]
+where $A(t_i)$ is the applicability of topic $t_i$ as defined in Definition \ref{def:applicability}, and $\max_{t_k \in \mathcal{T}} A(t_k)$ is the maximum applicability value among all topics in $\mathcal{T}$.
+\end{definition}
+
+Normalized applicability scales the original applicability value of a topic to a range between 0 and 1, allowing for easier comparison across different topics.
+
+In practice, it is very difficult to compute the applicability graph, since for the majority of the topics, the quantity $N \left( t_i \mid t_j \right)$ has not been estimated. In order to solve this problem, we can use an approximation to the applicabilitiy graph, in which the arcs have no weight, and an edge $(i, j)$ represents that the topic $j$ has been applied to solve the problem $i$. For example, there would be a direct link between the topics "graph theory" and "recommendation engines", since graph theory has been successfully applied to the problem of how to recommend purchase items to customers over Internet.
+
+\begin{definition}\index{Simplified applicability graph}
+\label{def:simplified-applicability-graph}
+We define the \emph{simplifiled applicability graph}, denoted by $SAG$, as the directed graph $SAG = (\mathcal{T}, E)$, where $\mathcal{T}$ is the set of research topics, and $E\subseteq\left\{ (i,j):i,j\in \mathcal{T} \right\} $. An arc $(i, j)$ belong to $E$ if the topic $j$ has been used to understand topic $i$.
+\end{definition}
+
+Using this simplified version of the applicability graph, the concept of applicability becomes:
+
+\begin{definition}\index{Simplified applicability}
+\label{def:simplified-applicability}
+We define the \emph{simplified applicability} of a topic $t\in \mathcal{T}$, denoted by $SA(t)$, as the outdegree of that node in the applicability graph, that is:
+\[
+SA(t) = outdeg(t)
+\]
+\end{definition}
+
+And the corresponding normalized version becomes:
+
+\begin{definition}\index{Normalized simplified applicability}
+\label{def:normalized-simplified-applicability}
+Given the simplified applicability graph $SAG = (\mathcal{T}, E)$, the \emph{simplified normalized applicability} of a topic $t_i \in \mathcal{T}$, denoted by $SA_n(t_i)$, is defined as the ratio of the simplified applicability of $t_i$ to the maximum possible simplified applicability value, expressed as:
+\[
+SA_n(t_i) = \frac{SA(t_i)}{\max_{t_k \in \mathcal{T}} SA(t_k)}
+\]
+where $SA(t_i)$ is the simplified applicability of topic $t_i$ as defined in Definition \ref{def:applicability}, and $\max_{t_k \in \mathcal{T}} SA(t_k)$ is the maximum applicability value among all topics in $\mathcal{T}$.
+\end{definition}
+
+When using topics as tools, we are primarily interested in those topics that are better understood. Generally, relying on a background knowledge that is poorly understood is not advisable, even if it significantly reduces the (conditional) nescience of our problem. In the following definition, we will introduce the concept of the maturity of a topic as one minus its nescience.
 
 \begin{definition}\index{Maturity}
-Given a topic $t \in \mathcal{T}$, we define the \emph{maturity} of topic $t$, denoted as $M(t)$, as the inverse of nescience, that is:
+Given a topic $t \in \mathcal{T}$, we define the \emph{maturity} of topic $t$, denoted as $M(t)$, as:
 \[
 M(t) = \nu(t)^{-1}
 \]
 \end{definition}
 
-Intuitively, the more mature is a topic the higher is it potential applicability to solve other open problems. Highly immature topics should not be applied to solve open problems, since they could provide wrong solutions.
-
-{\color{red} TODO: We should provide a normalized definition of relevance.}
+Intuitively, the more mature a topic is, the greater its utility in solving other open problems. Highly immature topics should not be applied as tools to address open problems, as doing so would merely transfer our lack of understanding from one topic to another.
 
 \begin{example}
-{\color{red} TODO: Find an illuminating example.}
+Linear regression is a highly mature topic, since its nescience is very small.
 \end{example}
 
-Finally, we can define the concept of interestingness of a topic as a source of interesting tools, that is, how likely is that the topic can be used to solve a new problem, as a function of its maturity and applicability.
+Finally, we define the concept of interestingness of a topic as a source of interesting tools, that is, how likely is that the topic can be used to solve a new problem, as a function of its maturity and applicability. Similar to the definition of relevance introduced in the previous section, topics can be visualized within a two-dimensional vector space, where one dimension represents maturity and the other represents applicability. The interestingness of a topic will be determined by its Euclidean distance from the origin.
 
 \begin{definition}\index{Interestingness of a topic as a tool}
-Let $t \in \mathcal{T}$ a topic. We define the \emph{interestingness of the topic as a tool}, denoted by $IT(t)$, as:
+Given a topic $t \in \mathcal{T}$, we define the \emph{interestingness of the topic as a tool}, denoted by $IT(t)$, as:
 \[
-IT(t) = A(t) M(t)
+IT(t) = \sqrt{ M(t)^2 +  A(t)^2 }
 \]
 \end{definition}
 
-Intuitively, a topic is interesting as a tool if it has been already applied to many other problems, and it is very well understood topic.
-
-{\color{red} TODO: Again, mention why the product.}
+Intuitively, a topic is considered interesting as a tool if it is thoroughly understood and has already been applied to numerous other problems.
 
 \begin{example}
-{\color{red} TODO}
+The Pythagorean theorem (in a right-angled triangle, the square of the length of the hypotenuse is equal to the sum of the squares of the other two sides) is undoubtedly one of the most widely used and applied theorems in various fields and practical situations, including but not limited to: engineering (calculating distances, angles, and forces in structures and mechanical systems), architecture (determining lengths and angles in building design and construction projects), land surveying (measuring distances and calculating areas of land parcels), physics (analyzing problems in mechanics, optics, and electromagnetism), computer graphics and game development (calculating distances and angles in 2D and 3D spaces) or trigonometry(serving as a foundation for the study of trigonometric functions and their applications). The widespread application of the Pythagorean theorem to so many fields is due to its simplicity and its ability to describe complex geometric relationships.
 \end{example}
 
 %

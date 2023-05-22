@@ -20,11 +20,6 @@ The pursuit of knowledge typically begins with the identification of a collectio
 
 Ideally, we aspire to construct descriptions that allow us to reconstruct the original entities under study. However, for a vast number of entities, particularly abstract ones, this is not achievable. Consequently, we must resort to working with representations - using texts or data that strive to capture as many details of the original entities as feasible. For instance, if we are physicists, an entity's representation could be the outcome of an experiment; for computer scientists, it might be a dataset composed of measurements, and for sociologists, it could be a collection of observed facts. Figure \ref{fig:representationProblem} illustrates this process: while we desire our descriptions to model entities, in reality, they model our artificially constructed representations of those entities.
 
-% \begin{figure}[h]
-% \centering\includegraphics[scale=0.5]{representationProblem}
-% \caption{\label{fig:representationProblem}The Problem of Understanding.}
-% \end{figure}
-
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}
@@ -32,11 +27,11 @@ Ideally, we aspire to construct descriptions that allow us to reconstruct the or
     \node[draw, ellipse, minimum width=3cm] (representations) at (5,0) {Representations};
     \node[draw, ellipse, minimum width=3cm] (descriptions) at (10,0) {Descriptions};
 
-    \draw[->] (representations) -- node[above,midway] {encode} (entities);
-    \draw[->] (descriptions) -- node[above,midway] {model} (representations);
-    \draw[dashed,->] (descriptions) to [bend right=45] node[above,midway] {explain?} (entities);
+    \draw[-{Latex[length=3mm]}] (representations) -- node[above,midway] {encode} (entities);
+    \draw[-{Latex[length=3mm]}] (descriptions) -- node[above,midway] {model} (representations);
+    \draw[dashed,-{Latex[length=3mm]}] (descriptions) to [bend right=45] node[above,midway] {explain?} (entities);
 \end{tikzpicture}
-\caption{The Problem of Understanding}
+\caption{\label{fig:representationProblem}The Problem of Understanding}
 \end{figure}
 
 The fundamental question lies in how effectively our descriptions interpret the original entities through the modelling of the representations that encode those entities. We must take into account various potential sources of error. First, our encoding methodology may not be flawless. In an ideal scenario, if an entity $e$ is ideally represented by the string $r$, in practice, we may be working with another string $r'$ that approximates $r$ but is not identical. This type of error is what we call \emph{miscoding}\index{Miscoding}.
@@ -71,35 +66,75 @@ Typically, the set $\mathcal{E}$ corresponds to a distinct field of knowledge, w
 
 \section{Representations}
 
-Most of the entities can not be the subject of a direct scientific analysis because, for example, they are abstract objects. Instead, what we have to do is to work with representations of those entities. Let $\mathcal{R_\mathcal{E}}$ be the collection of finite binary strings, called \emph{representations}\index{Representation}, that encode the entities of $\mathcal{E}$. The exact format of these strings is something that depends on the entities in which the theory of nescience is being applied. In some cases, entities will be strings themselves (e.g. computer programs), and in others they will be abstract objects that have to be encoded as strings (e.g. human needs). Note that an entity $e \in \mathcal{E}$ might have more than one valid representation in $\mathcal{R_\mathcal{E}}$. How to encode abstract entities as strings of symbols in such a way that they capture all the details and nuances of the original entities is a difficult, still unsolved, problem, and so, the set $\mathcal{R_\mathcal{E}}$ is normally unknown. 
+In many instances, entities cannot be directly scrutinized through scientific analysis, particularly if they are abstract. Consequently, we have to work with representations of those entities. We designate the collection of strings that encode the entities of $\mathcal{E}$ as $\mathcal{R_\mathcal{E}}$. These strings, referred to as \emph{representations}\index{Representation}, may differ depending on the application of the theory of nescience. In certain scenarios, entities may inherently be string-based (e.g., computer programs), while others might be abstract objects that require encoding into string format (e.g., human needs). It's worth noting that a single entity $e \in \mathcal{E}$ could correspond to more than one valid representation in $\mathcal{R_\mathcal{E}}$. Transforming abstract entities into symbol strings in a manner that fully captures their complexities and intricacies remains a significant, unresolved challenge. As such, the exact composition of the set $\mathcal{R_\mathcal{E}}$ often remains unknown.
 
-Ideally, we would like to have an encoding function $f:\mathcal{E} \rightarrow \mathcal{R_\mathcal{E}}$ from a set of entities $\mathcal{E}$ to the set of all possible representations. Unfortunately, in practice, it is not possible to define such a function, since as we have already mentioned, the set $\mathcal{E}$ is not a well defined set, that is, we cannot tell what it is and what is not a member of this set. For example, it requires a lot more research before we can tell exactly what a human need is.
+Ideally, we would like to establish an encoding function $f:\mathcal{E} \rightarrow \mathcal{R_\mathcal{E}}$ that maps a set of entities $\mathcal{E}$ to the corresponding set of possible representations. However, in practice, defining such a function is challenging because the set $\mathcal{E}$ is not a well defined set, meaning we can't conclusively determine what should or should not be included in this set. For instance, it will require further research to precisely define what constitutes a human need.
 
-From a theoretical point of view we could take advantage of the concept of \emph{oracle Turing machine}\index{Oracle Turing machine} (see Chapter \ref{chap:Computability}) to address this problem. A Turing machine\index{Turing machine} is a mathematical model of a computer, and an oracle Turing machine is somehow like a mathematical model of a computer connected to Internet. We could assume that this computer can query an hypothetical external service, hosted somewhere in another computer, to check if a given string $r$ encodes \emph{any} entity of $\mathcal{E}$. We cannot ask the oracle if the string $r$ is a valid representation of the entity $e$ in which we are interested, because that would require to provide a valid representation of $e$ as a string of symbols, something that we cannot do since, in general, it is unknown. The concept of oracle machine allow us to define a function from the collection of finite binary strings to the set of entities $f:\mathcal{B}^\ast \rightarrow \mathcal{E}$.
+From a theoretical standpoint, the concept of an \emph{oracle Turing machine}\index{Oracle Turing machine} (see Chapter \ref{chap:Computability}) could be employed to tackle this issue. A Turing machine\index{Turing machine} is essentially a mathematical model of computation, whereas an oracle Turing machine can be likened to a computer model with internet access. We could presume that this computer could query a hypothetical external service, situated remotely, to verify whether a specific string $r$ encodes \emph{any} entity of $\mathcal{E}$. Notably, we cannot ask the oracle if the string $r$ is a valid representation of the specific entity $e$ we are interested in, as this would necessitate providing a valid string representation of $e$, which is generally unknown. The concept of the oracle machine, however, allows us to define a function from the collection of finite binary strings to the set of entities $f:\mathcal{B}^\ast \rightarrow \mathcal{E}$.
 
-From a practical point of view, we usually approximate the set $\mathcal{R}_\mathcal{E}$ by another set $\hat{\mathcal{R}}_\mathcal{E} \subseteq \mathcal{B}^\ast$ of strings that we believe are good enough representations of the entities of $\mathcal{E}$. In science, traditionally, these representations have had the form of images or drawings (e.g. biology), collection of facts (e.g. sociology), or the result of experiments (e.g. physics). Recently, and due to the huge advances in the capacity of computers to collect and store data, a new and powerful way to encode entities has emerged: the use of large collections of data as representations. Please mind that in the process of encoding we are not interested in finding the shortest possible representation of the entities, what we need is high quality representations.
+From a practical perspective, we typically approximate the set $\mathcal{R}_\mathcal{E}$ with another set $\hat{\mathcal{R}}_\mathcal{E} \subseteq \mathcal{B}^\ast$ of strings, which we consider to be adequate representations of the entities of $\mathcal{E}$. In scientific practice, these representations have traditionally taken the form of illustrations or images (e.g., in biology), collections of factual data (e.g., in sociology), or experimental results (e.g., in physics). With recent significant advancements in the capability of computers to gather and store data, a novel and potent method for encoding entities has emerged: using vast data sets as representations. It's essential to note that in the encoding process, our objective is not to find the shortest possible representation of the entities but to seek out high-quality representations.
 
-We should be aware that in many practical problems, the selected representations of abstract entities will not be able to fully capture all the details of the original objects. That is, we are dealing with simplified abstractions of reality that might limit our capability of making universal statements about nature (see Chapter \ref{chap:Miscoding}).
+It's crucial to acknowledge that in numerous practical scenarios, the chosen representations of abstract entities may not fully encapsulate all nuances of the original objects. This means we are grappling with oversimplified abstractions of reality, which could potentially curtail our capacity to make sweeping assertions about nature (see Chapter \ref{chap:Miscoding}).
 
 \begin{example}
 \label{ex:animals_DNA}
-When the topics under study are animals (the set $\mathcal{E}$), we could use as representations a binary encoding of their DNAs (the set $\mathcal{R_\mathcal{E}}$). Although today we do not have the technology to grow a creature given its DNA, in theory it could be possible to do so. However, the DNA is not enough to fully reconstruct the original animal, since we also need to know what happened along its life. For example, what if we are dealing with a cat with only three legs because it lost one in an accident? That information is not included in its DNA. If we are interested in studying the characteristics of some species, it will be sufficient to work with the DNA of some representative sample of individuals that belongs to each species. However, if we are studying the particular individuals inside a species, we also need a way to encode the history of each animal, or a way to encode the details not covered by the DNA.
+If we're studying animals (the set $\mathcal{E}$), we could use a binary encoding of their DNA (the set $\mathcal{R_\mathcal{E}}$) as representations. While our current technology doesn't allow us to bring a creature to life solely from its DNA, theoretically, it could be feasible. However, DNA alone doesn't fully replicate the original animal, as it doesn't include life experiences. For instance, how would we represent a cat that only has three legs due to an accident? That detail is not recorded in its DNA. If our goal is to study the traits of certain species, working with the DNA of a representative sample of individuals within each species would be adequate. However, if we're studying specific individuals within a species, we would also need a way to encode each animal's history or the details not encapsulated by the DNA.
 \end{example}
 
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{entities_topics}
+
+\begin{figure}[t]
+\centering
+
+\begin{tikzpicture}
+  % Oval 1
+  \node[draw, ellipse, minimum width=3cm, minimum height=6cm, label=below left:{$\mathcal{E}$}] (oval1) at (-2,0) {};
+
+  % Oval 2
+  \node[draw, fill=gray!20, ellipse, minimum width=2cm, minimum height=3cm] (oval2) at (-2,1) {};
+
+  % Small circles inside Oval 2
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$e_1$}] (circle1) at (-2, 1.5) {};
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$e_2$}] (circle2) at (-2, 0.5) {};
+
+  % Small circle inside Oval 1
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$e_3$}] (circle3) at (-2,-1) {};
+
+  % Question mark inside Oval 1
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{?}] (question) at (-2,-2) {};
+
+  % Vertical Line
+  \draw[thick] (0,-3) -- (0,3);
+  \node at (0,-3.5) {oracle};
+
+  % Oval 4
+  \node[draw, fill=gray!20, ellipse, minimum width=2cm, minimum height=4cm, label=above right:{$\mathcal{R}_{\mathcal{E}}$}] (oval4) at (2,1) {};
+
+  % Small circles inside Oval 4
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$r_1$}] (circle5) at (2,1.5) {};
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$r_2$}] (circle6) at (2,0.5) {};
+
+  % Oval 3
+  \node[draw, ellipse, minimum width=2cm, minimum height=4cm, label=below right:{$\hat{\mathcal{R}}_\mathcal{E}$}] (oval3) at (2,-1) {};
+
+  % Small circle inside Oval 3
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$r_3$}] (circle4) at (2,-2) {};
+
+  % Curved arrows
+  \draw[->] (circle5) to[bend right=40] (circle1);
+  \draw[->] (circle6) to[bend right=40] (circle2);
+  \draw[->] (circle4) to[bend left=40] (question);
+\end{tikzpicture}
+
 \caption{\label{fig:entities_topics}Entities and Representations.}
 \end{figure}
 
-A consequence of working with strings as representations (the set $\mathcal{R}_\mathcal{E}$) is that it might happen that there exist entities that are not encoded by any representation (see the gray areas in Figure \ref{fig:entities_topics}, in particular, the entity $e_3$ is not encoded by any representation). For example, if our set of entities is the set of real numbers, it turns out that there exist numbers that do not have a finite representation (we do not allow infinite strings as representations). Intuitively, we could say that for many domains of knowledge the number of problems is greater than the number of solutions. A consequence of working with approximations of representations (the set $\mathcal{R}$) is that some representations might encode the wrong entities (the representation $r_3$ in Figure \ref{fig:entities_topics}). This is due to the fact that our knowledge is incomplete, and we might be using incorrect representations for the entities of $\mathcal{E}$. Working with incomplete knowledge has an additional problem, there may be some entities whose existence we do not know yet, what we call the \emph{unknown unknown}\index{Unknown unknown}. For example, the representation $r_1$ in Figure \ref{fig:entities_topics} is not part of the set $\mathcal{R}$, and so, it is not currently considered by researchers even though it represents a valid entity $e_1$. We are interested in investigating a procedure to discover new, previously unknown, research entities from the set $\mathcal{R}_\mathcal{E}$ (see Section \ref{sec:intro_research_topics} and Chapter \ref{chap:Interesting-Research-Questions}).
+Working with string representations (the set $\mathcal{R}_\mathcal{E}$) can lead to certain entities not being encoded by any representation (see the gray areas in Figure \ref{fig:entities_topics}, specifically, entity $e_3$ lacks an encoding). For instance, if our set of entities is the set of real numbers, some numbers lack a representation, since we don't allow infinite strings as representations. Intuitively, this suggests that in many knowledge domains, the quantity of problems may exceed the number of solutions. Using approximations of representations (the set $\hat{\mathcal{R}}_\mathcal{E}$) can also lead to some representations encoding incorrect entities (as in the case of representation $r_3$ in Figure \ref{fig:entities_topics}). This is due to our incomplete knowledge possibly leading us to utilize incorrect representations for the entities of $\mathcal{E}$. Another issue with incomplete knowledge is the possibility of 'unknown unknowns'\index{Unknown unknown} - entities whose existence we're unaware of. For instance, representation $r_1$ in Figure \ref{fig:entities_topics} is not part of the set $\hat{\mathcal{R}}_\mathcal{E}$ and is therefore overlooked by researchers despite its representation of a valid entity $e_1$. Our objective includes exploring a procedure to uncover new, previously unknown, research entities from the set $\mathcal{R}_\mathcal{E}$ (refer to Section \ref{sec:intro_research_topics} and Chapter \ref{chap:Interesting-Research-Questions}).
 
-A \emph{research area} $A$ is subset of topics, that is $A \subset \mathcal{R}_\mathcal{E}$. In practice, areas are useful as long as the topics included in the area share a common property. We might be interested in studying what we do not know about a particular area. For example, if the set of topics is "animals", examples of areas could be "invertebrates", "mammals", "birds", "amphibians", "reptiles" and "fish". In order to measure what we do not know about an area, first we have to provide a description of the topics included in that area. However, in general, our knowledge about the topics that compose an area is limited, and so, we can only partially describe them. Moreover, as our understanding of a research area changes, the number of topics included in its known subset changes as well. Consequently, the properties of areas can be studied only relative to our current knowledge.
+A \emph{research area}\index{Research area} $A$ is a subset of topics, in other words, $A \subset \mathcal{R}_\mathcal{E}$. In a practical context, areas prove valuable when their included topics share a common attribute. Our interest may lie in investigating our knowledge gaps about a particular area. For instance, if the set of topics is "animals", areas could include "invertebrates", "mammals", "birds", "amphibians", "reptiles", and "fish". To gauge our lack of knowledge about an area, we first need to describe the topics encompassed by it. However, as our understanding of the topics constituting an area is generally limited, we can only provide partial descriptions. Furthermore, as our comprehension of a research area evolves, the quantity of topics included in its known subset adjusts accordingly. As a result, we can only examine the properties of areas relative to our present knowledge.
 
 \begin{example}
-If our set of topics is "astronomy", a research area could be the set of "habitable planets", from which we currently known only a few of them. A model of this area would be a description of those already known habitable planets.
+Should our topic set revolve around "astronomy," a conceivable research area might be "habitable planets," a category wherein we have knowledge of only a few currently. A model for this area could be a description compiled from our existing knowledge of these habitable planets.
 \end{example}
-
-{\color{red} Fix figure and the claim that there are strings that do not represent any entity.}
 
 %
 % Section: Descriptions

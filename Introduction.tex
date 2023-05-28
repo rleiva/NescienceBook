@@ -187,39 +187,67 @@ The theory of nescience concentrates on comprehending and quantitatively assessi
 \section{Miscoding}
 \label{sec:ch1_miscoding}
 
-As we have seen, for the majority of the scientific disciplines, the set $\mathcal{E}$ of entities under consideration could be composed by abstract elements, or other kind of objects that are not easily represented as a string of symbols. Also, it might happen that our current understanding of the elements of $\mathcal{E}$ is limited, and so, we can not properly encode them. In those cases we have to work with approximate representations instead of the valid representations. We are interested in knowing the error introduced due to the use of these incorrect representations.
+As we've observed, in many scientific disciplines, the set $\mathcal{E}$ of entities under examination might consist of abstract elements or various types of objects that cannot be easily represented as a string of symbols. There may also be instances where our comprehension of the elements in $\mathcal{E}$ is limited, preventing us from encoding them appropriately. In such situations, we must rely on approximate representations rather than accurate ones. We aim to quantify the error introduced by the use of these inaccurate representations.
 
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{miscoding}
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+  % Oval 1
+  \node[draw, ellipse, minimum width=3cm, minimum height=4cm, label=below left:{$\mathcal{E}$}] (oval1) at (-2,0) {};
+
+  % Small circles inside Oval 1
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{e}] (circle1) at (-2, 1) {};
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{?}] (circle2) at (-2, 0) {};
+
+  % Vertical Line
+  \draw[thick] (0,-2.5) -- (0,2.5);
+  \node at (0,-3) {oracle};
+
+  % Oval 2
+  \node[draw, fill=gray!20, ellipse, minimum width=1.25cm, minimum height=1cm, label=right:{$\mathcal{R}_{e}$}] (oval2) at (2,1.05) {};
+
+  % Small circles inside Oval 2
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$r$}] (circle3) at (2,1) {};
+
+  % Oval 3
+  \node[draw, ellipse, minimum width=3cm, minimum height=4cm, label=below right:{$\mathcal{R}$}] (oval3) at (2,0) {};
+
+  % Small circle inside Oval 3
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$r'$}] (circle4) at (2,0) {};
+
+  % Curved arrows
+  \draw[->] (circle3) to[bend right=40] (circle1);
+  \draw[->] (circle4) to[bend right=40] (circle2);
+\end{tikzpicture}
 \caption{\label{fig:miscoding}Miscoding of topics.}
 \end{figure}
 
-We propose to quantify the \emph{miscoding}\index{Miscoding} of an incorrect representation $r'$ as the length of the shortest computer program that can print the correct representation $r$ having as input $r'$, denoted by $K(r|r')$. See Figure \ref{fig:miscoding}, where $\mathcal{R}_e$ denotes the set of strings that correctly represent the entity $e$. Intuitively, miscoding measures the effort (measured as the length of a program, not as the time it takes to that program to do its work) required to fix the incorrect representation. For example, if our representation contains some errors, the program should be able to identify and correct those errors; or if our representation is missing some critical information required to fully encode the entity, the program will contain, hard-wired, that missing information.
+We propose to measure the \emph{miscoding}\index{Miscoding} of an inaccurate representation $r'$ as the length of the shortest computer program capable of printing the accurate representation $r$ when given $r'$ as an input, denoted as $K(r|r')$. This is demonstrated in Figure \ref{fig:miscoding}, where $\mathcal{R}_e$ represents the set of strings that accurately represent the entity $e$. Essentially, miscoding assesses the effort (determined by the length of a program, not the time it takes for the program to execute its task) needed to rectify the incorrect representation. If our representation includes errors, the program should identify and correct them. If our representation omits vital information necessary for fully encoding the entity, the program will include, hard-wired, this missing information.
 
-However this approach is not sufficient to fully capture our intuitive notion of miscoding. The problem arises when our represenation $r'$ contains additional information that is not needed to encode the entity $e$. In this case, it might happen that our descriptions include elements modeling those unnecessary symbols, making them artificially long. For example, in a experiment we could be measuring features that do not influence at all the result of the experiment, and given our limited understanding of the original entity, our current description could include those features as predictors\footnote{\color{red} TODO: This example is confusing, since the experiment describes a cause-effect situation, and our machine learning algorithm could identify non-relevant features authomatically. Use a different example.}. In order to avoid this problem, we have to compute also the length of the shortest computer program that can print the incorrect description $r'$ having as input the correct one $r$, that is, $K(r'|r)$. Then, miscoding could be defined as the maximum of these two lengths $\max\{ K(r \mid r'), K(r' \mid r)\}$.
+However, this method does not wholly encapsulate our intuitive concept of miscoding. A problem occurs when our representation $r'$ includes surplus information that is not required to encode the entity $e$. In such a case, our descriptions might include elements that model these unneeded symbols, resulting in artificially elongated descriptions. For instance, in an experiment, we might be measuring features that have no impact on the experiment's outcome. Given our limited understanding of the original entity, our current description might incorporate these features as predictors. To circumvent this issue, we also need to calculate the length of the shortest computer program capable of printing the incorrect description $r'$ when given the correct one $r$, i.e., $K(r'|r)$. Miscoding can then be defined as the maximum of these two lengths, $\max\{ K(r \mid r'), K(r' \mid r)\}$.
 
-Unfortunately, this last definition still presents some practical problems. Most of the entities have multiple valid representations. Maybe $r'$ is far from a representation $r_1$, but it is closer to a second one $r_2$. It would be unfair to say that a description $d$ that perfectly model $r_2$ is a bad descriptions because it does not model $r_1$, since both, $r_1$ and $r_2$ represent the same entity $e$. A possible solution to this problem would be to look at $\min_{r \in \mathcal{R}_e} \{ \max\{ K(r \mid r'), K(r' \mid r)\} \}$.
+Nevertheless, this latest definition still poses practical challenges. Most entities have multiple valid representations. Perhaps $r'$ is a significant deviation from representation $r_1$, but it is much closer to another, $r_2$. It would be unjust to deem a description $d$ that perfectly models $r_2$ as poor simply because it doesn't model $r_1$, especially when both $r_1$ and $r_2$ represent the same entity $e$. One potential solution to this issue could involve examining $\min_{r \in \mathcal{R}_e} \{ \max\{ K(r \mid r'), K(r' \mid r)\} \}$.
 
 \begin{example}
 \label{ex:leibnez-wallis}
-Let $e$ be the abstract entity called "Pi constant", that is, the ratio of a circle's circumference to its diameter; let $r$ be the Wallis' product\index{Wallis' product} $2 (\frac{2}{1} \cdot \frac{2}{3} \cdot \frac{4}{3} \cdot \frac{4}{5} \cdot \frac{6}{5} \cdot \ldots)$, one of the valid representations of $e$; and let $d$ be the description $\sum_{n=0}^\infty \frac{(-1)^n}{2n+1}$. It would be unfair to affirm that $d$ is a terribly bad description for the entity $e$ because it does not print $r$. In fact, $d$ produces the Leibniz's series\index{Leibniz's series} $4 (1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \ldots)$ that it is also a valid representation of Pi. Leibniz's series should not be classified as a miscoded representation of Pi, even in the hypothetical case that it were unknown by mathematicians.
+Consider $e$ as the abstract entity known as the "Pi constant", which is the ratio of a circle's circumference to its diameter. Let $r$ represent the Wallis' product\index{Wallis' product} $2 (\frac{2}{1} \cdot \frac{2}{3} \cdot \frac{4}{3} \cdot \frac{4}{5} \cdot \frac{6}{5} \cdot \ldots)$, which is a valid representation of $e$. Suppose $d$ is the description $\sum_{n=0}^\infty \frac{(-1)^n}{2n+1}$. It wouldn't be fair to claim that $d$ is an exceptionally poor description of the entity $e$ just because it does not reproduce $r$. In reality, $d$ generates the Leibniz's series\index{Leibniz's series} $4 (1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \ldots)$, another valid representation of Pi. Even if Leibniz's series were unknown by mathematicians, it should not be classified as a miscoded representation of Pi.
 \end{example}
 
-As example \ref{ex:leibnez-wallis} pointed it out, one of the most difficult problems with the definition of miscoding is that the set $\mathcal{R}_e$ of valid representations for the entity $e$ is, in general, not known. From a theoretical point of view we could resort again to the oracle Turing machine\index{Oracle Turing machine} to address this problem. However, as we have seen, we cannot ask the oracle if the string $r$ is a valid representation of the entity $e$ in which we are interested (the set $\mathcal{R}_e$), since that would require to provide a valid representation of $e$ as a string of symbols, something that, in general, cannot be done. The only thing we can do is to ask the oracle how far the string $r$ is from being a valid representation of any entity from the set of entities $\mathcal{R}_\mathcal{E}$.
+As example \ref{ex:leibnez-wallis} indicates, defining miscoding poses challenges because the set $\mathcal{R}_e$ of valid representations for the entity $e$ is generally unknown. Theoretically, we could rely again on the oracle Turing machine\index{Oracle Turing machine} to solve this problem. However, as observed, we can't ask the oracle if the string $r$ is a valid representation of our interested entity $e$ (the set $\mathcal{R}_e$), since that would require us to provide a valid representation of $e$ as a string of symbols, which typically can't be done. The only thing we can do is to ask the oracle how far the string $r$ is from being a valid representation of any entity from the set of entities $\mathcal{R}_\mathcal{E}$.
 
-Taking into account all the above considerations, we define the miscoding of a representation $r$, denoted by $\mu(r)$, as:
+Bearing in mind the aforementioned considerations, we define the miscoding of a representation $r$, denoted by $\mu(r)$, as follows:
 \[
 \mu(r) = \overset{o}{ \underset{r_e \in \mathcal{R}_\mathcal{E}} \min} \frac{ \max\{ K(r_e \mid r), K(r \mid r_e) \} } { \max\{ K(r_e), K(r) \} }
 \]
-where $\overset{o} \min$ means that the minimum function has to be computed by an oracle. Note that in the definition we have introduced the normalization factor $K(r_e)$, that is, the length of the shortest program that can print $r_e$, because we are interested in comparing the miscoding of multiple, possibly unrelated, representations.
+where $\overset{o} \min$ implies that the minimum function has to be computed by an oracle. Notice in the definition, we've introduced the normalization factor $K(r_e)$—the length of the shortest program that can print $r_e$—since we're interested in comparing the miscoding of various, possibly unrelated, representations.
 
-Since miscoding does not take as argument the original entity $e$, it may be the case that what we are representing is not what we were expecting. That is, with our representations and descriptions we might be studying a different entity. This is something that happens quite often in the practice of scientific research. 
+Given that miscoding doesn't utilize the original entity $e$ as an argument, it's possible that what we're representing is different from what we anticipated. In other words, our representations and descriptions might be investigating an entirely different entity. This occurrence is quite common in scientific research practice.
 
 \begin{example}
-At the end of the eighteenth century, the chemist Joseph Priestley thought he was studying the nonexistent entity called "phlogiston"\index{Phlogiston}, a fire-like element that was supposed to be contained within combustible bodies and released during combustion. It turned out that he was studying a completely different entity called "oxygen".
+In the late eighteenth century, chemist Joseph Priestley believed he was studying the non-existent entity named "phlogiston"\index{Phlogiston}, which was thought to be a fire-like element contained within combustible bodies and released during combustion. However, he was actually studying a completely different entity known as "oxygen".
 \end{example}
 
-According to the theory of nescience, our task as researchers is not only to find the proper representations of the entities of $\mathcal{E}$, but also to discover how this ideal oracle machine that knows how to properly encode entities works. That is, why our representations constitute good encodings of the entities under study.
+According to the theory of nescience, our role as researchers isn't solely to identify the appropriate representations of the entities within $\mathcal{E}$, but also to understand how this ideal oracle machine, which knows how to encode entities correctly, functions. That is, we need to comprehend why our representations serve as effective encodings of the entities being studied.
 
 %
 % Section: Inaccuracy
@@ -500,6 +528,21 @@ We can extend our method to find new research topics with additional metrics. Fo
 The idea that perfect descriptions must be random has been already mentioned by other authors (see for example \cite{mosterin2016conceptos}). The gravity dataset used in Example \ref{ex:introduction:inaccuracy:newton} comes from \cite{cressie1982playing}, and a more detailed analysis can be found at \cite{davison1997bootstrap}. The Boston housing dataset referred in Example \ref{cha1:ex:Boston} was published in \cite{harrison1978hedonic} and further discussed in \cite{belsley2005regression}; for more information about decision trees see for example \cite{james2013introduction}. For more information about trading systems and technical indicators see for example \cite{kaufman2013trading}, and how to quantitatively test if a system is profitable to \cite{pardo1992design}. The Locka-Voterra model for population dynamics was originally described in \cite{lotka1920analytical}. How to apply graph analysis to recommendation engines is covered in \cite{cordobes2015empirical}. And finally, if the reader is interested in knowing how far a dog flea can jump, please refer to \cite{cadiergues2000comparison}.
 
 The discipline of epistemology is more oriented to understand what we do know as individuals, meanwhile in this book we are interested in what we know as humankind; moreover, the kind of knowledge addressed by epistemology is not necessarily the scientific knowledge subject of the theory of nescience. Perhaps, the area of epistemology more interesting for our purposes is what the epistemologists call knowing by testimony. A good, and easy to read, introduction to the discipline of epistemology is \cite{nagel2014knowledge}.
+
+% Godfrey-Smith, Peter. "Theory and Reality: An Introduction to the Philosophy of Science." (2003): This is a good introduction to philosophy of science, which might provide some useful background to your discussions of scientific representation.
+
+% Suárez, Mauricio (ed.). "Fictions in Science: Philosophical Essays on Modeling and Idealization", Routledge, 2009. This anthology contains numerous essays about the use of models in science.
+
+% Frigg, Roman and Hartmann, Stephan. "Models in Science". The Stanford Encyclopedia of Philosophy, Edward N. Zalta (ed.), 2020. This article provides an excellent overview of the topic of scientific models and their role in representation.
+
+% Giere, Ronald N. "How Models Are Used to Represent Reality", Philosophy of Science, 71(5), 742–752, 2004. In this paper, Giere discusses the way that models are used in scientific representation.
+
+% Hacking, Ian. "Representing and Intervening: Introductory Topics in the Philosophy of Natural Science", Cambridge University Press, 1983. This influential work discusses the role of experimentation in scientific representation.
+
+% Morgan, Mary and Morrison, Margaret (eds.). "Models as Mediators: Perspectives on Natural and Social Science", Cambridge University Press, 1999. This book provides a collection of essays discussing the role of models in the sciences.
+
+% Teller, Paul. "Twilight of the Perfect Model Model", Erkenntnis, 55, 393–415, 2001. This article critiques the common view that models must be exactly correct to be useful in science.
+
 
 
 

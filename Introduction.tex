@@ -256,33 +256,53 @@ According to the theory of nescience, our role as researchers isn't solely to id
 \section{Inaccuracy}
 \label{sec:introduction:inaccuracy}
 
-In the previous section we have characterized how much we do not know about an entity $e$ in terms of the miscoding due to using a wrong representation $r'$ instead of a correct one $r$. In this section we are interested in how much we do not know given a description. Ideally we should be working with a description $d$ that allows us to fully reconstruct the representation $r'$ (recall that the representation $r$ might be unknown), but in general this is not the case in practice. Normally we will be working with a description $d'$ that prints out a string $r''$ (remember that we require that descriptions must be computer programs) that it is (hopefully) close to the string $r'$, but not equal. In this case we say that the description $d'$ is an \emph{inaccurate} description of the representation $r'$ (see Figure \ref{fig:inaccuracy:inaccuracy:inaccuracy}).
+In the preceding section, we established a way to measure our lack of knowledge about a certain entity $e$. This was done in terms of miscoding, which results from utilizing an incorrect representation $r'$ instead of the correct one, $r$. In this section, we aim to examine the extent of our lack of knowledge based on a given description. 
 
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{inaccuracy}
+In an ideal situation, we would use a description $d$ that would allow us to completely rebuild the representation $r'$ (keeping in mind that the true representation $r$ might be unknown). However, in most real-world situations, this is not feasible. Usually, we work with a description $d'$ that generates a string $r''$. This string $r''$ is expected to be similar to the string $r'$, albeit not identical. In such instances, we say that the description $d'$ is an \emph{inaccurate} depiction of the representation $r'$ (refer to Figure \ref{fig:inaccuracy:inaccuracy:inaccuracy}). Recall that the descriptions should be computer programs.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+  % Oval 1
+  \node[draw, ellipse, minimum width=3cm, minimum height=4cm, label=below left:{$\mathcal{R}$}] (oval1) at (-2,0) {};
+
+  % Small circles inside Oval 1
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{r}] (circle1) at (-2, 1) {};
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{r'}] (circle2) at (-2, 0) {};
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{r''}] (circle3) at (-2, -1) {};
+
+  % Oval 2
+  \node[draw, ellipse, minimum width=3cm, minimum height=4cm, label=below right:{$\mathcal{D}$}] (oval2) at (2,0) {};
+
+  % Small circle inside Oval 2
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$d$}] (circle4) at (2, 0) {};
+  \node[draw, fill=black, circle, inner sep=0.05cm, label=below:{$d'$}] (circle5) at (2, -1) {};
+
+  % Curved arrows
+  \draw[->] (circle4) to[bend right=40] (circle2);
+  \draw[->] (circle5) to[bend right=40] (circle3);
+\end{tikzpicture}
 \caption{\label{fig:inaccuracy:inaccuracy:inaccuracy}Inaccuracy of a description.}
 \end{figure}
 
-If a description is inaccurate for a representation, we would like to have a quantitative measure of how far we are from properly modeling the representation. A natural way to define this measure would be by means of computing the effort required to fix the output of our inaccurate description. In this sense, inaccuracy could be given by the length of the shortest computer program that can print the representation given as input the wrong representation produced by the description. However, as it was the case of miscoding, in order to have a complete picture of the error made with the description $d$ we have to compute also how difficult is to print the inaccurate representation given the good one. It might happen that our description $d$ is modeling things that have nothing to do with the representation $r'$, and simply ignoring those elements is not a solution.
+If a description is inaccurate for a representation, it is useful to have a quantitative measure of how much we deviate from accurately modeling the representation. A viable method to define this measure could be calculating the effort needed to rectify the output of our inaccurate description. In this context, the inaccuracy could be determined by the length of the shortest computer program that can generate the correct representation when fed with the incorrect one produced by the description. However, similar to the case with miscoding, to have a holistic understanding of the error associated with the description $d$, we must also calculate the difficulty of generating the inaccurate representation given the correct one. It's possible that our description $d$ models elements unrelated to the representation $r'$, and merely ignoring these elements won't solve the problem.
 
-Let $r' \in \mathcal{R}$ be a representation, and $d \in \mathcal{D}$ a description that produces the string $r''$; we define the \emph{inaccuracy}\index{Inaccuracy} of the description $d$ for the representation $r'$, denoted by $\iota(d, r')$, as:
+Let $r' \in \mathcal{R}$ be a representation, and $d \in \mathcal{D}$ a description that produces the string $r''$. We define the \emph{inaccuracy}\index{Inaccuracy} of the description $d$ for the representation $r'$, symbolized as $\iota(d, r')$, by the formula:
 \[
 \iota(d, r') = \frac{ \max\{ K(r'' \mid r'), K(r' \mid r'') \} } { \max\{ K(r'), K(r'') \} }
 \]
-Again, since what we need is the broadest possible interpretation of the concept of inaccuracy, we have to divide by the normalization factor $\max\{ K(r'), K(r'') \}$, so we can compare multiple descriptions for the same representation as well as descriptions for different representations.
+Again, in order to have the most comprehensive interpretation of the concept of inaccuracy, we divide by the normalization factor $\max\{ K(r'), K(r'') \}$. This allows us to compare multiple descriptions for the same representation, as well as descriptions for different representations.
 
-We prefer the term \emph{inaccuracy} over the term \emph{error}. Error is given by two components, precision and accuracy. But precision mostly refers to continuous systems, and since we are dealing with discrete strings of symbols, it does not make too much sense to talk about precision in this context.
+We favor the term \emph{inaccuracy} over the term \emph{error}. An error comprises two components: precision and accuracy. However, precision typically pertains to continuous systems. Since we're dealing with discrete strings of symbols in this context, it's not quite appropriate to discuss precision.
 
-In practice it is a difficult task to compute the inaccuracy associated with the description of a representation, since, as we have already said, finding the length of the shortest computer program that can print a string is a non-computable problem. If the original entities are texts themselves, the inaccuracy could be approximated using compression algorithms, where the Kolmogorov complexity is approximated with the length of the compressed text using a compressor. If topics are abstract entities, like mathematical concepts, their descriptions could be based on the result of an experiment, and so, the inaccuracy could be based on the error of the model (for example, by means of computing the length of the additional information required to fully describe the results of the experiment given the model). In this sense, our definition of inaccuracy is a generalization of the concept of error, since it can be applied to multiple types of entities, not only to those entities that can be encoded as datasets.
+In practice, calculating the inaccuracy associated with the description of a representation is a challenging task. As previously mentioned, determining the length of the shortest computer program that can print a string is a non-computable problem. If the original entities are texts themselves, we could approximate the inaccuracy using compression algorithms. Here, the Kolmogorov complexity is approximated by the length of the compressed text using a compressor. If the topics are abstract entities, such as mathematical concepts, their descriptions could be derived from the result of an experiment. Hence, the inaccuracy could be based on the model's error (for instance, by calculating the length of additional information required to thoroughly describe the experiment's results given the model). In this regard, our definition of inaccuracy is a generalization of the concept of error. It can be applied to various types of entities, not only those that can be encoded as datasets.
 
 \begin{example}
 \label{ex:introduction:inaccuracy:newton}
-{\color{red} TODO: Review this example.}
-The topic Newton's second law\index{Newton's second law} of motion $F = m a$ could be encoded given the results of an experiment using objects of different masses to which we apply different forces and then we measure the acceleration. The dataset would be composed by the masses, the forces, and the accelerations achieved for each combination of mass and force. However, if we are interested in the acceleration due to gravity, forces and masses cancel out, and so, the only value to measure is acceleration.  Of course, if the result of the experiment is a large collection of measurements, the encoding of the entity would be very long. But, as we said before, with the encodings of entities we are not interested in finding the shortest possible strings, what we are looking for are complete and accurate encodings of topics. For this example we will use the results of an experiment performed by the National Bureau of Standards in Washington D.C. between May 1934 and July 1935. The dataset is composed by 81 measurements, and each value is expressed in centimeters per second squared, for example 980,078. In practice we approximate the quantity $\frac{ K(t \mid m) } {K(t)}$ by $\frac{ C(D \mid M) } {l(D)}$, where $C(D \mid M)$ is the length of the compressed version of the data given the model (using a standard compressor), and $C(D)$ is the length of the compressed data. In order to encode the dataset we require 20 bits per measure (using an uniform code, as it is explained in Chapter \ref{chap:Coding}), and so, to encode the full dataset we require 1,620 bits. If we assume that our model predicts a gravity of $980,000 cm/s^2$ plus a random error that follows a normal distribution (estimated using a maximum likelihood approach), we have that it requires 453 bits to encode the data given the model (see Chapter \ref{chap:Machine-Learning} for more information about how to encode a dataset given a model). We have that the approximated inaccuracy of the model is $\frac{453}{1,620} = 0.27$.
+The topic of Newton's second law\index{Newton's second law} of motion $F = m a$ could be encoded using the results of an experiment conducted with objects of varying masses to which different forces are applied, and then measuring the acceleration. The dataset would comprise the masses, forces, and accelerations achieved for each combination of mass and force. However, if we're interested in acceleration due to gravity, forces and masses cancel each other out, leaving acceleration as the only value to measure. If the experiment results in a large collection of measurements, the encoding of the entity would be quite lengthy. However, with entity encodings, we're not striving to find the shortest possible strings. Instead, we aim for comprehensive and accurate encodings of topics. For this example, we'll use the results of an experiment performed by the National Bureau of Standards in Washington D.C. between May 1934 and July 1935. The dataset consists of 81 measurements, each expressed in centimeters per second squared, for example, 980,078. In practice, we approximate the quantity $\frac{ K(t \mid m) } {K(t)}$ by $\frac{ C(D \mid M) } {l(D)}$, where $C(D \mid M)$ is the length of the compressed version of the data given the model (using a standard compressor), and $C(D)$ is the length of the compressed data. To encode the dataset, we require 20 bits per measure (using a uniform code, as explained in Chapter \ref{chap:Coding}), making the full dataset encoding require 1,620 bits. Assuming that our model predicts gravity of $980,000 cm/s^2$ plus a random error following a normal distribution (estimated using a maximum likelihood approach), it would take 453 bits to encode the data given the model (refer to Chapter \ref{chap:Machine-Learning} for more information on encoding a dataset given a model). Therefore, the model's approximated inaccuracy is $\frac{453}{1,620} = 0.27$.
 \end{example}
 
 As it was pointed out by Example \ref{ex:introduction:inaccuracy:newton}, when dealing with representations based on experiments, we have to take into account that there is no way, from a logical point of view, to determine which one is the factor that contributes the more to our unknown, a wrong model (inaccuracy) or a wrong experiment (miscoding).
-
 
 %
 % Section: Surfeit
@@ -529,6 +549,8 @@ The idea that perfect descriptions must be random has been already mentioned by 
 
 The discipline of epistemology is more oriented to understand what we do know as individuals, meanwhile in this book we are interested in what we know as humankind; moreover, the kind of knowledge addressed by epistemology is not necessarily the scientific knowledge subject of the theory of nescience. Perhaps, the area of epistemology more interesting for our purposes is what the epistemologists call knowing by testimony. A good, and easy to read, introduction to the discipline of epistemology is \cite{nagel2014knowledge}.
 
+% Review for miscoding
+
 % Godfrey-Smith, Peter. "Theory and Reality: An Introduction to the Philosophy of Science." (2003): This is a good introduction to philosophy of science, which might provide some useful background to your discussions of scientific representation.
 
 % Suárez, Mauricio (ed.). "Fictions in Science: Philosophical Essays on Modeling and Idealization", Routledge, 2009. This anthology contains numerous essays about the use of models in science.
@@ -543,7 +565,18 @@ The discipline of epistemology is more oriented to understand what we do know as
 
 % Teller, Paul. "Twilight of the Perfect Model Model", Erkenntnis, 55, 393–415, 2001. This article critiques the common view that models must be exactly correct to be useful in science.
 
+% Review for inaccuracy
 
+% 1. Mayo, Deborah G. (1996) "Error and the Growth of Experimental Knowledge". University of Chicago Press. This book offers an extensive discussion on the philosophy of errors and scientific experiment.
 
+% 2. Popper, Karl (2002) "The Logic of Scientific Discovery". Routledge Classics. Popper discusses the philosophy of science, where theories are conjectures that are put to the test.
 
+% 3. Kuhn, Thomas S. (2012) "The Structure of Scientific Revolutions". University of Chicago Press. Kuhn's work is seminal in the philosophy of science, discussing how scientific theories change over time.
 
+% 4. Goodman, Steven N., and Greenland, Sander (2007) "Assessing the Uncertainty in the Most Likely Confounding Bias Direction." Epidemiology. This article presents a method for assessing the error in statistical models.
+
+% 5. Ioannidis, John P. A. (2005) "Why Most Published Research Findings Are False." PLoS Medicine. Ioannidis discusses how research can lead to incorrect results and how to assess the reliability of findings.
+
+% 6. Lakatos, Imre (1978) "The Methodology of Scientific Research Programmes". Cambridge University Press. Lakatos discusses the philosophy of science and the structure of scientific theories, including the role of error and falsification.
+
+% 7. Levesque, Hector J. (2017) "Common Sense, the Turing Test, and the Quest for Real AI". MIT Press. Levesque includes a discussion on the limitations and potential errors of AI and machine learning models.

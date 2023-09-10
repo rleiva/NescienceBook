@@ -84,62 +84,6 @@ Given a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{B}^
 If $d$ belongs to the set $\mathcal{D}_r$, it follows that $K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) = 0$, implying that $\iota(d, r) = 0$. Conversely, if $\iota(d, r) = 0$, it means that $\max\{ K \left( r \mid \delta(d) \right), K \left( \delta(d) \mid r \right) \} = 0$. This leads to the conclusion that $K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) = 0$ and, consequently, $d$ is part of the set of valid descriptions for $r$, i.e., $d \in \mathcal{D}_r$.
 \end{proof}
 
-%
-% Section: Reducing Inaccuracy
-%
-
-\section{Decreasing Inaccuracy}
-
-{\color{red} TODO
-
-In the previous section we saw how, given a representation, to reduce of the inaccuracy by means of using a different description. In this section we are going to study an alternative approach to reduce our unknown about an entity. Instead of changing the description, perhaps it is better to change the represetation of the entity. Of course, change the representation of an entity might increase the miscoding of that entity, but this change could be smaller that the gain we have by means of reducing the inaccuacy.
-
-\begin{definition}
-Let $e \in \mathcal{E}$ be an entity, and $r_1, r_2 \in \mathcal{R}_e$ be two of its representations, and $d_1, d_2 \in \mathcal{D}$ be two descriptions. The ratio of change between the inaccuracy of the description $d$ and the miscoding for the representations $r_1, r_2$, denoted by $\Delta_{\mu \iota} ( r_1, r_2, d )$, is defined as:
-\[
-\Delta_{\mu \iota} ( r_1, r_2, d ) = \frac{\mu(r_1) - \mu(r_2)}{\iota(d, r_1) - \iota(d, r_2)}
-\] 
-assuming that $\iota(d, r_1) - \iota(d, r_2) \neq 0$.
-\end{definition}
-
-If both, miscoding and innacuracy, decreases, that is $\mu(r_1) - \mu(r_2) > 0$ and $\iota(d, r_1) - \iota(d, r_2) > 0$, we should prefer $r_2$ over $r_1$. If both increase, that is $\mu(r_1) - \mu(r_2) > 0$ and $\iota(d, r_1) - \iota(d, r_2) > 0$, in general it is not a good idea to replace $r_1$ by $r_2$.
-
-}
-
-%
-% Section: Inaccuracy Rate of Change
-%
-
-\section{Inaccuracy Rate of Change}
-
-At times, we might be compelled to posit that the exclusive method to attain improvement in the precision of our description is by incurring a loss in the miscoding of our representation. The extent of miscoding that we must relinquish in order to enhance inaccuracy is referred to as the miscoding-inaccuracy trade-off (refer to Section \ref{sec:trade_offs} for more information of trade-offs in multiobjective optimization).
-
-\begin{definition}
-Let $e \in \mathcal{E}$ be an entity, and $\mathbf{x}_1, \mathbf{x}_2 \in \mathcal{R}_e \times \mathcal{D}$ be two hypothesis, with $\mathbf{x}_1 = (r_1, d_1)$ and $\mathbf{x}_2 = (r_2, d_2)$. The rate of change between the inaccuracy and the miscoding of the hypothesis $\mathbf{x}_1, \mathbf{x}_2$, denoted by $\Delta_{\mu \iota} ( \mathbf{x}_1, \mathbf{x}_2 )$, is defined as:
-\[
-\Delta_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{\iota(d_1, r_1) - \iota(d_2, r_2)}{\mu(r_2) - \mu(r_1)}
-\] 
-assuming that $\mu(r_2) - \mu(r_1) \neq 0$.
-\end{definition}
-
-We are interested in those hypothesis were a small loss in miscoding has a positive impact in inaccuracy. That is, we are looking for a $\Delta_{\mu \iota} ( \mathbf{x}_1, \mathbf{x}_2 ) > M$, where $M$ is large positive number.
-
-
-{\color{red} TODO: properly pareto optimal}
-
-%
-% Section: Inaccuracy of Joint Representations
-%
-
-\section{Inaccuracy of Joint Representations}
-
-Given two representations $r$ and $s$, we want to know the inaccuracy of the model $d$ when describing the joint representation $rs$. Since we require that $rs$ must be a valid representation, the formalization of the concept of inaccuracy applied to joint representation is straightforward, and it does not require a new definition:
-\[
-\iota(d, rs) = \frac{ \max\{ K \left(rs \mid \delta(d) \right), K \left( \delta(d) \mid rs \right) \} } { \max\{ K(rs), K \left(\Gamma(d) \right) \} }
-\]
-As a direct consequence of Proposition \ref{prop:range_miscoding}, if $r, s \in \mathcal{B}^\ast$ are two arbitrary representations and $d \in \mathcal{D}$ is a description, we have that $0 \leq \iota(d, rs) \leq 1$.
-
-{\color{red} TODO: Recall the properties of NID, and particularize for the case of inaccuracy of joint representations.}
 
 %
 % Section: Inaccuracy of Conditional Descriptions
@@ -214,15 +158,89 @@ Finally, given two representations $r$ and $t$, the formalization of the concept
 \iota(d \mid s) = \frac{ \max\{ K \left(rt \mid \delta(d \mid s) \right), K \left( \delta(d \mid s) \mid rt \right) \} } { \max\{ K(rt), K \left(\delta(d \mid s) \right) \} }
 \]
 
+
+%
+% Section: Reducing Inaccuracy
+%
+
+\section{Decreasing Inaccuracy}
+
+Our objective is to reduce the inaccuracy of our current description $d_1$, thereby enhancing our understanding of the original entity. This enhancement might take the form of a modified version of $d_1$, correcting or eliminating its errors, or by formulating an entirely new description using a different aproach to model the entity. In either scenario, the revised or new version is considered as a new description $d_2$. In this section, we aim to analyze how introducing a new description $d_2$ affects the inaccuracy relative to the original description $d_1$.
+
+\begin{definition}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d_1, d_2 \in \mathcal{D}$ be two descriptions. The \emph{variation of the inaccuracy} of the descriptions $d_1, d_2$, denoted by $\Delta^{a} _{\iota} ( d_1, d_2 )$, is defined as:
+\[
+\Delta^{a}_{\iota} ( d_1, d_2, r ) = \iota(d_1, r) - \iota(d_2, r)
+\] 
+\end{definition}
+
+A positive value of $\Delta_{\iota}$ suggests a preference for description $d_2$ over $d_1$. Conversely, a negative value indicates the reverse. This preference is strictly based on inaccuracy. It's possible that the new description could result in a significant increase in surfeit, which might be even more significant than the reduction in inaccuracy (refer to Chapter \ref{chap:Redundancy} for a deeper discussion on surfeit, and Chapter \ref{chap:Nescience} to understand how these two concepts merge into a single metric termed nescience).
+
+We can also introduce a relative variation of inaccuracy.
+
+\begin{definition}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d_1, d_2 \in \mathcal{D}$ be two descriptions. The relative variation of the inaccuracy of the descriptions $d_1, d_2$, denoted by $\Delta^{r}_{\iota} ( d_1, d_2 )$, is defined as:
+\[
+\Delta^{r}_{\iota} ( d_1, d_2, r ) = \frac{\iota(d_1, r) - \iota(d_2, r)}{\iota(d_1, r)}
+\] 
+\end{definition}
+
+We are primarily concerned with descriptions $d_2$ that offer improvements over the existing description $d_1$. This means that the inaccuracy of $d_2$ is less than that of $d_1$. Accordingly, the relative variation ranges from $0$, indicating no improvement in inaccuracy at all, to $1$, denoting maximal improvement. Regrettably, $\Delta^{r}_{\iota}$ can also be negative when the new description $d_2$ is even worse than the original $d_1$.
+
+{\color{red} TODO How do absolute and relative changes interact? For instance, a small absolute change might result in a large relative change if the initial inaccuracy is tiny.}
+
+%
+% Section: Inaccuracy Rate of Change
+%
+
+\section{Inaccuracy-Miscoding Rate of Change}
+
+{\color{red} TODO
+
+In the previous section we saw how, given a representation, to reduce of the inaccuracy by means of using a different description. In this section we are going to study an alternative approach to reduce our unknown about an entity. Instead of changing the description, perhaps it is better to change the represetation of the entity. Of course, change the representation of an entity might increase the miscoding of that entity, but this change could be smaller that the gain we have by means of reducing the inaccuacy. }
+
+At times, we might be compelled to posit that the exclusive method to attain improvement in the precision of our description is by incurring a loss in the miscoding of our representation. The extent of miscoding that we must relinquish in order to enhance inaccuracy is referred to as the miscoding-inaccuracy trade-off (refer to Section \ref{sec:trade_offs} for more information of trade-offs in multiobjective optimization).
+
+\begin{definition}
+Let $e \in \mathcal{E}$ be an entity, and $\mathbf{x}_1, \mathbf{x}_2 \in \mathcal{R}_e \times \mathcal{D}$ be two hypothesis, with $\mathbf{x}_1 = (r_1, d_1)$ and $\mathbf{x}_2 = (r_2, d_2)$. The rate of change between the inaccuracy and the miscoding of the hypothesis $\mathbf{x}_1, \mathbf{x}_2$, denoted by $\Delta_{\mu \iota} ( \mathbf{x}_1, \mathbf{x}_2 )$, is defined as:
+\[
+\Delta_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{\iota(d_1, r_1) - \iota(d_2, r_2)}{\mu(r_2) - \mu(r_1)}
+\] 
+assuming that $\mu(r_2) - \mu(r_1) \neq 0$.
+\end{definition}
+
+We are interested in those hypothesis were a small loss in miscoding has a positive impact in inaccuracy. That is, we are looking for a $\Delta_{\mu \iota} ( \mathbf{x}_1, \mathbf{x}_2 ) > M$, where $M$ is large positive number.
+
+{\color{red} If both, miscoding and innacuracy, decreases, that is $\mu(r_1) - \mu(r_2) > 0$ and $\iota(d, r_1) - \iota(d, r_2) > 0$, we should prefer $r_2$ over $r_1$. If both increase, that is $\mu(r_1) - \mu(r_2) > 0$ and $\iota(d, r_1) - \iota(d, r_2) > 0$, in general it is not a good idea to replace $r_1$ by $r_2$. }
+
+
+
+{\color{red} TODO: properly pareto optimal}
+
+%
+% Section: Inaccuracy of Joint Representations
+%
+
+\section{Inaccuracy of Joint Representations}
+
+Given two representations $r$ and $s$, we want to know the inaccuracy of the model $d$ when describing the joint representation $rs$. Since we require that $rs$ must be a valid representation, the formalization of the concept of inaccuracy applied to joint representation is straightforward, and it does not require a new definition:
+\[
+\iota(d, rs) = \frac{ \max\{ K \left(rs \mid \delta(d) \right), K \left( \delta(d) \mid rs \right) \} } { \max\{ K(rs), K \left(\Gamma(d) \right) \} }
+\]
+As a direct consequence of Proposition \ref{prop:range_miscoding}, if $r, s \in \mathcal{B}^\ast$ are two arbitrary representations and $d \in \mathcal{D}$ is a description, we have that $0 \leq \iota(d, rs) \leq 1$.
+
+{\color{red} TODO: Recall the properties of NID, and particularize for the case of inaccuracy of joint representations.}
+
+
 %
 % Section: Inaccuracy of Areas
 %
 
 \section{Inaccuracy of Areas}
 
-The concept of conditional inaccuracy can be extended to research areas in order to quantitative measure the amount of effort required to fix an inaccurate description of the area assuming some already existing background knowledge.
+An area $\mathcal{A}$ is a subset $\mathcal{A} \subset \mathcal{E}$ of entities that are related of share a common property.The concept of conditional inaccuracy can be extended to research areas in order to quantitative measure the amount of effort required to fix an inaccurate description of the area assuming some already existing background knowledge. Recall that if $r_1, r_2, \ldots, r_n$ are $n$ representations, the joint representation $r_1 r_2 \ldots r_n$ encodes a single entity, while the $n$-folded representation $\langle r_1, r_2, \ldots, r_n \rangle$ might encode to up to $n$ distinct entities. Unfortunately, there is no way to check if the strings included in a $n$-fold representation correspond to entities to the area $\mathcal{A}$, or to avoid the fact that some of these strings might represent the same entity.
 
-{\color{red} TODO: review notation}
+The following defintion extend the concept of inacuraccy to $n$-fold representations.
 
 \begin{definition}
 Let $\mathcal{A} \subset \mathcal{E}$ be an area with known subset $\hat{\mathcal{A}} = \{r_1, r_2, \ldots, r_n\}$, $s \in \mathcal{B}^\ast$ a string, and $d_{\hat{\mathcal{A}} \mid s}$ a condtional description. We define the \emph{inaccuracy of the area} $d_{\hat{\mathcal{A}}}$ as:
@@ -233,10 +251,36 @@ Let $\mathcal{A} \subset \mathcal{E}$ be an area with known subset $\hat{\mathca
 
 {\color{red}
 
+The inaccuracy of a description conveniently falls within the range of $0$ and $1$, as illustrated by the following proposition.
+
+\begin{proposition}
+\label{prop:inaccuracy:inaccuracy:range}
+For all representations $r \in \mathcal{B}^\ast$ and all descriptions $d \in \mathcal{D}$, it is true that $0 \leq \iota(d, r) \leq 1$.
+\end{proposition}
+\begin{proof}
+This is because for all $x, y \in \mathcal{B}^\ast$, it follows that $0 \leq \frac{ \max\{ K(x \mid y), K(y \mid x) \} } { \max\{ K(x), K(y) \} } \leq 1$ in accordance with Proposition \ref{prop:ncd_between_zero_and_one}.
+\end{proof}
+
+The preceding proposition applies to all possible descriptions $d$ and representations $r$, even in cases where a description $d$ is not intended to model the representation $r$. In such scenarios, the inaccuracy would be approximately one.
+
+Inaccuracy is exactly zero if, and only if, the description $d$ constitutes one of the feasible valid descriptions of the representation $r$.
+
+\begin{proposition}\label{prop:perfect_description}
+Given a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{B}^\ast$, it is the case that $\iota(d, r) = 0$ if, and only if, $d$ is a member of the valid descriptions of $r$, i.e., $d \in \mathcal{D}_r$.
+\end{proposition}
+\begin{proof}
+If $d$ belongs to the set $\mathcal{D}_r$, it follows that $K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) = 0$, implying that $\iota(d, r) = 0$. Conversely, if $\iota(d, r) = 0$, it means that $\max\{ K \left( r \mid \delta(d) \right), K \left( \delta(d) \mid r \right) \} = 0$. This leads to the conclusion that $K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) = 0$ and, consequently, $d$ is part of the set of valid descriptions for $r$, i.e., $d \in \mathcal{D}_r$.
+\end{proof}
+
+}
+
+
+{\color{red}
+
 TODO: Recall the properties of areas, and particularize for the case of inaccuracy.
-TODO: Study the miscoding of subareas of areas in relation to the miscoding of areas
+TODO: Study the inaccuracy of subareas of areas in relation to the inaccuracy of areas
 TODO: Say something about the concept of intradisciplinary and interdisciplinary in the context
-of miscoding and provide a reference to the chapter of computational creativity.
+of inaccuracy and provide a reference to the chapter of computational creativity.
 
 }
 

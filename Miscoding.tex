@@ -82,7 +82,7 @@ For a given entity $e$, all valid representations encompassed by $\mathcal{R}^\s
 % Section: Miscoding of Joint Representations
 %
 
-\section{Miscoding of Joint Representations}
+\section{Joint Miscoding}
 \label{sec:joint_miscoding}
 
 Section \ref{sec:descriptions_joint_topic} introduced the notion of 'joint representation'\index{Joint representation}, which arises when two representations, $s, t \in \mathcal{B}^\ast$, are concatenated to form a new string $st$. This section delves into the properties of miscoding intrinsic to these joint representations.
@@ -96,19 +96,21 @@ In alignment with Proposition \ref{prop:range_miscoding}, the miscoding of a joi
 It is worth noting that the process of supplementing an incomplete representation — a representation with a positive miscoding — with additional symbols does not unequivocally guarantee a reduction in miscoding. This is because the appended symbols may introduce errors. Conversely, it is also not certain that the miscoding will increase, as the integration of pertinent symbols can potentially decrease the miscoding of an incomplete representation. From a formal point of view, given two arbitrary representations $s, t \in \mathcal{B}^\ast$, there is no guarantee that any of the following relationships will consistently hold: $\mu(ts) \geq \mu(t)$, $\mu(ts) \leq \mu(t)$, $\mu(ts) \geq \mu(s)$, nor $\mu(ts) \leq \mu(s)$.
 
 \begin{example}
-{\color{red} TODO: provide a couple of practical counterexamples covering the cases $\mu(ts) \geq \mu(t)$ and $\mu(ts) \leq \mu(t)$.}
+Consider the text $r$ of a biology research article that succinctly and accurately describes a newly discovered specimen, resulting in a low miscoding value $\mu(r)$. However, when additional text $s$ from a completely unrelated article on a second specimen from a different species is appended, the new concatenated representation $rs$ muddles the original focus. This inclusion of unrelated content increases the miscoding value $\mu(ts) = 0.6$, proving the case where $\mu(ts) \geq \mu(t)$. The added text, though scientific, dilutes the clarity and precision of the original article, causing a rise in miscoding.
+
+Conversely, in a second scenario, another biological research article $r'$ has a relatively high miscoding value of $\mu(r')$, stemming from an incomplete presentation of the specimen. However, the concatenation of an additional text $s'$, rich with the previously omitted essential details, ameliorates the article. The concatenated version $ts$ thus sees a significant reduction in miscoding. This exemplifies the case of $\mu(ts) \leq \mu(t)$ and underscores the premise that the enrichment of an incomplete representation with pertinent, focused information can lead to a more accurate, reliable, and lower miscoding value.
 \end{example}
 
 Furthermore, it should not be assumed that the miscoding of a joint representation is less than the sum of the miscoding of the individual representations, i.e., $\mu( st ) \leq \mu(s) + \mu(t)$. This holds true even when both representations $t$ and $s$ encode the same entity, as the joint representation $ts$ might encode an entirely distinct entity compared to $t$ and $s$.
 
 \begin{example}
-{\color{red} TODO: provide a practical counterexample of the property: $\mu( st ) \leq \mu(s) + \mu(t)$}
+In a medical research context, representation $r$ describes a new drug compound $A$ for treating a specific type of cancer, while representation $s$ outlines a genetic mutation $B$ associated with that cancer type. Both $r$ and $s$ have low miscoding values, denoting accurate, focused content. However, when concatenated, the combined representation $rs$ unintentionally suggests a third entity $C$, implying a causal relationship between $A$ and $B$. This unintended implication stems from the mixture of distinct information, leading to a higher miscoding value. In this instance, each of $r$, $s$, and $rs$ essentially represents different research entities. $r$ and $s$ are clear in their individual contexts, but $rs$ is ambiguous, exemplifying a case where concatenated information can inadvertently create a representation of an entirely different, unintended entity, thus increasing miscoding.
 \end{example}
 
 Given the non-commutative nature of joining two representations, it is not guaranteed that $\mu(ts) = \mu(st)$. This is because the composite strings $ts$ and $st$ could potentially encode two different entities. This property hold true even when we restrict our focus to the valid representations of a specific entity $e$. For instance, if $r^\star_e, s^\star_e \in \mathcal{R}^\star_{e}$ denote two valid representations of the entity $e$, there is no guarantee that the concatenated string $r^\star_e s^\star_e$ will maintain its status as a representation of $e$.
 
 \begin{example}
-{\color{red} TODO: provide a practical counterexample of $\mu(ts) = \mu(st)$}
+In environmental science, representation $r$ thoroughly examines microplastics, their nature, and detrimental impacts on marine ecosystems, while representation $s$ outlines specific technologies and methodologies for detecting these pollutants in the water. The $rs$ concatenation offers a logical narrative from the identification of microplastics and their effects to the methodologies of detection, forming a coherent entity that serves as a comprehensive resource on the pollutant, its impacts, and detection methods, and which is not fully understood. Conversely, $sr$ starts with the technical and methodological aspects of detecting microplastics and then moves to describe the pollutants and their effects, forming another clear entity that can serve as a methodological guide with a detailed context of application, with low miscoding. In this particular case we have that $\mu(rs) > \mu(sr)$
 \end{example}
 
 The concept of miscoding can be generalized to apply to joint representations of any finite collection of representations. If $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$ comprise a finite collection of representations, the miscoding of the joint representation $r_1 r_2, \ldots r_n$, can be expressed as:
@@ -117,17 +119,11 @@ The concept of miscoding can be generalized to apply to joint representations of
 \]
 Consistent with the case of joining two representations, we maintain that $0 \leq \mu(r_1, r_2, \ldots, r_n) \leq 1$. It cannot be assured that $\mu(r_1, r_2, \ldots, r_n) \leq \mu(r_i)$ or $\mu(r_1, r_2, \ldots, r_n) \geq \mu(r_i)$ for $i = 1, \ldots, n$. Additionally, it is not necessarily true that $\mu(r_1, r_2, \ldots, r_n) \leq \mu(r_1) + \ldots + \mu(r_n)$. Lastly, it is not possible to make any assertions regarding the miscoding of a permutation of the representations incorporated in the joint representation compared to the original miscoding.
 
-{\color{red} Role of Redundancy: It would be intriguing to explore how redundancy in joint representations (i.e., repeated or unnecessary information) affects miscoding.}
-
-\begin{example}
-{\color{red} TODO: provide an example relating miscoding and redundancy in representations.}
-\end{example}
-
 %
 % Section: Reducing Miscoding
 %
 
-\section{Reducing Miscoding}
+\section{Decreasing Miscoding}
 
 A valid representation of an entity refers to a string that encapsulates all the vital information needed by the oracle to reproduce the given entity, and solely that information. Conversely, an invalid representation—signified by a miscoding exceeding zero—may stem from either a lack of critical information, the presence of incorrect symbols, or the inclusion of irrelevant symbols. To decrease the miscoding of a representation, one can supplement missing information or eliminate incorrect or non-pertinent symbols. Determining in advance whether any information is absent or if certain symbols require removal is not possible. Nonetheless, as the ensuing theorem demonstrates, one of these scenarios must inevitably be true.
 
@@ -153,11 +149,11 @@ Let $r^\star_e = \text{arg}\,\min \left( \mu(r) \right)$. Hence, $\max\{ K \left
 Suppose that the research entity $e$ in which we are interested is the causes of lung cancer. In order to understand this entity, we have measured a collection of risk factors in a random sample of the population (smooking, exercise, diet, age, etc.). However, due to a problem with the sampling procedure, all the samples correspond to a subset of the population, for example, males. This dataset would be a representation $s$ for our entity $e$, but a very bad one, since it is strongly biased. If we have a second representation, corresponding the sample data of females $t$, the joint representation $st$ will be a better one that any of them, $s$ or $t$, isolated.
 \end{example}
 
-{\color{red} TODO: Provide an example of the second case (removing some symbols)}
+Next example describes a case in which removing some symbols from a representation can decrease its miscoding.
 
-{\color{red} How does the quantity of miscoding reduction correlate with the number of symbols added or removed? Is there a linear, exponential, or logarithmic relationship?}
-
-{\color{red} How sensitive is a representation's miscoding to the addition or removal of symbols? This may help us understand how robust different encoding schemes (oracles) are to changes in their representations.}
+\begin{example}
+A historian compiles representation $r$, aiming to narrate the events surrounding the signing of a pivotal treaty. However, the inclusion of speculative statements and personal interpretations about the involved parties’ intentions, not backed by primary sources, leads to a high miscoding value. The document, while rich in information, is clouded by content that is erroneous, making it an invalid representation of the historical event. By removing these speculative and unverified segments, a refined version $r’$ emerges, offering a concise, factual account based solely on verifiable data and primary sources. This refinement leads to a decrease in the miscoding value, transforming $r’$ into a more valid representation that accurately reflects the historical event without the noise of uncorroborated interpretations.
+\end{example}
 
 %
 % Section: Targetless Representations

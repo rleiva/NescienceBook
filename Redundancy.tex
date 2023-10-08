@@ -34,7 +34,7 @@ In this chapter, we will formally introduce the concept of surfeit and delve int
 \section{Surfeit}
 \label{sec:Definition_redundancy}
 
-Given the length of a description of a representation for an entity, and the length of its shortest possible description, we can introduce a relative measure of how much unneeded effort we are using to explain the entity when using that description. We call this quantity \emph{surfeit}, and it will be part of our definition of nescience, that is, how much we do not know about that research entity.
+Given the length of a description of a representation for an entity and the length of its shortest possible description, we can introduce a relative measure to quantify the unnecessary effort expended in explaining the entity with that particular description. We term this quantity \emph{surfeit}, and it constitutes an integral component of our definition of nescience, representing the extent of our ignorance about the research entity.
 
 \begin{definition}[Surfeit]
 Given a representation $r \in \mathcal{B}^\ast$, and $d \in \mathcal{D}$ a description for $r$, we define the \emph{surfeit of the description $d$ for the representation $r$}, denoted by $\sigma(d, r)$, as
@@ -43,33 +43,40 @@ Given a representation $r \in \mathcal{B}^\ast$, and $d \in \mathcal{D}$ a descr
 \]
 \end{definition}
 
-For the majority of the descriptions it will be the case that the length of the description $l(d)$ for $r$ is greater that the length of its shortest possible description $K(r)$. Intuitively, the more ignorant we are about an entity, the longer will be our description, since a better understanding of that entity means that we should be able to remove all the redundant elements from its description. However, it migth also be the case that the description is shorter than the optimal description. In that case, we are oversimplifying the problem, which is also a bad thing. This is why we use the absolute value $| l(d) - K(r) |$ instead of symply $l(d) - K(r)$. Of course, the description in use could be inaccurate, and the representation could be non-valid, but these issues have been already addressed by the metrics of inaccuracy and miscoding.
+For the majority of descriptions, it will be the case that the length of the description $l(d)$ for $r$ exceeds the length of its shortest possible description $K(r)$. Intuitively, the more ignorant we are about an entity, the longer our description will be. A refined understanding of the entity should enable us to eliminate all redundant elements from its description. However, there might also be instances where the description is shorter than the optimal one. In such cases, we are oversimplifying the problem, which is equally detrimental. This is the rationale behind using the absolute value $| l(d) - K(r) |$ instead of simply $l(d) - K(r)$. Naturally, the current description might also be inaccurate, and the representation could be invalid. However, these issues are addressed by the metrics of inaccuracy and miscoding.
 
-In our definition of surfeit we have used a relative measure instead of an absolute one (i.e., $| l(d) - K(r) |$), because beside to compare the surfeit of different models for the same entity, we are also interested in to compare the surfeit of different entities. We prefer to use $K(r)$ instead of the equivalent $l \left( r^\star \right)$ in order to be consistent with the definition of inaccuracy provided in Section \ref{sec:inaccuracy:inaccuracy}.
-
-\begin{remark}
-We could have used the normalized information distance between our description and an optimal description as a measure of sufeit, trying to be consistant with the definitions of miscoding and inaccuracy. Since we do not want to favour one of the possible descriptions of $r$ over the other, we have to compute the minimum distance with respect to all possible minimal descriptions of $r$:
-\[
-\sigma (d, r) = { \underset{ d^\star \in d^\star_r } \min} \frac{ \max\{ K \left( d \mid d^\star \right), K \left( d^\star \mid d \right) \} } { \max\{ K \left( d \right), K \left( d^\star \right) \} }
-\]
-This definition has the potential to replace not only our current definition of surfeit, but also the entire concept of inaccuracy, since when the distance between our description and an optimal description is zero, inaccuracy will also be zero. However, this approach is difficult to implement in practice, since it requires to know all possible descriptions of $r$. Even if we fix one of the poosibles styles of $e$ admited by the oracle, that description is unknown.
-\end{remark}
+In our definition of surfeit, we opted for a relative measure rather than an absolute one (i.e., $| l(d) - K(r) |$) because we are interested not only in comparing the surfeit of different models for the same entity but also in comparing the surfeit across different entities. We prefer to use $K(r)$ instead of the equivalent $l \left( r^\star \right)$ to maintain consistency with the definition of inaccuracy provided in Section \ref{sec:inaccuracy:inaccuracy}.
 
 \begin{example}
-{\color{red} TODO: Provide an example to clarify the concept.}
+In a practical machine learning scenario, consider a task of classifying images of cats and dogs, being our representation a set of training images. An initial complex model, encumbered with excessive parameters and unnecessary features, represents a lengthy "description" of the problem. The optimal model, however, balances accuracy and simplicity. The surfeit measures the excess complexity of the initial model compared to this optimal one. It quantifies the "extra" elements that aren't essential for accurate classification. A high surfeit indicates an overly complicated model, signaling the need for refinement to achieve efficiency and effectiveness, a principle crucial in machine learning for developing models that generalize well to unseen data.
 \end{example}
 
 The surfeit of a description is a number between $0$ and $1$.
 
 \begin{proposition}
 \label{prop:range_redundancy}
-Let $r \in \mathcal{B}^\ast$ be a representation , and $d \in \mathcal{D}^\star_r$ one of its valid descriptions, then we have that $0 \leq \sigma(d, r) \leq 1$.
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}^\star_r$ one of its {\color{red} XXX valid descriptions}, then we have that $0 \leq \sigma(d, r) \leq 1$.
 \end{proposition}
 \begin{proof}
-Given that $l\left( d \right)>0$ and that $K\left( r \right)>0$, since they are the lengths of non-empty strings, and that $l\left( d \right) \geq K\left( r \right)$ since we do not consider pleonastic descriptions.
+Given that $l\left( d \right)>0$ and $K\left( r \right)>0$, as they are the lengths of non-empty strings, and $l\left( d \right) \geq K\left( r \right)$ because we are not considering {\color{red} XXX pleonastic descriptions}.
 \end{proof}
 
-{\color{red} Explain when it is the case that surfait is zero, and that there could be more than one description that makes surfeit zero for the same representation.}
+The surfeit is zero when the length of the description \(l(d)\) is equal to the Kolmogorov complexity \(K(r)\) of the representation of the entity, signifying that the description has achieved theoretical conciseness.
+
+\begin{proposition}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}$ a description for $r$, then we have that  $\sigma(d, r) = 0$ if and only if $l(d) = l(d^\star)$.
+\end{proposition}
+\begin{proof}
+As a direct consequence of the definition of Kolmogorov complexity.
+\end{proof}
+
+It is essential to distinguish between conciseness and correctness. A zero surfeit highlights the optimal brevity of the description, but not necessarily its accuracy. The accuracy, or correctness, of the description is evaluated by the metric inaccuracy. Thus, while a zero surfeit points to a minimally lengthy, streamlined description, the inaccuracy metric is consulted to determine the extent to which this concise description is correct and reliable. Together, surfeit and inaccuracy offer a comprehensive assessment of the description's efficiency and validity.
+
+\begin{example}
+In a machine learning scenario, a model designed to classify emails as spam or not has achieved a surfeit of zero, indicating optimal conciseness with no superfluous elements. However, despite its streamlined complexity, the model is found to have high inaccuracy, frequently misclassifying emails. This illustrates the dichotomy between surfeit and inaccuracy. While the model is theoretically as concise as possible, signified by the zero surfeit, its practical application is hampered by incorrect classifications, highlighted by the inaccuracy metric. This underscores the necessity to balance a minimal surfeit with low inaccuracy to achieve a model that is both efficient and accurate.
+\end{example}
+
+{\color{red} Explain  that there could be more than one description that makes surfeit zero for the same representation.}
 
 Our definition of surfeit compares the length of a description with the Kolmogorov complexity of the representation, not with the Kolmogorov complexity of the description itself (i.e., $K\left( d \right)$). That is, surfeit is not a measure of the redundancy of a description. It might happen that we come up with an incompressible description (no redundant elements to remove), that it is not the shortest possible one that describes the representation (see Example \ref{ex:description_neural}). Such a description would not be redundant in the traditional sense, but it still will present some surfeit in the sense of the theory of nescience. Moreover,it migth happen that the description $d$ we are considering does not describe the representation $r$, that is, $d \in \mathcal{D}_r$. In practice it is highly convenient to introduce the following alternative (we could say weaker) characterization of the concept of redundant model:
 

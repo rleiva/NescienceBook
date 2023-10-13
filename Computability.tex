@@ -30,18 +30,40 @@ Turing machines illuminate the inherent limitations of our computational capabil
 % Section: Turing Machines
 %
 
-\section{Turing Machines}\index{Turing Machine}
+\section{Turing Machines}
 \label{sec:Turing-Machines}
 
-A Turing machine is a extremely simplified model of a general purpose computer, but capable of solving any problem that real computers can solve. From an intuitive point of view, we could see the machine as composed of a head that operates on a two-way infinite striped tape of symbols; at every time step the machine reads the symbol under the head and decides whether to write a new symbol on the tape, move the head one square (left or right), or do both things; algorithms are implemented using an internal table of rules in the control head, and the actual input to the algorithm is codified on the tape; when the machine reaches the final state, the algorithm's output is on the tape. Figure \ref{fig:Turing-Machine} depicts an example of a machine in its initial state with the head located at the beginning of the input string.
+A Turing machine is an extremely simplified model of a general-purpose computer, yet it is capable of solving any problem that real computers can address. Intuitively, one can envision the machine as consisting of a head that operates on a two-way infinite tape striped with symbols. At each time step, the machine reads the symbol under the head and decides to either write a new symbol on the tape, move the head one square to the left or right, or execute both actions. Algorithms are implemented using an internal table of rules housed within the control head, and the actual input to the algorithm is encoded on the tape. Once the machine reaches its final state, the algorithm's output can be read from the tape. Figure \ref{fig:Turing-Machine} depicts an example of a machine in its initial state, with the head located at the beginning of the input string.
 
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{TM}
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=stealth', shorten >=1pt, auto, node distance=2cm]
+    % Draw tape
+    % \draw[thick] (-3,0) -- (3,0);
+    \foreach \x in {-2.5,-1.5,...,2.5} {
+        \draw (\x,-0.5) rectangle ++(1,1);
+    }
+    
+    % Draw tape head
+    \node[draw, rectangle, minimum height=1cm, minimum width=1cm, thick] (head) at (0.5,1.5) {Head};
+    
+    % Draw symbols on the tape
+    \node at (-2,0) {1};
+    \node at (-1,0) {0};
+    \node at (0,0) {1};
+    \node at (1,0) {0};
+    \node at (2,0) {1};
+    
+    % Draw arrow from head to tape
+    \draw[->] (head) -- (1,0.5);
+\end{tikzpicture}
 \caption{\label{fig:Turing-Machine}Turing Machine}
 \end{figure}
 
+The following definition formally introduces the concept of a Turing machine.
+
 \begin{definition}[Turing Machine]
-\label{def:Turing-Machine}
+\label{def:Turing-Machine}\index{Turing machine}
 A \emph{Turing machine} is a 7-tuple $\left(Q,\Gamma,\sqcup,\Sigma,q_{i},q_{f},\tau\right)$ where:
 \begin{align*}
  & Q \quad \text{is a finite, non-empty, set of \emph{states},} \index{Machine State} \\
@@ -54,13 +76,13 @@ A \emph{Turing machine} is a 7-tuple $\left(Q,\Gamma,\sqcup,\Sigma,q_{i},q_{f},\
 \end{align*}
 \end{definition}
 
-The algorithm implemented by the machine is given by the transition function $\tau$. This function specifies that given the current state of the machine and the tape symbol under the head, the machine will reach a new state, will write a new symbol on tape (or leave the old symbol unchanged), and will move the head to the left, to the right, or stay in place ($L$, $R$ or $S$ respectively). After a finite, uniquely determined, succession of steps, the machine will reach the final state $q_f$ and \emph{halts} (the machine does not make any further move after halting). The output of the algorithm is the unique string of symbols $s \in \Sigma^\ast$  that is left on the tape after halting. Eventually, some machines could iterate forever, never halting. If an undefined transition is reached, the machine will get stalled.
+The algorithm executed by the machine is defined by the transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$ and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Sigma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, it stalls.
 
-The input to the machine is a string of symbols, and we assume that in the initial state the head of the machine is located at the first symbol of the input string. If we want to solve a problem related to an object $O$ other than a string, fist we have to provide a method to encode that object using a string $\left\langle O \right\rangle$.
+The machine's input consists of a string of symbols, with the assumption that the machine's head is initially positioned at the first symbol of the input string. To address problems involving an object $O$ that isn’t a string, we must first develop a method to encode that object as a string, denoted as $\left\langle O \right\rangle$.
 
 \begin{example}
 \label{ex:Turing-Machine}
-The following Turing machine solves the problem of adding two natural numbers: the set of states is $Q = \left\{q_{o}, q_{1}, q_{f}\right\}$, the set of tape symbols is $\Gamma = \left\{0, 1, \sqcup \right\}$, the set of input symbols is $\mathcal{B} = \left\{0, 1 \right\}$, and the transition function is given by the following table (rows are indexed by machine states, and columns by tape symbols):
+The following Turing machine is designed to solve the problem of adding two natural numbers. It consists of the set of states $Q = \left\{q_{o}, q_{1}, q_{f}\right\}$, the set of tape symbols $\Gamma = \left\{0, 1, \sqcup \right\}$, and the set of input symbols $\mathcal{B} = \left\{0, 1 \right\}$. The transition function is defined in the table below, where rows are indexed by machine states, and columns by tape symbols:
 
 \begin{table}[h]
 \centering
@@ -75,37 +97,52 @@ $q_{1}$ & $\left(q_{f}, 1     , S\right)$ & $\left(q_{f}, 1     , R\right)$ & $\
 \caption{Transition Rules}
 \end{table}
 
-Given the natural numbers $n$ and $m$, the input string for this machine is $n$ 1's followed by a $0$ and followed by $m$ 1's. The output is a string of $n+m$ consecutive 1's. For example, if we want to add the numbers 2 and 3 the input string should be $\sqcup 1 1 0 1 1 1 \sqcup$, and the machine output string would be $\sqcup 1 1 1 1 1 \sqcup$.
+For natural numbers $n$ and $m$, the input string is composed of $n$ occurrences of the symbol ‘1’, followed by a ‘0’, and then followed by $m$ occurrences of ‘1’. The machine's output will be a string of $n+m$ consecutive ‘1’s. For instance, to add the numbers 2 and 3, the input string should be $\sqcup 1 1 0 1 1 1 \sqcup$, resulting in the output string $\sqcup 1 1 1 1 1 \sqcup$.
 \end{example}
 
-A Turing machine can be also represented by a \emph{state diagram}\index{State diagram}. A state diagram is similar to a labeled directed graph\footnote{In this particular case we allow loops and multiple edges coming out from vertices.} where the vertices are the states of the machine, the edges represent a movement from one state to another state, and the edge labels shows the symbol under the head that yields to the new state, together with the symbol written down in the tape and the movement of the head. Under these conventions, the state diagram of the Turing machine of Example \ref{ex:Turing-Machine} is depicted in Figure \ref{fig:Example-Turing-Machine}.
+A Turing machine can also be represented by a \emph{state diagram}\index{State diagram}. A state diagram is similar to a labeled directed graph\footnote{In this particular case, we allow loops and multiple edges originating from vertices.} where the vertices represent the states of the machine. The edges signify transitions from one state to another, and the edge labels indicate the symbol under the head that leads to the new state, the symbol that gets written on the tape, and the direction in which the head moves. Following these conventions, the state diagram for the Turing machine in Example \ref{ex:Turing-Machine} is depicted in Figure \ref{fig:Example-Turing-Machine}.
 
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{ETM}
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto] 
+   \node[state,initial] (q_0)   {$q_0$}; 
+   \node[state] (q_1) [right=of q_0] {$q_1$}; 
+   \node[state] (q_f) [right=of q_1] {$q_f$}; 
+   
+   \path[->] 
+    (q_0) edge  node {1$\to$$\sqcup$,R} (q_1)
+    (q_0) edge[bend right] node[below] {0$\to$$\sqcup$,R} (q_f)
+    (q_1) edge  node {0$\to$1,S} (q_f)
+    (q_1) edge [loop above] node {1$\to$1,R} ();
+\end{tikzpicture}
 \caption{\label{fig:Example-Turing-Machine}Example of Turing Machine}
 \end{figure}
 
-It is a remarkable fact that small changes to the actual definition of Turing machine do not alter its power. That is, it is a highly robust definition. In Example \ref{ex:multitape_turing_machine} it is shown that adding more tapes to the machines does not increase the number of problems that can be solved using this model. Similar proofs can be provided for the case of adding a finite storage to the control tape, allowing parallel processing with multiple control heads, and so on.
+It is a remarkable fact that minor alterations to the definition of a Turing machine do not change its computational power. In other words, the definition is highly robust. In Example \ref{ex:multitape_turing_machine}, it's demonstrated that adding more tapes to the machine doesn't expand the range of problems it can solve. Similar arguments can be made when adding finite storage to the control tape, allowing for parallel processing with multiple control heads, and so on.
 
 \begin{example}
 \label{ex:multitape_turing_machine}
-A \emph{multitape Turing machine}\index{Multitape Turing machine} is a Turing machine that has multiple heads with their corresponding tapes. At the starting configuration the input string is in tape 1 and all the others tapes are blank. The transition function of a multitape Turing machine is:
+A \emph{multitape Turing machine}\index{Multitape Turing machine} is a Turing machine equipped with multiple heads and their respective tapes. In the initial configuration, the input string resides in tape 1, while the other tapes are blank. The transition function for a multitape Turing machine is:
 \[
-\tau:\left(Q \setminus q_{f} \right) \times \Gamma^k \rightarrow  Q \times \Gamma^k \times \left\{L,R,S\right\}^k.
+\tau:\left(Q \setminus q_{f} \right) \times \Gamma^k \rightarrow  Q \times \Gamma^k \times \left\{L,R,S\right\}^k,
 \]
-where $k$ is the number of tapes. Multitape Turing machines are equivalent to regular Turing machines. We can prove this assertion by providing a mechanism in which a regular Turing machine can simulate the behavior of a multitape machine. In order to do that we have to encode the content of the multiple tapes into a single tape, introducing a new symbol that will act as tape separator, and to codify the location of the heads in all those tapes, by means of a new head location symbol. If the tape separation symbol is $|$ and the head location symbol is $h$, a simulation tape of a 3-tapes machine could looks something like $\sqcup01h00|000h1|h0101\sqcup$. The operation of the regular machine just scans one by one the subtapes locating the head position and performing the required transition. If the computation of one subtape requires to write a new symbol beyond it limits, we have to shift the rest of the symbols to make room to the new symbol. Of course, the operation of the simulation will be much slower than the original multitape machine, but the set of problems that can be solved with the two types of machines is exactly the same.
+where $k$ denotes the number of tapes. Multitape Turing machines are equivalent in power to standard Turing machines. We can validate this claim by devising a method for a standard Turing machine to mimic a multitape machine's behavior. This requires encoding the content of multiple tapes onto a single tape, introducing a new symbol as a tape separator, and encoding the positions of the heads across the tapes with a distinct head location symbol. If we designate the tape separation symbol as $|$ and the head location symbol as $h$, a simulation tape for a machine with 3 tapes might appear as $\sqcup01h00|000h1|h0101\sqcup$. The standard machine's operation would involve scanning the subtapes one by one, pinpointing the head's location, and executing the necessary transition. If the computation on one subtape necessitates writing a new symbol beyond its boundary, we'd need to shift subsequent symbols to accommodate the new one. While the simulation might operate at a slower pace than the original multitape machine, both machine types can solve an identical set of problems.
 \end{example}
 
-Without any loss of generality, for the rest of this book we will assume that the set of input symbols $\Sigma = \mathcal{B}$ and that the set of tape symbols $\Gamma = \left\{0, 1, \sqcup \right\}$.
+For the remainder of this book, without any loss of generality, we'll assume that the set of input symbols is $\Sigma = \mathcal{B}$ and the set of tape symbols is $\Gamma = \left\{0, 1, \sqcup \right\}$.
+
+In addition to providing a formal definition of a Turing machine, it's essential to formally outline its computational process. This entails detailing how the machine reads the input string, produces the output string, and transitions between states during computation. We will start by defining the concept of the machine's internal configuration. This configuration captures the machine's current state and position, as well as the present state of the tape.
 
 \begin{definition}\index{Configuration}
-A \emph{configuration} of a Turing machine $T$ is the 3-tuple $\left(q,s,i\right)$, where $q\in Q$ is an state of the machine, $s\in\Gamma^+$ is a string with the contents of the tape (excluding the blank symbols), and $1 \le i \le n$ is the index of the symbol $s_i$ under the head, where $s_1$ is the first non-blank symbol of the tape and $n=l(s)$. 
+A \emph{configuration}\index{Configuration} of a Turing machine $T$ is the 3-tuple $\left(q,s,i\right)$, where $q\in Q$ represents a state of the machine, $s\in\Gamma^+$ denotes a string containing the tape's content (excluding the blank symbols), and $1 \le i \le n$ is the index of the symbol $s_i$ beneath the head. Here, $s_1$ is the first non-blank symbol on the tape, and $n=l(s)$. 
 \end{definition}
 
-Configurations allow us to losslessly describe the current state of a Turing machine. At any step of a computation we could stop the machine, write down its current configuration, and later on continue the computation at the same point where we left, just by reading its configuration.
+Configurations enable us to describe the current state of a Turing machine without any loss of information. At any stage of computation, one could halt the machine, record its configuration, and later resume the computation from the exact point of interruption using this configuration.
+
+The following definition explains how we transition from one configuration to the next during computation.
 
 \begin{definition}\index{Configuration yields configuration}
-We say that configuration $C=\left(q,s,i\right)$ \emph{yields} configuration $C'=\left(r,s',j\right)$ if there exists a transition $\tau:\left(q, s_{i}\right) = \left(r, s'_{i}, a\right)$, where $s=s_{1} \dots s_{i-1}s_{i}s_{i+1} \dots s_{n}$, $s'=s_{1} \dots s_{i-1}s'_{i}s_{i+1} \dots s_{n}$, and
+A configuration $C=\left(q,s,i\right)$ \emph{yields}\index{Yield} another configuration $C'=\left(r,s',j\right)$ if there exists a transition $\tau:\left(q, s_{i}\right) = \left(r, s'_{i}, a\right)$, where $s=s_{1} \dots s_{i-1}s_{i}s_{i+1} \dots s_{n}$, $s'=s_{1} \dots s_{i-1}s'_{i}s_{i+1} \dots s_{n}$, and
 \begin{equation}
   j = \begin{cases}
         i+1 & \text{if $a=R$} \\
@@ -115,16 +152,16 @@ We say that configuration $C=\left(q,s,i\right)$ \emph{yields} configuration $C'
 \end{equation}
 \end{definition}
 
-Given the concepts of configuration and configuration that yields a new configuration we can formally define what we mean by computation.
+Building on the concepts of configuration and one configuration yielding another, we can now formally articulate the notion of computation.
 
 \begin{definition}[Computation]\index{Computation}
-Let $T$ be a Turing machine, $C_{0}$ the starting configuration of the machine, and $C_n$ a configuration containing the final state $q_f$. A \emph{computation} under machine $T$ is a finite sequence of $n+1$ configurations $\left(C_{0},C_{1},\ldots,C_n\right)$ in which each configuration $C_{k}$ yields the configuration $C_{k+1}$, for all $0\leq k < n$.
+Let $T$ be a Turing machine, $C_{0}$ its initial configuration, and $C_n$ a configuration encompassing the final state $q_f$. A \emph{computation}\index{Computation} under machine $T$ refers to a finite sequence of $n+1$ configurations $\left(C_{0},C_{1},\ldots,C_n\right)$ wherein each configuration $C_{k}$ yields the subsequent configuration $C_{k+1}$, for all $0\leq k < n$.
 \end{definition}
 
-Computations are deterministic, that is, given a Turing machine $T$ and an input string $s$, the sequence of configurations is predetermined. If the machine $T$ does not halt, or it get stalled, on input $s$, we say that there was no computation.
+Computations are deterministic; meaning, for a given Turing machine $T$ and an input string $s$, the configuration sequence is preordained. If machine $T$ neither halts nor progresses with input $s$, we deduce the absence of computation.
 
 \begin{example}
-The computation of the Turing machine described in Example \ref{ex:Turing-Machine} with the input string $110111$ is the following sequence of configurations:
+The computation of the Turing machine described in Example \ref{ex:Turing-Machine} using the input string $110111$ results in the following sequence of configurations:
 
 \begin{enumerate}
 \item $(q_0, 110111, 1)$
@@ -135,14 +172,14 @@ The computation of the Turing machine described in Example \ref{ex:Turing-Machin
 
 \end{example}
 
-The next theorem states that our intuitive notion of computable procedure is equivalent to the concept of Turing machine. This result is not a regular theorem, since it cannot be formally proved. Some authors call it \emph{thesis} instead of theorem; Turing himself called it a \emph{definition}.
+Intuitively, a procedure is deemed computable by a human if it can be delineated through specific steps, executed systematically, without relying on intuition or ingenuity. This intuitive grasp aligns with the formalized concept of a Turing machine, bridging informal comprehension and the machine's rigorous definition—a cornerstone in the theory of computation. However, this alignment presents an intriguing challenge. Affirming that our grasp of computability mirrors a Turing machine's capabilities cannot be proven traditionally, as 'computability' lacks a well-defined interpretation. Consequently, some researchers categorize this as a \emph{thesis}, avoiding the formal 'theorem' label. Turing himself opted to term it a \emph{definition}, steering clear of denoting it as a theorem.
 
 \begin{theorem}[Turing's Thesis]
-\label{th:turing_thesis}
-A procedure can be computed by a human being if, and only if, it can be computed by a Turing machine.
+\label{th:turing_thesis}\index{Turing's thesis}
+A procedure is computable if, and only if, it can be executed by a Turing machine.
 \end{theorem}
 
-As we have mentioned in the introduction of this chapter, all the other alternative formalizations of the concept of computable procedure proposed so far are equivalent in expressive power to Turing machines. 
+To further underscore the significance and robustness of the Turing machine as a model of computation, it's worth noting, as mentioned earlier in this chapter, that all alternative formalizations of computability proposed to date align in terms of their computational capabilities with that of the Turing machine. This universality underscores the Turing machine's central position in the realm of theoretical computer science.
 
 %
 % Section: Universal Turing Machine

@@ -268,7 +268,7 @@ The next example introduces a well-defined, practical problem involving simple s
 
 \begin{example}
 \label{ex:PCP}
-Given two finite lists $\left( \alpha_1, \ldots, \alpha_n \right)$ and $\left( \beta_1, \ldots, \beta_n \right)$ of strings over some alphabet $\Sigma$, where $d(\Sigma) \ge 2$, the \emph{Post Correspondence Problem} (PCP) asks to determine if there exists a sequence of $K \geq 1$ indices $(i_k)$, with $1 \le i_k \le n$ for all $1 \le k \le K$, such that $\alpha_{i_1} \ldots \alpha_{i_K} = \beta_{i_1} \ldots \beta_{i_K}$. For instance, given the sequences $(a, ab, bba)$ and $(baa, aa, bb)$, a solution would be $\alpha_3 \alpha_2 \alpha_3 \alpha_1 = \beta_{3} \beta_{2} \beta_{3} \beta_{1}$. No algorithm exists to solve PCP. Like many proofs of incomputability, the proof proceeds by showing that HALT can be reduced to PCP, meaning if PCP is decidable, then the Halting Problem should be decidable as well. We will not detail the proof in this section; for interested readers, we refer to the references at the end of this chapter.
+Given two finite lists $\left( \alpha_1, \ldots, \alpha_n \right)$ and $\left( \beta_1, \ldots, \beta_n \right)$ of strings over some alphabet $\Sigma$, where $d(\Sigma) \ge 2$, the \emph{Post Correspondence Problem}\index{Post Correspondence Problem} (PCP) asks to determine if there exists a sequence of $K \geq 1$ indices $(i_k)$, with $1 \le i_k \le n$ for all $1 \le k \le K$, such that $\alpha_{i_1} \ldots \alpha_{i_K} = \beta_{i_1} \ldots \beta_{i_K}$. For instance, given the sequences $(a, ab, bba)$ and $(baa, aa, bb)$, a solution would be $\alpha_3 \alpha_2 \alpha_3 \alpha_1 = \beta_{3} \beta_{2} \beta_{3} \beta_{1}$. No algorithm exists to solve PCP. Like many proofs of incomputability, the proof proceeds by showing that HALT can be reduced to PCP, meaning if PCP is decidable, then the Halting Problem should be decidable as well. We will not detail the proof in this section; for interested readers, we refer to the references at the end of this chapter.
 \end{example}
 
 Non-computable problems are generally not derived directly from natural phenomena but from logical and mathematical constructs. To date, there are no known examples of non-computable problems manifesting plainly in natural phenomena. It's essential to distinguish between non-computability and unpredictability. Non-computable problems are those for which no algorithm can ever be created to solve them. In contrast, unpredictable systems (such as chaotic or complex systems) are theoretically computable but are unpredictable in practice due to factors like sensitivity to initial conditions or measurement precision.
@@ -280,39 +280,45 @@ Non-computable problems are generally not derived directly from natural phenomen
 \section{Computable Functions and Sets}
 \label{sec:computable_functions}
 
-Each Turing machine $T$ defines a function $f_T:\mathcal{B}^{\ast}\rightarrow\mathcal{B}^{\ast}$ that for each input string $s\in\mathcal{B}^{\ast}$ assigns the output string $T(s)\in\mathcal{B}^{\ast}$. This relation between Turing machines and functions allows us to introduce the concept of \emph{computable function}. 
+Each Turing machine \(T\) defines a function \(f_T:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) that assigns to each input string \(s \in \mathcal{B}^{\ast}\) an output string \(T(s) \in \mathcal{B}^{\ast}\). This relationship between Turing machines and functions forms the basis for introducing the concept of a \emph{computable function}, a fundamental element in the field of computational theory.
 
 \begin{definition}
 \label{def:computable-function}
-\index{Computable Function}
-A function $f:\mathcal{B}^{\ast}\rightarrow\mathcal{B}^{\ast}$ is \emph{computable} is there exist a Turing machine $T$ such that it defines the function $f$.
+\index{Computable function}
+A function \(f: \mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) is \emph{computable}\index{Computable function} if there exists a Turing machine \(T\) that defines the function \(f\).
 \end{definition}
 
-Computable functions are also called \emph{recursive functions}. However, since we are not going to cover the theory of recursive functions in this book, we prefer the term computable functions.
+The terminology in computational theory can vary. While computable functions are occasionally referred to as \emph{recursive functions}\index{Recursive function}, this book opts for the term computable functions for consistency.
 
 \begin{example}
-The function that assigns to each pair of natural numbers $x$ and $y$ its sum $x + y$ is a computable function, as it is shown in Example \ref{ex:Turing-Machine}. In this particular case, we have transformed the original function $f: \mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$ into a new function $g:\mathcal{B}^{\ast}\rightarrow\mathcal{B}^{\ast}$ by means of encoding natural numbers as strings of 1's, and the pair of numbers $x$, $y$ into a single string $\left\langle x, y \right\rangle$.
+In the context of this theoretical framework, let’s consider a practical example. The function that assigns to each pair of natural numbers \(x\) and \(y\) their sum \(x + y\) is computable, as demonstrated in Example \ref{ex:Turing-Machine}. The natural numbers and pairs are encoded as strings, transforming the original function into one operating in the realm of strings.
 \end{example}
 
-Partial functions can be defined by Turing machines that do not halt on the undefined values of the function.
+In real-world scenarios, certain functions don’t provide a defined output for all possible inputs. Partial functions, characterized by Turing machines that don’t halt for specific inputs, model these cases. This realistic representation of computational processes is essential in both theoretical exploration and practical application.
 
 \begin{definition}
-A partial function $f:\mathcal{B}^{\ast}\rightarrow\mathcal{B}^{\ast}$ is \emph{partial computable} is there exist a Turing machine $T$ such that it defines the function $f$ for those values in which $f$ is defined, and $T$ does not halt for those values in which $f$ is not defined.
+A partial function \(f:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) is \emph{partial computable}\index{Partial computable function} if there exists a Turing machine \(T\) that defines \(f\) for defined values and does not halt for undefined values.
 \end{definition}
+
+Partial functions, as next example shows, are only operational for certain input values. 
 
 \begin{example}
 The function $f: \mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that assigns to each pair of natural numbers $x$ and $y$ the number $x - y$ is a partial computable function, since it is not defined in the case that $x < y$.
 \end{example}
 
-We can apply the same concepts of computable and partial computable to sets.
+We can expand the application of the principles of computability and partial computability to the domain of sets. We characterize sets through the lens of theirs characteristic functions that discern the membership of elements within the sets.
 
 \begin{definition}
-A set $A \in \mathcal{B}^\ast$ is \emph{computable} if its characteristic function $\mathcal{X}_A$ is a total computable function. A set $A \in \mathcal{B}^\ast$ is \emph{computably enumerable} if its characteristic function $\mathcal{X}_A$ is a partial computable function, that is, $\mathcal{X}_A(a) = 1$ if $a \in A$, but $\mathcal{X}_A(a)$ is undefined if $a \not\in A$.
+A set $A \in \mathcal{B}^\ast$ is \emph{computable}\index{Computable set} if its characteristic function $\mathcal{X}_A$ is a total computable function. A set $A \in \mathcal{B}^\ast$ is \emph{computably enumerable}\index{Computably enumerable set} if its characteristic function $\mathcal{X}_A$ is a partial computable function, that is, $\mathcal{X}_A(a) = 1$ if $a \in A$, but $\mathcal{X}_A(a)$ is undefined if $a \not\in A$.
 \end{definition}
 
+The application of these concepts is illustrated through the example of the set of all Turing machines that halt for all inputs.
+
 \begin{example}
-The set of all Turing machines that halt on all inputs is not computable, as we have shown in Theorem \ref{th:halting-problem}, although it is computably enumerable.
+The set of all Turing machines that halt on all inputs, as demonstrated in \ref{th:halting-problem}, is not computable but is computably enumerable.
 \end{example}
+
+These definitions and examples provide insights into the delicate interplay between functions, sets, Turing machines, and the realm of the computability and non-computability.
 
 %
 % Section: Oracle Turing Machine

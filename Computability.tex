@@ -188,33 +188,33 @@ To further underscore the significance and robustness of the Turing machine as a
 \section{Universal Turing Machines}
 \label{sec:Universal-Turing-Machines}
 
-In Section \ref{sec:Turing-Machines} we saw how to store the current state of a Turing machine so that the computation could be stopped and later on resumed. In Example \ref{ex:Encoding_TM} we are going to see a similar procedure, not to store the current state of the machine, but to save a full description of the machine itself. This procedure will allow us to enumerate, that is, to list all possible Turing machines. This enumeration will enable us to prove that there exists problems that are not solved by any Turing machine (see Section \ref{sec:non_computable_problems}), and to introduce the very important concept of \emph{Universal Turing Machine}.
+In Section \ref{sec:Turing-Machines}, we explored storing the current state of a Turing machine, its configuration, to pause and later resume computation. In Example \ref{ex:Encoding_TM}, we will delve into a similar procedure, not for storing the machine's current state, but for saving a comprehensive description of the machine itself. This methodology facilitates the enumeration, or listing, of all possible Turing machines. Such enumeration is instrumental in demonstrating the existence of problems that cannot be solved by any Turing machine (refer to Section \ref{sec:non_computable_problems}) and unveiling the pivotal concept of the \emph{Universal Turing Machine}.
 
 \begin{example}
 \label{ex:Encoding_TM}
-In order to loosely describe a Turing machine we have to encode the transition function $\tau:\left(Q\setminus \{q_{f}\}\right)\times\Gamma\rightarrow Q\times\Gamma\times\left\{ L,R,S\right\}$. This function can be represented as a collection of quintuples $\left(q,s,r,t,a\right)$ where $q \in \left(Q\setminus \{q_{f}\}\right)$, $r \in Q$, $s$ and $t\in\Gamma$, and $a\in\left\{ L,R,S\right\}$. In this way, any Turing machine $T$ will be fully described by a collection of quintuples:
+To describe a Turing machine concisely, we need to encode the transition function $\tau:\left(Q\setminus \{q_{f}\}\right)\times\Gamma\rightarrow Q\times\Gamma\times\left\{ L,R,S\right\}$. This function can be represented as a collection of quintuples $\left(q,s,r,t,a\right)$, where $q \in \left(Q\setminus \{q_{f}\}\right)$, $r \in Q$, $s, t\in\Gamma$, and $a\in\left\{ L,R,S\right\}$. In this manner, any Turing machine $T$ is fully described by a collection of quintuples:
 \[
 \left(q_{1},s_{1},r_{1},t_{1},a_{1}\right),\left(q_{2},s_{2},r_{2},t_{2},a_{2}\right),\ldots,\left(q_{m},s_
 {m},r_{m},t_{m},a_{m}\right)
 \]
-where $m \leq d\left(Q\setminus \{q_{f}\} \times d(\Gamma) \right)$, with the additional requirement that the first quintuple should refer to the initial state, and second one to the final state, that is $q_{1} = q_{o}$ and $r_{2} = q_{f}$. A possible description of these quituples would be to encode the elements of the set $Q\cup\Gamma\cup\left\{ L, R, S \right\}$ using a fixed length binary code (see Definition \ref{def:Fixed-Length-Codes} for more information about these codes), so the quintuple $\left(q,s,r,t,a\right)$ would be encoded as $\left\langle q, s, r, t, a \right\rangle$. The length of an encoded quintuple is $5l$, where $l=\left\lceil \log\left(d\left(Q\cup\Gamma\cup\left\{ L,R,S\right\} \right)\right)\right\rceil$. Using those conventions, the machine $T$ would be encoded as the binary string:
+where $m \leq d\left(Q\setminus \{q_{f}\}\right) \times d(\Gamma)$, with the stipulation that the first quintuple refers to the initial state and the second one to the final state; i.e., $q_{1} = q_{o}$ and $r_{2} = q_{f}$. A possible approach to describe these quintuples is to encode the elements of the set $Q\cup\Gamma\cup\left\{ L, R, S \right\}$ using a fixed-length binary code (refer to Definition \ref{def:Fixed-Length-Codes} for more details), encoding the quintuple $\left(q,s,r,t,a\right)$ as $\left\langle q, s, r, t, a \right\rangle$. The length of an encoded quintuple is $5l$, where $l=\left\lceil \log\left(d\left(Q\cup\Gamma\cup\left\{ L,R,S\right\}\right)\right)\right\rceil$. Following this convention, machine $T$ is encoded as the binary string:
 \[
 \left\langle T \right\rangle = \left\langle \bar{l}, \left\langle q_{1}, r_{1}, s_{1}, t_{1}, a_{1} \right\rangle, \ldots, \left\langle q_{r}, r_{r}, s_{r}, t_{r}, a_{r} \right\rangle \right\rangle 
 \]
-The length of the encoded machine using this schema would be $l(\left\langle T \right\rangle) \leq 5lm + \log l + 1$.
+The length of the encoded machine, following this schema, would be $l(\left\langle T \right\rangle) \leq 5lm + \log l + 1$.
 \end{example}
 
 Since each Turing machine is composed by a finite set of quintuples, we can encode and list all the machines using a shortlex ordering. We associate each machine $T$ with the index $i$ corresponding to its position in this list, and we denote by $T_i$ the i-th Turing machine. Each positive integer $i$ encodes one, and only one, Turing machine. However, as Proposition \ref{prop:padding_lemman} shows, all Turing machines have an infinite number of indexes. We associate each Turing machine with its smallest index.
 
 \begin{proposition}[Padding Lemma]
-\label{prop:padding_lemman}
+\label{prop:padding_lemman}\index{Padding lemma}
 Each Turing machine has infinitely many indexes.
 \end{proposition}
 \begin{proof}
-If $T_i$ is the i-th Turing machine encoded by the string $\langle T_i \rangle$, we can add an finite number of 0's to the end of this string, resulting in a new encoding index $j$, that encodes the same machine.
+Consider a Turing machine $T_i$ encoded by the string $\langle T_i \rangle$. We can create a new encoding $\langle T_j \rangle$  by appending a finite number of 0's to $\langle T_i \rangle$,  such that $\langle T_j \rangle = \langle T_i \rangle 0^n$  for some positive integer $n$. Since $n$ can take on any positive integer value, there are infinitely many possible encodings $\langle T_j \rangle$ for the same Turing machine $T_i$.
 \end{proof}
 
-A universal Turing machine is a machine that can simulate the behavior of any other Turing machine on arbitrary input. The universal machine essentially achieves this by reading from its own tape both the description of the machine to be simulated (for instance, using the coding schema described in Example \ref{ex:Encoding_TM}), as well as the input string to be used during the computation.
+A universal Turing machine is a machine that can simulate the behavior of any other Turing machine on arbitrary input. The universal machine achieves this by reading both the description of the machine to be simulated (for instance, using the coding schema described in Example \ref{ex:Encoding_TM}) and the input string for the computation from its own tape.
 
 \begin{definition}[Universal Turing Machine]
 \label{def:Universal-Turing-Machine}
@@ -222,7 +222,7 @@ A universal Turing machine is a machine that can simulate the behavior of any ot
 A \emph{Universal Turing Machine} is a Turing machine $U$ such that $U(\langle \langle T_i\rangle, s \rangle) = T_i(s)$ for all Turing machines $T_i$ and all input strings $s \in \mathcal{B}$.
 \end{definition}
 
-Of course, we have to prove that such machine exits before we can use it. We could argue that a human being would be able to decode the machine $T_i$ and simulate its behavior with the input string $s$, and then refer to Theorem \ref{th:turing_thesis}. A better approach would be to explicitly build an universal Turing machine. However, describing one of these machines is out of the scope of this book. Instead, we refer to the reader to the references included at the end of the chapter.
+Naturally, we must prove that such a machine exists before we can utilize it. One could argue that a human being could decode the machine $T_i$ and simulate its behavior with the input string $s$, and then refer to Theorem \ref{th:turing_thesis}. A more rigorous approach would be to explicitly construct a universal Turing machine. However, providing a detailed description of one of these machines is beyond the scope of this book. Instead, we direct the reader to the references included at the end of the chapter for further exploration.
 
 %
 % Section: Non computable problems
@@ -231,7 +231,9 @@ Of course, we have to prove that such machine exits before we can use it. We cou
 \section{Non-Computable Problems}
 \label{sec:non_computable_problems}
 
-Turing machines allow us to identify which problems can be solved using effective procedures, that is, the set of problems that can be worked out with computers. Although it might be a bit surprising, there exists many problems that cannot be solved using algorithms. These problems are beyond the capabilities of computers. We are not talking about problems like if a computer can be intelligent or if it can be self-aware, we refer to well defined mathematical problems. For example, the famous \emph{halting problem} asks to find a computer program that, given any other program and an input string, decides if the program will eventually stop for that input string, or if it will keep running forever.
+Turing machines enable us to delineate the set of problems that can be resolved through effective procedures or, in other words, by computers. It may be surprising to learn that numerous problems cannot be addressed using algorithms; such challenges lie beyond the computational capabilities of machines. We are not alluding to speculative queries like whether a computer can be intelligent or self-aware but to concrete, well-defined mathematical problems. We are also not referring to complex problems that demand a substantial amount of time to solve, as those, irrespective of their time consumption, remain computable.
+
+One classic exemplar of non-computability is the \emph{halting problem}\index{Halting problem}. As illustrated in Algorithm \ref{alg:halt}, it involves a program or algorithm tasked with determining whether any given program (including itself) and input will eventually halt or continue to run indefinitely. Alan Turing proved that no algorithm can exist to solve this problem for all possible program-input pairs. This revelation wasn't a reflection on the limitations of technology or processing power but highlighted a profound theoretical limit intrinsic to computation.
 
 \begin{algorithm}
 \caption{HALT function}
@@ -247,23 +249,29 @@ Turing machines allow us to identify which problems can be solved using effectiv
 \end{algorithmic}
 \end{algorithm}
 
-\begin{theorem}[Halting Problem]
+The proposition below proves that the halting problem is non-computable.
+
+\begin{proposition}[Halting Problem]
 \index{Halting problem}
 \label{th:halting-problem}
-Define the HALT as in Algorithm \ref{alg:halt}. It does not exists a Turing machine that computes the $HALT$ function for all possible pairs $(A, I)$, where $A$ is a Turing machine and $I$ is the input string to that machine.
-\end{theorem}
+Define HALT as in Algorithm \ref{alg:halt}. There does not exist a Turing machine that computes the HALT function for all possible pairs $(A, I)$, where $A$ is a Turing machine and $I$ is the input string to that machine.
+\end{proposition}
 \begin{proof}
 The proof is by contradiction. Assume that the machine $HALT$  exists, and define a new Turing machine $TC$ such that $TC(A) = 1$ if $HALT(A,A) = 0$, and $TC(A)$ will never stop if $HALT(A,A) = 1$. Then the contradiction arises when we ask about the result of $TC(TC)$: if $TC(TC)$ stops we have that $HALT(TC,TC) = 0$ and that $TC(TC)$ should not stop, and if $TC(TC)$ does not stop then we have that $H(TC,TC) = 1$ and thus $TC(TC)$ should stop.
 \end{proof}
 
-A very important consequence of the Halting Problem is that there exists more well-defined mathematical problems than computable solutions\footnote{It is still an open question if there exists non-computable problems in Nature.}. The Halting Problem has also important practical consequences in computer programming. For example, we cannot write a program that can guarantee that any other arbitrary program is bug-free, or that all infinite loops with conditional exits will eventually stop for all possible inputs.
+The existence of such non-computable problems underscores the boundaries of mechanical computation. It illustrates that while Turing machines, and by extension, computers are profoundly powerful tools capable of solving an extensive array of problems, they are not omnipotent. A frontier of unsolvable problems exists, necessitating deeper exploration into the realms of mathematics, logic, and perhaps even philosophy to understand the inherent limits of computation.
 
-Incomputability is not only about halting. Next example shows a well defined practical problem involving simple strings manipulation that can not be solved using computers.
+The Halting Problem also has significant practical consequences in computer programming. For instance, it is impossible to write a program that can guarantee any other arbitrary program is bug-free or that all infinite loops with conditional exits will eventually halt for all possible inputs.
+
+The next example introduces a well-defined, practical problem involving simple string manipulation that cannot be solved using computers.
 
 \begin{example}
 \label{ex:PCP}
-Given two finite lists $\left( \alpha_1, \ldots, \alpha_n \right)$ and $\left( \beta_1, \ldots, \beta_n \right)$ of strings over some alphabet $\Sigma$, where $d(\Sigma) \ge 2$, the \emph{Post Correspondence Problem}, or PCP, asks to decide if there exists a sequence of $K \geq 1$ indices $(i_k)$, where $1 \le i_k \le n$ for all $1 \le k \le K$, such that $\alpha_{i_1} \ldots \alpha_{i_K} = \beta_{i_1} \ldots \beta_{i_K}$. For example, given the sequences $(a, ab, bba)$ and $(baa, aa, bb)$, a solution to the problem would be $\alpha_3 \alpha_2 \alpha_3 \alpha_1 = \beta_{3} \beta_{2} \beta_{3} \beta_{1}$. It does not exist an algorithm to solve PCP. As many proofs of incomputability, the proof proceed by showing that HALT can be reduced to PCP, that is, if PCP is decidable then the Halting problem should be decidable as well. We are not going to show the details of the proof in this section. For the interested reader, we refer to the references at the end of this chapter.
+Given two finite lists $\left( \alpha_1, \ldots, \alpha_n \right)$ and $\left( \beta_1, \ldots, \beta_n \right)$ of strings over some alphabet $\Sigma$, where $d(\Sigma) \ge 2$, the \emph{Post Correspondence Problem} (PCP) asks to determine if there exists a sequence of $K \geq 1$ indices $(i_k)$, with $1 \le i_k \le n$ for all $1 \le k \le K$, such that $\alpha_{i_1} \ldots \alpha_{i_K} = \beta_{i_1} \ldots \beta_{i_K}$. For instance, given the sequences $(a, ab, bba)$ and $(baa, aa, bb)$, a solution would be $\alpha_3 \alpha_2 \alpha_3 \alpha_1 = \beta_{3} \beta_{2} \beta_{3} \beta_{1}$. No algorithm exists to solve PCP. Like many proofs of incomputability, the proof proceeds by showing that HALT can be reduced to PCP, meaning if PCP is decidable, then the Halting Problem should be decidable as well. We will not detail the proof in this section; for interested readers, we refer to the references at the end of this chapter.
 \end{example}
+
+Non-computable problems are generally not derived directly from natural phenomena but from logical and mathematical constructs. To date, there are no known examples of non-computable problems manifesting plainly in natural phenomena. It's essential to distinguish between non-computability and unpredictability. Non-computable problems are those for which no algorithm can ever be created to solve them. In contrast, unpredictable systems (such as chaotic or complex systems) are theoretically computable but are unpredictable in practice due to factors like sensitivity to initial conditions or measurement precision.
 
 %
 % Section: Computable Functions and Sets
@@ -433,7 +441,30 @@ Theorem 19. If $B$ is NP-complete and $B\leq_{P}C$ for $C$ in $NP$, then $C$ is 
 
 \section*{References}
 
+{\color{red} TODO:  Briefly mention the historical emergence of the concept, including the works of pioneers like Alan Turing, Alonzo Church, and others.}
+
 The original paper form Alan Turing where the concepts of Turing machine, universal Turing machine, and non-computable problems were introduced is \cite{turing1936computable}, however it is a difficult to read paper for the contemporary reader. An easier to read introduction to computability theory, from the point of view of languages, can be found in \cite{sipser2012introduction}, and a more advanced introductions in \cite{cooper2003computability} and \cite{soare2016turing}. In \cite{fernandez2009models} we can find a description of the most important computability models proposed so far. The Post Correspondence Problem was introduced by Emil Post in \cite{post1946variant}; for the details of the proof sketched in Example \ref{ex:PCP} please refer to \cite{sipser2012introduction}.
 
+{\color{red} TODO: Here are a few seminal academic works on non-computability:
+
+Turing, A. M. (1936). On Computable Numbers, with an Application to the Entscheidungsproblem. Proceedings of the London Mathematical Society, s2-42(1), 230-265. Content: This foundational paper by Alan Turing introduces the concept of Turing machines, laying the groundwork for the theory of computation and establishing the halting problem's non-computability.
+
+Church, A. (1936). An Unsolvable Problem of Elementary Number Theory. American Journal of Mathematics, 58(2), 345-363. Content: Alonzo Church presents the $\lambda$-calculus and establishes Church’s Thesis, claiming that his formalism captures the intuitive notion of "computable," and proving the unsolvability of the Entscheidungsproblem.
+
+Gödel, K. (1931). Über formal unentscheidbare Sätze der Principia Mathematica und verwandter Systeme, I. Monatshefte für Mathematik, 38(1), 173-198. Content: Kurt Gödel's landmark paper where he introduces his incompleteness theorems, showing that within any sufficiently powerful mathematical system, there are statements that cannot be proven or disproven.
+
+Post, E. (1946). A Variant of a Recursively Unsolvable Problem. Bulletin of the American Mathematical Society, 52(4), 264-268. Content: Emil Post presents a simpler, more accessible proof of unsolvability (non-computability) related to the halting problem and delves into the Post Correspondence Problem, a classic example of a non-computable problem.
+
+Davis, M. (1958). Computability and Unsolvability. McGraw-Hill. Content: In this book, Martin Davis offers a comprehensive overview of the theory of computability and unsolvability, addressing topics like recursive functions, Turing machines, and Gödel’s incompleteness theorems in an accessible manner.
+
+These references should provide a solid academic foundation for exploring the multifaceted and intriguing world of non-computability. Each offers unique insights and perspectives that collectively illuminate the complexity and depth of this area of study.
+}
+
 {\color{red} TODO: Add a reference to how to build a universal Turing machine.}
+
+{\color{red} TODO: Introduce other well-known non-computable problems besides the halting problem, like Turing’s “Entscheidungsproblem” or the Busy Beaver function.}
+
+{\color{red} TODO: Relate non-computability to Gödel's incompleteness theorems to illustrate the inherent limitations in formal mathematical systems.}
+
+{\color{red} TODO: Explore philosophical discussions on the implications of non-computability for artificial intelligence and human cognition.}
 

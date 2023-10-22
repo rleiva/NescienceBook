@@ -318,7 +318,7 @@ The application of these concepts is illustrated through the example of the set 
 The set of all Turing machines that halt on all inputs, as demonstrated in \ref{th:halting-problem}, is not computable but is computably enumerable.
 \end{example}
 
-These definitions and examples provide insights into the delicate interplay between functions, sets, Turing machines, and the realm of the computability and non-computability.
+These definitions and examples provide insights into the delicate interplay between functions, sets, Turing machines, and the realm of the computability and non-computability.t
 
 %
 % Section: Oracle Turing Machine
@@ -327,9 +327,28 @@ These definitions and examples provide insights into the delicate interplay betw
 \section{Oracle Turing Machine}
 \label{sec:oracle_turing_machine}
 
-{\color{red} TODO: Introduce the concept}
+An oracle Turing machine is a theoretical model of computation that extends the capabilities of a standard Turing machine by providing it with an oracle. The oracle is a black box that can instantly compute certain answers, even for problems that are unsolvable or would take an impractical amount of time for a standard Turing machine to process. This model helps computer scientists and mathematicians explore the implications and boundaries of computational theory, including questions about complexity classes and the limits of what is computationally possible. The oracle Turing machine isn't a physical or implementable machine but rather a conceptual tool used in theoretical computer science to study the properties and limitations of computation.
 
-{\color{red} TODO: Provide a diagram}
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=stealth, node distance=2cm, thick, state/.style={circle, draw, minimum size=1cm}]
+
+    % Nodes
+    \node[state] (TM) {TM};
+    \node[rectangle, draw, right=of TM] (oracle) {Oracle};
+    \node[state, below=of TM] (q0) {$q_0$};
+    
+    % Paths
+    \draw[->] (TM.east) -- node[above, midway] {Query} (oracle.west);
+    \draw[->] (oracle.east) -- node[above, midway] {Answer} ++(2,0);
+    \draw[->] (q0) -- node[right, midway] {Start} (TM);
+
+    % Oracle box
+    \draw (oracle.north west) -- ++(-1,0.5) -- ++(4,0) -- (oracle.north east);
+    
+\end{tikzpicture}
+\caption{\label{fig:Oracle-Turing-Machine}Oracle Turing Machine}
+\end{figure}
 
 Withe the aid of the Oracle, a Turing machine could solve uncomputable problems, like the halting problem.
 
@@ -350,6 +369,22 @@ An \emph{oracle Turing machine} with oracle set $\mathcal{O}$ is a 8-tuple $\lef
 \end{align*}
 \end{definition}
 
+
+\begin{example}
+The halting problem is a classic problem in computational theory that asks whether, given the description of an arbitrary computer program and an input, the program will eventually halt (stop executing) or continue to run forever. It has been proven to be undecidable, meaning there is no algorithm that can determine the halting behavior of every possible program-input pair.
+
+However, in the realm of theoretical computer science, an oracle can be used to "solve" the halting problem. The oracle is a hypothetical device or black box that magically and instantly provides the answer to a specific problem instance. In this context, you would have an oracle specifically designed to solve the halting problem. You would input a program and an input into this oracle, and it would instantly tell you whether the program halts on that input or not.
+
+Here's how it works step by step:
+
+1. You have a program `P` and an input `I`.
+2. You query the oracle with `P` and `I`.
+3. The oracle instantly tells you whether `P` halts on `I` or if it runs forever.
+
+This is, of course, entirely theoretical. No such oracle exists, and the halting problem remains unsolvable in practice. It is a helpful concept for exploring the boundaries of computation and understanding what is and isn’t computable. In theoretical terms, if we have an oracle for the halting problem, we are operating in a higher computational complexity class, specifically the complexity class \(O\), which is a class of decision problems solvable by a Turing machine with an oracle.
+\end{example}
+
+
 Properties:
 
  * The machine is independent of the oracle set
@@ -368,41 +403,58 @@ Talk about:
 \section{Computational Complexity}
 \label{sec:computational_complexity}
 
-{\color{red} Computational Complexity theory is an investigation of the time, memory, or other resources required for solving computational problems.} In this book we are insterested mostly in the time required to solve a problem. {\color{red} We compute the running time of an algorithm as a function of the length of the string representing the input.}
+\emph{Computational complexity}\index{Computational complexity} refers to the study of the efficiency of algorithms in terms of the resources they consume, such as time and space, to solve a given problem. By categorizing problems based on their inherent difficulty, computational complexity provides insights into the feasibility of solving problems within practical limits. It involves classifying problems into \emph{complexity classes}\index{Complexity class} offering a framework to analyze and compare the performance of algorithms. In this book we are insterested mostly in the time required to solve a problem. We compute the running time of an algorithm as a function of the length of the string representing the input.
 
-{\color{red} TODO: Adapt this definiton.}
 \begin{definition}
-Let $M$ a deterministic Turing machine that halts on all inputs. The running time or time complexity of $M$ is the function $f:\mathbb{N}\rightarrow\mathbb{N}$, where $f(n)$ is the maximum number of steps that $M$ uses in any input of length $n$. If $f(n)$ is the running time of $M$, we say that $M$ runs in time $f(n)$ and that $M$ is an $f(n)$ time Turing machine.
+Let $M$ a Turing machine. The running time or \emph{time complexity}\index{Time complexity} of $M$ is the function $T_M:\mathbb{N} \to \mathbb{N}$, where $T_M(n)$ is the maximum number of steps that machine $M$ takes for any input of length $n$.
 \end{definition}
 
-{\color{red} It considers only the highest order term of the expression for the running time of the algorithm, disregarding both the coefficient of that term and any lower order terms.}
+\emph{Big-O notation}\index{Big-O notation} is a mathematical notation that describes the upper bound of an algorithm's running time in the worst-case scenario, serving as a measure of its efficiency. big-O notation provides a high-level analysis of an algorithm's performance, offering insights into how the running time requirements grow as the size of the input increases. It abstracts the details of the machine model and focuses on the most significant factors that contribute to the growth rate of the algorithm's complexity.
 
-{\color{red} Introduce polynomial bounds $O(n^c)$}
-
-{\color{red} TODO: Adapt this definiton.}
-Let $t:\mathbb{N}\rightarrow\mathbb{R}^{+}$ be a function. Define the time complexity class, $TIME(t(n))$, to be the collection of all languages that are decidible by an $O(t(n))$ time Turing machine.
-
-{\color{red} TODO: Add the following as an example:
-Let $t(n)$ be a function, where $t(n)\geq n$. Then every $t(n)$ time multiple tape Turing machine has an equivalent $O(t^{2}(n))$ time single-tape Turing machine.
-}
-
-{\color{red} Polynomial differences in running time are considered to be small, whereas exponential differeces are considered to be large.}
-
-
-{\color{red} Adapt this definition:
 \begin{definition}
-$P$ is the class of languages that are decidible in polynomial time on a deterministic single-tape Turing machine $P=\cup_{k}TIME(n^{k})$.
-\end{definition} 
-
-$P$ roughly corresponds to the class of problems that are realistically solvable on a computer.}
-
-{\color{red} Add the following example of problem in P: PATH = \{ $\langle G,s,t\rangle|G$ is a directed graph that has directed path from $s$ to $t$ }
-
-{\color{red} Adapt this definition:
-\begin{definition}
-A verifier for a language $A$ is an algorithm $V$, where $A=\{w|V$ accepts $\langle w, c\rangle$ for some string $c\}$.
+Let $f:\mathbb{N} \to \mathbb{N}$ and $g:\mathbb{N} \to \mathbb{N}$ be two functions. We say that the function $f$ is or order $g$, denoted \(f(n) = O(g(n))\), if there exist constants \(c > 0\) and \(n_0 \geq 0\) such that for all \(n \geq n_0\), \(f(n) \leq c \cdot g(n)\).
 \end{definition}
-}
+
+Big-O notation is instrumental in comparing different algorithms and selecting the most appropriate one for a given problem and dataset size.
+
+\begin{example}
+Consider a polynomial function that represents the time complexity of an algorithm:
+\[
+f(n) = 3n^3 + 2n^2 + 5n + 7
+\]
+In the context of big-O notation, we are interested in the term with the highest growth rate as \(n\) approaches infinity, because it will eventually dominate the function. In this case, the term \(3n^3\) has the highest growth rate. Thus, we have
+\[
+f(n) = O(n^3)
+\]
+\end{example}
+
+A complexity class consists of a collection of problems that are classified together due to their shared level of computational complexity. Each problem within a class shares similar characteristics of time complexity, ensuring a consistent measure of computational effort needed for resolution. These classes offer valuable insights and are integral in assessing and distinguishing the solvability and resource requirements of various computational challenges.
+
+\begin{definition}\index{Complexity class}
+A complexity class $C$ is a collection of problems for which there exists a time bound function $f(n)$ such that any problem $P$ in $C$ can be solved by a Turing machine $M$ with time compexity $T_M = f(n)$, where $n$ is the size of the input.
+\end{definition}
+
+The class $P$ consists of problems that can be solved in polynomial time by a Turing machine. In other words, for every problem in $P$, there exists an algorithm that can determine the solution in a number of steps that is a polynomial function of the size of the input. This class is foundational in computational complexity, serving as a baseline for measuring the efficiency of algorithms. 
+
+\begin{definition}\index{Class P}
+The class problems that can be solved in polynomial time, denoted by $P$, is defined as the collection of problems for which there exists a Turing machine $M$ that solve them and a polynomial $p(n)$ such that the time complexity of $M$ is $p(n)$.
+\end{definition}
+
+Problems within $P$ are considered tractable, meaning they can be practically solved even for large inputs. The concept of polynomial time solvability is crucial in distinguishing between problems that have efficient solutions in practice and those that do not.
+
+\begin{example}
+A classic example of a problem in class $P$ is the \emph{shortest path problem}\index{Shortest-path problem}. In this problem, you're given a weighted graph and two vertices, and the objective is to find the path of minimum total weight between these two vertices. One common algorithm to solve this problem is Dijkstra's algorithm. It works by iteratively selecting the vertex with the smallest known distance from the start vertex, and updating the estimated distances to its neighbors. This algorithm runs in polynomial time, specifically $O(V^2)$ for a graph with $V$ vertices. Since there exists a polynomial-time solution to this problem it is in class $P$.
+\end{example}
+
+A verifier is a Turing machine used to check the correctness of a solution to a problem.
+
+{\color{red} TODO: review this defintion}
+
+\begin{definition}\index{Verifier}
+A verifier for a problem is a Turing machine $M$ that takes an input string $x$ and an additional string $y$ called a \emph{certificate}\index{Certificate} or witness, and verifies whether $x$ belongs to the language \(L\). The verifier satisfies two conditions:
+1. If \(x \in L\), then there exists a string \(y\) of polynomial length such that \(M(x, y) = 1\).
+2. If \(x \notin L\), then for every string \(y\), \(M(x, y) = 0\).
+\end{definition}
 
 {\color{red} We measure the time of a verier only in terms of the length of $w$, so a polynomial time verifier runs in polynomial time in the length of $w$
 . A language $A$ is polynomially verifiable if it has a polynomial time verifier. The symbol $c$ is called a certificate, or proof of membership in $A$.}
@@ -417,9 +469,6 @@ $NP$ is the class of languages that have polynomial time verifiers.
 {\color{red} TODO: Include an example.}
 
 {\color{red} $P$ is the class of languages for which membership can be decided quickly. $NP$ is the class of languages for which membership can be verified quickly. The question of whether $P=NP$ is one of the greatest unsolved problems in theoretical computer science and contemporary mathematics.}
-
-
-{\color{red} TODO: Not sure about the rest of this chapter:
 
 Definition 14. A function $f:\Sigma^{\ast}\rightarrow\Sigma^{\ast}$ is a polynomial time computable function if some polynomial time Turing machine $M$ exists that halts with just $f(w)$ on its tape, when started on any imput $w$.
 
@@ -439,7 +488,6 @@ Theorem 18. If $B$ is NP-complete and $B\in P$, then $P=NP$.
 
 Theorem 19. If $B$ is NP-complete and $B\leq_{P}C$ for $C$ in $NP$, then $C$ is NP-Complete.
 
-}
 
 %
 % Section: References

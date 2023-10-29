@@ -409,7 +409,7 @@ Talk about:
 Let $M$ a Turing machine. The running time or \emph{time complexity}\index{Time complexity} of $M$ is the function $T_M:\mathbb{N} \to \mathbb{N}$, where $T_M(n)$ is the maximum number of steps that machine $M$ takes for any input of length $n$.
 \end{definition}
 
-\emph{Big-O notation}\index{Big-O notation} is a mathematical notation that describes the upper bound of an algorithm's running time in the worst-case scenario, serving as a measure of its efficiency. big-O notation provides a high-level analysis of an algorithm's performance, offering insights into how the running time requirements grow as the size of the input increases. It abstracts the details of the machine model and focuses on the most significant factors that contribute to the growth rate of the algorithm's complexity.
+\emph{Big-O notation}\index{Big-O notation} is a mathematical notation that describes the upper bound of an algorithm's running time in the worst-case scenario, serving as a measure of its efficiency. Big-O notation provides a high-level analysis of an algorithm's performance, offering insights into how the running time requirements grow as the size of the input increases. It abstracts the details of the machine model and focuses on the most significant factors that contribute to the growth rate of the algorithm's complexity.
 
 \begin{definition}
 Let $f:\mathbb{N} \to \mathbb{N}$ and $g:\mathbb{N} \to \mathbb{N}$ be two functions. We say that the function $f$ is or order $g$, denoted \(f(n) = O(g(n))\), if there exist constants \(c > 0\) and \(n_0 \geq 0\) such that for all \(n \geq n_0\), \(f(n) \leq c \cdot g(n)\).
@@ -428,7 +428,7 @@ f(n) = O(n^3)
 \]
 \end{example}
 
-A complexity class consists of a collection of problems that are classified together due to their shared level of computational complexity. Each problem within a class shares similar characteristics of time complexity, ensuring a consistent measure of computational effort needed for resolution. These classes offer valuable insights and are integral in assessing and distinguishing the solvability and resource requirements of various computational challenges.
+A complexity class consists of a collection of problems that are classified together due to their shared level of computational complexity. Each problem within a class shares similar characteristics of time complexity, ensuring a consistent measure of computational effort needed for resolution. These classes offer valuable insights and are integral in assessing and distinguishing the practical solvability and resource requirements of various computational challenges.
 
 \begin{definition}\index{Complexity class}
 A complexity class $C$ is a collection of problems for which there exists a time bound function $f(n)$ such that any problem $P$ in $C$ can be solved by a Turing machine $M$ with time compexity $T_M = f(n)$, where $n$ is the size of the input.
@@ -446,48 +446,71 @@ Problems within $P$ are considered tractable, meaning they can be practically so
 A classic example of a problem in class $P$ is the \emph{shortest path problem}\index{Shortest-path problem}. In this problem, you're given a weighted graph and two vertices, and the objective is to find the path of minimum total weight between these two vertices. One common algorithm to solve this problem is Dijkstra's algorithm. It works by iteratively selecting the vertex with the smallest known distance from the start vertex, and updating the estimated distances to its neighbors. This algorithm runs in polynomial time, specifically $O(V^2)$ for a graph with $V$ vertices. Since there exists a polynomial-time solution to this problem it is in class $P$.
 \end{example}
 
-A verifier is a Turing machine used to check the correctness of a solution to a problem.
+A \emph{verifier}\index{Verifier} is a Turing machine that, given an input string and an additional string known as a \emph{certificate}\index{Certificate} or witness, determines whether the input satisfies a particular property, resulting in a binary "yes" or "no" answer. The core idea behind a verifier is not necessarily to find a solution to a problem, but rather to efficiently check or "verify" the validity of a proposed solution. 
 
-{\color{red} TODO: review this defintion}
-
-\begin{definition}\index{Verifier}
-A verifier for a problem is a Turing machine $M$ that takes an input string $x$ and an additional string $y$ called a \emph{certificate}\index{Certificate} or witness, and verifies whether $x$ belongs to the language \(L\). The verifier satisfies two conditions:
-1. If \(x \in L\), then there exists a string \(y\) of polynomial length such that \(M(x, y) = 1\).
-2. If \(x \notin L\), then for every string \(y\), \(M(x, y) = 0\).
-\end{definition}
-
-{\color{red} We measure the time of a verier only in terms of the length of $w$, so a polynomial time verifier runs in polynomial time in the length of $w$
-. A language $A$ is polynomially verifiable if it has a polynomial time verifier. The symbol $c$ is called a certificate, or proof of membership in $A$.}
-
-{\color{red}
 \begin{definition}
-$NP$ is the class of languages that have polynomial time verifiers.
+A verifier is a Turing machine $M$ that, given an input string $x$ and an additional certificate string $y$, determines if $x$ belongs to a certain subset $S$ of strings. The machine satisfies two conditions:
+\begin{enumerate}
+    \item If $x$ belongs to subset $S$, there exists a certificate $y$ such that $V(x, y) = 1$.
+    \item If $x$ does not belong to subset $S$, then for every possible certificate $y$, $V(x, y) = 0$.
+\end{enumerate}
 \end{definition}
-}
 
+Being the verifier a Turing machine, we can measure its time complexity, in terms of the length of the certificate. When a problem has solutions that can be verified in polynomial time using a verifier, it sheds light on the inherent complexity of that problem, situating it within specific computational classes.
 
-{\color{red} TODO: Include an example.}
+\begin{definition}
+A problem is in the class $NP$ if there exists a polynomial $p(n)$ and a Turing verifier $V$ such that for every instance $x$:
+\begin{enumerate}
+    \item If $x$ has a solution in subset $S$, then there exists a certificate $y$ with length at most $p(|x|)$ such that $V$ confirms $x$ as a valid instance of $S$ using $y$ in polynomial time.
+    \item If $x$ does not have a solution in subset $S$, then for every possible certificate $y$ with length at most $p(|x|)$, $V$ does not confirm $x$ as a valid instance of $S$.
+\end{enumerate}
+\end{definition}
 
-{\color{red} $P$ is the class of languages for which membership can be decided quickly. $NP$ is the class of languages for which membership can be verified quickly. The question of whether $P=NP$ is one of the greatest unsolved problems in theoretical computer science and contemporary mathematics.}
+\begin{example}
+{\color{red} TODO: Rewrite}
+A classic example of a problem in class $NP$ is the \emph{Traveling Salesman Problem}\index{Traveling salesman problem} or TSP: given a list of cities and the distances between each pair of cities, the problem is to find the shortest possible route that visits each city exactly once and returns to the original city. To show that TSP is in $NP$, we don't need to demonstrate how to efficiently find the shortest route; we only need to show that, given a proposed route (or tour), we can efficiently verify whether that route satisfies the conditions of the problem and is shorter than or equal to a certain length. The verification process would be:
+\begin{itemize}
+\item Check if the proposed route visits each city exactly once and returns to the starting city. This can be done by traversing the proposed route and marking visited cities.
+\item Compute the total distance of the proposed route by summing up the distances between consecutive cities in the route. 
+\item Compare the computed distance to the given threshold or limit.
+\end{itemize}
+Given a proposed solution (the route) and the distances between cities, a verifier can perform the above steps in polynomial time with respect to the number of cities, thereby verifying the solution's validity. In the context of the $NP$ definition, the "certificate" for TSP would be the proposed route. If TSP has a route shorter than or equal to a specific distance, then there exists a certificate (the route itself) that can be verified in polynomial time. If not, no such certificate would make the verifier confirm the solution.
+\end{example}
 
-Definition 14. A function $f:\Sigma^{\ast}\rightarrow\Sigma^{\ast}$ is a polynomial time computable function if some polynomial time Turing machine $M$ exists that halts with just $f(w)$ on its tape, when started on any imput $w$.
+The $P=NP$ problem is one of the most fundamental questions in computer science. It asks whether every problem for which a potential solution can be verified quickly can also have its solution found quickly. In essence, if $P$ equals $NP$, it would mean that finding solutions is as "easy" as checking them. Despite extensive study, no one has been able to prove that $P=NP$ or $P\neq NP$, making it a longstanding open challenge in theoretical computer science.
 
-When problem $A$ reduces to problem $B$, a solution to $B$ can be used to solve $A$.
+\begin{theorem}[P=NP Problem]\index{P=NP Problem}
+The class of problems $P$ is equal to the class of problems $NP$.
+\end{theorem}
 
-Definition 15. Language $A$ is polynomial time mapping reducible, or simply polynomial time reducible, to language $B$, written $A\leq_{P}B$, if a polynomial time computable function $f:\Sigma^{\ast}\rightarrow\Sigma^{\ast}$ exists, where for every $w$ $w\in A\iff f(w)\in B$
+If $P$ were to equal $NP$, it would signify a monumental shift in our understanding of computational tasks. Practically, many problems considered intractable today, especially those in cryptography, would become tractable. Secure communication over the internet relies on certain problems being hard to solve (like factoring large numbers). If $P=NP$, then encryption methods underpinning online security could be broken, potentially leading to a crisis in digital security. Conversely, numerous challenges in fields like optimization, drug discovery, and logistics could see groundbreaking solutions, revolutionizing industries. While it's tempting to view $P=NP$ solely in the context of its challenges, especially to security, it would also herald unprecedented opportunities and advancements in multiple domains.
 
-The function $f$ is called the polynomial time reduction of $A$ to $B$.
+\emph{Turing reducibility}\index{Turing reducibility} is a fundamental concept in the realm of theoretical computer science and computability theory. It provides a means to compare the "computational difficulty" of problems. Specifically, a problem $A$ is Turing reducible to a problem $B$ if there exists an algorithm for solving $A$ that may make use of a subroutine solving $B$ an arbitrary number of times.
 
-If one language is polynomial time reducible to a language already known to have a polynomial time solution, we obtain a polynomial time solution to the original language.
+\begin{definition}
+Let $A$ and $B$ be two problems. We say that $A$ is \textbf{Turing reducible} to $B$, denoted by $A \leq_T B$, if there exists a Turing machine that solves $A$ by making use of one or more Turing machines that solve $B$.
+\end{definition}
 
-Theorem 16. If $A\leq_{P}B$ and $B\in P$, then $A\in P$.
+If $A$ is Turing reducible to $B$ and vice versa, then the two problems are said to be Turing equivalent, indicating they have the same computational complexity.
 
-Definition 17. A language $B$ is NP-complete if it satisfies two conditions: $B$ is in $NP$, and every $A$ in $NP$ is polynomial time reducible to $B$.
+\begin{example}
+{\color{red} TODO: rewrite.}
+Consider the problems of GRAPH ISOMORPHISM and SUBGRAPH ISOMORPHISM.
 
-Theorem 18. If $B$ is NP-complete and $B\in P$, then $P=NP$.
+GRAPH ISOMORPHISM (GI): Given two graphs \(G_1\) and \(G_2\), is there a one-to-one correspondence (isomorphism) between their vertices such that the edges are preserved?
 
-Theorem 19. If $B$ is NP-complete and $B\leq_{P}C$ for $C$ in $NP$, then $C$ is NP-Complete.
+SUBGRAPH ISOMORPHISM (SI): Given two graphs \(G_1\) and \(G_2\), does \(G_1\) contain a subgraph that is isomorphic to \(G_2\)?
 
+The GRAPH ISOMORPHISM problem is Turing reducible to the SUBGRAPH ISOMORPHISM problem. Here's the reasoning:
+
+If we have an efficient solver for SUBGRAPH ISOMORPHISM, then we can use it to solve GRAPH ISOMORPHISM. For two graphs \(G_1\) and \(G_2\) of the same size, we ask the SI solver if \(G_2\) is a subgraph of \(G_1\) and vice versa. If both answers are affirmative, then \(G_1\) and \(G_2\) are isomorphic. Thus, an efficient solution for SI can be used to determine a solution for GI.
+
+This example demonstrates the essence of Turing reducibility: by solving the more general problem (SUBGRAPH ISOMORPHISM), we inherently find a solution for the more specific problem (GRAPH ISOMORPHISM).
+\end{example}
+
+{\color{red} NP-hard}
+
+{\color{red} NP-Complete}
 
 %
 % Section: References

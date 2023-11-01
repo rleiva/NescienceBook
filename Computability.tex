@@ -327,32 +327,38 @@ These definitions and examples provide insights into the delicate interplay betw
 \section{Oracle Turing Machine}
 \label{sec:oracle_turing_machine}
 
-An oracle Turing machine is a theoretical model of computation that extends the capabilities of a standard Turing machine by providing it with an oracle. The oracle is a black box that can instantly compute certain answers, even for problems that are unsolvable or would take an impractical amount of time for a standard Turing machine to process. This model helps computer scientists and mathematicians explore the implications and boundaries of computational theory, including questions about complexity classes and the limits of what is computationally possible. The oracle Turing machine isn't a physical or implementable machine but rather a conceptual tool used in theoretical computer science to study the properties and limitations of computation.
+An oracle Turing machine\index{Oracle Turing machine} (see Figure \ref{fig:Oracle-Turing-Machine}) is a theoretical model of computation that extends the capabilities of a standard Turing machine by providing it with an oracle. The oracle is a black box that can instantly compute certain answers, even for problems that are unsolvable or would take an impractical amount of time for a standard Turing machine to process. This model helps computer scientists and mathematicians explore the implications and boundaries of computational theory, including questions about complexity classes and the limits of what is computationally possible. The oracle Turing machine isn't a physical or implementable machine but rather a conceptual tool used in theoretical studies.
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}[>=stealth, node distance=2cm, thick, state/.style={circle, draw, minimum size=1cm}]
-
-    % Nodes
-    \node[state] (TM) {TM};
-    \node[rectangle, draw, right=of TM] (oracle) {Oracle};
-    \node[state, below=of TM] (q0) {$q_0$};
+\begin{tikzpicture}[>=stealth', shorten >=1pt, auto, node distance=2cm]
+    % Draw tape
+    \foreach \x in {-2.5,-1.5,...,2.5} {
+        \draw (\x,-0.5) rectangle ++(1,1);
+    }
     
-    % Paths
-    \draw[->] (TM.east) -- node[above, midway] {Query} (oracle.west);
-    \draw[->] (oracle.east) -- node[above, midway] {Answer} ++(2,0);
-    \draw[->] (q0) -- node[right, midway] {Start} (TM);
-
-    % Oracle box
-    \draw (oracle.north west) -- ++(-1,0.5) -- ++(4,0) -- (oracle.north east);
+    % Draw tape head
+    \node[draw, rectangle, minimum height=1cm, minimum width=1cm, thick] (head) at (0.5,1.5) {Head};
     
+    % Draw symbols on the tape
+    \node at (-2,0) {1};
+    \node at (-1,0) {0};
+    \node at (0,0) {1};
+    \node at (1,0) {0};
+    \node at (2,0) {1};
+    
+    % Draw oracle
+    \node[draw, rectangle, minimum height=1.5cm, minimum width=2cm, right of=head, node distance=3cm] (oracle) {Oracle};
+    
+    % Draw arrow from head to tape
+    \draw[->] (head) -- (1,0.5);
+    
+    % Draw arrows to and from the oracle
+    \draw[->] (head.east) to[out=0,in=180] node[midway, above] {Query} (oracle.west);
+    \draw[->] (oracle.west) to[out=180,in=0] node[midway, below] {Answer} (head.east);
 \end{tikzpicture}
 \caption{\label{fig:Oracle-Turing-Machine}Oracle Turing Machine}
 \end{figure}
-
-Withe the aid of the Oracle, a Turing machine could solve uncomputable problems, like the halting problem.
-
-{\color{red} The oracle tape is a one-way unbounded, read-only tape that contains all the values of the characteristic function $\chi_\mathcal{O}$. We assume that it takes, for arbitrary $w \in \Sigma^\ast$, only one step to search the tape and return the value of $\chi_\mathcal{O}(w)$.}
 
 \begin{definition}[Oracle Turing Machine]
 \label{def:Oracle-Turing-Machine}
@@ -369,32 +375,35 @@ An \emph{oracle Turing machine} with oracle set $\mathcal{O}$ is a 8-tuple $\lef
 \end{align*}
 \end{definition}
 
+Building on the concept of a regular Turing machine (refer to Definition \ref{def:Turing-Machine}), an oracle Turing machine introduces the unique feature of an oracle set $\mathcal{O}$. This set comprises a subset of strings for which the oracle can instantly provide answers. The true strength of an oracle machine emerges when the set $\mathcal{O}$ is non-computable; in cases where $\mathcal{O}$ is computable, a regular Turing machine would be sufficient.
+
+The transition function $\tau$ for the oracle Turing machine is nuanced. At each step the machine will query the oracle. Specifically, it sends the current string $w$ —starting under the head and extending to the rightmost non-empty cell of the input tape—to the oracle. The oracle then responds with a binary answer: '1' if $w$ is in $\mathcal{O}$ or '0' if it isn't. The machine doesn't always utilize this response. There are steps where, despite receiving an answer, the computation proceeds unaffected by the oracle's response—essentially ignoring it. However, when the oracle's answer is pivotal, the machine makes a decision based on it. This decision could affect the next state, the next symbol to be written, or the next move (left, right, or stay). In essence, while the machine has the capability to continuously consult the oracle, it strategically chooses when to act on the information received. We could have modified the $\tau$ funcion in such a way that the oracle is queried only when the answer is relevant for the computation, but that would require making important changes to the behaviour of the function, such as the introduction of new control states.
 
 \begin{example}
-The halting problem is a classic problem in computational theory that asks whether, given the description of an arbitrary computer program and an input, the program will eventually halt (stop executing) or continue to run forever. It has been proven to be undecidable, meaning there is no algorithm that can determine the halting behavior of every possible program-input pair.
-
-However, in the realm of theoretical computer science, an oracle can be used to "solve" the halting problem. The oracle is a hypothetical device or black box that magically and instantly provides the answer to a specific problem instance. In this context, you would have an oracle specifically designed to solve the halting problem. You would input a program and an input into this oracle, and it would instantly tell you whether the program halts on that input or not.
-
-Here's how it works step by step:
-
-1. You have a program `P` and an input `I`.
-2. You query the oracle with `P` and `I`.
-3. The oracle instantly tells you whether `P` halts on `I` or if it runs forever.
-
-This is, of course, entirely theoretical. No such oracle exists, and the halting problem remains unsolvable in practice. It is a helpful concept for exploring the boundaries of computation and understanding what is and isn’t computable. In theoretical terms, if we have an oracle for the halting problem, we are operating in a higher computational complexity class, specifically the complexity class \(O\), which is a class of decision problems solvable by a Turing machine with an oracle.
+In the realm of theoretical computer science, an oracle can be invoked to "solve" the halting problem (refer to Theorem \ref{th:halting-problem}). The oracle is a hypothetical device or black box that, as if by magic, provides an instantaneous answer to a specific problem instance. The oracle set $\mathcal{O}$ would consist of a collection of strings in the form $\langle P, I \rangle$, where $P$ represents a program encoded as a string and $I$ denotes its input. Given a program and its input, this oracle would instantly inform us whether the program halts on that input. Naturally, this concept is purely theoretical. No such oracle exists in reality, and the halting problem remains unsolvable in practical terms.
 \end{example}
 
+{\color{red} Turing machines are a subset of oracle Turing machines}
 
-Properties:
+\begin{proposition}
+\end{proposition}
 
- * The machine is independent of the oracle set
- * Turing machines are a subset of oracle Turing machines
+{\color{red} The machine is independent of the oracle set}
 
-Talk about:
+\begin{proposition}
+\end{proposition}
 
- * How to encode oracle Turing machines
- * What means a function or set to be oracle computable
- * 
+{\color{red} An oracle machie is characterized by two independent components: a particular Turing machine and a particular oracle set.}
+
+{\color{red} How to encode oracle Turing machines}
+
+\begin{example}
+\end{example}
+
+{\color{red} What means a function or set to be oracle computable}
+
+\begin{definition}
+\end{definition}
 
 %
 % Section: Computational Complexity

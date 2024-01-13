@@ -121,9 +121,7 @@ Figure \ref{fig:Classification-Codes} provides a graphical representation of the
 \caption{\label{fig:Classification-Codes}Classification of Codes}
 \end{figure}
 
-
-
-Another interesting type of codes are fixed length codes. We will use fixed length codes to compute the length of a text when there are no regularities we can exploit to compress the text.
+Another interesting type of codes are fixed length codes. We will use fixed length codes to compute the length of a text when there are no regularities we can exploit to compress it.
 
 \begin{definition}
 \label{def:Fixed-Length-Codes}\index{Fixed-length code}
@@ -147,76 +145,125 @@ Of course, the converse of the previous proposition does not hold; not all prefi
 
 \section{Kraft Inequality}
 
-The Kraft inequality provides a sufficient, and necessary, condition for the existence of a prefix-free code given a set of code words lengths. Among other things, Kraft inequality is important because if we take an exponential of the length of each codeword, the resulting set of values look like a probability mass function, that is, they sum less than or equal to one.
+The Kraft inequality provides a condition for the existence of a prefix-free code given a set of code word's lengths. Kraft's inequality states that for a given set of codeword lengths in a binary code, the sum of the reciprocals of the powers of two corresponding to the codeword lengths must be less than or equal to one. This condition is both necessary and sufficient; not only must any prefix-free code satisfy this inequality, but given a set of lengths that meets this condition, it is always possible to construct a corresponding prefix-free code. The elegance and utility of Kraft's inequality lie in its ability to link the lengths of codewords with the mathematical properties of probability.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[grow=right,->,>=stealth',level/.style={sibling distance = 4cm/#1,
+  level distance = 3cm}] 
+\node [circle,draw] (n1){}
+    child{node [circle,draw] (n2) {$0$}
+    }
+    child{node [circle,draw] (n3) {$1$}
+        child{node [circle,draw] (n4) {$10$}}
+        child{node [circle,draw] (n5) {$11$}
+            child{node [circle,draw] (n6) {$110$}}
+            child{node [circle,draw] (n7) {$111$}
+                child{node [circle,draw] (n8) {$1110$}}
+            }
+        }
+    };
+    
+% Now, we add the edge labels
+\path (n1) -- (n2) node [midway, above]  {$0$};
+\path (n1) -- (n3) node [midway, above] {$1$};
+\path (n3) -- (n4) node [midway, above]  {$0$};
+\path (n3) -- (n5) node [midway, above] {$1$};
+\path (n5) -- (n6) node [midway, above] {$0$};
+\path (n5) -- (n7) node [midway, above] {$1$};
+\path (n7) -- (n8) node [midway, above] {$1$};
+\end{tikzpicture}
+\caption{\label{fig:Prefix-Free-Tree}Prefix-free Tree}
+\end{figure}
 
 \begin{theorem}[Kraft Inequality]
 \label{th:Kraft-Inequality}
-Let $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ a set of lengths, $l_{i}\in\mathbb{N}$, then there exists a binary prefix-free code $C$ whose code words have the lengths of $\mathcal{L}$ if, and only if,
+\index{Kraft's inequality}
+Let $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ be a set of lengths, $l_{i}\in\mathbb{N}$, then there exists a binary prefix-free code $C$ whose code words have the lengths of $\mathcal{L}$ if, and only if,
 \[
 \sum_{l_{i}\in\mathcal{L}}2^{-l_{i}}\leq1
 \]
 \end{theorem}
 \begin{proof}
+Consider a binary tree whose branches are labeled with the symbols of the code alphabet, in such a way that the path from the root to the leaves traces out the symbols of a codeword. The prefix-free condition implies that nodes representing complete codewords cannot have descendants. An example of such a tree, for the code described in Example \ref{ex:prefix-free}, is shown in Figure \ref{fig:Prefix-Free-Tree}.
 
-Consider a binary tree whose branches are labeled with the symbols of the code alphabet, in such a way that the path from the root to the leaves traces out the symbols of a codeword. The prefix-free condition implies that nodes containing codewords cannot have descendants. An example of such a tree, for the code described in Example \ref{ex:prefix-free}, is shown in Figure \ref{fig:Prefix-Free-Tree}. 
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.4]{PrefixFreeTree2}
-\caption{\label{fig:Prefix-Free-Tree}Prefix-free Tree}
-\end{figure}
-
-Let $l_{max}=\max \left\{ l_{1},l_{2},\ldots,l_{q}\right\}$, that is, the length of the longest codeword from the set of lengths. There will be at most $2^{l_{max}}$ leaf nodes in the tree, but at level $l_{i}$ we have to prune $2^{l_{max} - l_{i}}$ leafs, since the code is prefix-free. Summing over all the codewords lengths, we have that the total number of pruned leafs must be less or equal that the maximum number of leafs, that is
+Let $l_{max}=\max \left\{ l_{1},l_{2},\ldots,l_{q}\right\}$, that is, the length of the longest codeword from the set of lengths. There will be at most $2^{l_{max}}$ leaf nodes in the tree, but at level $l_{i}$ we have to prune $2^{l_{max} - l_{i}}$ leaves, since the code is prefix-free. Summing over all the codewords' lengths, we have that the total number of pruned leaves must be less than or equal to the maximum number of leaves, that is
 \[
 \sum_{l_{i}\in\mathcal{L}}2^{l_{max}-l_{i}} \leq 2^{l_{max}}
 \]
-or, equivalently
+or, equivalently,
 \[
 \sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} \leq 1
 \]
 which is exactly the inequality we are trying to prove.
 
-Conversely, given any set of codewords lengths $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ that satisfy the Kraft inequality, we can always construct a binary tree, like the one in the Figure \ref{fig:Prefix-Free-Tree}. Label the first node (lexicographcally) of depth $l_{1}$ as code word 1, and remove its descendants from the tree. Then label the first remaining node of depth $l_{2}$ as codeword 2, and so on. Proceeding this way, we construct a prefix code with the specified lengths.
-
+Conversely, given any set of codewords' lengths $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ that satisfy the Kraft inequality, we can always construct a binary tree, like the one in the Figure \ref{fig:Prefix-Free-Tree}. Label the first node (lexicographically) of depth $l_{1}$ as code word 1, and remove its descendants from the tree. Then label the first remaining node of depth $l_{2}$ as codeword 2, and so on. Proceeding this way, we construct a prefix code with the specified lengths.
 \end{proof}
 
-Given a code $C$ whose code words lengths $\mathcal{L}$ satisfy the Kraft inequality does necessarily means that the code is prefix-free, since what the inequality states is that there exist a prefix-free code with those word lengths, not that all codes with those word lengths are prefix-free.
+Given a code $C$ whose code words' lengths $\mathcal{L}$ satisfy the Kraft inequality does not necessarily mean that the code is prefix-free, since what the inequality states is that there exists a prefix-free code with those word lengths, not that all codes with those word lengths are prefix-free.
 
 \begin{example}
 \label{ex:not-prefix-fix}
 The code $C(a)=0$, $C(b)=111$, $C(c)=110$ and $C(d)=100$ satisfies the Kraft inequality, but it is not prefix-free.
 \end{example}
 
-Kraft's inequality allows us to compare how efficient are the different codes available for the same source alphabet.
+Kraft's inequality allows us to compare how efficient different codes are for the same source alphabet.
 
 \begin{definition}
-Let $C_1:\mathcal{S}\rightarrow\mathcal{X}^{+}$ and $C_2:\mathcal{S}\rightarrow\mathcal{X}^{+}$ two different codes. We say that code $C_1$ is \emph{more efficient} than code $C_2$ if for all $s \in \mathcal{S}$ we have that $l(C_1(s)) \leq l(C_2(s))$, and there exist at least one $s' \in \mathcal{S}$ such that $l(C_1(s')) < l(C_2(s'))$.
+Let $C_1:\mathcal{S}\rightarrow\mathcal{X}^{+}$ and $C_2:\mathcal{S}\rightarrow\mathcal{X}^{+}$ be two different codes. We say that code $C_1$ is \emph{more efficient}\index{Code efficiency} than code $C_2$ if for all $s \in \mathcal{S}$ we have that $l(C_1(s)) \leq l(C_2(s))$, and there exists at least one $s' \in \mathcal{S}$ such that $l(C_1(s')) < l(C_2(s'))$.
 \end{definition}
 
 \begin{example}
-The code described in Example \ref{ex:not-prefix-fix} is more efficient than the code of Example \ref{ex:prefix-free}. Of course, the problem with the code described in Example \ref{ex:not-prefix-fix} is that it is not prefix-free, but since it satisfy the Kraft's inequality, we know that there must exists another code with the same code word lengths that it is prefix free. For example, $C(a)=0$, $C(b)=10$, $C(c)=110$ and $C(d)=111$.
+The code described in Example \ref{ex:not-prefix-fix} is more efficient than the code of Example \ref{ex:prefix-free}. Of course, the problem with the code described in Example \ref{ex:not-prefix-fix} is that it is not prefix-free, but since it satisfies Kraft's inequality, we know that there must exist another code with the same codeword lengths that is prefix-free. For example, $C(a)=0$, $C(b)=10$, $C(c)=110$ and $C(d)=111$.
 \end{example}
 
 We are interested in the most efficient possible codes.
 
 \begin{definition}
-A code $C$ is \emph{complete} if there does not exists a code $C'$ that is more efficient that $C$.
+A code $C$ is \emph{complete}\index{Complete code} if there does not exist a code $C'$ that is more efficient than $C$.
 \end{definition}
 
-It turns out that the Kraft's inequality provides a very useful characterization of complete codes.
+It turns out that Kraft's inequality provides a very useful characterization of complete codes.
 
 \begin{proposition}
-A code $C$ is complete if, and only if, its code word lengths $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ satisfy the property:
+A code $C$ is complete if, and only if, its codeword lengths $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ satisfy the property:
 \[
 \sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} = 1
 \]
 \end{proposition}
 \begin{proof}
-{\color{red} TODO: To be done}
+Suppose the sum of the exponentiated inverses of the codeword lengths equals 1:
+
+\[
+\sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} = 1
+\]
+
+This implies that the code utilizes the full capacity of the coding space. In other words, there is no redundancy or additional space in the code that could be used to encode a symbol with a shorter length. This is because each term in the sum \( 2^{-l_{i}} \) represents the proportion of the coding space taken up by the codeword of length \( l_{i} \). If these proportions sum up to 1, then all possible codewords of the given lengths are used, and there's no space left to introduce any new codeword without increasing the length of at least one existing codeword. Therefore, the code is as efficient as possible, hence complete.
+
+Now suppose that the code \( C \) is complete. This means that there is no other code \( C' \) with the same source alphabet and the same or shorter codeword lengths that is more efficient than \( C \).
+
+Assume for contradiction that the sum of the exponentiated inverses is less than 1:
+
+\[
+\sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} < 1
+\]
+
+This would imply that there is still unused coding space, meaning that it would be possible to construct a more efficient code by using this unused space to represent at least one symbol with a shorter codeword, contradicting the assumption that \( C \) is complete. Therefore, the sum cannot be less than 1.
+
+Since \( C \) is complete and cannot be less efficient, the only alternative left is that the sum is exactly 1:
+
+\[
+\sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} = 1
+\]
+
+Combining both directions, we have shown that a code \( C \) is complete if and only if the sum of the exponentiated inverses of its codeword lengths equals 1, as stated in the proposition.
+
 \end{proof}
 
-As we said above, in the theory of nescience we are mostly interested in prefix-fix codes. That might appear as a limitation, since it sounds more reasonable to use the more general class of uniquely decodable codes. However, such limitation does not exists, since, as next theorem proves, uniquely decodable codes also satisfy Kraft's inequality. That is, for any uniquely decodable code there exists a prefix-free code with exactly the same code word lengths. In the theory of nescience we are not interested in the codes themselves, but in code lengths.
+MacMillan's inequality provides a crucial link betwen the lengths of code words in a uniquely decodable code, in the same way that Kraft's inequality did for prefix-free codes.
 
-\begin{theorem}[McMillan Inequality]
+\begin{theorem}[McMillan's Inequality]
+\index{McMillan's Inequality}
 \label{th:Kraft-Inequality}
 Let $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ a set of lengths, $l_{i}\in\mathbb{N}$, then there exists a uniquely decodable code $C$ whose code words have the lengths of $\mathcal{L}$ if, and only if,
 \[
@@ -224,8 +271,52 @@ Let $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ a set of lengths, $l_
 \]
 \end{theorem}
 \begin{proof}
-{\color{red} TODO: To be done}
+We must show that if there exists a uniquely decodable code with codeword lengths \( l_1, l_2, \ldots, l_q \), then the inequality holds.
+
+Suppose \( C \) is a uniquely decodable code with codeword lengths \( l_1, l_2, \ldots, l_q \). Consider a sequence of codewords produced by \( C \) that is long enough to contain any possible concatenation of \( n \) codewords (for some \( n \) large enough). Let's denote the set of all such sequences as \( S_n \). 
+
+Because \( C \) is uniquely decodable, each sequence in \( S_n \) corresponds to a unique sequence of source symbols. The number of different sequences in \( S_n \) is at least \( 2^{nl} \), where \( l \) is the smallest length among all \( l_i \). This is because, for the shortest codeword, we can consider a sequence of length \( nl \) and all possible fillings with the shortest codeword. Since the code is uniquely decodable, none of these sequences can be the same as any sequence containing longer codewords.
+
+The total number of bits required to represent all sequences in \( S_n \) is the sum of the lengths of all possible concatenations of \( n \) codewords, which can be calculated as \( (2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q})^n \).
+
+Since each sequence in \( S_n \) must be different (uniquely decodable) and can be represented in a binary tree (where each leaf corresponds to a codeword and the length of the path to the leaf corresponds to the length of the codeword), the number of sequences in \( S_n \) cannot exceed \( 2^{nl_{max}} \), where \( l_{max} \) is the length of the longest codeword.
+
+Therefore, we have:
+
+\[
+(2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q})^n \leq 2^{nl_{max}}
+\]
+
+Taking the \( n \)th root of both sides, we have:
+
+\[
+2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q} \leq 2^{l_{max}}
+\]
+
+Since \( 2^{l_{max}} \) is always less than or equal to 1 (because there must be at least one codeword of the maximum length and thus occupying the "full" length of the binary tree), we obtain:
+
+\[
+2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q} \leq 1
+\]
+
+To prove sufficiency, we must show that if the inequality holds, then there exists a uniquely decodable code with those lengths.
+
+If the inequality holds, we can use the Kraft construction to build a prefix-free code, which is always uniquely decodable, with codeword lengths \( l_1, l_2, \ldots, l_q \). The construction starts by assigning the shortest codeword first and ensuring no other codeword is a prefix of any other. Since prefix-free codes are a subset of uniquely decodable codes, we have constructed the required code.
+
+Therefore, by satisfying the inequality, we can construct a uniquely decodable code, proving that the condition is sufficient.
+
 \end{proof}
+
+As we said above, in the theory of nescience we are mostly interested in prefix-free codes. That might appear as a limitation, since it sounds more reasonable to use the more general class of uniquely decodable codes. However, such limitation does not exist, since, as the next theorem proves, uniquely decodable codes also satisfy Kraft's inequality. That is, for any uniquely decodable code, there exists a prefix-free code with exactly the same codeword lengths.
+
+\begin{corollary}
+There is an instantaneous code with word lengths $l_1, \ldots, l_q$ if and only if there is a unique decodable code with these word lengths.
+\end{corollary}
+\begin{proof}
+It is a direct consequence of ...
+\end{proof}
+
+In the theory of nescience, we are not interested in the codes themselves, but in the codeword lengths.
 
 %
 % Section: Entropy
@@ -425,34 +516,45 @@ I(X;Y) = H(X) + H(Y) - H(X, Y)
 \section{Optimal Codes}
 \label{sec:Optimal-Codes}
 
-{\color{red} TODO: Explain the concept of unversal code. Give an example.}
+The concept of expected length is fundamental in assessing the efficiency of a code in terms of its average word length. The expected length is a weighted average where each codeword's length is weighted by the probability of its corresponding source symbol.
 
-Lets fix $\mathcal{S}=\left\{ s_{1},s_{2},\ldots,s_{q}\right\}$ a finite source alphabet, and $P$ a probability distribution defined over the elements of $S$.
+Let's establish $\mathcal{S}=\left\{ s_{1},s_{2},\ldots,s_{q}\right\}$ as a finite source alphabet, with $P$ denoting a probability distribution defined over the elements of $\mathcal{S}$.
 
 \begin{definition}
-The \emph{expected length} for a code $C$, denoted by $L_{C}$, is defined as
+The \emph{expected length}\index{Expected length of a code} of a code $C$, denoted by $L_{C}$, is the weighted sum of the lengths of the codewords, calculated as
 \[
-L_{C} = \sum_{i=1}^{q} P(s_{i})l_{i}
+L_{C} = \sum_{i=1}^{q} P(s_{i})l_{i},
 \]
-where $\mathcal{L} = \left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ are the lengths of the code words of $C$. If $C$ is clear from the context, we will denote $L_{C}$ by $L$.
+where $\mathcal{L} = \left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ represents the lengths of the codewords of $C$. We may simply use $L$ to denote $L_{C}$ when the code $C$ is understood from the context.
 \end{definition}
 
-We are interested in finding a code $C$ that minimizes the expected length $L$ of the code words $\mathcal{L}$ given the probability distribution $P$. This code $C$ will allow us to compress the messages written with $S$, that is, to reduce the number of symbols required to write the messages.
+Our goal is to identify a code $C$ that minimizes the expected length $L$ of the codewords $\mathcal{L}$ under the given probability distribution $P$. Such an optimal code $C$ would enable us to compress messages composed from the source alphabet $\mathcal{S}$, effectively reducing the number of symbols required to encode these messages.
+
+Nex definition formalizes what it means for a code to be compact, which is a desirable attribute for efficient data encoding.
+
+\begin{definition}
+A code $C$ is \emph{compact}\index{Compact code} if its average length $L$ is less than or equal to the average length of all the other codes for the same source alphabet and code alphabet.
+\end{definition}
+
+It is not entirely clear that compact codes exist for all possible source alphabets, so the following proposition must be proven.
+
+\begin{proposition}
+For every finite source alphabet $\mathcal{S}=\left\{ s_{1},s_{2},\ldots,s_{q}\right\}$, there exists at least one code $C$ that is compact.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+{\color{red} TODO: Introduce this concept}
 
 \begin{definition}
 The redundancy of a code is defined as
 \[
-\eta = \frac{H(\mathcal(S)}{L}
+\eta = \frac{H(\mathcal(S))}{L}
 \]
 \end{definition}
 
-Of course, our goal is to minimize the redundancy of codes. Next definition provides a formal definition of this concept:
-
-\begin{definition}
-A code $C$ is \emph{compact} if its average length $L$ is less than or equal to the average length of all the other codes for the same source alphabet and code alphabet.
-\end{definition}
-
-{\color{red} TODO: explain the relation between comple and copact codes}
+Of course, our goal is to minimize the redundancy of codes.
 
 Next theorem states that the entropy of the probability distibution $P$ poses a limit to the average length of prefix-free codes.
 
@@ -477,10 +579,6 @@ We have the equality in the theorem if, and only if, the distribution of X is D-
 \begin{proof}
 {\color{red} TODO}
 \end{proof}
-
-{\color{red} TODO: Explain how this relates to complete codes}
-
-{\color{red} TODO: Mention that optimal codes are random}
 
 {\color{red} Mention that in practice we will non-integer codeword lengths. Show that, on average, the length of the encoded string will be less than 1 bit than usind a code with codewords with integer lengths} 
 

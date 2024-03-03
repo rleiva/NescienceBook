@@ -24,11 +24,11 @@ Albert Einstein
 \end{quote}
 \bigskip
 
-In Chapter \ref{chap:Coding} it was introduced the notion of complexity of a string based on the lengths of the code words of a prefix free code. We saw that this definition presents two limitations: the first one is that we need to know in advance the set of possible strings, and the second that it is necessary to define a priori a probability distribution over this set. It would be highly convenient if we can widen the set of strings until we cover all strings (that is, $\mathcal{B}^\ast$), without requiring a probability distribution, so we provide an absolute notion of string complexity. Unfortunately, even if we are able to solve these problems, there exists an even more serious limitation when studying the complexity of strings using codes: some strings that we would expect to be classified as simple cannot be compressed at all. For example, the binary expansion of the $\pi$ constant follows a uniform distribution over the set $\left\{0, 1\right\}$, and so, it cannot be compressed; but, on the other hand, it can be fully and effectively described by a very short mathematical formula. What it is required is an alternative definition of complexity of strings.
+In Chapter \ref{chap:Coding}, the concept of the complexity of a string based on the lengths of the codewords of a prefix-free code was introduced. This definition is limited by two main factors: firstly, it necessitates prior knowledge of the set of possible strings, and secondly, it requires the definition of a probability distribution over this set a priori. It would be highly beneficial if we could expand the set of strings to encompass all strings (that is, $\mathcal{B}^\ast$) without necessitating a probability distribution, thereby providing an absolute notion of string complexity. Unfortunately, even if these issues are addressed, a more significant limitation exists in studying the complexity of strings using codes: certain strings, expected to be classified as simple, cannot be compressed. For instance, the binary expansion of the constant $\pi$ follows a uniform distribution over the set $\left\{0, 1\right\}$ and, as such, cannot be compressed. However, it can be fully and effectively described by a very short mathematical formula. This necessitates an alternative definition of string complexity.
 
-\emph{Kolmogorov Complexity}, also known as \emph{Algorithmic Information Theory}, provides a definition of complexity of a string that explicitly address these issues. Intuitively, the amount of information of a finite string is the length of the shortest computer program that is able to print the string. It does not require to know in advance the set of valid strings, nor its probability distribution. Moreover, objects like $\pi$ are properly classified as having low complexity. We could say that Kolmogorov complexity provides a universal definition of amount of information that is very close to our intuitive idea. In order to compute the Kolmogorov complexity of a string, we have to agree upon a universal description method, or computer language, and a universal computer. We could rise the question if doing so the complexity of a string becomes a quantity that depends on the computer language selected. Fortunately, it can be shown that this is not the case, since all reasonable options (powerful enough) of computer languages provide the same description length, up to a fixed constant that depends on the selected languages, but now the string itself. Unfortunately, Kolmogorov complexity introduces new problems, being the most important one that it is a non-computable quantity, and so, it must be approximated in practice.
+\emph{Kolmogorov Complexity}, also known as \emph{Algorithmic Information Theory}, offers a definition of the complexity of a string that explicitly addresses these issues. Intuitively, the amount of information in a finite string is measured by the length of the shortest computer program capable of producing the string. This approach does not require prior knowledge of the set of valid strings or their probability distribution. Furthermore, objects like $\pi$ are appropriately classified as having low complexity. We could argue that Kolmogorov complexity provides a universal definition of the amount of information that closely aligns with our intuitive understanding. To compute the Kolmogorov complexity of a string, it is necessary to agree upon a universal description method or computer language, along with a universal computer. One might question whether, by doing so, the complexity of a string becomes dependent on the chosen computer language. Fortunately, it has been demonstrated that this is not the case, as all reasonable (and sufficiently powerful) computer languages yield the same description length, up to a fixed constant that depends on the languages chosen, but not on the string itself. Unfortunately, Kolmogorov complexity introduces a significant issue: it is a non-computable quantity, and as such, must be approximated in practice.
 
-At this point, we could ask ourselves if it is possible to compute the complexity of any object in general, not only strings. The answer is yes, at least in theory. Given an object $x$ what we have to do is to provide an encoding method that describes the object using a string $\langle x \rangle$. That encoding method would be useful only if we are able to losslessly and effectively reconstruct the original objects given their descriptions. Unfortunately, it is not always possible to provide such descriptions, either because we are dealing with abstract objects (like most of the objects studied in mathematics), or because from a practical point of view it is not possible to reconstruct the object given its description (for example with living things\footnote{At least up to today it is not possible to recreate an animal given its DNA.}).
+At this point, one might wonder if it is possible to compute the complexity of any object in general, not just strings. The answer is yes, at least theoretically. Given an object $x$, the task is to provide an encoding method that represents the object as a string  $x$. This encoding method would only be useful if we can losslessly and effectively reconstruct the original object from its encoded description. Unfortunately, providing such descriptions is not always feasible, either because the objects in question are abstract (as is often the case in mathematics) or because practical reconstruction of the object from its description is currently impossible (for example, with living organisms\footnote{As of now, it is not possible to recreate an animal solely based on its DNA.}).
 
 %
 % Section: String Complexity
@@ -37,17 +37,15 @@ At this point, we could ask ourselves if it is possible to compute the complexit
 \section{Strings Complexity}
 \label{sec:strings_complexity}
 
-In Section \ref{sec:Turing-Machines} it was introduced the concept of Turing machine, an idealized model of computers, and we saw that Turing machines can be represented as partial computable functions $T:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, that assigns to each input string $s \in \mathcal{B}^\ast$ the output string $T(s) \in \mathcal{B}^\ast$ (Definition \ref{def:computable-function}); we also introduced the concept of universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ (Definition \ref{def:Universal-Turing-Machine}), a machine that can simulate the behavior of any other Turing machine; that is, for all $(x,v) \in  \mathcal{B}^\ast \times \mathcal{B}^\ast$ we have that $U(x,v) = T_{x}(v)$. Later, in Section \ref{Codes} it was introduced the concept of code, and in particular, the notion of prefix-free code (Definition \ref{def:Prefix-free-Code}), and we saw that this kind of codes present important properties (Theorem \ref{th:Kraft-Inequality}). Next definition merges the best of both worlds, Turing machines and prefix-free codes, and introduce a new type of universal Turing machine.
+In Section \ref{sec:Turing-Machines}, the concept of the Turing machine, an idealized model of computers, was introduced. We saw that Turing machines can be represented as partial computable functions $T:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, which assign to each input string $s \in \mathcal{B}^\ast$ an output string $T(s) \in \mathcal{B}^\ast$ (Definition \ref{def:computable-function}). We also introduced the concept of a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ (Definition \ref{def:Universal-Turing-Machine}), a machine that can simulate the behavior of any other Turing machine; that is, for all $(x,v) \in  \mathcal{B}^\ast \times \mathcal{B}^\ast$, we have that $U(x,v) = T_{x}(v)$. Later, in Section \ref{Codes}, the concept of a code, and in particular, the notion of a prefix-free code, was introduced (Definition \ref{def:Prefix-free-Code}). We saw that this kind of code presents important properties (Theorem \ref{th:Kraft-Inequality}). The next definition merges the best of both worlds, Turing machines and prefix-free codes, and introduces a new type of universal Turing machine.
 
 \begin{definition}
-A \emph{prefix-free universal Turing machine} is a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ such that for every $v \in \mathcal{B}^\ast$, the domain $U_{v}$ is prefix-free, where $U_{v}:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, $U_{v}(x) = U(x, v)$ for all $x \in \mathcal{B}^\ast$.
+A \emph{prefix-free universal Turing machine} is a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ such that, for every $v \in \mathcal{B}^\ast$, the domain $U_{v}$ is prefix-free, where $U_{v}:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ and $U_{v}(p) = U(p, v)$ for all $p \in \mathcal{B}^\ast$.
 \end{definition}
 
-% TODO: This thing about McMillan is true?
+Using modern computer science terminology we could say that $U$ is the computer, $p$ is the program and $v$ is the input to the program. Intuitively, the above definition requires that no computer program can be a prefix of any other program. This is not a limitation from the point of view of string lengths, since, by applying McMillan's theorem (Theorem \ref{th:Kraft-Inequality}), given a uniquely decodable program, we could always find a prefix-free one that computes exactly the same function and has the same length. Moreover, in practice, real computer programs are usually prefix-free; for example, the C programming language requires that all functions must be enclosed by braces \{\}.
 
-Intuitively, what the above definition requires is that no computer program can be a prefix of any other program. This is not a limitation from the point of view of string lengths, since applying McMillan (Theorem \ref{th:Kraft-Inequality}) given a non-prefix-free program we could always find a prefix-free one that computes exactly same function and has the same length. Moreover, in practice, real computer programs are usually prefix free; for example, the C programming language requires that all functions must be enclosed by braces \{\}.
-
-The concept of prefix-free universal Turing machine allows us to introduce a new definition of complexity of a string that is more in line with out intuitive idea of amount of computational information contained in an object (encoded as a string).
+The concept of a prefix-free universal Turing machine allows us to introduce a new definition of the complexity of a string that aligns more closely with our intuitive understanding of the amount of computational information contained in an object (encoded as a string).
 
 \begin{definition}[Kolmogorov Complexity]
 \label{def:Kolmogorov-Complexity}
@@ -57,7 +55,7 @@ K(s)=\min_{p,v \in \mathcal{B}^\ast}\left\{l(p) + l(v)\,:\, U(p,v)=s\right\}
 \]
 \end{definition}
 
-Using modern computer science terminology we could say that $U$ is the computer, $p$ is the program and $v$ is the input to the program. Intuitively, the shortest description of a string $s$ is given by two elements: a program that compress all the regular patterns of the string, and a new string $v$ that comprises those parts of $s$ that do not present any regularity. We have to find the optimum balance between increasing the complexity of the program, trying to grasp more regularities, or increase the size of the non-compressible part.
+Intuitively, the shortest description of a string $s$ is given by two elements: a program that compress all the regular patterns of the string, and a new string $v$ that comprises those parts of $s$ that do not present any regularity. We have to find the optimum balance between increasing the complexity of the program, trying to grasp more regularities, or increase the size of the non-compressible part\footnote{In the literature the Kolmogorov complexity of the string $s$ is defined as $K(s)=\min_{p \in \mathcal{B}^\ast}\left\{l(p)\,:\, U(p,\lambda)=s\right\}$, that is, the length of the shortest computer program that without any additional input can print the string $s$. We prefer to use the two parts definition $l(p) + l(v)$ because it is more in line with the requirements of the theory of nescience.}.
 
 \begin{example}
 Consider the string composed of one thousand times the substring "10", that is "$\underbrace{1010\ldots1010}_{1.000\,\mathrm{times}}$". We could write the following program:
@@ -73,12 +71,12 @@ and then run it with:
     example("10");
 \end{verbatim}
 
-in order to print it. The length of the original string is 2.000 bits, but the length of the program is 480 bits (assuming that the program is encoded using an uniform code of 8 bits), and the length of the input is 2 bits, so we can conclude that the string has a low complexity. Of course, in order to compute the real Kolmogorov complexity of the string we should find the shortest Turing machine that prints that string.
+in order to print it. The length of the original string is 2.000 bits, but the length of the program is 480 bits (assuming that every symbol is encoded using an uniform code of 8 bits), and the length of the input is 2 bits, so we can conclude that the string has a low complexity. Of course, in order to compute the real Kolmogorov complexity of the string we should find the shortest Turing machine that prints that string.
 
 On the contrary, a string composed of two thousands random 0's and 1's would have a high complexity, since it does not exists any program shorter than the program that prints the string itself.
 \end{example}
 
-As we said in the preface of this chapter, Kolmogorov complexity would be useless if the complexity of the strings depends on the selected universal Turing machine. Next theorem proves that this is not the case, up to a constant that depends on the selected machines, but not on the strings themselves. In this way, we could say that Kolmogorov complexity is an inherent property of the strings themselves.
+As we mentioned in the preface of this chapter, Kolmogorov complexity would not be particularly useful if the complexity of strings depended on the choice of universal Turing machine. The following theorem demonstrates that this concern is unfounded, up to a constant that depends on the choice of machines, but not on the strings themselves. This establishes Kolmogorov complexity as an inherent property of the strings.
 
 \begin{theorem}[Invariance theorem]
 \label{def:Invariance-theorem}
@@ -92,25 +90,28 @@ Let $p, v$ be the shortest strings that $U'(p,v)=s$, then we have that $U(\langl
 \end{proof}
 
 \begin{example}
-Select a universal programming language, for example Java, and an alternative language, for example Python. We could write an interpreter of Python in Java, that is, a Java program that as input gets a Python script and runs it. Then, we could just ask to Java to run this interpreter over the shortest Python script that prints a string. In this way, the complexity of a string $s \in \mathcal{B}^\ast$ given the language Java $C_J(s)$ would be less or equal than the complexity of the string given the language Phyton $C_J(s)$ plus the length of the Phyton interpreter written in Java $C_{J,P}$, that is, $C_J(s) \leq C_P(s) + C_{J,P}$.  Moreover, the lenght of the interpreter $C_{J,P}$ does not depend on the string $s$.
+Consider a universal programming language, such as Java, and an alternative language, such as Python. We can write a Python interpreter in Java, that is, a Java program that takes a Python script as input and executes it. Then, to compute the complexity of a string $s \in \mathcal{B}^\ast$ using Java, $C_J(s)$, it would be no greater than the complexity of the string using Python, $C_P(s)$, plus the length of the Python interpreter written in Java, $C_{J,P}$. Importantly, the length of the interpreter, $C_{J,P}$, does not depend on the string $s$.
 \end{example}
 
-Although we have proved that Kolmogorov complexity does not depends on the selected universal Turing machine, the size of the constant $C$ could be a serious limitation in practical applications, since it prevents us to compute the complexity of short strings (the complexity of the string would be very small compared to the constant). This problem is explicitly addressed by the Minimum Description Length principle described in Chapter \ref{ch:Learning}.
+Although we have proved that Kolmogorov complexity does not depend on the selected universal Turing machine, the size of the constant \(C_{U, U'}\) could pose a limitation in practical applications, especially when computing the complexity of short strings where the constant might significantly exceed the complexity of the string itself. This challenge is addressed by the Minimum Description Length principle, as described in Section \ref{sec:MML}.
 
 \begin{notation}
-We denote by $s^{\ast}$ the shortest program that print the string $s$ given the universal Turing machine $U$, that is $s^\ast = \langle p,v \rangle$, $U(s^\ast) = s$ and $l(s^\ast) = K(s)$. If there are more than one $s^\ast$ programs satisfying the avobe properties, we select the first one using a lexicographical order iduced by $0 < 1$.
+We denote by \(s^\ast\) the shortest program that outputs the string \(s\) on the universal Turing machine \(U\), that is, \(s^\ast = \langle p,v \rangle\), \(U(s^\ast) = s\) and \(l(s^\ast) = K(s)\). If more than one program satisfies these properties, we select the first one using a lexicographical order induced by \(0 < 1\).
 \end{notation}
 
-The size of the $C_{U, U'}$ constant is not the only limitation that Kolmogorov complexity presents, another problem is that it is a non-computable quantity, that is, there is no algorithm that given a string computes the shortest program that prints that string.
+The size of the \(C_{U, U'}\) constant is not the only challenge presented by Kolmogorov complexity; another issue is its non-computability, that is, there is no algorithm capable of determining the shortest program that generates any given string. The following theorem on the uncomputability of Kolmogorov complexity marks a pivotal insight into the intrinsic limits of complexity theory. By exploring the theorem, we delve into the heart of computability theory, confronting the paradoxical reality that some of the most fundamental aspects of information are inherently beyond the reach of algorithmic computation.
 
 \begin{theorem}
-The function $K:\mathcal{B}^\ast \rightarrow \mathbb{N}$ that assigns to each string $s$ its Kolmogorov complexity $K(s)$ is not computable.
+The function \(K: \mathcal{B}^\ast \rightarrow \mathbb{N}\) that assigns to each string \(s\) its Kolmogorov complexity \(K(s)\) is not computable.
 \end{theorem}
 \begin{proof}
-{\color{red} TODO}
+{\color{red} TODO: Review}
+Assume for the sake of contradiction that \(K\) is computable. This means there exists a Turing machine \(T\) such that for any string \(s\), \(T\) halts with \(K(s)\) on its tape. Consider the following process, which uses \(T\) to construct a string \(s\) of arbitrary complexity: i) enumerate all binary strings using a shortlex ordering: \(s_1, s_2, \ldots\), ii) for each string \(s_i\), compute \(K(s_i)\) using \(T\) and select \(s_i\) such that \(K(s_i) > l(s_i) + C\), where \(C\) is a constant representing the length of this description plus the operation to add \(C\). Such a process would effectively produce a string \(s\) whose Kolmogorov complexity is greater than its length plus a constant, which contradicts the definition of Kolmogorov complexity as the length of the shortest description. The contradiction arises because our assumption that \(K\) is computable allows us to construct a string that defies the bounds set by \(K\) itself. Therefore, the function \(K\) is not computable.
 \end{proof}
 
-In practice, what we do is to approximate the Kolmogorov complexity by the compressed version of the string, given an standard compression algorithm, for example, the Huffman algorithm described in Section \ref{sec:Huffman-Algorithm}.
+If \(K\) were computable, we could solve the Halting Problem by constructing a program that, for any input program and input, computes whether the program halts by checking if its Kolmogorov complexity is finite. Since the Halting Problem is known to be undecidable, this provides a contradiction.
+
+In practice, we approximate the Kolmogorov complexity using the compressed version of the string, employing standard compression algorithms, such as the Huffman algorithm described in Section \ref{sec:Huffman-Algorithm}.
 
 %
 % Section: Properties of Kolmogorov Complexity
@@ -118,16 +119,7 @@ In practice, what we do is to approximate the Kolmogorov complexity by the compr
 
 \section{Properties of Complexity}
 
-{\color{red} TODO: Section Pending!}
-
-\begin{proposition}
-\label{prop:kolmogorov_order}
-There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $K(x, y) \leq K(y, x) + c$.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO}
-\end{proof}
-
+In this section, we delve into the properties of Kolmogorov complexity. We will explore the foundational principles that govern this complexity measure, including its invariance, symmetry, and non-computability. Through examining these properties, we gain deeper insights into the complex interplay between information, computation, and randomness.
 
 The Kolmogorov complexity of a string cannot exceed its own length.
 
@@ -154,6 +146,20 @@ Let $U$ and $U'$ two universal Turing machines. Prove that there exists a consta
 {\color{red} TODO}
 \end{proof}
 
+\begin{proposition}
+If f:A* -> A* is a computable biyection, then K(f(x)) < K(x) + O(1).
+\end{proposition}
+\begin{proof}
+{\color{red} TODO}
+\end{proof}
+
+
+%
+% Section: Joint Kolmogorov Complexity
+%
+
+\section{Joint Kolmogorov Complexity}
+
 By $K(x, y)$ we mean the length of the shortes program that prints the strings $x$ and $y$ in such a way that we can distinguish them.
 
 \begin{proposition}
@@ -172,12 +178,14 @@ There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have t
 {\color{red} TODO}
 \end{proof}
 
+The first proposition highlights a fundamental symmetry in Kolmogorov complexity, illustrating that the complexity of describing a pair of strings in either order differs by at most a constant. This reflects the intrinsic property that the information content is independent of the specific arrangement of the strings being described. The constant \(c\) encapsulates the overhead associated with the operations needed to reverse the order of the strings.
 
 \begin{proposition}
-If f:A* -> A* is a computable biyection, then K(f(x)) < K(x) + O(1).
+\label{prop:kolmogorov_order}
+There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $K(x, y) \leq K(y, x) + c$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+The key to this proof lies in the symmetry of information and the properties of a universal Turing machine. Let $U$ be a universal Turing machine, and let $p_{xy}$ and $p_{yx}$ be the shortest programs that output $x$ followed by $y$, and $y$ followed by $x$, respectively, when executed on $U$. To convert $p_{xy}$ into a program that outputs $yx$, we need to add or modify a finite set of instructions to swap the output order. This set of instructions has a fixed length, denoted by $c$. Therefore, the program that first computes $x$ and $y$ and then swaps their order can be at most $c$ bits longer than the program that directly computes $y$ and $x$.
 \end{proof}
 
 %
@@ -267,6 +275,15 @@ K(XY) = K(X) + K(Y \mid X)
 \begin{proof}
 {\color{red} TODO}
 \end{proof}
+
+
+%
+% Section: Two Parts Complexity
+%
+
+\section{Two Parts Complexity}
+\label{sec:two_parts_complexity}
+
 
 %
 % Section: Information Distance
@@ -407,6 +424,9 @@ Th number of strings o length n thare are c-incompressible is ast least $2^n - 2
 \section*{Bibliography and References}
 
 {\color{red} TODO: Section Pending!}
+
+{\color{red} Kolmogorov Complexity, a fundamental concept in the field of information theory and computer science, emerged in the 1960s from the work of three pioneering researchers: Andrei Kolmogorov, Ray Solomonoff, and Gregory Chaitin. Independently arriving at similar concepts, these scholars sought to formalize a measure of the information content or complexity of an object (specifically, finite strings) in a way that is independent of the specific language or encoding used. Kolmogorov, a prominent Soviet mathematician, introduced his formulation in 1965, aiming to provide a theoretical foundation for understanding the complexity of individual objects beyond the probabilistic framework of Shannon's information theory. Solomonoff, an American information theorist, introduced a related concept as part of his work on algorithmic probability, emphasizing its implications for prediction and inductive inference. Chaitin, working in the United States as well, contributed by exploring the mathematical properties and implications of this notion, including its non-computability. The motivations behind the development of Kolmogorov Complexity were multifaceted, encompassing the desire to better understand the nature of information, randomness, and the limits of computation and prediction, thus laying the groundwork for numerous applications in theoretical computer science, mathematics, and beyond. }
+
 
 The idea of measuring the amount of information contained in a string based on the shorter computer program that can reproduce it was introduced independelntly by Solomonoff \cite{solomonoff1964formal}, Kolmogorov \cite{kolmogorov1965three} and Chaiting \cite{chaitin1969simplicity}.
 

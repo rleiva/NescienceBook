@@ -5,10 +5,6 @@
 % TODO: Can we talk about independent topics? K(t|s) = K(t)
 % TODO: Does K(t|s) != K(s|t)?
 
-%
-%  Section 1:
-%    - (TODO)   Review proof, for example Vitanyi says C = 2l(n) + 1
-%    - (TODO)   Prove theorem
 
 \chapterimage{Mandelbrot.pdf}
 
@@ -121,15 +117,20 @@ In practice, we approximate the Kolmogorov complexity using the compressed versi
 
 In this section, we delve into the properties of Kolmogorov complexity. We will explore the foundational principles that govern this complexity measure, including its invariance, symmetry, and non-computability. Through examining these properties, we gain deeper insights into the complex interplay between information, computation, and randomness.
 
-The Kolmogorov complexity of a string cannot exceed its own length.
+The Kolmogorov complexity of a string cannot surpass the sum of its own length and a constant.
 
 \begin{proposition}
 \label{prop:kolmogorov_length}
-There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s) \leq l(s)+c$.
+There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s) \leq l(s) + c$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Let $s \in \mathcal{B}^\ast$ be an arbitrary string, and consider the encoding of a Turing machine $p$ such that for any input $v = s$, it halts and outputs $s$. The program $p$ is designed to simply reproduce its input. Given this setup, when $p$ is executed on a universal Turing machine $U$ with $s$ as input, it satisfies the condition $U(p, s) = s$. The length of \(p\) is a constant $c$ across all strings $s$. This constancy arises because $p$'s mechanism (accepting an input and outputting it unchanged) does not vary with the size or content of $s$. By the definition of Kolmogorov Complexity $K(s)$, which seeks the minimum length of a program-input pair that generates $s$, the combination of $p$ and $s$ presents a feasible solution. Therefore, we have:
+\[
+K(s) \leq l(s) + l(p) = l(s) + c
+\]
 \end{proof}
+
+The size of the constant $c$ depends on the specific encoding schema used by the selected universal Turing machine $U$, but it is independent of the string $s$. In Section \ref{sec:incompressibility_randomness}, we will explore the characteristics of random strings, which are defined as strings that cannot be compressed. Such strings exhibit a Kolmogorov complexity that exceeds their own length, that is, $K(s) > l(s)$.
 
 \begin{proposition}
 For all $s\in\mathcal{B}^{\ast}$ we have that $0 < K(s) < \infty$.

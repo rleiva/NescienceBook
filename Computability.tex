@@ -76,7 +76,7 @@ A \emph{Turing machine} is a 7-tuple $\left(Q,\Gamma,\sqcup,\Sigma,q_{i},q_{f},\
 \end{align*}
 \end{definition}
 
-The algorithm executed by the machine is defined by the transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$ and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Sigma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, it stalls.
+The algorithm executed by the machine is defined by the transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$ and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Sigma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, it will enter in an infinite loop, never halting.
 
 The machine's input consists of a string of symbols, with the assumption that the machine's head is initially positioned at the first symbol of the input string. To address problems involving an object $O$ that isn’t a string, we must first develop a method to encode that object as a string, denoted as $\left\langle O \right\rangle$.
 
@@ -280,30 +280,30 @@ Non-computable problems are generally not derived directly from natural phenomen
 \section{Computable Functions and Sets}
 \label{sec:computable_functions}
 
-Each Turing machine \(T\) defines a function \(f_T:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) that assigns to each input string \(s \in \mathcal{B}^{\ast}\) an output string \(T(s) \in \mathcal{B}^{\ast}\). This relationship between Turing machines and functions forms the basis for introducing the concept of a \emph{computable function}, a fundamental element in the field of computational theory.
+Each Turing machine \(T\) defines a function \(f_T:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) that assigns to each input string \(s \in \mathcal{B}^{\ast}\) an output string \(T(s) \in \mathcal{B}^{\ast}\). The relationship between Turing machines and functions forms the basis for introducing the concept of a \emph{computable function}.
 
 \begin{definition}
 \label{def:computable-function}
 \index{Computable function}
-A function \(f: \mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) is \emph{computable}\index{Computable function} if there exists a Turing machine \(T\) that defines the function \(f\).
+A function \(f: \mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) is \emph{computable}\index{Computable function} if there exists a Turing machine \(T\) that defines the function \(f\) and halts for all the values of \( \mathcal{B}^{\ast} \).
 \end{definition}
 
 The terminology in computational theory can vary. While computable functions are occasionally referred to as \emph{recursive functions}\index{Recursive function}, this book opts for the term computable functions for consistency.
 
 \begin{example}
-In the context of this theoretical framework, let’s consider a practical example. The function that assigns to each pair of natural numbers \(x\) and \(y\) their sum \(x + y\) is computable, as demonstrated in Example \ref{ex:Turing-Machine}. The natural numbers and pairs are encoded as strings, transforming the original function into one operating in the realm of strings.
+The function that assigns to each pair of natural numbers \(x\) and \(y\) their sum \(x + y\) is computable, as demonstrated in Example \ref{ex:Turing-Machine}. 
 \end{example}
 
-In real-world scenarios, certain functions don’t provide a defined output for all possible inputs. Partial functions, characterized by Turing machines that don’t halt for specific inputs, model these cases. This realistic representation of computational processes is essential in both theoretical exploration and practical application.
+In real-world scenarios, certain functions don’t provide a defined output for all possible inputs. Partial computable functions, characterized by Turing machines that don’t halt for specific inputs, model these cases.
 
 \begin{definition}
 A partial function \(f:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) is \emph{partial computable}\index{Partial computable function} if there exists a Turing machine \(T\) that defines \(f\) for defined values and does not halt for undefined values.
 \end{definition}
 
-Partial functions, as next example shows, are only operational for certain input values. 
+The distinction between total computable functions and partial computable functions is significant in computability theory because it reflects the difference between problems that are always solvable by an algorithm (total) and those that are only solvable in some cases (partial).
 
 \begin{example}
-The function $f: \mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that assigns to each pair of natural numbers $x$ and $y$ the number $x - y$ is a partial computable function, since it is not defined in the case that $x < y$.
+The function $f: \mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that assigns to each pair of natural numbers $x$ and $y$ the number $x - y$ is a partial computable function, since it is not defined in the case that $x < y$. Recall that according to our definition of Turing machine (see Definition \ref{def:Turing-Machine}), when the machine reaches an undefined configuration enters an infinite loop without ever halting.
 \end{example}
 
 We can expand the application of the principles of computability and partial computability to the domain of sets. We characterize sets through the lens of theirs characteristic functions that discern the membership of elements within the sets.
@@ -318,7 +318,17 @@ The application of these concepts is illustrated through the example of the set 
 The set of all Turing machines that halt on all inputs, as demonstrated in \ref{th:halting-problem}, is not computable but is computably enumerable.
 \end{example}
 
-These definitions and examples provide insights into the delicate interplay between functions, sets, Turing machines, and the realm of the computability and non-computability.t
+Next proposition provides an alternative characterization of computable sets.
+
+\begin{proposition}
+A set $A \in \mathcal{B}^\ast$ is computable if and only if $A$ and its complement $A^c$ are computably enumerable.
+\end{proposition}
+\begin{proof}
+If $A$ is computable, by definition, there exists a Turing machine that decides for any input $x \in \mathcal{B}^\ast$ whether $x \in A$ or $x \notin A$, halting in both cases. This implies that both $A$ and its complement $A^c$ can be enumerated by Turing machines. Thus, both $A$ and $A^c$ are computably enumerable.
+
+Conversely, suppose $A$ and $A^c$ are computably enumerable. This means there exist two Turing machines, $T_A$ and $T_{A^c}$, that enumerate the elements of $A$ and $A^c$, respectively. To show that $A$ is computable, construct a Turing machine $T$ that, given an input $x \in \mathcal{B}^\ast$, simulates $T_A$ and $T_{A^c}$ in parallel to search for $x$. If $x$ appears in the enumeration produced by $T_A$, $T$ halts and accepts $x$ as an element of $A$. If $x$ appears in the enumeration produced by $T_{A^c}$, $T$ halts and accpts $x$, indicating $x \notin A$. Since every element of $\mathcal{B}^\ast$ must be in either $A$ or $A^c$ and both sets are computably enumerable, $T$ will eventually halt for every input $x$, proving that $A$ is computable.
+\end{proof}
+
 
 %
 % Section: Oracle Turing Machine

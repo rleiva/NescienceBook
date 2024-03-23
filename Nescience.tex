@@ -43,21 +43,22 @@ Another notable consequence of the nescience concept is the highly counterintuit
 
 \section{Nescience}
 
-Intuitively, our understanding of an entity should be based on the quality of the model we use to describe it, namely, its ability to explain why things happen. In the theory of nescience, we propose a quantitative measure of our ignorance about a research entity using the miscoding of a string-based representation of the entity, and the inaccuracy and surfeit of the model describing this representation. Miscoding is significant because it indicates how well the representation encodes the entity, inaccuracy measures how closely our model comes to adequately describing the representation, and surfeit quantifies the extent of unnecessary effort invested in the model. We believe that the objective of Science should be to minimize these three quantities simultaneously: miscoding, inaccuracy, and surfeit. Unfortunately, these metrics are conflicting, in that decreasing one could increase the other two.
+Intuitively, our understanding of an entity should be based on the quality of the model we use to describe it, namely, its ability to explain why things happen. In the theory of nescience, we propose a quantitative measure of our ignorance about a research entity using the miscoding of a string-based representation of the entity, and the inaccuracy and surfeit of the model describing this representation. Miscoding is significant because it indicates how well the representation encodes the entity, inaccuracy measures how closely our model comes to adequately describing the representation, and surfeit quantifies the extent of unnecessary effort invested in the model. We believe that the objective of Science should be to minimize these three quantities: miscoding, inaccuracy, and surfeit. Unfortunately, these metrics are conflicting, in the sense that decreasing one could increase the other two.
 
 According to the theory of nescience, science aims to address the following multiobjective optimization problem\footnote{Technically speaking, science is a deterministic discrete nonlinear nonconvex nondifferentiable multiobjective optimization problem with a single decision maker.}:
 
 \begin{tBox}
 \textbf{The Science Problem}
+\index{Sicence problem}
 \begin{align*}
  & \text{minimize} \quad \{ \mu(r), \iota(d, r), \sigma(d, r)\} \\
  & \text{subject to} \quad (r, d) \in \mathcal{B}^\ast \times \mathcal{D}
 \end{align*}
 \end{tBox}
 
-A \emph{scientific method}, detailed further in Section \ref{sec:scientific_method}, refers to any algorithm or computational approach capable of addressing, or providing a closely approximate resolution to, the previously discussed minimization challenge. This encompasses a wide range of techniques and methodologies aimed at systematically reducing simultaneously the metrics of miscoding, inaccuracy, and surfeit within the realm of scientific inquiry, thereby enhancing the precision and conciseness of our representations and models.
+A \emph{scientific method}\index{Scientific method}, detailed further in Section \ref{sec:scientific_method}, refers to any algorithm or computable procedure capable of addressing, or providing a closely approximate resolution to, the previously discussed minimization challenge. This encompasses a wide range of techniques and methodologies aimed at systematically reducing the metrics of miscoding, inaccuracy, and surfeit within the realm of scientific inquiry, thereby enhancing the precision and conciseness of our representations and models.
 
-The feasible region is the Cartesian product $\mathcal{B}^\ast \times \mathcal{D}$ of the set of finite binary strings $\mathcal{B}^\ast$ and the set of descriptions $\mathcal{D}$. The decision vectors are pairs $(r, d)$ composed of a representation and a description, and the objective functions to minimize are miscoding, surfeit, and inaccuracy. The objective region is the subset $\mathbf{Z} \subset \mathbb{R}^3$, and its elements are the objective vectors.
+The feasible region is the Cartesian product $\mathcal{B}^\ast \times \mathcal{D}$ of the set of finite binary strings $\mathcal{B}^\ast$ and the set of descriptions $\mathcal{D}$. The decision vectors are pairs $(r, d)$, called \emph{hypothesis}\index{Hypothesis}, composed of a representation and a description, and the objective functions to minimize are miscoding, surfeit, and inaccuracy. The objective region is the subset $\mathbf{Z} \subset \mathbb{R}^3$, and its elements are the objective vectors.
 
 In our characterization of science and the scientific method, we do not involve the set $\mathcal{E}$ of entities, since requiring knowledge of the entity $e \in \mathcal{E}$ under study would render science an ill-defined problem for the majority of research topics. Science is essentially a problem of manipulating strings of symbols. From a practical perspective, science is about finding strings that have a meaningful interpretation in the real world and that enable us to solve practical problems. From a more theoretical perspective, the goal of science would be to understand how an unknown abstract oracle functions.
 
@@ -73,34 +74,43 @@ In the theory of nescience, we are mostly interested in the decision space $\mat
 If the representation and description currently in use to describe an entity are not perfect, our goal is to find another representation, or another description, that reduces at least one of the metrics miscoding, inaccuracy, or surfeit without deteriorating either of the other two.
 
 \begin{definition}
-We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ \emph{dominates} another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ if it improves in one of the metrics miscoding, inaccuracy, or surfeit without deteriorating either of the other two.
+We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ \emph{dominates}\index{Dominate} another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ if it improves in one of the metrics miscoding, inaccuracy, or surfeit without deteriorating either of the other two.
 \end{definition}
 
 We could discover a new representation that more accurately encodes the entity of interest without diminishing the quality of its descriptive model. Alternatively, we might identify a new description that addresses inaccuracies without augmenting the surfeit, or we could find a more concise description that does not compromise accuracy.
 
 \begin{example}
-Consider an experiment where we've gathered several observations $r$ and applied a mathematical model $f_1$ from a family of models $\mathcal{M}_1$, resulting in an inaccuracy of $i_1$. Subsequently, we might fit a second model $f_2$ from an alternative family of models $\mathcal{M}_2$. This second model yields a smaller inaccuracy $i_2$ while maintaining a comparable length. In this scenario, we would say that the vector $(r, i_2)$ dominates the vector $(r, i_1)$.
+\label{ex:nescience_pareto}
+Consider an experiment where we've gathered several observations $r$ and applied a mathematical model $f_1$ from a family of models $\mathcal{M}_1$, resulting in an inaccuracy of $i_1$. Subsequently, we might fit a second model $f_2$ from an alternative family of models $\mathcal{M}_2$. This second model is smaller that $i_2$ while maintaining the same inaccuracy. In this scenario, we would say that the hypothesis $B = (r, i_2)$ dominates the hypothesis $A = (r, i_1)$ although they it is not superior in the individual objective of inaccuracy.
 \end{example}
 
 For the majority of entities, there does not exist a single solution that simultaneously minimizes the three metrics. Instead, what we have is a collection of Pareto optimal solutions that define an optimal frontier.
 
 \begin{definition}
-We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ is \emph{Pareto optimal} if there does not exist another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ such that $(r', d')$ dominates $(r, d)$. The set of Pareto optimal solutions, denoted by $\mathbf{P}_{\mathcal{B}^\ast \times \mathcal{D}}$, is called the \emph{Pareto frontier}.
+We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ is \emph{Pareto optimal}\index{Pareto optimal} if there does not exist another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ such that $(r', d')$ dominates $(r, d)$. The set of Pareto optimal solutions, denoted by $\mathbf{P}_{\mathcal{B}^\ast \times \mathcal{D}}$, is called the \emph{Pareto frontier}\index{Pareto frontier}.
 \end{definition}
 
 In the realm of scientific research, the concept of the Pareto frontier, as defined by the set of Pareto optimal solutions $\mathbf{P}_{\mathcal{B}^\ast \times \mathcal{D}}$, plays a crucial role. It delineates the boundary of optimal trade-offs between the conflicting metrics of miscoding, inaccuracy, and surfeit, without one being improved at the expense of the others. This frontier represents the spectrum of best-achievable balances, guiding researchers to identify models and representations that offer the most scientifically rigorous understanding of their subject matter (see Section \ref{sec:perfect_knowledge}). However, in certain cases or specific practical applications, it might be justifiable to adopt a solution that is not Pareto optimal. For example, we might prioritize one metric significantly over others due to its relevance or the specific objectives of the research, accepting a degree of compromise in the non-prioritized metrics (see Section \ref{sec:minimizing_nescience}).
 
-{\color{red} TODO: Weakly Pareto optimal}
+Building on the concept of Pareto optimality, where a solution is considered optimal if no other solution can improve one objective without worsening another, we introduce the notion of weakly Pareto optimality. A decision vector is deemed weakly Pareto optimal if there is no other vector that can improve all objectives simultaneously. It differs from Pareto optimality in that it includes solutions that, although they may not be superior in some individual objective, are not outperformed across all dimensions.
 
 \begin{definition}
-We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ \emph{weakly dominates} another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ if it improves in one of the metrics miscoding, inaccuracy, or surfeit without deteriorating the other two.
+We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ \emph{weakly dominates}\index{Weakly dominates} another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ if it improves the three metrics miscoding, inaccuracy and surfeit at the same time, that is, $\mu(r') < \mu(r)$, $\iota(d', r') < \iota(d, r)$ and $\sigma(d', r') < \sigma(d, r)$.
 \end{definition}
+
+A decison vector is weakly pareto optimal if it does not exist another decision vector that improves over the three metrics of miscoding, inaccuracy and surfeit.
 
 \begin{definition}
-We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ is \emph{weakly Pareto optimal} if there does not exist another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ such that $(r', d')$ weakly dominates $(r, d)$. The set of Pareto optimal solutions, denoted by $\mathbf{P}_{\mathcal{B}^\ast \times \mathcal{D}}$, is called the \emph{weakly Pareto frontier}.
+We say that a decision vector $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ is \emph{weakly Pareto optimal}\index{Weakly Pareto optimal} if there does not exist another decision vector $(r', d') \in \mathcal{B}^\ast \times \mathcal{D}$ such that $(r', d')$ weakly dominates $(r, d)$. The set of Pareto optimal solutions, denoted by $\mathbf{P}_{\mathcal{B}^\ast \times \mathcal{D}}$, is called the \emph{weakly Pareto frontier}\index{Weakly Paretor frontier}.
 \end{definition}
 
-{\color{red} The concepts of domination and Pareto optimality can be defined in the same way for the restricted decision space $\mathcal{R}_e \times \mathcal{D}$.}
+If a decision vector is weakly Pareto optimal that means we cannot find another decision vector that improves over the three metrics. However, we can still find a decison vector that improves over one of the metrics without deteriorating the other, that is, a decison vector that is Pareto optimal. The Pareto frontier is a subset of the weakly Pareto frontier. In the theory of nescience we will work mostly with the set of Pareto optimal solutions, to the detriment of set of weak Pareto solutions.
+
+\begin{example}
+Based on the assumpitions of Example \ref{ex:nescience_pareto} the hypothesis $A$ still could be weakly Pareto optimal, but it cannot be Pareto optimal, since it is dominated by the hypothesis $B$, but is is not weakly dominated by the hypothesis $B$.
+\end{example}
+
+The concept of Pareto and weakly Pareto optimality can be particuralized to the case in which the set $\mathcal{R}_e$ of representations of the particular entity $e$ is known.
 
 % Range of Solutions
 

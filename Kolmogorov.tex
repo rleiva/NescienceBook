@@ -117,20 +117,7 @@ In practice, we approximate the Kolmogorov complexity using the compressed versi
 
 In this section, we delve into the properties of Kolmogorov complexity. We will explore the foundational principles that govern this complexity measure, including its invariance, symmetry, and non-computability. Through examining these properties, we gain deeper insights into the complex interplay between information, computation, and randomness.
 
-The Kolmogorov complexity of a string cannot surpass the sum of its own length and a constant.
-
-\begin{proposition}
-\label{prop:kolmogorov_length}
-There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s) \leq l(s) + c$.
-\end{proposition}
-\begin{proof}
-Let $s \in \mathcal{B}^\ast$ be an arbitrary string, and consider the encoding of a Turing machine $p$ such that for any input $v = s$, it halts and outputs $s$. The program $p$ is designed to simply reproduce its input. Given this setup, when $p$ is executed on a universal Turing machine $U$ with $s$ as input, it satisfies the condition $U(p, s) = s$. The length of \(p\) is a constant $c$ across all strings $s$. This constancy arises because $p$'s mechanism (accepting an input and outputting it unchanged) does not vary with the size or content of $s$. By the definition of Kolmogorov Complexity $K(s)$, which seeks the minimum length of a program-input pair that generates $s$, the combination of $p$ and $s$ presents a feasible solution. Therefore, we have:
-\[
-K(s) \leq l(s) + l(p) = l(s) + c
-\]
-\end{proof}
-
-The size of the constant $c$ depends on the specific encoding schema used by the selected universal Turing machine $U$, but it is independent of the string $s$. In Section \ref{sec:incompressibility_randomness}, we will explore the characteristics of random strings, which are defined as strings that cannot be compressed. Such strings exhibit a Kolmogorov complexity that exceeds their own length, that is, $K(s) > l(s)$.
+Kolmogorov complexity is a finite positive natural number.
 
 \begin{proposition}
 For all $s\in\mathcal{B}^{\ast}$ we have that $0 < K(s) < \infty$.
@@ -139,24 +126,28 @@ For all $s\in\mathcal{B}^{\ast}$ we have that $0 < K(s) < \infty$.
 Since $K(s)$ is the length of a string, it must be greater than $0$. The property $K(s) < \infty$ is a consequence of Proposition \ref{prop:kolmogorov_length} and the fact that we are only dealing with finite strings.
 \end{proof}
 
+The Kolmogorov complexity of a string cannot surpass the sum of its own length and a constant.
 
 \begin{proposition}
-Let $U$ and $U'$ two universal Turing machines. Prove that there exists a constant $C$ such that for each $s \in \Sigma$ we have $\mid K_{U}(s) - K_{U'}(s) \mid \leq C$.
+\label{prop:kolmogorov_length}
+There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s) \leq l(s) + c$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Let $s \in \mathcal{B}^\ast$ be an arbitrary string, and consider the encoding of a Turing machine $p$ such that for any input $v = s$, it halts and outputs $s$. The program $p$ is designed to simply reproduce its input. Given this setup, when $p$ is executed on a universal Turing machine $U$ with $s$ as input, it satisfies the condition $U(p, s) = s$. The length of \(p\) is a constant $c$ across all strings $s$. This constancy arises because $p$'s mechanism (accepting an input and outputting it unchanged) does not vary with the size or content of $s$. By the definition of Kolmogorov Complexity $K(s)$, which seeks the minimum length of a program-input pair that generates $s$, the combination of $p$ and $s$ presents a feasible solution. Therefore, we have $K(s) \leq l(s) + l(p) = l(s) + c$.
 \end{proof}
 
-Our last proposition considers the transformation of the original string via computable bijection. It proves that the absolute difference in Kolmogorov complexity between any string \(x\) and its transformed counterpart \(f(x)\) is bounded by a constant $c$.
+The size of the constant $c$ depends on the specific encoding schema used by the selected universal Turing machine $U$, but it is independent of the string $s$. In Section \ref{sec:incompressibility_randomness}, we will explore the characteristics of random strings, which are defined as strings that cannot be compressed. Such strings exhibit a Kolmogorov complexity that exceeds their own length, that is, $K(s) > l(s)$.
+
+The absolute difference in Kolmogorov complexity between any string \(x\) and its transformed counterpart \(f(x)\), via a computable bijection, is bounded by a constant $c$. That is, not only does $f$ not increase the complexity of $x$ by more than a constant, but also $f$ does not decrease the complexity by more than a constant.
 
 \begin{proposition}
-Let $f:\mathcal{B}^{\ast} \to \mathcal{B}^{\ast}$ is a computable biyection, then $| K(f(x)) -  K(x) | < O(1)$.
+Let $f:\mathcal{B}^{\ast} \to \mathcal{B}^{\ast}$ is a computable biyection, then there exists a constant $c$ such that $| K\left( f(x) \right) -  K(x) | < c$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Let $P_f$ be the program that computes $f$ and $P_{f^{-1}}$ the program that computes the inverse of $f$. For any string $x$, let $P_x$ be the shortest program that generates $x$. Then, a program $P_{f(x)}$ that generates $f(x)$ can be constructed by concatenating $P_x$ with $P_f$. The length of this program is $|P_{f(x)}| = |P_f| + |P_x|$. Since $|P_f|$ is a constant that does not dependent on $x$, we can say that $K(f(x)) \leq K(x) + |P_f|$. Similarly, given $f(x)$, we can construct a program $P'_{x}$ to generate $x$ by applying $P_{f^{-1}}$ to $f(x)$. The length of this program is $|P'_{x}| = |P_f| + |P_{f^{-1}}|$. Thus, $K(x) \leq K(f(x)) + |P_{f^{-1}}|$. The two inequalities combined implies that $|K(f(x)) - K(x)| \leq \max(|P_f|, |P_{f^{-1}}|) = c$, where \(c\) is a constant that represents the maximum of the lengths of the programs that compute \(f\) and \(f^{-1}\). This constant \(c\) does not depend on \(x\), but rather on the complexity of the functions \(f\) and \(f^{-1}\).
 \end{proof}
 
-that is, not only does $f$ not increase the complexity of $x$ by more than a constant, but also $f$ does not decrease the complexity by more than a constantThis proposition suggests a remarkable stability of informational content under computable bijections, underscoring the intrinsic robustness of Kolmogorov complexity in the face of such transformations.
+This proposition shows a remarkable stability of informational content under computable bijections, underscoring the intrinsic robustness of Kolmogorov complexity in the face of such transformations.
 
 
 %

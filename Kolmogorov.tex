@@ -36,7 +36,7 @@ At this point, one might wonder if it is possible to compute the complexity of a
 In Section \ref{sec:Turing-Machines}, the concept of the Turing machine, an idealized model of computers, was introduced. We saw that Turing machines can be represented as partial computable functions $T:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, which assign to each input string $s \in \mathcal{B}^\ast$ an output string $T(s) \in \mathcal{B}^\ast$ (Definition \ref{def:computable-function}). We also introduced the concept of a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ (Definition \ref{def:Universal-Turing-Machine}), a machine that can simulate the behavior of any other Turing machine; that is, for all $(x,v) \in  \mathcal{B}^\ast \times \mathcal{B}^\ast$, we have that $U(x,v) = T_{x}(v)$. Later, in Section \ref{Codes}, the concept of a code, and in particular, the notion of a prefix-free code, was introduced (Definition \ref{def:Prefix-free-Code}). We saw that this kind of code presents important properties (Theorem \ref{th:Kraft-Inequality}). The next definition merges the best of both worlds, Turing machines and prefix-free codes, and introduces a new type of universal Turing machine.
 
 \begin{definition}
-A \emph{prefix-free universal Turing machine} is a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ such that, for every $v \in \mathcal{B}^\ast$, the domain $U_{v}$ is prefix-free, where $U_{v}:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ and $U_{v}(p) = U(p, v)$ for all $p \in \mathcal{B}^\ast$.
+A \emph{prefix-free universal Turing machine}\index{Prefix-free universal Turing machine} is a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ such that, for every $v \in \mathcal{B}^\ast$, the domain $U_{v}$ is prefix-free, where $U_{v}:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ and $U_{v}(p) = U(p, v)$ for all $p \in \mathcal{B}^\ast$.
 \end{definition}
 
 Using modern computer science terminology we could say that $U$ is the computer, $p$ is the program and $v$ is the input to the program. Intuitively, the above definition requires that no computer program can be a prefix of any other program. This is not a limitation from the point of view of string lengths, since, by applying McMillan's theorem (Theorem \ref{th:Kraft-Inequality}), given a uniquely decodable program, we could always find a prefix-free one that computes exactly the same function and has the same length. Moreover, in practice, real computer programs are usually prefix-free; for example, the C programming language requires that all functions must be enclosed by braces \{\}.
@@ -44,7 +44,7 @@ Using modern computer science terminology we could say that $U$ is the computer,
 The concept of a prefix-free universal Turing machine allows us to introduce a new definition of the complexity of a string that aligns more closely with our intuitive understanding of the amount of computational information contained in an object (encoded as a string).
 
 \begin{definition}[Kolmogorov Complexity]
-\label{def:Kolmogorov-Complexity}
+\label{def:Kolmogorov-Complexity}\index{Kolmogorov Complexity}
 Fix a prefix-free universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$. The \emph{Kolmogorov complexity} of a string $s \in \mathcal{B}^\ast$, denoted by $K(s)$, is defined as:
 \[
 K(s)=\min_{p,v \in \mathcal{B}^\ast}\left\{l(p) + l(v)\,:\, U(p,v)=s\right\}
@@ -75,7 +75,7 @@ On the contrary, a string composed of two thousands random 0's and 1's would hav
 As we mentioned in the preface of this chapter, Kolmogorov complexity would not be particularly useful if the complexity of strings depended on the choice of universal Turing machine. The following theorem demonstrates that this concern is unfounded, up to a constant that depends on the choice of machines, but not on the strings themselves. This establishes Kolmogorov complexity as an inherent property of the strings.
 
 \begin{theorem}[Invariance theorem]
-\label{def:Invariance-theorem}
+\label{def:Invariance-theorem}\index{Invariance Theorem}
 Let $U$ and $U'$ two universal Turing machines. Then, there exists a constant $C_{U, U'}$, that depends on $U$ and $U'$, such that for each string $s \in \Sigma^{\ast}$ we have that:
 \[
 K_{U}(s) \leq K_{U'}(s) + C_{U, U'}
@@ -156,25 +156,23 @@ This proposition shows a remarkable stability of informational content under com
 
 \section{Joint Kolmogorov Complexity}
 
-By $K(x, y)$ we mean the length of the shortes program that prints the strings $x$ and $y$ in such a way that we can distinguish them.
+The joint Kolmogorov complexity of two strings $s$ and $t$ is defined as the length of the shortest is the shortest program $p$ that, when executed on an universal Turing machine $U$, outputs the pair $\langle s, t \rangle$, that is, in such a way that allows both strings to be unambiguously retrieved.
 
-\begin{proposition}
-\label{prop:additive_kolmogorov}
-There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $K(x, y) \leq K(x) + K(y) + c$.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO}
-\end{proof}
+\begin{definition}[Joint Kolmogorov Complexity]
+\label{def:Joint-Kolmogorov-Complexity}\index{Joint Kolmogorov complexity}
+The \emph{Joint Kolmogorov complexity} of the strings $s, t \in \mathcal{B}^\ast$, denoted by $K(s, t)$, is defined as:
+\[
+K(s, t)=\min_{p,v \in \mathcal{B}^\ast}\left\{l(p) + l(v)\,:\, U(p,v)=\langle s, t \rangle \right\}
+\]
+\end{definition}
 
-\begin{proposition}
-\label{prop:excess_kolmogorov}
-There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $K(x, y) \geq K(x) + c$ and $K(x, y) \geq K(y) + c$.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO}
-\end{proof}
+The notation $K(s, t)$ and $K(st)$ represent two different concepts in the context of Kolmogorov complexity. $K(s, t)$ refers to the joint Kolmogorov complexity of two strings $s$ and $t$ as per Definition \ref{def:Joint-Kolmogorov-Complexity}, meanwhile $K(st)$ represents the Kolmogorov complexity of the concatenation of $s$ and $t$, without any additional structure to distinguish between them, and so, Defintion \ref{def:Kolmogorov-Complexity} is applied. The choice between $K(s, t)$ and $K(st)$ depends on whether it's important to preserve and utilize the distinction and relationship between $s$ and $t$. If analyzing the interplay or the shared characteristics of $s$ and $t$ is relevant, $K(s, t)$ is more appropriate. If the focus is on the information content of the combined sequence without regard to its origin from two separate strings, $K(st)$ is used.
 
-The first proposition highlights a fundamental symmetry in Kolmogorov complexity, illustrating that the complexity of describing a pair of strings in either order differs by at most a constant. This reflects the intrinsic property that the information content is independent of the specific arrangement of the strings being described. The constant \(c\) encapsulates the overhead associated with the operations needed to reverse the order of the strings.
+\begin{example}
+{\color{red} TODO: Pending}
+\end{example}
+
+Our first proposition highlights a fundamental symmetry in Kolmogorov complexity, illustrating that the complexity of describing a pair of strings in either order differs by at most a constant. This reflects the intrinsic property that the information content is independent of the specific arrangement of the strings being described. The constant \(c\) encapsulates the overhead associated with the operations needed to reverse the order of the strings.
 
 \begin{proposition}
 \label{prop:kolmogorov_order}
@@ -183,6 +181,27 @@ There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have t
 \begin{proof}
 The key to this proof lies in the symmetry of information and the properties of a universal Turing machine. Let $U$ be a universal Turing machine, and let $p_{xy}$ and $p_{yx}$ be the shortest programs that output $x$ followed by $y$, and $y$ followed by $x$, respectively, when executed on $U$. To convert $p_{xy}$ into a program that outputs $yx$, we need to add or modify a finite set of instructions to swap the output order. This set of instructions has a fixed length, denoted by $c$. Therefore, the program that first computes $x$ and $y$ and then swaps their order can be at most $c$ bits longer than the program that directly computes $y$ and $x$.
 \end{proof}
+
+Next proposition underscores the subadditive nature of Kolmogorov complexity, proving that the total complexity of describing two strings jointly cannot exceed the sum of their individual complexities by more than a fixed constant, irrespective of the strings' content.
+
+\begin{proposition}
+\label{prop:additive_kolmogorov}
+There is a constant $c$ such that for all $s, t \in\mathcal{B}^{\ast}$ we have that $K(s, t) \leq K(s) + K(t) + c$.
+\end{proposition}
+\begin{proof}
+Let $s^\ast$ and $t^\ast$ be the shortest computer programs that generate $s$ and $t$, respectively. Given that $s^\ast$ and $t^\ast$ are designed to be prefix-free, a universal Turing machine $U$ can unambiguously decode each program without needing any additional information and subsequently generate the strings $s$ and $t$. The constant $c$ accounts for the requirement of $U$ to prepend the concatenated program for $st$ with the length $l(s)$ of $s$. This step ensures that the concatenated sequence $st$ can be decoded unambiguously.
+\end{proof}
+
+The last proposition states the relationship between the complexity of individual strings and their joint complexity, by establishing a lower bound on the joint complexity of two strings relative to their individual complexities.
+
+\begin{proposition}
+\label{prop:excess_kolmogorov}
+There is a constant $c$ such that for all $s, t \in\mathcal{B}^{\ast}$ we have that $K(s, t) \geq K(s) + c$ and $K(s, t) \geq K(t) + c$.
+\end{proposition}
+\begin{proof}
+Assume for the sake of contradiction that $K(s, t) < K(s) + c$. Let $p$ be the shortest computer program that outputs the pair $\langle s, t \rangle$, meaning that $K(s, t) = l(p)$. Since program $p$ unambiguously generates $s$ as part of the output pair, it follows that the complexity of generating $s$ alone, $K(s)$, should not exceed the length of $p$. which is a contradiction with respect the intial assumption of $K(s, t) < K(s) + c$. 
+\end{proof}
+
 
 %
 % Section: Conditional Kolmogorov Complexity

@@ -149,6 +149,9 @@ Let $P_f$ be the program that computes $f$ and $P_{f^{-1}}$ the program that com
 
 This proposition shows a remarkable stability of informational content under computable bijections, underscoring the intrinsic robustness of Kolmogorov complexity in the face of such transformations.
 
+\begin{example}
+{\color{red} TODO: Provide an example clarifying this concept.}
+\end{example}
 
 %
 % Section: Joint Kolmogorov Complexity
@@ -169,7 +172,7 @@ K(s, t)=\min_{p,v \in \mathcal{B}^\ast}\left\{l(p) + l(v)\,:\, U(p,v)=\langle s,
 The notation $K(s, t)$ and $K(st)$ represent two different concepts in the context of Kolmogorov complexity. $K(s, t)$ refers to the joint Kolmogorov complexity of two strings $s$ and $t$ as per Definition \ref{def:Joint-Kolmogorov-Complexity}, meanwhile $K(st)$ represents the Kolmogorov complexity of the concatenation of $s$ and $t$, without any additional structure to distinguish between them, and so, Defintion \ref{def:Kolmogorov-Complexity} is applied. The choice between $K(s, t)$ and $K(st)$ depends on whether it's important to preserve and utilize the distinction and relationship between $s$ and $t$. If analyzing the interplay or the shared characteristics of $s$ and $t$ is relevant, $K(s, t)$ is more appropriate. If the focus is on the information content of the combined sequence without regard to its origin from two separate strings, $K(st)$ is used.
 
 \begin{example}
-{\color{red} TODO: Pending}
+{\color{red} TODO: Provide an example clarifying this concept.}
 \end{example}
 
 Our first proposition highlights a fundamental symmetry in Kolmogorov complexity, illustrating that the complexity of describing a pair of strings in either order differs by at most a constant. This reflects the intrinsic property that the information content is independent of the specific arrangement of the strings being described. The constant \(c\) encapsulates the overhead associated with the operations needed to reverse the order of the strings.
@@ -196,7 +199,7 @@ The last proposition states the relationship between the complexity of individua
 
 \begin{proposition}
 \label{prop:excess_kolmogorov}
-There is a constant $c$ such that for all $s, t \in\mathcal{B}^{\ast}$ we have that $K(s, t) \geq K(s) + c$ and $K(s, t) \geq K(t) + c$.
+There is a constant $c$ such that for all $s, t \in \mathcal{B}^{\ast}$ we have that $K(s, t) \geq K(s) + c$ and $K(s, t) \geq K(t) + c$.
 \end{proposition}
 \begin{proof}
 Assume for the sake of contradiction that $K(s, t) < K(s) + c$. Let $p$ be the shortest computer program that outputs the pair $\langle s, t \rangle$, meaning that $K(s, t) = l(p)$. Since program $p$ unambiguously generates $s$ as part of the output pair, it follows that the complexity of generating $s$ alone, $K(s)$, should not exceed the length of $p$. which is a contradiction with respect the intial assumption of $K(s, t) < K(s) + c$. 
@@ -209,90 +212,74 @@ Assume for the sake of contradiction that $K(s, t) < K(s) + c$. Let $p$ be the s
 
 \section{Conditional Kolmogorov complexity}
 
-{\color{red} TODO: Section Pending!}
-
-Sometimes, the description of a string can be greatly reduced if we assume we know about another string. In this section we are going to introduce the concept of \emph{conditional Kolmogorov complexity}, that is, the complexity of a string $s$ when another string $s'$ is given as input.
+In this section, we explore the concept of \emph{conditional Kolmogorov complexity}, which examines how the complexity of a string $s$ can be significantly decreased by assuming prior knowledge of another string $t$. This notion highlights the impact of assuming some background information on the compressibility of a description.
 
 \begin{definition}[Conditional Kolmogorov Complexity]
-Given the universal Turing machine $U:\Sigma^{\ast}\times\Sigma^{\ast}\rightarrow\Sigma^{\ast}$ we define the \emph{conditional Kolmogorov complexity} of a string $s\in\Sigma^{\ast}$ given the string $s'\in\Sigma^{\ast}$ as:
+\index{Conditional Kolmogorov complexity}
+The \emph{conditional Kolmogorov complexity} of a string $s \in \mathcal{B}^{\ast}$ given the string $t \in \mathcal{B}^{\ast}$ is defined as:
 \[
-K(s|s')=\min_{p,v\in\Sigma^{\ast}}\left\{l(p) + l(v)\,:\, U(p,\langle v, s' \rangle)=s\right\}
+K(s|t)=\min_{p, v \in \mathcal{B}^{\ast}}\left\{l(p) + l(v)\,:\, U(p,\langle v, t \rangle)=s\right\}
 \]
 \end{definition}
 
-As it was the case of the non-conditional Kolmogorov complexity, we have that the conditional complexity of a string $s$ is a quantity that depends on the string itself and the provided string $v$, but not on the reference machine used for the computation.
+Similar to the non-conditional Kolmogorov complexity, the conditional complexity of a string $s$, given a background string $t$, depends on the strings themselves rather than the specific universal Turing machine used for computation. That is, for any two universal Turing machines, $U$ and $U'$, it is easy to show that there exists of a constant $C_{U, U'}$ such that for all strings $s, t \in \Sigma^{\ast}$, the inequality $K_{U}(s|t) \leq K_{U'}(s|t) + C_{U, U'}$ holds. This property underscores the inherent machine-independence of conditional complexity measures.
 
-\begin{exercise}
-Given $U$ and $U'$, two universal Turing machines, prove that there exists a constant $C_{U, U'}$ such that for each strings $s$ and $s' \in \Sigma^{\ast}$ we have that $K_{U}(s|s') \leq K_{U'}(s|s') + C_{U, U'}$.
-\end{exercise}
+\begin{example}
+{\color{red} TODO: Provide an example clarifying this concept.}
+\end{example}
 
-{\color{red} TODO: Multiple conditional complexity}
+As it was the case of the unconditional Kolmogorov complexity, conditional Kolmogorov complexity is a finite positive natural numbrer.
 
 \begin{proposition}
-For all $s\in\mathcal{B}^{\ast}$ we have that $0 < K(s | v) < \infty$.
+For all $s, t \in\mathcal{B}^{\ast}$ we have that $0 < K(s | t) < \infty$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Since $K(s)$ is the length of a string, it must be greater than $0$. The property $K(s | t) < \infty$ is a consequence of Proposition \ref{prop:kolmogorov_length} and the fact that we are only dealing with finite strings.
 \end{proof}
 
+Next proposition posits that when a string $s$ is conditioned upon itself, its complexity stabilizes to a universal constant $c$.
 
 \begin{proposition}
+\label{prop:self_conditional}
 There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s | s ) = c$.
 \end{proposition}
-\label{prop:self_conditional}
 \begin{proof}
-{\color{red} TODO}
+When a string $s$ is conditioned on itself, the information needed to generate $s$ from $s$ can be encapsulated in a Turing machine that simply copies its input to its output. This machine, being independent of the specific content of $s$, has a fixed length $c$. 
 \end{proof}
 
-The complexity of a string $s$ does not increase when another string
+This proposition explores the relationship between unconditional and conditional Kolmogorov complexities, establishing an upper bound for the latter. It asserts that for any strings $s$ and $t$, the complexity of $s$ given $t$ is at most the complexity of $s$ alone, plus a constant $c$. This highlights the intuitive notion that having additional information at most reduces the complexity of describing a string, or in the worst case, adds a constant overhead, but does not increase it beyond this bound.
 
 \begin{proposition}
 \label{prop:kolmogorov_conditional}
-There is a constant $c$ such that for all $s, s'\in\mathcal{B}^{\ast}$ we have that $K(s | s' ) \leq K(s) + c$.
+There is a constant $c$ such that for all $s, t \in \mathcal{B}^{\ast}$ we have that $K(s | t ) \leq K(s) + c$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+There exists a Turing machine $T'$ that ignores its input and $t$ directly generates $s$. The length of $T'$ is $K(s)$ by definition.
 \end{proof}
 
-{\color{red} TODO: Introduce this propostion.}
-
-\begin{proposition}
-\label{prop:kolmogorov_joint_conditional}
-There is a constant $c$ such that for all $r ,s, s'\in\mathcal{B}^{\ast}$ we have that $K(s | rs' ) \leq K(s \mid s') + c$.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO}
-\end{proof}
-
-
-{\color{red} TODO: Introduce this propostion.}
+The relationship between conditional, unconditional, and joint Kolmogorov complexities, offers a comprehensive perspective on the informational interdependencies of binary strings. It posits that the complexity of a string $s$ given another string $t$ is at most the complexity of $s$ alone, which in turn is no greater than the joint complexity of both $s$ and $t$. The proposition encapsulates the intuitive understanding that knowledge of additional data (in this case, $t$) cannot increase the complexity of describing $s$, and that the combined description of two strings is at least as complex as describing each independently.
 
 \begin{proposition}
 \label{prop:kolmogorov_relations}
-For all $s, s'\in\mathcal{B}^{\ast}$ we have that
-\[
-K(s | s' ) \leq K(s) \leq K(s, s')
-\]
+For all $s, t\in\mathcal{B}^{\ast}$ we have that $K(s | t ) \leq K(s) \leq K(s, t)$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Given Proposition \ref{prop:kolmogorov_conditional} and Proposition \ref{prop:excess_kolmogorov}.
 \end{proof}
 
-{\color{red} TODO: Introduce this propostion.}
+The Kolmogorov complexity chain rule is a fundamental principle that connects the joint complexity of two strings with their individual and conditional complexities. It asserts that the total complexity of a pair of strings $s$ and $t$ can be decomposed into the complexity of $s$ plus the complexity of $t$ given $s$. This relationship mirrors the additive property of entropy in information theory ({\color{red} see Proposition XXX}) and provides a powerful tool for understanding the interplay between information content and conditional information in the context of Kolmogorov complexity.
 
 \begin{proposition}
-\label{prop:kolmogorov_relations}
-For all $X, Y\in\mathcal{B}^{\ast}$ we have that
-\[
-K(XY) = K(X) + K(Y \mid X)
-\]
+\label{prop:kolmogorov_chain_rule}
+For all $s, t \in \mathcal{B}^{\ast}$ we have that $K(s, t) = K(s) + K(t \mid s)$
 \end{proposition}
 \begin{proof}
 {\color{red} TODO}
 \end{proof}
 
-
-
+\begin{example}
+{\color{red} TODO: Provide an example clarifying this concept.}
+\end{example}
 
 %
 % Section: Information Distance
@@ -301,41 +288,39 @@ K(XY) = K(X) + K(Y \mid X)
 \section{Information Distance}
 \label{sec:information_distance}
 
-{\color{red} TODO: Section Pending!}
-
-In this section we are going to introduce a universal measure of absolute information distance between individual objects. Intuitively, the information distance between two strings $x$ and $y$ would be the length of the shortest computer program that allow us to transform $x$ into $y$ and $y$ into $x$. This notion of distance is universal in the sense that it contains all the other notions of computable distance as special cases.
-
-We might be tempted to use as information distance the conditional Kolmogorov coplexity of $x$ given $y$, $K(x \mid y)$, however conditional complexity is not suitable as a measure of information distance due to its assymetry, that is, $K( \lambda \mid y)$ is always small, even in the case of $y$ is not close to the empty string. Equally erroneously would be to use $K(x \mid y) + K(y \mid x)$ since that would not take into account the redundancy existing between the information required to transform $x$ into $y$ and $y$ into $x$.
+In this section, we aim to introduce a universal metric for quantifying the absolute information distance between two or more individual entities encoded as strings of symbols. Intuitively, the information distance between two strings $s$ and $t$ can be understood as the length of the shortest computer program for a universal computer that enables the generation of $s$ given $t$ and vice versa.
 
 \begin{definition}
-The \emph{information distance} between two binary strings $x$ and $y$, denoted by $E(x, y)$, is defined as
+The \emph{information distance}\index{Information distance} between two strings $s,  t \in \mathcal{B}^{\ast}$ with respect to a universal Turing machine $U$, denoted by $ID_U(s, t)$, is defined as
 \[
-E_U(x, y) = \min \{ l(p) : U(p, x) = y, U(p, y) = x \}
+ID_U(s, t) = \min \{ l(p) : U(p, s) = t, U(p, t) = s \}
 \]
 \end{definition}
 
-{\color{red} Say something about that information distance is up to a fixed universal Turing machine. Perhaps insists that it is not computable.}
+It can be shown that for any pair of universal Turing machines, $U_1$ and $U_2$, the information distance between two strings $s$ and $t$ differs by no more than a constant $c$; this constant $c$ depends on the choice of $U_1$ and $U_2$ but is independent of the specific strings $s$ and $t$. It's also important to note that despite its theoretical utility, information distance is non-computable, meaning it does not exists and algorithm to calculate it in practice.
 
-{\color{red} Introduce the following proposition.}
+The idea of using the conditional Kolmogorov complexity of $s$ given $t$,that is $K(s \mid t)$, as a metric for information distance may seem appealing. However, this approach is unsuitable for capturing the essence of information distance because of its inherent asymmetry (refer to Proposition {\color{red} XXX}). For example, the complexity $K(\lambda \mid t)$ remains minimal even when $t$ significantly differs from the empty string. Alternatively, employing the sum $K(s \mid t) + K(t \mid s)$ as a measure of distance is also inadequate, as it overlooks the redundancy in the information necessary for transforming $s$ into $t$ and vice versa.
+
+Next proposition shows the proper way in which the information distance between two strings can be computed using their conditional Kolmogorov complexity.
 
 \begin{proposition}
-Let $x$ and $y$ two binary strings, then we have that:
+Let $s,  t \in \mathcal{B}^{\ast}$ be two binary strings, then we have that:
 \[
-E_U(x, y) = \max\{ K(x \mid y), K(y \mid x) \} + O ( \log \max\{ K(x \mid y), K(y \mid x) \}) 
+ID_U(s, t) = \max\{ K(s \mid t), K(t \mid s) \} + O ( \log \max\{ K(s \mid t), K(t \mid s) \}) 
 \]
 \end{proposition}
 \begin{proof}
-{\color{red} TBD (based on the maximal overlap).}
+{\color{red} TODO: based on the maximal overlap.}
 \end{proof}
+
+\begin{example}
+{\color{red} TODO: Give an example based on the bitwise exclusive or.}
+\end{example}
 
 {\color{red} Introduce the concept of max distance as:}
 \[
 E(x, y) = \max\{ K(x \mid y), K(y \mid x) \}
 \]
-
-\begin{example}
-{\color{red} TODO: Give an example based on the bitwise exclusive or.}
-\end{example}
 
 {\color{red} Introduce the following proposition.}
 
@@ -344,47 +329,6 @@ E(x, y) = \max\{ K(x \mid y), K(y \mid x) \}
 \end{proposition}
 \begin{proof}
 \end{proof}
-
-{\color{red} TODO: Introduce the concept of admisible information distance. Prove that $E(x, y)$ is an admisible information distance. Prove that it is minimal for every admisible information distance. Explain this notion of universality.}
-
-{\color{red} Explain the problem of using non-normilized distance, perhaps with an example. "Normaliztion refers to the fact that the transformation description size must be seen in relation to the size of the participating objects"}
-
-{\color{red} TODO: Perhaps say something about the options of normalization, and why we choose max.}
-
-\begin{definition}
-The \emph{normalized information distance} between two binary strings $x$ and $y$, denoted by $e(x, y)$, is defined as:
-\[
-e(x, y) = \frac{\max\{ K(x \mid y), K(y \mid x) \}}{\max \{ K(x), K(y) \} }
-\]
-\end{definition}
-
-\begin{definition}
-The \emph{normalized compression distance} between two strings $x$ and $y$, given the compressor $Z$, and denoted by $e_Z(x, y)$, is defined as:
-\[
-e_Z(x, y) = \frac{ Z(xy) - \min\{ Z(x), Z(y) \}}{\max \{ Z(x), Z(y) \} }
-\]
-\end{definition}
-
-{\color{red} Introduce the following proposition.}
-
-\begin{proposition}
-\label{prop:ncd_between_zero_and_one}
-The normalized information distance $e(x, y)$ takes values in the range $[0, 1]$.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO: Pending}
-\end{proof}
-
-{\color{red} Introduce the following proposition.}
-
-\begin{proposition}
-The normalized information distance $e(x, y)$ is a metric, up to negligible errors.
-\end{proposition}
-\begin{proof}
-{\color{red} TODO: Pending}
-\end{proof}
-
-{\color{red} TODO: Explain that NID is not computable in the general case, and how wonderfull would be to have a computable equivalent.}
 
 {\color{red} Introduce the following proposition.}
 
@@ -397,13 +341,75 @@ E(x, y) = \max\{ K(x \mid y), K(y \mid x) \} = K(xy) - \min\{ K(x), K(y) \} + O(
 {\color{red} TODO: Pending}
 \end{proof}
 
-{\color{red} Introduce the following definition.}
+{\color{red} TODO: Introduce the concept of admisible information distance. Prove that $E(x, y)$ is an admisible information distance. Prove that it is minimal for every admisible information distance. Explain this notion of universality.}
+
+{\color{red} This concept of information distance is universal because it encompasses all other computable distance metrics as special cases.}
+
+\subsection*{Normalized Information Distance}
+
+Information distance is an absolute measure; however, when assessing similarity, we are often more concerned with relative measures. For instance, consider two strings each of length 1,000,000 that differ by 1000 bits; we would perceive these strings as being relatively more similar compared to two strings of length 1000 bits that differ by the same amount of 1000 bits. This concept of normalization implies that the size of the description required for transformation should be evaluated in the context of the sizes of the objects involved.
 
 \begin{definition}
-Normalize compression distance.
+The \emph{normalized information distance}\index{Normalized information distance} between two binary strings $s,  t \in \mathcal{B}^{\ast}$, denoted by $e(s, yt)$, is defined as:
+\[
+NID(s, t) = \frac{\max\{ K(s \mid t), K(t \mid s) \}}{\max \{ K(s), K(t) \} }
+\]
 \end{definition}
 
-{\color{red} And its properties.}
+As expected, the normalized information distance is a number between zero and one.
+
+\begin{proposition}
+\label{prop:ncd_between_zero_and_one}
+The normalized information distance $NID(s, t)$ takes values in the range $[0, 1]$.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+{\color{red} Introduce the following proposition.}
+
+\begin{proposition}
+The normalized information distance $NID(x, y)$ is a metric, up to negligible errors.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+{\color{red} Introduce the following proposition.}
+
+\begin{proposition}
+\[
+NID(x, y) = \frac{ K(xy) - \min\{ K(x), K(y) \} + O(\log K(xy) ) }{ \max \{ K(s), K(t) \} }
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+\subsection*{Normalized Compression Distance}
+
+Although the normalized information distance metric is not computable, it has a potential wide range of applications. By approximating $K$ with practical compressors, where $Z(s)$ represents the binary length of the string $s$ compressed using a compressor $Z$ (such as "gzip", "bzip2", "PPMZ"), we can approximate the concept of normalized information distance. 
+
+\begin{definition}
+The \emph{normalized compression distance}\index{Normalized compression distance} between two strings $s,  t \in \mathcal{B}^{\ast}$, given the compressor $Z$, and denoted by $NCD_Z(s, t)$, is defined as:
+\[
+NCD_Z(s, t) = \frac{\max\{ Z(s \mid t), Z(t \mid s) \}}{\max \{ Z(s), Z(t) \} }
+\]
+\end{definition}
+
+Unfortunately, for the majority of the compressors it is very difficult to compute the compressed conditional version of a string $Z(s \mid t)$. Fortunately, we can rewrite the NCD in a differnt way in which we do not need to use conditional compressions.
+
+\begin{proposition}
+The normalized compression distance between two strings $s,  t \in \mathcal{B}^{\ast}$, given the compressor $Z$, satisfies:
+\[
+NCD_Z(s, t) = \frac{ Z(st) - \min\{ Z(s), Z(t) \}}{\max \{ Z(s), Z(t) \} }
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: prove.}
+\end{proof}
+
+The normalized compression distance constitutes a spectrum of distances, each defined by the choice of compressor $Z$. The effectiveness of $Z$ determines how closely the normalized compression distance mirrors the normalized information distance, ultimately influencing the quality of the outcomes.
 
 
 %

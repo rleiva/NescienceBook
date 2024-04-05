@@ -468,45 +468,81 @@ Let $X: \Omega \rightarrow \mathbb{R}$ be the random variable representing the o
 
 % Marginal Distribution
 
-\subsection{Marginal Distribution}
+\subsection*{Marginal Distribution}
 
-{\color{red} Often, we start with a joint distribution of two random variables and we then want to find the distribution of just one of them, called the marginal distribution.}
+Given a multivariate discrete distribution, the marginal distribution of a variable is derived by summing the joint probability distribution over all possible values of the other variables. This process essentially "marginalizes" out the variables not of interest, allowing focus on the distribution of a single variable or a subset of variables within the multivariate context.
 
 \begin{definition}
-Suppose that $X$ and $Y$ have a joint distribution. The c.d.f. of $X$ derived with the above theorem is called the marginal c.d.f. of $X$. Similarly, the p.f. or p.d.f. of $X$ associated with the marginal c.d.f. of $X$ is caled the marginal p.f. or marginal p.d.f. of $X$.
+Given a joint probability distribution $P(X_1 = x_1, X_2 = x_2, \ldots, X_n = x_n)$ for a set of discrete random variables $(X_1, X_2, \ldots, X_n)$, the \emph{marginal distribution}\index{Marginal distribution} of any subset of these variables, say $(X_1, X_2, \ldots, X_k)$ where $k \leq n$, is obtained by summing the joint distribution over all possible values of the remaining variables. Specifically, the marginal probability function  of $(X_1, X_2, \ldots, X_k)$ is given by:
+\[
+P(X_1 = x_1, X_2 = x_2, \ldots, X_k = x_k) = \sum_{x_{k+1}} \sum_{x_{k+2}} \ldots \sum_{x_n} P(X_1 = x_1, X_2 = x_2, \ldots, X_n = x_n)
+\]
 \end{definition}
 
-\begin{proposition}
-If $X$ and $Y$ have a discrete joint distribution for which the joint p.f. is f, then the marginal p.f. of $X$ is $f_{1}\left(x\right)=\sum_{y}f\left(x,y\right)$
-\end{proposition}
-\begin{proof}
-\end{proof}
+This definition underscores the process of marginalization in a discrete setting, which is key to understanding and analyzing the behavior of specific variables within a larger multivariate framework.
 
-{\color{red} Similarly, the marginal p.f. $f_{2}$ of $Y$ is $f_{2} \left(y\right)=\sum_{x}f\left(x,y\right)$.}
+\begin{example}
+\label{ex:cat_and_dogs}
+Imagine a survey conducted on a group of 100 people to find out who owns cats, dogs, both, or neither. The responses are categorized as follows:
 
-{\color{red} Although the marginal distributions of X and Y can be derived from their joint distribution, it is not possible to reconstruct the joint distribution of X and Y from their marginal distributions without additional information.}
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+ & Owns a Dog & Does Not Own a Dog & Total \\ 
+\hline
+Owns a Cat & 14 & 16 & 30 \\ 
+\hline
+Does Not Own a Cat & 26 & 44 & 70 \\ 
+\hline
+Total & 40 & 60 & 100 \\ 
+\hline
+\end{tabular}
+\caption{Survey on pet ownership among 100 people}
+\label{table:pet_ownership}
+\end{table}
 
-{\color{red} Independent Random Variables}
+Here, we have two discrete random variables: $X$ (owning a dog) and $Y$ (owning a cat), with possible values of owning or not owning for each. The joint distribution would consider the combination of owning dogs and cats.
+
+To find the marginal distribution of $X$, we sum the probabilities (or, in this practical case, the counts) of the outcomes related to dog ownership, regardless of cat ownership status. The marginal distribution is concerned with whether people own dogs, irrespective of whether they also own cats.
+\[
+P(X=\text{owns a dog}) = \frac{\text{Owns only dogs} + \text{Owns both}}{\text{Total surveyed}} = \frac{14 + 26}{100} = 0.4
+\]
+\[
+P(X=\text{does not own a dog}) = \frac{\text{Owns only cats} + \text{Owns neither}}{\text{Total surveyed}} = \frac{16 + 44}{100} = 0.6 
+\]
+The marginal distributions tell us about the overall proportions of dog and cat ownership among the surveyed individuals, disregarding the cross-ownership of the other pet.
+\end{example}
+
+While the marginal distributions of random variables $X$ and $Y$ can be obtained from their joint distribution by summing or integrating over the range of the other variable, the reverse process is not straightforward. Specifically, reconstructing the joint distribution of $X$ and $Y$ from their marginal distributions alone is not feasible without extra information about the dependence between $X$ and $Y$. This limitation arises because marginal distributions encapsulate only the individual behavior of each variable, omitting details about how the variables interact or are related.
+
+\begin{example}
+Given the marginal distributions of Example \ref{ex:cat_and_dogs} it is not possible to derive its joint distribution.
+\end{example}
+
+Two random variables $X$ and $Y$ are considered independent if the occurrence of an event associated with $X$ does not influence the probability of an event associated with $Y$, and vice versa. Independence between variables indicates a lack of association or correlation, meaning that knowing the outcome of one provides no information about the outcome of the other.
 
 \begin{definition}
 It is said that two random variables $X$ and $Y$ are independent if, for every two sets $A$ and $B$ of real numbers such that $\left\{ X\in A\right\}$ and $\left\{ Y\in B\right\}$ are events $P\left(X\in A\enskip and\enskip Y\in B\right)=Pr\left(X\in A\right)Pr\left(Y\in B\right)$
 \end{definition}
 
+This concept of independence facilitates the simplification of complex problems by allowing the joint probability distribution of $X$ and $Y$ to be expressed as the product of their individual marginal distributions.
+
 \begin{proposition}
-Suppose that $X$ and $Y$ are random variables that have a joint p.f., p.d.f., or p.f./p.d.f. $f$. Then $X$ and $Y$ will be independent if and only if f can be represented in the following form for $-\infty<x<\infty$ and $-\infty<y<\infty$ $f\left(x,y\right)=h_{1}\left(x\right)h_{2}\left(y\right)$ where $h_{1}$ is a nonnegative function of $x$ alone and $h_{2}$ is a nonnegative function of $y$ alone.
+Two random variables $X$ and $Y$ are independent if and only if the following is satisfied for all real numbers $x$ and $y$ $f\left(x,y\right)=f_{1}\left(x\right)f_{2}\left(y\right)$
 \end{proposition}
 \begin{proof}
+Assuming $X$ and $Y$ are independent, by definition, for any two sets $A$ and $B$ of real numbers, we have that $P(X \in A \text{ and } Y \in B) = P(X \in A)P(Y \in B)$. Applying this definition to the PMFs, for all $x$ and $y$, the independence of $X$ and $Y$ implies $P(X=x \text{ and } Y=y) = P(X=x)P(Y=y)$. Since $P(X=x \text{ and } Y=y) = f(x, y)$, and the marginal probabilities $P(X=x)$ and $P(Y=y)$ are given by $f_1(x)$ and $f_2(y)$ respectively, we get $f(x, y) = f_1(x)f_2(y)$.
+
+Conversely, assume that for all $x$ and $y$, the joint PMF of $X$ and $Y$ can be expressed as $f(x, y) = f_1(x)f_2(y)$, where $f_1(x)$ and $f_2(y)$ are the marginal PMFs of $X$ and $Y$, respectively. We need to show that this implies $X$ and $Y$ are independent. The probability that $X$ and $Y$ simultaneously take on values $x$ and $y$ is given by $P(X=x \text{ and } Y=y) = f(x, y)$. Substituting the given condition into this expression yields $P(X=x \text{ and } Y=y) = f_1(x)f_2(y)$. By the definition of independence, if the joint probability of any $x$ and $y$ equals the product of their individual probabilities for all possible values of $x$ and $y$, then $X$ and $Y$ must be independent.
 \end{proof}
 
-\begin{corollary}
-Two random variables $X$ and $Y$ are independent if and only if the following factorization is satisfied for all real numbers $x$ and $y$ $f\left(x,y\right)=f_{1}\left(x\right)f_{2}\left(y\right)$
-\end{corollary}
-\begin{proof}
-\end{proof}
-
-{\color{red} Two discrete random variables $X$ and $Y$ are independent if, for each $y$, learning that $Y=y$ does not change any of the probabilities of the events $\left\{ X=x\right\}$ .}
-
-{\color{red} If $X$ and $Y$ are independent, then $h\left(X\right)$ and $g\left(Y\right)$ are independent no matter what the functions $h$ and $g$ are.}
+\begin{example}
+The random variables of Example \ref{ex:cat_and_dogs} are dependent since, for example, .
+\[
+P(X=\text{owns a dog}) = \frac{\text{Owns only dogs} + \text{Owns both}}{\text{Total surveyed}} = \frac{14 + 26}{100} = 0.4
+\]
+\end{example}
 
 % Conditional Distributions
 

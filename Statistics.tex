@@ -1,0 +1,440 @@
+%
+% CHAPTER: Probability Theory
+%
+
+\chapterimage{owl} % Chapter heading image
+
+\chapter{Descriptive Statistics}
+\label{chap:descriptive_statistics}
+
+\begin{quote}
+\begin{flushright}
+\emph{Pending}\\
+Thomas Bayes
+\end{flushright}
+\end{quote}
+\bigskip
+
+
+Statistics involves the methods used for collecting, organizing, summarizing, presenting, and analyzing data. It also focuses on drawing valid conclusions and making informed decisions based on this analysis. Statistics typically does not deals with unusual or rare cases.
+
+Rather than studying an entire population, statistics examines a smaller subset known as a sample. When a sample accurately represents a population, significant insights about the population can often be deduced from the sample analysis. The branch of statistics that addresses the conditions under which such deductions are valid is known as inductive statistics, or statistical inference. Since these inferences are not completely certain, probabilistic language is commonly employed when presenting conclusions. Conversely, the branch of statistics that solely aims to describe and analyze a specific group, without making any broader conclusions or inferences, is referred to as descriptive statistics.
+
+{\color{red} TODO: Extend}
+
+%
+% Section: Descriptive Statistics
+%
+
+\section{Descriptive Statistics}
+
+Statistics is a field that revolves around the collection, analysis, and interpretation of data. At the heart of statistical analysis is the concept of a population, which is fundamental in understanding how data reflects a group of interest. 
+
+\begin{definition}
+Let $\mathcal{S}$ be a set referred to as the \emph{population}\index{Population}. Its constituents are termed \emph{individuals}\index{Individual}.
+\end{definition}
+
+The set $\mathcal{S}$ must be well-defined, non-empty, and it can be either finite or infinite. 
+
+A variable is a symbol used to represent the characteristics or attributes of individuals within a population. It is called 'variable' because these attributes can vary from one individual to another, although from a pure mathematical perpective the term function might have been more appropriate.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population, and let $\mathcal{D}$ be the set containing all possible values that the individuals of $\mathcal{S}$ can assume. A variable $X$ is a function $X: \mathcal{S} \rightarrow \mathcal{D}$ that maps individuals from the population $\mathcal{S}$ to the values in $\mathcal{D}$.
+\end{definition}
+
+The set $\mathcal{D}$ can be any set, such as the real numbers, a set of integers, or a set of categorical labels. A variable is called a \emph{quantitative variable}\index{Quantitative variable} if it the elements of $\mathcal{S}$ can be measured numerically. These can be further classified as \emph{discrete variables}\index{Discrete variable} if they can take a countable number of distinct values, and \emph{continuous variables}\index{Continuous variable} if they can take any value within a given range or interval. A variable is called a \emph{qualitative}\index{Qualitative variable} or \emph{categorical variable}\index{Categorical variable} if it represents quantities that cannot be measured numerically. A qualitative variable can be a \emph{nominal variable}\index{Nominal variable} if no natural order exists among the categories, or an \emph{ordinal variable}\index{Ordinal variable} if a natural order exists among the categories.
+
+\begin{example}
+Consider a population consisting of the inhabitants of a small village, where we are interested in studying three attributes of these individuals: age, gender, and daily water consumption. The variable representing age, mapping individuals to their ages in years, is a quantitative discrete variable because it can be counted precisely in integer values. Gender, mapping individuals to categories like "Male" or "Female," is a qualitative nominal variable because the categories have no inherent order. Finally, daily water consumption, mapping individuals to the amount of water they drink in liters, is a quantitative continuous variable as it can take any real number within a range, reflecting precise measurements.
+\end{example}
+
+% Frequency distributions
+
+\section{Frequency Distributions}
+
+When summarizing large masses of raw data, it is often useful to distribute the data into classes, or categories, and to determine the number of individuals belonging to each class, called absolute frequency. The following definition formally introduces this concept.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{absolute frequency}\index{Absolute frequency}, also known simply as \emph{frequency}, denoted by $n_i$ for $1 \leq i \leq k$, quantifies the number of individuals in $\mathcal{S}$ for which $X$ assigns the value corresponding to the $i$-th category of $\mathcal{D}$.
+\end{definition}
+
+The sum of the frequencies must be equal to population size, that is, $\sum_{i=1}^k n_i = n$.
+
+If the variable $X$ is continuous, the elements of $\mathcal{D}$ are referred to as \emph{class intervals}\index{Class interval}. The endpoints of these intervals are known as \emph{class limits}\index{Class limits}; the smaller number is termed the \emph{lower class limit}\index{Lower class limit}, and the larger number, the \emph{upper class limit}\index{Upper class limit}. A \emph{class interval}\index{Class interval} that lacks either an upper or a lower class limit is known as an \emph{open class interval}\index{Open class interval}. The \emph{width}\index{Class interval width} of a class interval is defined as the difference between the upper and lower class boundaries, denoted by $a_i = e_i - e_{i-1}$. The \emph{class mark}\index{Class mark}, or the midpoint of a class interval, is calculated as $a_i = \frac{e_i + e_{i-1}}{2}$. It is assumed that all observations within a specific class interval are equivalent concerning their categorical assignment. Refer to Section \ref{sec:discretization_algorithms} for more information about how to discretize a continous variable into discrete intervals.
+
+\begin{example}
+In a study measuring adult heights within a community, researchers record heights ranging from 150 cm to 200 cm and organize them into 10 cm class intervals: 150-159 cm, 160-169 cm, 170-179 cm, 180-189 cm, and 190-199 cm. Each interval's lower and upper class limits are respectively the start and end points, such as 150 cm and 159 cm for the first interval. If the last interval had no specified upper limit, it would be considered an open class interval. The class width, typically 10 cm, is the operational span between boundaries, and the class mark, calculated as the midpoint of each interval (e.g., 154.5 cm for the first interval), provides a central value for summarizing data within that range.
+\end{example}
+
+A tabular arrangement of data by classes together with the corresponding class frequencies is called a frequency distribution, or frequency table.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let $X: \mathcal{S} \rightarrow \mathcal{D}$ be a variable that maps individuals in $\mathcal{S}$ to $k$ distinct values of the set $\mathcal{D}$. A \emph{frequency distribution}\index{Frequency distribution} is represented the set of pairs $\{(d_i, n_i) : 1 \leq i \leq k\}$, where $d_i$ denotes the $i$-th interval and $n_i$ represents the number of individuals from $\mathcal{S}$ whose value under $X$ falls within the interval $d_i$.
+\end{definition}
+
+Frequency distributions are useful for statistical analysis and helps in visualizing data by grouping values, which simplifies the understanding of distribution and central tendencies within the data.
+
+The relative frequency of a class is the frequency of the class divided by the total frequency of all classes
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{relative frequency}\index{Relative frequency}, denoted by $f_i$, is the ratio $f_i = \frac{n_i}{n}$ for $1 \leq i \leq k$.
+\end{definition}
+
+The sum of the relative frequencies is equal to one, that is, $\sum_{i=1}^k f_i = 1$.
+
+The total frequency of all values less than the upper class boundary of a given class interval is called the cumulative frequency up to and including that class interval.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{cumulative frequency}\index{Cumulative frequency}, denoted by $N_i$ for $1 \leq i \leq k$, represents the total number of individuals in $\mathcal{S}$ for which $X$ assigns a value less than or equal to the upper limit of the $i$-th category of $\mathcal{D}$. This is mathematically expressed as $N_i = \sum_{j=1}^i n_j$, where $n_j$ is the absolute frequency of the $j$-th category.
+\end{definition}
+
+By accumulating the frequencies up to each category or interval, cumulative frequencies provides a running total that shows how many data points fall below a certain value.
+
+%
+% Section: Characterizing Distributions
+%
+
+\section{Characterizing Distributions}
+\label{sec:measures_central_tendency}
+
+A \emph{measure of central tendency} is a number derived from a population, intended as a summary of that population. The most common measures of central tendency in use are the mode, the median and the mean. Each of these measures provides a different approach to characterize populations. It is also common to use \emph{metrics of dispersion} to describe the variability of a frequency distribution around the measures of centrality. We will review two metrics of dispersion, the variance and the standard deviation. All these measures allow us to summarize and compare populations.
+
+% The Mean
+
+\subsection*{Mean}
+
+The most commonly used measure of central tendency is the \emph{mean}. The mean of a population is the weighted average of the distinct values of the individuals in the population, where weights are given by the frequencies.
+
+\begin{definition}
+\label{def:mean}
+Let $X$ be a variable representing the mapping of the $N$ individuals of a population $\mathcal{S}$ to the set of possible values $\mathcal{D} = \{x_1, x_2, \dots, x_k\}$, each occurring with frequency $\{n_1, n_2, \dots, n_k\}$ and relative frequency $\{f_1, f_2, \dots, f_k\}$. The \emph{mean}\index{mean} of $X$, denoted by $\overline{X}$, is defined as:
+\[
+\overline{X} = \frac{1}{N} \sum_{i=1}^k n_i x_i = \sum_{i=1}^k f_i x_i
+\]
+\end{definition}
+
+Definition \ref{def:mean} can be directly applied to the case of quantitative discrete variables, but it requires some considerations in the case of continuous variables. For continuous cases, we could use the average of the observed values. That is, if for individuals $s_1, \ldots, s_N$ we have observed the values $y_1, \ldots, y_N$ for the characteristic of interest, the mean would be given by:
+\[
+\overline{X} = \frac{1}{N} \sum_{i=1}^N y_i 
+\]
+Alternatively, we could group the observed values into a reduced number of intervals. In that case, the mean could be computed as the weighted average of the class marks $a_1, \ldots, a_k$:
+\[
+\overline{X} = \frac{1}{N} \sum_{i=1}^k n_i a_i
+\]
+We must be careful about the number of intervals, as it is described in Section \ref{sec:discretization_algorithms}.
+
+The mean, while widely used as a measure of central tendency, has several notable limitations. First and foremost, it is not suitable for categorical variables, where numerical operations such as averaging are not meaningful. In such cases, the mode is typically used as a more appropriate measure of central tendency. Another limitation of the mean is that it may not correspond to an actual value observed in the dataset, particularly in datasets with wide ranges or unusual distributions. This can make the mean less representative of typical values in the dataset. Furthermore, the mean is sensitive to outliers or extreme values; even a small change in the frequency of a large number in the set $\mathcal{D}$ can disproportionately affect the mean, potentially skewing analysis. This sensitivity makes the mean less robust compared to other measures, such as the median, which is less influenced by outliers and extreme data points.
+
+\begin{example}
+Consider a small company with a population of 10 employees, and that th characteristic in which we are interetes is their salaries. Let's $\mathcal{D} = \{50, 300\}$ with  frequencies of $9$ and $1$ respectively. The mean salary is calculated as:
+\[ 
+\overline{X} = \frac{(50 \times 9) + (300 \times 1)}{10} = \frac{450 + 300}{10} = 75
+\]
+Now, suppose the executive receives a raise or another executive with the same high salary joins the company, making two employees earning \$300,000. The recalculated mean salary would be:
+\[
+\overline{X} = \frac{(50 \times 8) + (300 \times 2)}{10} = \frac{400 + 600}{10} = 100
+\]
+This example shows how just a small change, a single additional person earning a significantly higher salary, can substantially increase the mean salary from \$75,000 to \$100,000.
+\end{example}
+
+The preference for the mean over other measures of central tendency such as the median or mode is primarily due to its mathematical properties that facilitate algebraic manipulations and further statistical analysis. For example, the mean is linear, which means that the mean of a linear transformation of a variable is the same transformation applied to the mean of the variable.
+
+\begin{proposition}
+Let $X_1, \ldots, X_n$ be $n$ variables with means $\overline{X}_1, \ldots, \overline{X}_n$, and let $a_1, \ldots, a_n$ and $b$ constants. The mean of a linear combination of the variables $X' = a_1 X_1 + \ldots + a_n X_n + b$ is given by
+\[
+\overline{X}' = a_1 \overline{X}_1 + \ldots + a_n \overline{X}_n + b
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Review}
+We have that
+\begin{multline}
+\overline{X}' = \sum_{x_1} \ldots \sum_{x_n} \left(a_ 1 x_1 + \ldots + a_n x_n + b  \right) f\left(x_1, \ldots, x_n \right) = \\
+\sum_{x_1} \ldots \sum_{x_n} a_1 x_1 f\left(x_1, \ldots, x_n \right) + \ldots + \sum_{x_1} \ldots \sum_{x_n} a_n x_n f\left(x_1, \ldots, x_n \right) + \sum_{x_1} \ldots \sum_{x_n} b f\left(x_1, \ldots, x_n \right) = \\
+\sum_{x_1} a_1 x_1 f\left(x_1\right) + \ldots + \sum_{x_n} a_n x_n f\left( x_n \right) + b = 
+a_1 \sum_{x_1} x_1 f\left(x_1\right) + \ldots + a_n \sum_{x_n} x_n f\left( x_n \right) + b = \\
+a_1 \overline{X}_1 + \ldots + a_n \overline{X}_n + b
+\end{multline}
+\end{proof}
+
+% The Median
+
+\subsubsection*{The Median}
+\label{sec:median}
+
+The median represents the middle value in a population when the individuals are arranged in order given a characteristic. This measure is particularly valuable because it provides a clear indication of the central location of the data, especially in cases where the population may be skewed or contain outliers. The median is often favored over the mean in these situations because it is less sensitive to extreme values, making it a more robust indicator of the population's typical value.
+
+The formal definition of the median in statistics can be articulated as follows:
+
+\begin{definition}
+The \emph{median} of a dataset is the value that separates the higher half of the data from the lower half. For a dataset \( X = \{x_1, x_2, \dots, x_n\} \) sorted in ascending order, the median \( M \) is defined as:
+\[
+M = \begin{cases} 
+x_{\left(\frac{n+1}{2}\right)} & \text{if } n \text{ is odd} \\
+\frac{x_{\left(\frac{n}{2}\right)} + x_{\left(\frac{n}{2}+1\right)}}{2} & \text{if } n \text{ is even}
+\end{cases}
+\]
+\end{definition}
+
+The advantages of the meadian are: robustness against outliers, unlike the mean, the median is not significantly affected by extreme values or skewed data, providing a more accurate reflection of the typical value; useful for ordinal data, the median can be calculated for ordinal data where the mean cannot be meaningfully computed. Its disadvantages include: limited sensitivity to data changes, small changes in data near the median do not affect its value, while changes at the ends of the dataset might not have any effect unless they shift the median position; more complex calculation for large datasets, unlike the mode, which is simply the most frequent value, calculating the median involves sorting the data, which can be computationally intensive for large datasets.
+
+\begin{example}
+Consider a real estate agent analyzing home prices in a neighborhood where the prices are: \$100,000, \$150,000, \$160,000, \$170,000, \$200,000, \$600,000, \$900,000. Sorting the prices in ascending order gives: \$100,000, \$150,000, \$160,000, \$170,000, \$200,000, \$600,000, \$900,000. Since there are seven data points, the median (middle value) is \$170,000. This median price gives a more accurate reflection of the typical home price than the mean, which is skewed by the two high prices.
+\end{example}
+
+The median of a population remains invariant under any monotonic transformation, meaning if the population undergoes a transformation that preserves the order of data points, the position of the median remains unchanged.
+
+\begin{proposition}
+Let \( X = \{x_1, x_2, \dots, x_n\} \) be a dataset with median \( M \). For any monotonically increasing function \( f \), the dataset \( Y = \{f(x_1), f(x_2), \dots, f(x_n)\} \) has the median \( f(M) \).
+\end{proposition}
+\begin{proof}
+Given that \( f \) is monotonically increasing, the order of the data points is preserved. Therefore, the middle value of \( Y \) after applying \( f \) is simply \( f \) applied to the median of \( X \), which is \( f(M) \).
+\end{proof}
+
+% The Mode
+
+\subsubsection*{The Mode}
+\label{sec:mode}
+
+The mode is a measure of central tendency often described as the most frequently occurring value in a population. It is particularly significant because it provides a direct indication of the most common category or value in a population. This makes the mode especially useful in analyzing categorical data where numerical measures like mean and median are not applicable.
+
+The formal definition of mode in statistics can be expressed as follows:
+
+\begin{definition}
+The \emph{mode} of a dataset is the value that appears most frequently in the dataset. For a dataset \( X = \{x_1, x_2, \dots, x_n\} \), the mode \( M \) is defined such that the frequency of \( M \) is greater than the frequency of any other value in \( X \).
+\end{definition}
+
+The most relevant advantages of the mod are: it is simple to understand and easy to compute, it is useful for categorical data where numerical averages cannot be computed, and it is insensitive to extreme values, unlike the mean, which makes it stable in the presence of outliers. However, it also present some disadvantages, including that it is not uniquely defined, if two or more values appear with the same highest frequency, leading to a dataset having multiple modes or being bimodal or multimodal, and it is less informative, about the dataset as a whole compared to the mean or median, especially in numeric data.
+
+\begin{example}
+Suppose a teacher wants to determine the most common score on a test where the grades are: 85, 92, 85, 97, 85, 92, 92, 84. The score 85 occurs three times, and the score 92 also occurs three times. Hence, this dataset is bimodal with modes at 85 and 92, indicating these scores were the most common.
+\end{example}
+
+The mode is invariant under scale transformations.
+
+\begin{proposition}
+Let \( X = \{x_1, x_2, \dots, x_n\} \) be a dataset with mode \( M \). For any real number \( a \neq 0 \) and \( b \), the dataset \( Y = \{a x_1 + b, a x_2 + b, \dots, a x_n + b\} \) has the mode \( aM + b \).
+\end{proposition}
+\begin{proof}
+Since multiplying and adding constants to each element in \( X \) maintains the relative frequency of the values, the transformed version of \( M \) will appear with the same frequency in dataset \( Y \), thus, \( aM + b \) is the mode of \( Y \).
+\end{proof}
+
+%
+% Measures of Dispersion
+%
+\subsection{Measures of Dispersion}
+
+Definitions of the Variance and the Standard Deviation
+
+\begin{definition}
+Let X be a random variable with finite mean and $\mu=E\left(X\right)$. The variance of X, denoted by $Var\left(X\right)$, is defined as follows: $Var\left(X\right)=E\left[\left(X-\mu^{2}\right)\right]$
+\end{definition}
+
+{\color{red} If X has infinite mean or if the mean of X does not exist, we say that $Var\left(X\right)$ does not exist. The standard deviation of X is the nonnegative square root of $Var\left(X\right)$ if the variance exists. It is common to denote the standard deviation by the symbol $\sigma$, and the variance by $\sigma^{2}$. Variance depeds only on the distribution.}
+
+\begin{proposition}
+For every random variable X, $Var\left(X\right)=E\left(X^{2}\right)-\left[E\left(X\right)\right]^{2}$.
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+{\color{red} The variance (as well as the standard deviation) of a distribution provides a measure of the spread or dispersion of the distribution around its mean $\mu$. The variance of a distribution, as well as its mean, can be made arbitrarily large by placing even a very small but positive amount of probability far enough from the origin on the real line.}
+
+Properties of the Variance
+
+\begin{proposition}
+For constants a and b, let $Y=aX+b$, then $Var\left(Y\right)=a^{2}Var\left(X\right)$
+and $\sigma_{Y}=\left|a\right|\sigma_{X}$.
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+{\color{red} If $X_{\text{1}},\ldots,X_{n}$ are independent random variables with finite means, and if $a_{1},\ldots,a_{n}$ and b are arbitrary constants, then $Var\left(a_{1}X_{1}+\ldots+a_{n}X_{n}+b\right)=a_{1}^{2}Var\left(X_{1}\right)+\ldots+a_{n}^{2}Var\left(X_{n}\right)$}
+
+\begin{example}
+The Variance of a Binomial Distribution
+
+The variance of a random variable X with a binomial distribution of n samples with probability p is $Var\left(X\right)=np\left(1-p\right)$
+\end{example}
+
+
+%
+% Measures fo Statistical Relationship
+%
+
+\section{Measures of Statistical Relationship}
+\label{sec:measures_statistical_relationship}
+
+The metrics of disperson can also be used in case of bivariate distributions, under the names of covariance and correlation, to measure the \emph{statistical relationship} between two random variables.
+
+Covariance and correlation are attempst to measure the linear dependence between to random variables.
+
+Covarance
+
+\begin{definition}
+Definition 183. Let X and Y be random variables having finite means. Let $E\left(X\right)=\mu_{X}$ and $E\left(Y\right)=\mu_{Y}$. The covariance of X and Y, which is denoted by $Cov\left(X,Y\right)$ is defined as $Cov\left(X,Y\right)=E\left[\left(X-\mu_{X}\right)\left(Y-\mu_{Y}\right)\right]$
+\end{definition}
+
+if the expectation exists.
+
+The covariance between X and Y is intended to measre the degree to which X and Y tend to be large at the same time or the degree to which one tends to be large while the other is small.
+
+\begin{proposition}
+For all random variables X and Y such that $\sigma_{X}^{2}<\infty$ and $\sigma_{Y}^{2}<\infty Cov\left(X,Y\right)=E\left(XY\right)-E\left(X\right)E\left(Y\right)$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+Correlation
+
+Correlation is a measure of association between two random variables that is not driven by arbitrary changes in the scales.
+
+\begin{definition}
+Let X and Y be random variables with finite variances $\sigma_{X}^{2}$ and $\sigma_{Y}^{2}$ respectively. Then the correlation of X and Y, which is denoted by $\rho\left(X,Y\right)$, is defined as follows $\rho\left(X,Y\right)=\frac{Cov\left(X,Y\right)}{\sigma_{X}\sigma_{Y}}$
+\end{definition}
+
+XX
+
+\begin{definition}
+It is said that X and Y are positively correlated if $\rho\left(X,Y\right)>0$, that X and Y are negatively correlated if $\rho\left(X,Y\right)<0$ and that X and Yare uncorrelated if $\rho\left(X,Y\right)=0$.
+\end{definition}
+
+Properties of Covariance and Correlation
+
+\begin{proposition}
+Moreover $-1 \leq \rho\left(X,Y\right) \leq 1$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+\begin{proposition}
+If X and Y are independent random variables with $0<\text{\ensuremath{\sigma_{X}^{2}}}<\infty$ and $0<\text{\ensuremath{\sigma_{Y}^{2}}}<\infty$ then $Cov\left(X,Y\right)=\rho\left(X,Y\right)=0$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+The converse is not true as a general rule. Two dependent random variables can be uncorrelated.
+
+\begin{proposition}
+Suppose that X is a random variable such that $0<\sigma_{X}^{2}\infty$ and $Y=aX+b$ for some constants a and b, where $a\neq0$. If $a>0$ then $\rho\left(X,Y\right)=1$. If $a<0$, then $\rho\left(X,Y\right)=-1$.
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+The converse is also true, that is, if $\left|\rho\left(X,Y\right)\right|=1$ implies that X and Y are linearly related.
+
+\begin{proposition}
+If X and Y are random variables such that $Var\left(X\right)<\infty$ and $Var\left(Y\right)<\infty$, then $Var\left(X+Y\right)=Var\left(X\right)+Var\left(Y\right)+2Cov\left(X,Y\right)$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+For all constants a and b, it can be shown that $Cov\left(aX,bY\right)=abCov\left(X,Y\right)$.
+
+\begin{proposition}
+Let X and Y are random variables such that $Var\left(X\right)<\infty$ and $Var\left(Y\right)<\infty$, and let a, b and c be constants, then $Var\left(aX+bY+c\right)=a^{2}Var\left(X\right)+b^{2}Var\left(Y\right)+2abCov\left(X,Y\right)$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+A special case is $Var\left(X-Y\right)=Var\left(X\right)+Var\left(Y\right)-2Cov\left(X,Y\right)$
+
+\begin{proposition}
+If $X_{1},\ldots,X_{n}$ are random variables such that $Var\left(X_{i}\right)<\infty for i=1,\ldots,n$, then $Var\left(\sum_{i=1}^{n}X_{i}\right)=\sum_{i=1}^{n}Var\left(X_{i}\right)+2\sum\sum Cov\left(X_{i},X_{j}\right)$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+\begin{proposition}
+If $X_{1},\ldots,X_{n}$ are uncorrelated random variables, then $Var\left(\sum_{i=1}^{n}X_{i}\right)=\sum_{i=1}^{n}Var\left(X_{i}\right)$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+
+%
+% Section: Common Distribution
+%
+
+\section{Common Distributions}
+\label{sec:probability_distributions}
+
+
+\subsection{Uniform Distribution}
+
+\begin{definition}
+Let $a \leq b$ be integers. Suppose that the value of a random variable $X$ is equally likely to be each of the integers $a, \ldots, b$. Then we say that $X$ has the uniform distribution on the integers $a, \ldots, b$.
+\end{definition}
+
+{\color{red} Introduce the following propostion}
+
+\begin{proposition}
+If $X$ has the uniform distribution on the integers $a,\ldots,b$, the p.f. of $X$ is $f\left(x\right)=\begin{cases}
+\frac{1}{b-a+1} & for\,x=a,\ldots,b\\
+0 & otherwise
+\end{cases}$
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+{\color{red} The uniform distribution on the integers $a, \ldots, b$ represents the outcome of an experiment that is often described by saying that one of the integers $a, \ldots, b$ is chosen at random. A uniform distribution cannot be assigned to an infinite sequence of possible values}
+
+
+\subsection{Bernoulli Distributions}
+
+\begin{example}
+A random variable $Z$ that takes only two values $0$ and $1$ with $P\left(Z=1\right)=p$ has the Bernoulli distribution with parameter $p$. We also say that $Z$ is a Bernoulli random variable with parameter $p$.
+\end{example}
+
+\subsection{Binomial Distributions}
+
+\begin{example}
+Suppose we perform $N$ independent trials where each trial either succeeds or fails with probability of success $p$, and let $X$ the random variable defined by the number of successes. The probability of having exactly $n$ successes $P(X=n)$ follows a \emph{binomial distribution} with parameters $N, p$, defined by:
+\[
+f(n\mid N, p) = \binom{N}{n} p^n (1-p)^{(N-n)}
+\]
+\end{example}
+
+\begin{definition}
+The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
+{n \choose x}p^{x}\left(1-p\right)^{n-x} & for\,x=0,1,\ldots,n\\
+0 & otherwise
+\end{cases}$
+\end{definition}
+
+{\color{red} is called the binomial distribution with parameters $n$ and $p$.}
+
+{\color{red} Consider a general experiment that consists of observing $n$ independent trials with only two possible results for each trial: success and failure. Then the distribution of the number of trials that result in success will be binomial with parameters $n$ and $p$, where $p$ is the probability of success on each trial.} 
+
+%
+% Section: Discretization of Continuous Data
+%
+
+\section{Discretization of Continuous Variables}
+\label{sec:discretization_algorithms}
+
+{\color{red} TODO: Rewrite this section.}
+
+Let $\mathcal{X}$ a continuous random variable that follows a probability density function $P_\mathcal{X}$, and assume we have collected $n$ independent and identically distributed samples $\bold{x} = \{x_1, \ldots, x_n\}$ from $\mathcal{X}$. We are interested in computing the length of a compressed version of $\bold{x}$ using an optimal compressor. Unfortunately, and except for some degenerate distributions, there is no lossless compression algorithm that produces a string with fewer bits than encoding directly the elements $\bold{x}$. Compression algorithms for continuous data only work in case that the elements of $\bold{x}$ are not independent, as it is the case with images or sound. But, if this is not the case, the only option available to compress $\bold{x}$ is to use a lossy compression algorithm, where some information is lost.
+
+We are looking for an algorithm to produce a finite non-overlapping partition of $m$ discrete intervals $D=\{ [d_o, d_1], (d_1, d_2], \ldots, (d_{m-1}, d_m] \}$, where $d_o = \min{\bold{x}_j}$, and $d_m = \max{\bold{x}_j}$, and $d_i < d_{i+1}$ for $i = 0, 1, \ldots, m-1$, assign a unique label to each interval, and encode the elements of $\bold{x}$ using this labeling schema. As compression algorithm we will use an optimal length code given the relative frequencies of the labels in the encoded vector. In this sense, our goal is to have a collection of intervals with sufficiently number of samples (so they are statistically significant) and that the distribution of frequencies resembles the original probability distribution $P_\mathcal{X}$.
+
+A discretization algorithm is a mapping between a (possibly huge) number of numeric values and a reduced set of discrete values, and so, it is a process in which some information is potentially lost. The choice of discretization algorithm is something that could have a high impact in the practical computation of the nescience. We are interested in a discretization algorithm that produces a large number of intervals (low bias), with a large number of number of observations per interval (low variance). Common techniques include \emph{equal width discretization}, \emph{equal frequency discretization} and \emph{fixed frequency discretization}. However, these techniques require the optimization of an hyperparameter, and so, they are not suitable for our purposes.
+
+In a \emph{proportional discretization approach} the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. The algorithm starts by sorting the values of $\bold{x}_j$ in ascending order and then discretizing them into $m$ intervals of approximately $s$ (possibly identical) values each. In this way, as the number of training observations increases, both interval frequency and number of intervals increases, taking advantage of the larger number of observations. In the same way, when the number of observations decreases, we reduce both.
+
+\subsection{k-means Clustering}
+\label{sec:kmeans_clustering}
+
+K-means clustering is an algorithms that partitions n observations into k clusters in such a way that each observation belongs to the cluster with the nearest mean. In this way, we can replace the observation that belong to a cluster by its means, as a discretization. The optimization criteria in k-means is to minize the within-cluster variance. Given the fact that the problem is NP-Complete, some approximation algorithms are used instead.
+
+{\color{red} TODO: Define the concept of Voronoi diagram / Voronoi cell}
+
+
+%
+% Section: References
+%
+\section*{References}
+
+{\color{red} TODO: Pending}
+

@@ -24,11 +24,12 @@ In this chapter we are going to focus in the area of discrete probability. In th
 
 This chapter is a very brief overview of probability theory. We will cover only the most important techniques and results. The contents have been selected based on their applicability to the theory of nescience. For example, moment generating functions are not covered. For a more comprehensive introduction to probability theory, see the References section at the end of the Chapter.
 
+
 %
-% Section: Foundations
+% Section: Foundations of Probability Theory
 %
 
-\section{Foundations}
+\section{Foundations o Probability Theory}
 \label{sec:probability_foundations}
 
 The concept of \emph{probability} represents a profound intellectual challenge. Let us consider an instance where a dice is rolled and the objective is to compute the probability of an even number being the outcome. The dice comprises six distinct outcomes, and given that half of these are even numbers, we posit that the probability of yielding an even number is $3/6$ or equivalently $1/2$. This embodies the \emph{classical interpretation}\index{Classical interpretation of probability} of probability which asserts that in an experiment where all finite potential outcomes possess an equal likelihood of occurrence, the probability of an event equates to the count of favorable instances over the total number of instances. This interpretation, however, confronts the issue of circularity in its definition as "equally likely" essentially amounts to "possessing the same probability". An alternative method for probability assignment might be the implementation of the \emph{principle of indifference}\index{Principle of indifference}, which postulates that in the absence of any relevant evidence, all potential outcomes should possess identical probability. This principle, however, encounters a predicament when there exists evidence that contradicts the presumption of equivalence amongst all outcomes. For instance, how should probability be assigned when knowledge of a loaded dice suggests that not all sides possess an equal likelihood of occurrence?
@@ -178,9 +179,9 @@ By virtue of satisfying the axioms, a conditional probability is, in itself, a p
 The probability of two events transpiring concurrently (although not necessarily contemporaneously, as previously discussed in Example \ref{ex:concurrent_events}), given their respective conditional probabilities, is encapsulated by the formula $P \left( A \cap B \right) = P \left( A \mid B \right) P \left( B \right)$. This equation offers perhaps a more intuitive comprehension of the conditional probability concept. Indeed, there exist a number of authors who advocate for this interpretation to form the basis of the definition of conditional probability, as opposed to the quotient method.
 
 The extension of this formula to accommodate $n$ events, termed the \emph{multiplication rule}\index{Multiplication rule}, is expressed as follows:
-\[
+\begin{equation}\label{eq:multiplication_rule}
 P \left( A_{1} \cap A_{2} \cap \ldots \cap A_{n} \right) = P \left( A_{1} \right) P \left( A_{2} \mid A_{1}\right) \ldots  P \left( A_{n} \mid A_{1}\cap A_{2} \cap \ldots \cap A_{n-1} \right)
-\]
+\end{equation}
 
 The notion of event independence holds significant importance in the realm of probability theory and statistical learning. 
 
@@ -430,10 +431,16 @@ f(x_1, x_2) = P(X_1 = x_1, X_2 = x_2) = \frac{1}{36}, \quad \text{for} \ x_1, x_
 The joint distribution allows us to analyze the relationship between $X_1$ and $X_2$. For instance, we can compute the probability that the sum of the two dice is equal to a certain number, or that one die shows a higher number than the other.
 \end{example}
 
+Before exploring the properties of multivariate random variables, we will introduce the concept of a random vector. This concept simplifies notation and enhances clarity by grouping multiple random variables into a single entity.
+
+\begin{definition}
+A \emph{random vector}\index{Random vector} $\mathbf{X}$ is an ordered collection of $n$ random variables $X_1, X_2, \ldots, X_n$, where $X_i : \Omega_i \rightarrow \mathbb{R}$ for all $i=1, \ldots, n$. If the $n$ random variables are discrete, the random vector is called discrete random vector.
+\end{definition}
+
 Given the joint probability function of a vector of random variables, we can derive the probability of any subset within the multidimensional real space.
 
 \begin{proposition}
-Let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be $n$ discrete random variables with a joint probability function $f$. The probability of each subset $C$ of the $n$-dimensional real space can be determined from the relation $P\left(\mathbf{X} \in C\right)=\sum_{\mathbf{x} \in C}f\left(\mathbf{x}\right)$, where $\mathbf{x} = (x_{1}, \ldots, x_{n})$.
+Let $\mathbf{X}=\left(X_{1}, \ldots, X_{n}\right)$ be a discrete random vector with a joint probability function $f$. The probability of each subset $C$ of the $n$-dimensional real space can be determined from the relation $P\left(\mathbf{X} \in C\right)=\sum_{\mathbf{x} \in C}f\left(\mathbf{x}\right)$, where $\mathbf{x} = (x_{1}, \ldots, x_{n})$.
 \end{proposition}
 \begin{proof}
 Considering that each outcome in the sample space is associated with exactly one value in the range of $\mathbf{X}$, we have that:
@@ -445,7 +452,7 @@ P\left(\mathbf{X} \in C\right) = P \left( \left\{ \omega \in \Omega \,:\, \mathb
 The next proposition outlines a fundamental property, that the total sum of probabilities across all possible outcomes of a vector of discrete random variables is 1.
 
 \begin{proposition}
-Let $\mathbf{X}=\left(X_{1}, \ldots, X_{n}\right)$ be $n$ discrete random variables with a joint probability function $f$. If the range of $\mathbf{X}$ is represented as a set of vectors $\mathbf{x} = (x_{1}, \ldots, x_{n})$, then $\sum_{\mathbf{x}}f\left(\mathbf{x}\right)=1$.
+Let $\mathbf{X}=\left(X_{1}, \ldots, X_{n}\right)$ be a discrete random vector with a joint probability function $f$. If the range of $\mathbf{X}$ is represented as a set of vectors $\mathbf{x} = (x_{1}, \ldots, x_{n})$, then $\sum_{\mathbf{x}}f\left(\mathbf{x}\right)=1$.
 \end{proposition}
 \begin{proof}
 Considering that $\mathbf{X}$ is a total function, that each outcome in the sample space is associated with exactly one value in the range of $\mathbf{X}$, and given the axiomatic definition of probability we have that:
@@ -460,7 +467,7 @@ A particular interesting case of multivariate distribution is given by the sum o
 Let $X_1, X_2, \ldots, X_n$ be $n$ random variables, where $X_i : \Omega_i \rightarrow \mathbb{R}$ for all $i=1, \ldots, n$ The sum distribution of $X_1, X_2, \ldots, X_n$, denoted by $X_1 + \ldots + X_n$, is defined as the random variable $X + \ldots + X_n : \Omega_1 \times \ldots \times \Omega_n \rightarrow \mathbb{R}$ that assigns to each $\left( \omega_1, \omega_2, \ldots, \omega_n \right) \in \Omega_1 \times \ldots \Omega_n$ the number $X_1 \left( \omega_1 \right) + X_2 \left( \omega_2 \right) + \ldots + X_n \left( \omega_n \right)$.
 \end{definition}
 
-The concept of sum of $n$ randon variables will be applied in the law of large numbers (see Theorem \label{th:law_large_numbers}), one of the most important theorems in probability theory.
+The concept of sum of $n$ randon variables will be applied in the law of large numbers (see Theorem \ref{th:law_large_numbers}), one of the most important theorems in probability theory.
 
 \begin{example}
 Let $X: \Omega \rightarrow \mathbb{R}$ be the random variable representing the outcome of rolling a six-sided dice. The sum distribution corresponding to rolling three times a dice, denoted by $S = X + X + X$, is defined as the random variable $S: \Omega \times \Omega \times \Omega \rightarrow \mathbb{R}$ that assigns to each $\left( \omega_1, \omega_2, \omega_3 \right) \in \Omega \times \Omega \times \Omega$ the number $X \left( \omega_1 \right) + X \left( \omega_2 \right) + X \left( \omega_3 \right)$.
@@ -468,143 +475,221 @@ Let $X: \Omega \rightarrow \mathbb{R}$ be the random variable representing the o
 
 % Marginal Distribution
 
-\subsection*{Marginal Distribution}
+\subsection*{Marginal Probability Mass Function}
 
-Given a multivariate discrete distribution, the marginal distribution of a variable is derived by summing the joint probability distribution over all possible values of the other variables. This process essentially "marginalizes" out the variables not of interest, allowing focus on the distribution of a single variable or a subset of variables within the multivariate context.
+Given a multivariate discrete PMF, the marginal PMF of a subset of variables is derived by summing the joint PMF over all possible values of the other variables. This process essentially "marginalizes" out the variables not of interest, allowing focus on the PMF of a single variable or a subset of variables within the multivariate context.
 
 \begin{definition}
-Given a joint probability distribution $P(X_1 = x_1, X_2 = x_2, \ldots, X_n = x_n)$ for a set of discrete random variables $(X_1, X_2, \ldots, X_n)$, the \emph{marginal distribution}\index{Marginal distribution} of any subset of these variables, say $(X_1, X_2, \ldots, X_k)$ where $k \leq n$, is obtained by summing the joint distribution over all possible values of the remaining variables. Specifically, the marginal probability function  of $(X_1, X_2, \ldots, X_k)$ is given by:
+Let $\mathbf{X}$ be an $n$-dimensional discrete random vector with a joint probability mass function $f_\mathbf{X}$. The \emph{marginal probability mass function}\index{Marginal probability mass function} of a subset of these variables, say $(X_1, X_2, \ldots, X_k)$ where $k \leq n$, is obtained by summing over the probabilities of the other variables $(X_{k+1}, \ldots, X_n)$. That is, for any subset of values $(x_1, x_2, \ldots, x_k)$ in the respective domains of $(X_1, X_2, \ldots, X_k)$,
 \[
-P(X_1 = x_1, X_2 = x_2, \ldots, X_k = x_k) = \sum_{x_{k+1}} \sum_{x_{k+2}} \ldots \sum_{x_n} P(X_1 = x_1, X_2 = x_2, \ldots, X_n = x_n)
+f_{X_1, X_2, \ldots, X_k}(x_1, x_2, \ldots, x_k) = \sum_{x_{k+1}} \sum_{x_{k+2}} \ldots \sum_{x_n} f_\mathbf{X}(x_1, x_2, \ldots, x_n)
 \]
+where $f_{X_1, X_2, \ldots, X_k}$ is the marginal probability mass function of the variables $(X_1, X_2, \ldots, X_k)$.
 \end{definition}
 
 This definition underscores the process of marginalization in a discrete setting, which is key to understanding and analyzing the behavior of specific variables within a larger multivariate framework.
 
 \begin{example}
-\label{ex:cat_and_dogs}
-Imagine a survey conducted on a group of 100 people to find out who owns cats, dogs, both, or neither. The responses are categorized as follows:
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{|l|c|c|c|}
-\hline
- & Owns a Dog & Does Not Own a Dog & Total \\ 
-\hline
-Owns a Cat & 14 & 16 & 30 \\ 
-\hline
-Does Not Own a Cat & 26 & 44 & 70 \\ 
-\hline
-Total & 40 & 60 & 100 \\ 
-\hline
-\end{tabular}
-\caption{Survey on pet ownership among 100 people}
-\label{table:pet_ownership}
-\end{table}
-
-Here, we have two discrete random variables: $X$ (owning a dog) and $Y$ (owning a cat), with possible values of owning or not owning for each. The joint distribution would consider the combination of owning dogs and cats.
-
-To find the marginal distribution of $X$, we sum the probabilities (or, in this practical case, the counts) of the outcomes related to dog ownership, regardless of cat ownership status. The marginal distribution is concerned with whether people own dogs, irrespective of whether they also own cats.
-\[
-P(X=\text{owns a dog}) = \frac{\text{Owns only dogs} + \text{Owns both}}{\text{Total surveyed}} = \frac{14 + 26}{100} = 0.4
-\]
-\[
-P(X=\text{does not own a dog}) = \frac{\text{Owns only cats} + \text{Owns neither}}{\text{Total surveyed}} = \frac{16 + 44}{100} = 0.6 
-\]
-The marginal distributions tell us about the overall proportions of dog and cat ownership among the surveyed individuals, disregarding the cross-ownership of the other pet.
+{\color{red} TODO: Provide an example based on random variables.}
 \end{example}
 
-While the marginal distributions of random variables $X$ and $Y$ can be obtained from their joint distribution by summing or integrating over the range of the other variable, the reverse process is not straightforward. Specifically, reconstructing the joint distribution of $X$ and $Y$ from their marginal distributions alone is not feasible without extra information about the dependence between $X$ and $Y$. This limitation arises because marginal distributions encapsulate only the individual behavior of each variable, omitting details about how the variables interact or are related.
+While the marginal PMF of the random variables $X_1, \ldots, X_n$ can be obtained from their joint PMF by summing over the range of the other variables, the reverse process is not straightforward. Specifically, reconstructing the joint PMF of $X_1, \ldots, X_n$ from their marginal PMF alone is not feasible without extra information about the dependence between $X_1, \ldots, X_n$. This limitation arises because marginal PMF encapsulate only the individual behavior of each variable, omitting details about how the variables interact or are related.
 
 \begin{example}
-Given the marginal distributions of Example \ref{ex:cat_and_dogs} it is not possible to derive its joint distribution.
+{\color{red} TODO: Provide an example based on random variables.}
 \end{example}
 
-Two random variables $X$ and $Y$ are considered independent if the occurrence of an event associated with $X$ does not influence the probability of an event associated with $Y$, and vice versa. Independence between variables indicates a lack of association or correlation, meaning that knowing the outcome of one provides no information about the outcome of the other.
+A set of $n$ random variables $X_1, X_2, \ldots, X_n$ are considered independent if the occurrence of an event associated with any one of these variables does not influence the probability of an event associated with any other variable in the set. Independence among these variables indicates that there is no association or correlation among them, implying that knowing the outcome of one provides no information about the outcomes of the others.
 
 \begin{definition}
-It is said that two random variables $X$ and $Y$ are independent if, for every two sets $A$ and $B$ of real numbers such that $\left\{ X\in A\right\}$ and $\left\{ Y\in B\right\}$ are events $P\left(X\in A\enskip and\enskip Y\in B\right)=Pr\left(X\in A\right)Pr\left(Y\in B\right)$
+A set of random variables $X_1, X_2, \ldots, X_n$ are said to be independent if, for every choice of sets $A_1, A_2, \ldots, A_n$ of real numbers such that each $\left\{ X_i \in A_i \right\}$ is an event, the joint probability of these events can be expressed as the product of their individual probabilities:
+\[
+P\left(X_1 \in A_1 \text{ and } X_2 \in A_2 \text{ and } \ldots \text{ and } X_n \in A_n\right) = P\left(X_1 \in A_1\right)P\left(X_2 \in A_2\right)\ldots P\left(X_n \in A_n\right)
+\]
 \end{definition}
 
-This concept of independence facilitates the simplification of complex problems by allowing the joint probability distribution of $X$ and $Y$ to be expressed as the product of their individual marginal distributions.
+The concept of independence for a random vector $\mathbf{X}$ simplifies the computation and understanding of joint probability distributions, particularly in complex problems involving multiple variables. It allows the joint probability distribution of the vector $\mathbf{X}$ to be expressed as the product of the individual marginal distributions of $X_1, X_2, \ldots, X_n$. 
 
 \begin{proposition}
-Two random variables $X$ and $Y$ are independent if and only if the following is satisfied for all real numbers $x$ and $y$ $f\left(x,y\right)=f_{1}\left(x\right)f_{2}\left(y\right)$
+A set of random variables \(X_1, X_2, \ldots, X_n\) forming a random vector \(\mathbf{X}\) are independent if and only if the following is satisfied for all real numbers \(x_1, x_2, \ldots, x_n\): 
+\[
+f\left(x_1, x_2, \ldots, x_n\right) = f_1\left(x_1\right) f_2\left(x_2\right) \ldots f_n\left(x_n\right)
+\]
+where \(f\) is the joint probability mass function (PMF) or probability density function (PDF) of \(\mathbf{X}\), and \(f_i(x_i)\) is the marginal PMF or PDF of \(X_i\).
 \end{proposition}
-\begin{proof}
-Assuming $X$ and $Y$ are independent, by definition, for any two sets $A$ and $B$ of real numbers, we have that $P(X \in A \text{ and } Y \in B) = P(X \in A)P(Y \in B)$. Applying this definition to the PMFs, for all $x$ and $y$, the independence of $X$ and $Y$ implies $P(X=x \text{ and } Y=y) = P(X=x)P(Y=y)$. Since $P(X=x \text{ and } Y=y) = f(x, y)$, and the marginal probabilities $P(X=x)$ and $P(Y=y)$ are given by $f_1(x)$ and $f_2(y)$ respectively, we get $f(x, y) = f_1(x)f_2(y)$.
 
-Conversely, assume that for all $x$ and $y$, the joint PMF of $X$ and $Y$ can be expressed as $f(x, y) = f_1(x)f_2(y)$, where $f_1(x)$ and $f_2(y)$ are the marginal PMFs of $X$ and $Y$, respectively. We need to show that this implies $X$ and $Y$ are independent. The probability that $X$ and $Y$ simultaneously take on values $x$ and $y$ is given by $P(X=x \text{ and } Y=y) = f(x, y)$. Substituting the given condition into this expression yields $P(X=x \text{ and } Y=y) = f_1(x)f_2(y)$. By the definition of independence, if the joint probability of any $x$ and $y$ equals the product of their individual probabilities for all possible values of $x$ and $y$, then $X$ and $Y$ must be independent.
+\begin{proof}
+Assuming \(X_1, X_2, \ldots, X_n\) are independent, by definition, for any sets \(A_1, A_2, \ldots, A_n\) of real numbers, we have that 
+\[
+P(X_1 \in A_1 \text{ and } X_2 \in A_2 \text{ and } \ldots \text{ and } X_n \in A_n) = P(X_1 \in A_1)P(X_2 \in A_2)\ldots P(X_n \in A_n).
+\]
+Applying this definition to the PMFs or PDFs, for all \(x_1, x_2, \ldots, x_n\), the independence of \(X_1, X_2, \ldots, X_n\) implies 
+\[
+P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = P(X_1 = x_1)P(X_2 = x_2)\ldots P(X_n = x_n).
+\]
+Since \(P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f(x_1, x_2, \ldots, x_n)\), and the marginal probabilities \(P(X_i = x_i)\) are given by \(f_i(x_i)\) respectively, we get 
+\[
+f(x_1, x_2, \ldots, x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n).
+\]
+
+Conversely, assume that for all \(x_1, x_2, \ldots, x_n\), the joint PMF or PDF of \(\mathbf{X}\) can be expressed as 
+\[
+f(x_1, x_2, \ldots, x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n),
+\]
+where \(f_i(x_i)\) are the marginal PMFs or PDFs of \(X_i\) respectively. We need to show that this implies \(X_1, X_2, \ldots, X_n\) are independent. The probability that \(X_1, X_2, \ldots, X_n\) simultaneously take on values \(x_1, x_2, \ldots, x_n\) is given by 
+\[
+P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f(x_1, x_2, \ldots, x_n).
+\]
+Substituting the given condition into this expression yields 
+\[
+P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n).
+\]
+By the definition of independence, if the joint probability of any \(x_1, x_2, \ldots, x_n\) equals the product of their individual probabilities for all possible values of \(x_1, x_2, \ldots, x_n\), then \(X_1, X_2, \ldots, X_n\) must be independent.
 \end{proof}
 
 \begin{example}
-The random variables of Example \ref{ex:cat_and_dogs} are dependent since, for example, .
-\[
-P(X=\text{owns a dog}) = \frac{\text{Owns only dogs} + \text{Owns both}}{\text{Total surveyed}} = \frac{14 + 26}{100} = 0.4
-\]
+{\color{red} TODO: Provide an example based on random variables.}
 \end{example}
 
 % Conditional Distributions
 
-\subsection{Conditional Distributions}
+\subsection*{Conditional Probability Mass Function}
 
-{\color{red} The conditional distribution of one random variable $X$ given another $Y$ is the distribution that we would use for $X$ after we learn the value of $Y$.}
+The concept of conditional PMF offers a way to understand the probability of an event given that another event has occurred. Specifically, in the context of random variables, the conditional PMF of $Y$ given $X=x$ describes the PMF of $Y$ under the condition that $X$ takes a specific value $x$. This concept is pivotal for dissecting the interdependencies between random variables, allowing us to refine our probability assessments based on new information.
 
 \begin{definition}
-Let $X$ and $Y$ have a discrete joint distribution with joint p.f. f. Let $f_{2}$ denote the marginal p.f. of $Y$. For each y such that $f_{2}\left(y\right)>0$, define $g_{1}\left(x\mid y\right)=\frac{f\left(x,y\right)}{f_{2}\left(y\right)}$
+\label{def:conditional_probability_function}
+Let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be an $n$-dimensional random vector, which is partitioned into two subvectors: $\mathbf{Y}$, a $k$-dimensional random vector consisting of $k$ random variables from $\mathbf{X}$, and $\mathbf{Z}$, an $(n-k)$-dimensional random vector containing the remaining $n-k$ random variables of $\mathbf{X}$. Let $f$ denote the joint probability mass function of the combined random vectors $\mathbf{Y}$ and $\mathbf{Z}$, and let $f_\mathbf{Z}$ represent the marginal probability mass function of $\mathbf{Z}$ across its $(n-k)$ dimensions. Provided that for any vector $\mathbf{z} \in \mathbb{R}^{n-k}$ the condition $f_\mathbf{Z}(\mathbf{z})>0$ holds, the \emph{conditional probability mass function} $g$ for $\mathbf{Y}$ given $\mathbf{Z}=\mathbf{z}$ is defined as:
+\[
+g_{\mathbf{Y}|\mathbf{Z}} \left(\mathbf{y}\mid\mathbf{z}\right)=\frac{f\left(\mathbf{y},\mathbf{z}\right)}{f_\mathbf{Z} \left(\mathbf{z}\right)}
+\]
 \end{definition}
 
-{\color{red} Then $g_{1}$ is called the conditional p.f. of $X$ given $Y$. The discrete distribution whose p.f. is $g_{1}\left(\cdot\mid y\right)$ is called the conditional distribution of $X$ given that $Y=y$.}
+\begin{example}
+{\color{red} TODO: Provide an example based on random variables.}
+\end{example}
 
-{\color{red} Construction of the Joint Distribution}
-
-\begin{proposition}
-Let $X$ and $Y$ be random variables such that $X$ has p.f. or p.d.f. $f_{1}\left(x\right)$ and $Y$ has p.f. or p.d.f. $f_{2}\left(y\right)$. Also, assume that the conditional p.f. or p.d.f. of $X$ given $Y=y$ is $g_{1}\left(x\mid y\right)$ while the conditional p.f. or p.d.f. of $Y$ given $X=x$ is $g_{2}\left(y\mid x\right)$. Then for each $y$ such that $f_{2}\left(y\right)>0$ and each $x$, $f\left(x,y\right)=g_{1}\left(x\mid y\right)f_{2}\left(y\right)$ where $f$ is the joint p.f., p.d.f. or p.f./p.d.f. of $X$ and $Y$. Similarly, for each $x$ such that $f_{1}\left(x\right)>0$ and each $y$, $f\left(x,y\right)=f_{1}\left(x\right)g_{2}\left(y\mid x\right)$
-\end{proposition}
-\begin{proof}
-\end{proof}
-
-{\color{red} Next theorem provides a generalization of the law of total probability to random variables.}
+Next proposition generalizes the multiplication rule (see Equation \ref{eq:multiplication_rule}) by combining marginal and conditional PMFs to derive the joint PMF for any configuration of random variables within a random vector, accounting for the complex dependencies and interactions among multiple variables.
 
 \begin{proposition}
-If $f_{2}\left(y\right)$ is the marginal p.f. or p.d.f. of a random variable $Y$ and $g_{1}\left(x\mid y\right)$ is the conditional p.f. or p.d.f. of $X$ given $Y=y$, then the marginal p.f. or p.d.f. of $X$ is $f_{1}\left(x\right)=\sum_{y}g_{\text{1}}\left(x\mid y\right)f_{2}\left(y\right)$
-if Y is discrete.
+Let $\mathbf{X}$, $\mathbf{Y}$, $\mathbf{Z}$, $f_{\mathbf{Z}}(\mathbf{z})$ and $g_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y}|\mathbf{z})$ be defined as in Definiton \ref{def:conditional_probability_function}. Then, for each $\mathbf{z} \in \mathbf{Z}$ such that $f_{\mathbf{Z}}(\mathbf{z})>0$ and each possible value of $\mathbf{y} \in \mathbf{Y}$, the joint probability mass function is given by:
+\[
+f(\mathbf{x}) = g_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y}|\mathbf{z})f_{\mathbf{Z}}(\mathbf{z})
+\]
+where $\mathbf{x} $ represents a specific instantiation of the random vector $\mathbf{X}$.
 \end{proposition}
 \begin{proof}
+The proposition essentially follows from the definition of conditional probability and the properties of joint and marginal probabilities. By the definition of conditional probability:
+\[
+P(\mathbf{Y}=\mathbf{y} \mid \mathbf{Z}=\mathbf{z}) = \frac{P(\mathbf{Y}=\mathbf{y}, \mathbf{Z}=\mathbf{z})}{P(\mathbf{Z}=\mathbf{z})}
+\]
+Rearranging this equation gives us the joint probability function in terms of the conditional and marginal probability functions:
+\[
+P(\mathbf{Y}=\mathbf{y}, \mathbf{Z}=\mathbf{z}) = P(\mathbf{Y}=\mathbf{y} \mid \mathbf{Z}=\mathbf{z}) P(\mathbf{Z}=\mathbf{z})
+ \]
+Or equivalently, in terms of the function notation:
+\[
+f(\mathbf{x}) = g_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y}|\mathbf{z}) f_{\mathbf{Z}}(\mathbf{z})
+\]
 \end{proof}
 
-{\color{red} The following theorem is a generalization of Bayes' theorem for random variables.}
+Similarly, the conditional PMF of $\mathbf{Z}$ given $\mathbf{Y}=\mathbf{y}$, denoted as $g_{\mathbf{Z}|\mathbf{Y}}(\mathbf{z}|\mathbf{y})$, can be combined with the marginal PMF of $\mathbf{Y}$, $f_{\mathbf{Y}}(\mathbf{y})$, to yield the same joint probability mass function of $\mathbf{X}$:
+\[
+f(\mathbf{x}) = g_{\mathbf{Z}|\mathbf{Y}}(\mathbf{z}|\mathbf{y}) f_{\mathbf{Y}}(\mathbf{y})
+\]
+
+Next proposition provides a generalization of the law of total probability (see {\color{red} XXX }) to random variables. The law of total probability is used to calculate the probability of a single event based on a partition of the sample space into mutually exclusive events.
+
+\begin{proposition}
+Given a random vector $\mathbf{X} = (X_1, X_2, \ldots, X_n)$ where each $X_i$ for $i = 1, 2, \ldots, n$ is a discrete random variable, let $f_{X_i}(x_i)$ denote the marginal probability mass function of the variable $X_i$. If $g_{X_i|\mathbf{X}_{-i}}(x_i|\mathbf{x}_{-i})$ represents the conditional probability mass function of $X_i$ given the values of all other variables in the vector $\mathbf{X}$ except $X_i$ (denoted as $\mathbf{X}_{-i}$), then the marginal probability mass function of $X_i$ can be expressed as:
+\[ f_{X_i}(x_i) = \sum_{\mathbf{x}_{-i}} g_{X_i|\mathbf{X}_{-i}}(x_i|\mathbf{x}_{-i}) \prod_{j \neq i} f_{X_j}(x_j) \]
+where the summation $\sum_{\mathbf{x}_{-i}}$ is over all possible combinations of values for the random variables in $\mathbf{X}_{-i}$, and the product $\prod_{j \neq i} f_{X_j}(x_j)$ represents the multiplication of the marginal probability mass functionss of all other variables except $X_i$.
+\end{proposition}
+\begin{proof}
+The marginal probability mass function of a random variable $X_i$ within the vector $\mathbf{X}$ is defined as the probability of $X_i$ assuming a particular value $x_i$, regardless of the specific values assumed by the other variables in $\mathbf{X}$. Mathematically, this can be expressed as:
+\[
+f_{X_i}(x_i) = P(X_i = x_i)
+\]
+To compute this probability, we consider all possible combinations of values for the variables in $\mathbf{X}_{-i}$, which represents the set of all variables in $\mathbf{X}$ excluding $X_i$. The joint probability mass function of the entire random vector $\mathbf{X}$, which includes both $X_i$ and $\mathbf{X}_{-i}$, can be expressed in terms of conditional probability mass functions as follows:
+\[
+f_{\mathbf{X}}(x_1, x_2, \ldots, x_n) = g_{X_i|\mathbf{X}_{-i}}(x_i|\mathbf{x}_{-i}) \cdot f_{\mathbf{X}_{-i}}(\mathbf{x}_{-i})
+\]
+Here, $g_{X_i|\mathbf{X}_{-i}}(x_i|\mathbf{x}_{-i})$ is the conditional probability mass function of $X_i$ given the specific values of $\mathbf{X}_{-i}$, and $f_{\mathbf{X}_{-i}}(\mathbf{x}_{-i})$ is the joint probability mass function of the variables in $\mathbf{X}_{-i}$.
+
+To isolate the marginal PMF of $X_i$, we sum over all possible values of $\mathbf{x}_{-i}$, leveraging the law of total probability:
+\[
+f_{X_i}(x_i) = \sum_{\mathbf{x}_{-i}} f_{\mathbf{X}}(x_i, \mathbf{x}_{-i}) 
+\]
+\[
+= \sum_{\mathbf{x}_{-i}} g_{X_i|\mathbf{X}_{-i}}(x_i|\mathbf{x}_{-i}) \cdot f_{\mathbf{X}_{-i}}(\mathbf{x}_{-i}) 
+\]
+Recognizing that $f_{\mathbf{X}_{-i}}(\mathbf{x}_{-i})$ can be further decomposed into the product of the marginal probability mass functions of the individual variables in $\mathbf{X}_{-i}$ (assuming independence for simplicity), we can write:
+\[
+f_{X_i}(x_i) = \sum_{\mathbf{x}_{-i}} g_{X_i|\mathbf{X}_{-i}}(x_i|\mathbf{x}_{-i}) \cdot \prod_{j \neq i} f_{X_j}(x_j)
+\]
+This equation illustrates that the marginal probability mass funcion of $X_i$ is a summation over all possible combinations of values for the variables excluding $X_i$, weighted by the conditional probability of $X_i$ given those values and the joint probabilities of those values.
+\end{proof}
+
+The law of total probability is utilized to decompose the probability of an event into a sum of probabilities conditional on a partition of the sample space, making it useful for problems where direct calculation is impractical.
+
+\begin{example}
+{\color{red} TODO: Provide an example based on random variables}
+\end{example}
+
+Bayes' theorem (see {\color{red} XXX}) provides a way to update our probability estimates for a hypothesis given new evidence. For random vectors, the theorem can be generalized to accommodate the multi-dimensional nature of the variables involved. 
 
 \begin{theorem}
-If $f_{2}\left(y\right)$ is the marginal p.f. or p.d.f. of a random variable $Y$ and $g_{1}\left(x\mid y\right)$ is the conditional p.f. or p.d.f. of $X$ given $Y=y$, then the conditional p.f. or p.d.f. of $Y$ given $X=x$ is $g_{2}\left(y\mid x\right)=\frac{g_{1}\left(x\mid y\right)f_{2}\left(y\right)}{f_{1}\left(x\right)}$
+Let $\mathbf{X} = (X_1, X_2, \ldots, X_n)$ and $\mathbf{Y} = (Y_1, Y_2, \ldots, Y_m)$ be two random vectors representing different sets of random variables. Suppose we are interested in the conditional probability distribution of $\mathbf{X}$ given observed values of $\mathbf{Y}$, denoted as $\mathbf{y} = (y_1, y_2, \ldots, y_m)$. The generalized Bayes' theorem for random vectors can be stated as:
+\[
+P(\mathbf{X}=\mathbf{x}|\mathbf{Y}=\mathbf{y}) = \frac{P(\mathbf{Y}=\mathbf{y}|\mathbf{X}=\mathbf{x})P(\mathbf{X}=\mathbf{x})}{P(\mathbf{Y}=\mathbf{y})}
+\]
+where $P(\mathbf{X}=\mathbf{x}|\mathbf{Y}=\mathbf{y})$ is the conditional probability of $\mathbf{X}$ given $\mathbf{Y}=\mathbf{y}$, $P(\mathbf{Y}=\mathbf{y}|\mathbf{X}=\mathbf{x})$ is the conditional probability of $\mathbf{Y}$ given $\mathbf{X}=\mathbf{x}$,  $P(\mathbf{X}=\mathbf{x})$ is the prior probability of $\mathbf{X}$, and $P(\mathbf{Y}=\mathbf{y})$ is the marginal probability of $\mathbf{Y}$, which can also be expressed using the law of total probability as:
+\[
+P(\mathbf{Y}=\mathbf{y}) = \sum_{\mathbf{x}} P(\mathbf{Y}=\mathbf{y}|\mathbf{X}=\mathbf{x})P(\mathbf{X}=\mathbf{x})
+\]
+for discrete random vectors.
 \end{theorem}
 \begin{proof}
+{\color{red} TODO}
 \end{proof}
 
-\begin{proposition}
-Suppose that $X$ and $Y$ are two random variables having a joint p.f., p.d.f., or p.f./p.d.f. $f$. Then $X$ and $Y$ are independent if and only if for every value of $y$ such that $f_{2}\left(y\right)>0$ and every value of $x$ $g_{1}\left(x\mid y\right)=f_{1}\left(x\right)$
-\end{proposition}
-\begin{proof}
-\end{proof}
+This generalized form of Bayes' theorem allows us to update our belief about the probability distribution of a set of random variables $\mathbf{X}$ based on new information encapsulated in another set of random variables $\mathbf{Y}$. It emphasizes the interplay between the prior information we have about $\mathbf{X}$, the likelihood of observing $\mathbf{Y}=\mathbf{y}$ given $\mathbf{X}$, and the evidence provided by the actual observation of $\mathbf{Y}=\mathbf{y}$.
 
-{\color{red} Conclude that all the above can be generalized to multivariate distributions, and provide a couple of examples of such generalization.}
+\begin{example}
+{\color{red} TODO: Provide an example based on random variables}
+\end{example}
 
-
-\section{Random Samples}
-
-{\color{red} Perhaps this concept should be moved to the section of statistical inference}
-
-The concept of random sample plays a very important role in the area of statistical learning. Assuming that a collection of random variables form a random sample simplifies the mathematics behind inference methods. However, the requirements behind random samples are not always satisfied in practice.
+Building on the familiar concept of independence between random variables (see {\color{red} XXX}), an important extension is the idea of conditional independence. This concept comes into play when the independence of a set of random variables is considered in the context of being conditioned on another set of variables.
 
 \begin{definition}
-Let $f$ be a probability distribution, and let $X_1, X_2, \ldots, X_n$ be $n$ random variables. It is said that the variables $X_1, X_2, \ldots, X_n$ form a \emph{random sample} for the distribution $f$ if they are independent, and the marginal distribution of each of them is $f$. 
+Let $\mathbf{Z}$ be a random vector with joint probability function $f_\mathbf{Z} \left( \mathbf{z} \right)$. The variables of the random vector $\mathbf{X} = \left( X_{1}, \ldots, X_{n} \right)$ are \emph{conditionally independent}\index{Conditional independence} given $\mathbf{Z}$ if, for all $\mathbf{z}$ such that $f_\mathbf{Z}\left(\mathbf{z}\right)>0$, we have $g_{\mathbf{X} \mid \mathbf{Z}} \left(\mathbf{x}\mid\mathbf{z}\right)=\prod_{i=1}^{n}g_{X_i}\left(x_{i}\mid\mathbf{z}\right)$ where $g_{\mathbf{X} \mid \mathbf{Z}} \left( \mathbf{x} \mid \mathbf{z} \right)$ stands for the conditional probability mass function of $\mathbf{X}$ given $\mathbf{Z}=\mathbf{z}$ and $g_{X_i}\left(x_{i}\mid\mathbf{z}\right)$ stands for the conditional probability mass function of $X_{i}$ given $\mathbf{Z}=\mathbf{z}$.
 \end{definition}
 
-If the random variables $X_1, X_2, \ldots, X_n$ form a random sample for the distribution $f$, it is said that they are \emph{independent and identically distributed}, abbreviated \emph{i.i.d}. The number $n$ is called the \emph{sample size}. The joint distribution $g$ of the random sample is given by:
+Let's consider a practical example involving three discrete random variables $X$, $Y$, and $Z$, where $X$ and $Y$ are not independent, but they become conditionally independent given the third random variable $Z$.
+
+\begin{example}
+{\color{red} TODO: Provide a practical example involving three discrete random variables $X$, $Y$ , and $Z$. The domain of $X$, $Y$ and $Z$ must be infinitely countable. $X$ and $Y$ must be dependent, and they become conditionally independent given $Z$.}
+\end{example}
+
+\subsection*{Random Samples}
+
+The concept of a random sample is pivotal in the field of statistical learning, as assuming a set of random variables constitutes a random sample greatly simplifies the mathematical underpinnings of inferential methods. Nevertheless, the criteria for a collection of variables to be considered a random sample are not always met in real-world scenarios.
+
+\begin{definition}
+Given a probability distribution $f$, and let $X_1, X_2, \ldots, X_n$ be $n$ random variables. These variables $X_1, X_2, \ldots, X_n$ constitute a \emph{random sample} from the distribution $f$ if they are independent and each has the marginal distribution $f$.
+\end{definition}
+
+When the random variables $X_1, X_2, \ldots, X_n$ constitute a random sample from the distribution $f$, they are described as \emph{independent and identically distributed (i.i.d.)}. The term \emph{sample size} refers to the number $n$.
+
+The joint distribution $g$ of a random sample is defined as:
 \[
 g \left( x_1, x_2, \ldots, x_n \right) = f \left( x_1 \right) f \left( x_2 \right) \ldots f \left( x_n \right)
 \]
-for all the points $\left( x_1, x_2, \ldots, x_n \right) \in \mathcal{R}$.
+for every point $\left( x_1, x_2, \ldots, x_n \right) \in \mathcal{R}$.
+
+\begin{example}
+Imagine a researcher aims to estimate the average height of students at a university. The university has $N$ students, with $N$ very large, making it impractical to measure the height of every student. The researcher decides to select a sample of $n$ students, where $n << N$, ensuring that every student has an equal chance of being included in the sample. The set of height measurements can be represented as a random sample $\{X_1, X_2, \ldots, X_n\}$ from the population distribution of student heights, where each $X_i$ is a random variable representing the height of the $i$-th student in the sample.
+\end{example}
 
 %
 % Section: Expectation
@@ -619,7 +704,7 @@ A \emph{measure of central tendency} is a number derived from a probability dist
 
 \subsection{Measures of Central Tendency}
 
-The most comonly used measure of central tendency is the \emph{mean}. The mean of a collection of outcomes is the weigthed average of these outcomes, where the weights are equal to the probabilities. The mean is also know as expected value or expectation.
+The most commonly used measure of central tendency is the \emph{expected value}. The expected value of a collection of outcomes is the weighted average of these outcomes, where the weights are the probabilities of each outcome. The expected value extends the concept of the mean of a population, as discussed in Section \ref{sec:mean}, to continuous cases.
 
 \begin{definition}\label{probability:expectation}
 Let $X$ be a discrete random variable whose probability function is $f$. The \emph{mean} of $X$, denoted by $E\left(X\right)$, is defined as:
@@ -628,7 +713,9 @@ E\left(X\right)=\sum_{x}xf\left(x\right)
 \]
 \end{definition}
 
-Of course, Definition \ref{probability:expectation} only makes sense if the summation converges. It is also possible that the mean is infinite, but in this book we are only interested in finite means. We have defined the concept of mean based on random variables. In this sense, the definition of mean only takes into account the distribution of the random variables, not the original outcomes. That is, two different random variables with the same distribution will have the same mean. When working with random variables it is common to use the name expeced value instead of mean. However, this name is a little bit misleading, since for the majority of the discrete distributions, the expected value is not one of the possible values of the distribution, i.e., the expected value is not expected at all. For example, if we throw a dice, the expected value would be 3.5. This undesired property of something known as expected value has generated a lot of confusion in scientific research. The expectation of a random variable has a physhical interpretation as the center of gravity of the distribution. Expectation, as the center of gravity, can be greatly affected by a small change in the probability assigned to a large value of $X$.
+Of course, Definition \ref{probability:expectation} only makes sense if the summation converges. It is also possible that the expected value is infinite, but in this book we are only interested in finite expected values. We have defined the concept of expected values based on random variables. In this sense, the definition of expected value only takes into account the distribution of the random variables, not the original outcomes. That is, two different random variables with the same distribution will have the same expected values. The name expected value is a little bit misleading, since for the majority of the discrete distributions, the expected value is not one of the possible values of the distribution, i.e., the expected value is not expected at all. For example, if we throw a dice, the expected value would be 3.5. This undesired property of something known as expected value has generated a lot of confusion in scientific research. The expected value, as it was the case of the mean, can be greatly affected by a small change in the probability assigned to a large value of $X$.
+
+It is worth to clarify the difference between mean and expected value. In case of continuous statistical variables, the mean is calculated based on the frequency of each attribute value observed in the population. Typically, we aggregate individuals into class intervals, and calculate the mean using class marks. However, for random variables, the expectation is computed directly from the theoretical probabilities associated with these intervals. Consequently, the mean and the theoretical expected value may differ due to measurement errors, rounding errors of empirical values, or inaccuracies in the theoretical probability model selected. In the context of a discrete probability space $\left( \Omega, \mathcal{A}, P \right)$, which is the type of space we focus on in this book, the concepts of the mean and expected might provide the same value. This equivalence holds as long as the probability space $\left( \Omega, \mathcal{A}, P \right)$ is sufficiently granular, that is, for every $\omega$ in $\Omega$ the singleton set $\{ \omega \}$ belongs to $\mathcal{A}$, and probabilities resembles frequencies. Neither the mean nor the expected value makes sense in the case of categorical variables.
 
 The expectation of the linear combination of $n$ random variables is the linear combination of their expectations.
 
@@ -685,7 +772,6 @@ Do not confuse $\frac{1}{n} \left( X_1 + X_2 + \ldots + X_n \right)$, which is a
 % The Median
 
 \subsubsection*{The Median}
-
 
 We have seen that the mean of a probability distribution is the center of gravity of that distribution. The actual center of the distribution is called  the \emph{median}.
 

@@ -20,16 +20,16 @@ Probability theory is the branch of mathematics that studies random experiments 
 
 Probability theory provides the mathematical foundations for statistical inference, one of the most relevant aproaches we have today for gathering knowledge based on the analysis of the results of carefully designed experiments. Probability theory also provides the foundation of machine learning, that is, the analysis of large volumes of data to derive intelligent algorithms.
 
-In this chapter we are going to focus in the area of discrete probability. In this version of the theory, the possible outcomes of an event are finite, or at most, countably infinite. We are interested in the area of discrete probability, first because its applications in practice to the area of learning from data, and second, because discrete probability has some very interesting connections to theories used in this book: the length of optimal codes, the probability that a random machine will halt, and the derivation of universal distributions based on Kolmogorov complexity. All of these connection are relevant in our theory of nescience. We are going to study probability theory from a formal, axiomatic, point of view. We will start by formulating a very basic collection of fundamental axioms, and then we will derive the major results and properties from them. 
+In this chapter we are going to focus in the area of discrete probability. In this version of the theory, the possible outcomes of an event are finite, or at most, countably infinite. We are interested in the area of discrete probability, first because its applications in practice to the area of learning from data, and second, because discrete probability has some very interesting connections to theories used in this book: the length of optimal codes, the probability that a random machine will halt, and the derivation of universal distributions based on Kolmogorov complexity. All of these connections are relevant in our theory of nescience. We are going to study probability theory from a formal, axiomatic, point of view. We will start by formulating a very basic collection of fundamental axioms, and then we will derive the major results and properties from them. 
 
-This chapter is a very brief overview of probability theory. We will cover only the most important techniques and results. The contents have been selected based on their applicability to the theory of nescience. For example, moment generating functions are not covered. For a more comprehensive introduction to probability theory, see the References section at the end of the Chapter.
+This chapter is an of probability theory. We will cover only the most important techniques and results. The contents have been selected based on their applicability to the theory of nescience. For example, moment generating functions are not covered. For a more comprehensive introduction to probability theory, see the References section at the end of the Chapter.
 
 
 %
 % Section: Foundations of Probability Theory
 %
 
-\section{Foundations o Probability Theory}
+\section{Foundations of Probability Theory}
 \label{sec:probability_foundations}
 
 The concept of \emph{probability} represents a profound intellectual challenge. Let us consider an instance where a dice is rolled and the objective is to compute the probability of an even number being the outcome. The dice comprises six distinct outcomes, and given that half of these are even numbers, we posit that the probability of yielding an even number is $3/6$ or equivalently $1/2$. This embodies the \emph{classical interpretation}\index{Classical interpretation of probability} of probability which asserts that in an experiment where all finite potential outcomes possess an equal likelihood of occurrence, the probability of an event equates to the count of favorable instances over the total number of instances. This interpretation, however, confronts the issue of circularity in its definition as "equally likely" essentially amounts to "possessing the same probability". An alternative method for probability assignment might be the implementation of the \emph{principle of indifference}\index{Principle of indifference}, which postulates that in the absence of any relevant evidence, all potential outcomes should possess identical probability. This principle, however, encounters a predicament when there exists evidence that contradicts the presumption of equivalence amongst all outcomes. For instance, how should probability be assigned when knowledge of a loaded dice suggests that not all sides possess an equal likelihood of occurrence?
@@ -692,28 +692,48 @@ Imagine a researcher aims to estimate the average height of students at a univer
 \end{example}
 
 %
-% Section: Expectation
+% Section: Characterizing Distributions
 %
 
 \section{Characterizing Distributions}
 \label{sec:probability_expectation}
 
-A \emph{measure of central tendency} is a number derived from a probability distribution, intended as a summary of that distribution. The most common measures of central tendency in use are the mean and the median. Each of these measures provides a different approach to characterize distributions. It is also common to use \emph{metrics of dispersion} to describe the variability of a distribution around the measures of centrality. We will review two metrics of dispersion, the variance and the standard deviation. The metrics of disperson can also be used in case of bivariate distributions, under the names of covariance and correlation, to measure the \emph{statistical relationship} between two random variables. All these measures allow us to summarize and compare distributions.
+A \emph{measure of central tendency} is a number derived from a probability distribution, intended as a summary of that distribution. The most common measures of central tendency in use are the expected value and the median. Each of these measures provides a different approach to characterize distributions. It is also common to use \emph{metrics of dispersion} to describe the variability of a distribution around the measures of centrality. We will review two metrics of dispersion, the variance and the standard deviation. The metrics of disperson can also be used in case of bivariate distributions, under the names of covariance and correlation, to measure the \emph{statistical relationship} between two random variables. All these measures allow us to summarize and compare distributions.
 
 % Subsection: Measures of Central Tendency
 
 \subsection{Measures of Central Tendency}
 
-The most commonly used measure of central tendency is the \emph{expected value}. The expected value of a collection of outcomes is the weighted average of these outcomes, where the weights are the probabilities of each outcome. The expected value extends the concept of the mean of a population, as discussed in Section \ref{sec:mean}, to continuous cases.
+The most common measures of central tendency in use to characterize probability distributions are the expected value and the median.
+
+\subsubsection*{Expeced Value}
+
+The expected value of a discrete random variable is computed as the weighted average of all possible values of the variable, where weights are given by the probabilities of the outcomes.
 
 \begin{definition}\label{probability:expectation}
-Let $X$ be a discrete random variable whose probability function is $f$. The \emph{mean} of $X$, denoted by $E\left(X\right)$, is defined as:
+Let $X$ be a discrete random variable whose probability mass function is $f$. The \emph{expected value}\index{Expected value} of $X$, denoted by $E\left(X\right)$, is defined as:
 \[
 E\left(X\right)=\sum_{x}xf\left(x\right)
 \]
 \end{definition}
 
-Of course, Definition \ref{probability:expectation} only makes sense if the summation converges. It is also possible that the expected value is infinite, but in this book we are only interested in finite expected values. We have defined the concept of expected values based on random variables. In this sense, the definition of expected value only takes into account the distribution of the random variables, not the original outcomes. That is, two different random variables with the same distribution will have the same expected values. The name expected value is a little bit misleading, since for the majority of the discrete distributions, the expected value is not one of the possible values of the distribution, i.e., the expected value is not expected at all. For example, if we throw a dice, the expected value would be 3.5. This undesired property of something known as expected value has generated a lot of confusion in scientific research. The expected value, as it was the case of the mean, can be greatly affected by a small change in the probability assigned to a large value of $X$.
+The definition of expected value considers only the distribution of the random variable, not the original outcomes. Thus, two different random variables with the same distribution will have equal expected values, even if the underlying probability spaces are different.
+
+The term "expected value" can be somewhat misleading because, for many discrete distributions, the expected value is not necessarily one of the possible values. For instance, when rolling a six-sided dice, the expected value is \(3.5\), which is not an actual outcome of the roll. This counterintuitive aspect of the concept of expected value has led to considerable confusion in scientific research.
+
+The expected value can be greatly affected by a small change in the probability assigned to a large value of $X$.
+
+\begin{example}
+Consider a company with a population of 100 employees, and we define a random variable based on their salaries. Let's $X = \{300, 6000\}$ with probabilities of $99/100$ and $1/100$ respectively. The expected salary is calculated as:
+\[ 
+E\left(X\right) = (300 \times 99/100) + (6000 \times 1/100) = 357
+\]
+Now, suppose that one of the base employees is promoted to the executive level with the same salary of \$6000. The recalculated expected salary would be:
+\[
+E\left(X\right) = (300 \times 98/10) + (6000 \times 2/100) = 414
+\]
+This example shows how just changing the salary of one single person can increase the expected salary of the company by more than $13\%$.
+\end{example}
 
 It is worth to clarify the difference between mean and expected value. In case of continuous statistical variables, the mean is calculated based on the frequency of each attribute value observed in the population. Typically, we aggregate individuals into class intervals, and calculate the mean using class marks. However, for random variables, the expectation is computed directly from the theoretical probabilities associated with these intervals. Consequently, the mean and the theoretical expected value may differ due to measurement errors, rounding errors of empirical values, or inaccuracies in the theoretical probability model selected. In the context of a discrete probability space $\left( \Omega, \mathcal{A}, P \right)$, which is the type of space we focus on in this book, the concepts of the mean and expected might provide the same value. This equivalence holds as long as the probability space $\left( \Omega, \mathcal{A}, P \right)$ is sufficiently granular, that is, for every $\omega$ in $\Omega$ the singleton set $\{ \omega \}$ belongs to $\mathcal{A}$, and probabilities resembles frequencies. Neither the mean nor the expected value makes sense in the case of categorical variables.
 
@@ -1091,6 +1111,8 @@ The Central Limit Theorem is a fundamental concept in probability theory used in
 % Section: References
 %
 \section*{References}
+
+An example of the problems associated with the misinterpretation of expected value is the St. Petersburg Paradox. Introduced by Nicholas Bernoulli in 1713, this paradox involves a gambling game with an infinite expected payoff, yet no reasonable person would pay more than \$25 to play it. Despite being three centuries old, the paradox continues to inspire new arguments and solutions in recent years (see \cite{huang2013three} for a historical review of the main proposed solutions).
 
 % There are a few more interpretations of the concept of probability that you might consider including:
 

@@ -706,6 +706,8 @@ A \emph{measure of central tendency} is a number derived from a probability dist
 
 The most common measures of central tendency in use to characterize probability distributions are the expected value and the median.
 
+% Expected Value
+
 \subsubsection*{Expeced Value}
 
 The expected value of a discrete random variable is computed as the weighted average of all possible values of the variable, where weights are given by the probabilities of the outcomes.
@@ -719,11 +721,11 @@ E\left(X\right)=\sum_{x}xf\left(x\right)
 
 The definition of expected value considers only the distribution of the random variable, not the original outcomes. Thus, two different random variables with the same distribution will have equal expected values, even if the underlying probability spaces are different.
 
-The term "expected value" can be somewhat misleading because, for many discrete distributions, the expected value is not necessarily one of the possible values. For instance, when rolling a six-sided dice, the expected value is \(3.5\), which is not an actual outcome of the roll. This counterintuitive aspect of the concept of expected value has led to considerable confusion in scientific research.
+The term "expected value" can be somewhat misleading because, for many discrete distributions, the expected value is not necessarily one of the possible values. For instance, when rolling a six-sided die, the expected value is \(3.5\), which is not an actual outcome of the roll. This counterintuitive aspect of the concept of expected value has led to considerable confusion in scientific research.
 
-The expected value can be greatly affected by a small change in the probability assigned to a large value of $X$.
+A drawback of the expected value is that it can be greatly affected by a small change in the probability assigned to a large value of $X$.
 
-\begin{example}
+\begin{example}\label{ex:expected_salary}
 Consider a company with a population of 100 employees, and we define a random variable based on their salaries. Let's $X = \{300, 6000\}$ with probabilities of $99/100$ and $1/100$ respectively. The expected salary is calculated as:
 \[ 
 E\left(X\right) = (300 \times 99/100) + (6000 \times 1/100) = 357
@@ -735,9 +737,7 @@ E\left(X\right) = (300 \times 98/10) + (6000 \times 2/100) = 414
 This example shows how just changing the salary of one single person can increase the expected salary of the company by more than $13\%$.
 \end{example}
 
-It is worth to clarify the difference between mean and expected value. In case of continuous statistical variables, the mean is calculated based on the frequency of each attribute value observed in the population. Typically, we aggregate individuals into class intervals, and calculate the mean using class marks. However, for random variables, the expectation is computed directly from the theoretical probabilities associated with these intervals. Consequently, the mean and the theoretical expected value may differ due to measurement errors, rounding errors of empirical values, or inaccuracies in the theoretical probability model selected. In the context of a discrete probability space $\left( \Omega, \mathcal{A}, P \right)$, which is the type of space we focus on in this book, the concepts of the mean and expected might provide the same value. This equivalence holds as long as the probability space $\left( \Omega, \mathcal{A}, P \right)$ is sufficiently granular, that is, for every $\omega$ in $\Omega$ the singleton set $\{ \omega \}$ belongs to $\mathcal{A}$, and probabilities resembles frequencies. Neither the mean nor the expected value makes sense in the case of categorical variables.
-
-The expectation of the linear combination of $n$ random variables is the linear combination of their expectations.
+The expected value of the linear combination of $n$ random variables is the linear combination of their respective expected values.
 
 \begin{proposition}
 Let $X_{1}, \ldots, X_{n}$ be $n$ independent discrete random variables with expectations $E\left(X_{i}\right)$, and let $a_1, \ldots, a_n$ and $b$ constants, then
@@ -757,7 +757,7 @@ a_1 E\left(X_1\right) + \ldots + a_n E\left(X_n\right) + b
 \end{multline}
 \end{proof}
 
-The expectation of the product of $n$ independent random variables is the product of the individual expectations.
+The expected value of the product of $n$ independent random variables is equal to the product of the individual expected values.
 
 \begin{proposition}
 Let $X_{1}, \ldots, X_{n}$ be $n$ independent discrete random variables with expectations $E\left(X_{i}\right)$, then:
@@ -776,33 +776,46 @@ E \left( X_1 \right) \cdot \ldots \cdot E \left( X_n \right)
 \end{multline}
 \end{proof}
 
-The expectation of the product of non-independent random variables is not necesarily equal to the product of their individual expectations.
+The expected value of the product of non-independent random variables is not necesarily equal to the product of their individual expected values.
 
-In the area of statistical inference it is also highly convenient to compute the sample mean, as the average of $n$ random variables. In particular, we will compute the sample mean of random samples.
+In the area of statistical inference, it is also highly convenient to compute the sample mean, as the average of $n$ random variables. In particular, we will compute the sample mean of random samples.
 
 \begin{definition}
-Let $X_1, X_2, \ldots, X_n$ be $n$ random variables. The \emph{sample mean}, denoted by $\bar{X}_n$, is defined as:
+Let $X_1, X_2, \ldots, X_n$ be $n$ random variables. The \emph{sample mean}\index{Sample mean} of $X_1, X_2, \ldots, X_n$, denoted by $\bar{X}_n$, is defined as:
 \[
 \bar{X}_n = \frac{1}{n} \sum_{i=1}^n X_i
 \]
 \end{definition}
 
-Do not confuse $\frac{1}{n} \left( X_1 + X_2 + \ldots + X_n \right)$, which is a probability distribution, with $E \left( X_1 + X_2 + \ldots + X_n \right)$, which is a real number.
+Do not confuse $\frac{1}{n} \left( X_1 + X_2 + \ldots + X_n \right)$, which is a random variable, with $E \left( X_1 + X_2 + \ldots + X_n \right)$, which is a real number. We will study some important properties of the average of large random samples in Section \ref{sec:probability_random_samples}.
 
 % The Median
 
 \subsubsection*{The Median}
 
-We have seen that the mean of a probability distribution is the center of gravity of that distribution. The actual center of the distribution is called  the \emph{median}.
+The median of a discrete random variable is a measure of central tendency that represents the point that separates the higher half from the lower half of a probability distribution.
 
 \begin{definition}
-Let $X$ be a discrete random variable. Every number $m$ that satisfy the following properties is called a median of the distribution of $X$:
+Let $X$ be a discrete random variable. The \emph{median}\index{Median} of $X$, denoted by $m$, is the value that satisfies:
 \[
-Pr\left(X\leq m\right)\geq1/2 \quad and \quad Pr\left(X\geq m\right) \geq 1/2
+Pr\left(X\leq m\right)\geq \frac{1}{2} \quad \text{and} \quad Pr\left(X\geq m\right)\geq \frac{1}{2}
 \]
 \end{definition}
 
-The median divides a probability distribution in two equal parts. A distribution could have more than one median. And, on the contrary of what happens in case of the expectation, every distribution must have at least one median. An advantage of the median over the mean is that we can move a value $x$ larger to the median to any arbitrary larger value, and the median will be remain the same. 
+The definition of the median considers the distribution of the random variable, ensuring that at least half of the probability mass lies on either side of the median.
+
+The term "median" is often more intuitive than "expected value" because it is always one of the possible values, although in the case of an even number of outcomes it is customary to use the average of the two middle values.
+
+The median is a robust measure of central tendency, especially useful when the data has outliers or is skewed.
+
+\begin{example}
+Consider the company from Example \ref{ex:expected_salary}. The median of the salaries is calculated as the value $m$ for which $Pr\left(X\leq m\right)\geq \frac{1}{2}$. In this case, $m=300$. Now, suppose that one of the base employees is promoted to the executive level with the same salary of \$6000. The recalculated median would still be $m=300$. This example shows that the median is a more robust measure than the expected value in the presence of outliers.
+\end{example}
+
+
+%
+% subsection: Measures of Dispersion
+%
 
 \subsection{Measures of Dispersion}
 

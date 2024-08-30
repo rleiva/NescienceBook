@@ -142,6 +142,7 @@ P \left( \bigcup_{i=1}^n A_i \right) & = \sum_{i=1}^n P \left( A_i \right) - \su
 &  - \sum_{i<j<k<l} P \left( A_i \cap A_j \cap A_k \cap A_l \right) + \ldots +  (-1)^{n+1} P \left( A_1 \cap A_2 \cap \ldots \cap A_n \right) 
 \end{split}
 \end{equation*}
+
 A probability function is characterized as a function that assigns to every possible event within a sample space its corresponding probability.
 
 \begin{definition}
@@ -671,25 +672,6 @@ Let's consider a practical example involving three discrete random variables $X$
 {\color{red} TODO: Provide a practical example involving three discrete random variables $X$, $Y$ , and $Z$. The domain of $X$, $Y$ and $Z$ must be infinitely countable. $X$ and $Y$ must be dependent, and they become conditionally independent given $Z$.}
 \end{example}
 
-\subsection*{Random Samples}
-
-The concept of a random sample is pivotal in the field of statistical learning, as assuming a set of random variables constitutes a random sample greatly simplifies the mathematical underpinnings of inferential methods. Nevertheless, the criteria for a collection of variables to be considered a random sample are not always met in real-world scenarios.
-
-\begin{definition}
-Given a probability distribution $f$, and let $X_1, X_2, \ldots, X_n$ be $n$ random variables. These variables $X_1, X_2, \ldots, X_n$ constitute a \emph{random sample} from the distribution $f$ if they are independent and each has the marginal distribution $f$.
-\end{definition}
-
-When the random variables $X_1, X_2, \ldots, X_n$ constitute a random sample from the distribution $f$, they are described as \emph{independent and identically distributed (i.i.d.)}. The term \emph{sample size} refers to the number $n$.
-
-The joint distribution $g$ of a random sample is defined as:
-\[
-g \left( x_1, x_2, \ldots, x_n \right) = f \left( x_1 \right) f \left( x_2 \right) \ldots f \left( x_n \right)
-\]
-for every point $\left( x_1, x_2, \ldots, x_n \right) \in \mathcal{R}$.
-
-\begin{example}
-Imagine a researcher aims to estimate the average height of students at a university. The university has $N$ students, with $N$ very large, making it impractical to measure the height of every student. The researcher decides to select a sample of $n$ students, where $n << N$, ensuring that every student has an equal chance of being included in the sample. The set of height measurements can be represented as a random sample $\{X_1, X_2, \ldots, X_n\}$ from the population distribution of student heights, where each $X_i$ is a random variable representing the height of the $i$-th student in the sample.
-\end{example}
 
 %
 % Section: Characterizing Distributions
@@ -778,17 +760,6 @@ E \left( X_1 \right) \cdot \ldots \cdot E \left( X_n \right)
 
 The expected value of the product of non-independent random variables is not necesarily equal to the product of their individual expected values.
 
-In the area of statistical inference, it is also highly convenient to compute the sample mean, as the average of $n$ random variables. In particular, we will compute the sample mean of random samples.
-
-\begin{definition}
-Let $X_1, X_2, \ldots, X_n$ be $n$ random variables. The \emph{sample mean}\index{Sample mean} of $X_1, X_2, \ldots, X_n$, denoted by $\bar{X}_n$, is defined as:
-\[
-\bar{X}_n = \frac{1}{n} \sum_{i=1}^n X_i
-\]
-\end{definition}
-
-Do not confuse $\frac{1}{n} \left( X_1 + X_2 + \ldots + X_n \right)$, which is a random variable, with $E \left( X_1 + X_2 + \ldots + X_n \right)$, which is a real number. We will study some important properties of the average of large random samples in Section \ref{sec:probability_random_samples}.
-
 % The Median
 
 \subsubsection*{The Median}
@@ -819,39 +790,117 @@ Consider the company from Example \ref{ex:expected_salary}. The median of the sa
 
 \subsection{Measures of Dispersion}
 
-Definitions of the Variance and the Standard Deviation
+The most common measures of dispersion in use to characterize probability distributions are the variance and its squared root, called standard deviation.
+
+% The Variance
+
+\subsubsection*{The Variance}
+
+The variance of a discrete random variable is a measure of the spread or dispersion of the possible values of the variable around the expected value.
 
 \begin{definition}
-Let X be a random variable with finite mean and $\mu=E\left(X\right)$. The variance of X, denoted by $Var\left(X\right)$, is defined as follows: $Var\left(X\right)=E\left[\left(X-\mu^{2}\right)\right]$
+Let $X$ be a discrete random variable with expected value $E(X)$ and probability mass function $f$. The \emph{variance}\index{Variance} of $X$, denoted by $Var(X)$, is defined as:
+\[
+Var(X) = E[(X - E(X))^2] = \sum_{x} (x - E(X))^2 f(x)
+\]
 \end{definition}
 
-{\color{red} If X has infinite mean or if the mean of X does not exist, we say that $Var\left(X\right)$ does not exist. The standard deviation of X is the nonnegative square root of $Var\left(X\right)$ if the variance exists. It is common to denote the standard deviation by the symbol $\sigma$, and the variance by $\sigma^{2}$. Variance depeds only on the distribution.}
+Variance considers the distribution of the random variable and provides a measure of how much the values differ from the expected value. For instance, if all possible values of a random variable are the same, the variance is zero.
 
-\begin{proposition}
-For every random variable X, $Var\left(X\right)=E\left(X^{2}\right)-\left[E\left(X\right)\right]^{2}$.
-\end{proposition}
-\begin{proof}
-\end{proof}
-
-{\color{red} The variance (as well as the standard deviation) of a distribution provides a measure of the spread or dispersion of the distribution around its mean $\mu$. The variance of a distribution, as well as its mean, can be made arbitrarily large by placing even a very small but positive amount of probability far enough from the origin on the real line.}
-
-Properties of the Variance
-
-\begin{proposition}
-For constants a and b, let $Y=aX+b$, then $Var\left(Y\right)=a^{2}Var\left(X\right)$
-and $\sigma_{Y}=\left|a\right|\sigma_{X}$.
-\end{proposition}
-\begin{proof}
-\end{proof}
-
-{\color{red} If $X_{\text{1}},\ldots,X_{n}$ are independent random variables with finite means, and if $a_{1},\ldots,a_{n}$ and b are arbitrary constants, then $Var\left(a_{1}X_{1}+\ldots+a_{n}X_{n}+b\right)=a_{1}^{2}Var\left(X_{1}\right)+\ldots+a_{n}^{2}Var\left(X_{n}\right)$}
+As it was the case of the expected value, a drawback of the variance is that it can be influenced significantly by outliers because it involves squaring the deviations from the mean.
 
 \begin{example}
-The Variance of a Binomial Distribution
-
-The variance of a random variable X with a binomial distribution of n samples with probability p is $Var\left(X\right)=np\left(1-p\right)$
+Consider the company from Example \ref{ex:expected_salary}, with an expected salary of $E(X) = 357$: We calculate the variance as:
+\[
+Var(X) = (300 - 357)^2 \times 99/100 + (6000 - 357)^2 \times 1/100 = 3218250
+\]
 \end{example}
 
+Next proposition states that for a linear combination of independent random variables, the variance of the combination is the weighted sum of the variances of the individual variables, where the weights are the squares of the coefficients in the linear combination.
+
+\begin{proposition}
+Let \(X_{1}, \ldots, X_{n}\) be $n$ independent random variables with finite expected values, and \(a_{1},\ldots,a_{n}\) and \(b\) be arbitrary constants, then:
+\[
+Var\left(a_{1}X_{1}+\ldots+a_{n}X_{n}+b\right)=a_{1}^{2}Var\left(X_{1}\right)+\ldots+a_{n}^{2}Var\left(X_{n}\right)
+\]
+\end{proposition}
+\begin{proof}
+Let \(Y = a_{1}X_{1} + \ldots + a_{n}X_{n} + b\). The variance of \(Y\) is given by:
+\[
+Var(Y) = Var(a_{1}X_{1} + \ldots + a_{n}X_{n} + b)
+\]
+Since variance is unaffected by the addition of a constant, we can ignore \(b\):
+\[
+Var(Y) = Var(a_{1}X_{1} + \ldots + a_{n}X_{n})
+\]
+Now, using the linearity of variance for independent random variables, we have:
+\[
+Var(a_{1}X_{1} + \ldots + a_{n}X_{n}) = Var(a_{1}X_{1}) + \ldots + Var(a_{n}X_{n})
+\]
+Next, we use the property that for any random variable \(X_i\) and constant \(a_i\), \(Var(a_i X_i) = a_i^2 Var(X_i)\):
+\[
+Var(a_{1}X_{1}) + \ldots + Var(a_{n}X_{n}) = a_{1}^2 Var(X_{1}) + \ldots + a_{n}^2 Var(X_{n})
+\]
+Therefore, we have:
+\[
+Var(a_{1}X_{1} + \ldots + a_{n}X_{n} + b) = a_{1}^{2}Var(X_{1}) + \ldots + a_{n}^{2}Var(X_{n})
+\]
+\end{proof}
+
+A key relationship in probability theory is the formula that expresses variance in terms of expected values. This relationship not only simplifies calculations but also provides deeper insight into the nature of variance as a measure of risk and variability.
+
+\begin{proposition}
+Let $X$ be a discrete random variable with expected value $E(X)$. Then, the variance of $X$ is given by:
+\[
+Var(X) = E(X^2) - [E(X)]^2
+\]
+\end{proposition}
+\begin{proof}
+To prove this proposition, we start from the definition of variance:
+\[
+Var(X) = E[(X - E(X))^2]
+\]
+Expanding the square inside the expectation yields:
+\[
+Var(X) = E[X^2 - 2X \cdot E(X) + (E(X))^2]
+\]
+Applying the linearity of expectation, this becomes:
+\[
+Var(X) = E(X^2) - 2E(X)E(X) + E((E(X))^2)
+\]
+Since \(E(X)\) is a constant, the expectation of a constant is the constant itself, so:
+\[
+E((E(X))^2) = (E(X))^2
+\]
+Thus, the expression simplifies to:
+\[
+Var(X) = E(X^2) - 2(E(X))^2 + (E(X))^2
+\]
+Simplifying further, we cancel out terms:
+\[
+Var(X) = E(X^2) - (E(X))^2
+\]
+\end{proof}
+
+In the area of statistical inference, it is also highly convenient to compute the sample variance as a measure of the dispersion of $n$ random variables. In particular, we will compute the sample variance of random samples.
+
+\begin{definition}
+Let $X_1, X_2, \ldots, X_n$ be $n$ random variables with sample mean $\bar{X}_n$. The \emph{sample variance}\index{Sample variance} of $X_1, X_2, \ldots, X_n$, denoted by $S^2$, is defined as:
+\[
+S^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X}_n)^2
+\]
+\end{definition}
+
+Do not confuse the sample variance, which is a statistic based on observed values, with the theoretical variance of the distribution. We will study some important properties of the variance of large random samples in Section \ref{sec:probability_random_samples}.
+
+
+% Standard Deviation
+
+\subsubsection*{Standard Deviation}
+
+%
+% Measures of Statistical Relationship
+%
 
 \subsection{Measures of Statistical Relationship}
 
@@ -949,52 +998,188 @@ If $X_{1},\ldots,X_{n}$ are uncorrelated random variables, then $Var\left(\sum_{
 \section{Common Distributions}
 \label{sec:probability_distributions}
 
+{\color{red} In this section we are going to define and discuss serveral special families of distributions that are widely used in applications of probability theory. In particular, we will present the family of dicrete distributions uniform, bernioully, and binomial [...] we shall briefly describe how each of these families of distributions arise in applied problems and show why each might be an appropriate probability model for some experiment [...] For each family, we shall present the form of the probability mass function and disuss some of the basic properties of the distributions of the family} 
+
+%
+% Uniform Distribution
+%
 
 \subsection{Uniform Distribution}
 
+The uniform distribution is the simplest probability distribution in probability theory. It models scenarios where all outcomes are equally likely.
+
 \begin{definition}
-Let $a \leq b$ be integers. Suppose that the value of a random variable $X$ is equally likely to be each of the integers $a, \ldots, b$. Then we say that $X$ has the uniform distribution on the integers $a, \ldots, b$.
+A random variable $X$ is said to follow an \emph{uniform distribution}\index{Uniform distribution} if the probability of each value is the same. Specifically, if $X$ takes on values in the set $\{x_1, x_2, \ldots, x_n\}$, the probability mass function is given by:
+\[
+P(X = x_i) = \frac{1}{n} \quad \text{for } i = 1, 2, \ldots, n.
+\]
 \end{definition}
 
-{\color{red} Introduce the following propostion}
+An example of the discrete uniform distribution would be throwing a fair die. In contrast to other distributions studied in this section, the uniform distribution is non-parametric, meaning it does not depend on a parameter to be fully specified. The expected value of a discrete uniform random variable $X$ that takes on values in $\{x_1, x_2, \ldots, x_n\}$ is $E(X) = \frac{x_1 + x_2 + \ldots + x_n}{n}$. The variance of a discrete uniform random variable $X$ that takes on values in $\{x_1, x_2, \ldots, x_n\}$ is $Var(X) = \frac{1}{n} \sum_{i=1}^n (x_i - E(X))^2$.
 
-\begin{proposition}
-If $X$ has the uniform distribution on the integers $a,\ldots,b$, the p.f. of $X$ is $f\left(x\right)=\begin{cases}
-\frac{1}{b-a+1} & for\,x=a,\ldots,b\\
-0 & otherwise
-\end{cases}$
-\end{proposition}
-\begin{proof}
-\end{proof}
+%
+% Bernoulli Distribution
+%
 
-{\color{red} The uniform distribution on the integers $a, \ldots, b$ represents the outcome of an experiment that is often described by saying that one of the integers $a, \ldots, b$ is chosen at random. A uniform distribution cannot be assigned to an infinite sequence of possible values}
+\subsection{Bernoulli Distribution}
 
+The Bernoulli distribution is one of the simplest and most fundamental probability distributions in probability theory. It models scenarios where there are only two possible outcomes, often termed "success" and "failure."
 
-\subsection{Bernoulli Distributions}
-
-\begin{example}
-A random variable $Z$ that takes only two values $0$ and $1$ with $P\left(Z=1\right)=p$ has the Bernoulli distribution with parameter $p$. We also say that $Z$ is a Bernoulli random variable with parameter $p$.
-\end{example}
-
-\subsection{Binomial Distributions}
-
-\begin{example}
-Suppose we perform $N$ independent trials where each trial either succeeds or fails with probability of success $p$, and let $X$ the random variable defined by the number of successes. The probability of having exactly $n$ successes $P(X=n)$ follows a \emph{binomial distribution} with parameters $N, p$, defined by:
+\begin{definition}
+A random variable $X$ is said to follow a \emph{Bernoulli distribution}\index{Bernoulli distribution} with parameter $p$, with $0 \leq p \leq 1$, if it takes the value 1 (representing "success") with probability $p$ and the value 0 (representing "failure") with probability $1-p$. The probability mass function is given by:
 \[
-f(n\mid N, p) = \binom{N}{n} p^n (1-p)^{(N-n)}
+P(X = x) = 
+\begin{cases} 
+p & \text{if } x = 1, \\
+1 - p & \text{if } x = 0.
+\end{cases}
+\]
+\end{definition}
+
+The Bernoulli distribution arises naturally in many applied problems, especially those involving binary outcomes, in which the parameter $p$ represents the probability of success. For example, in medical studies, the outcome of a treatment can be a success (cure) or a failure (no cure), which can be modeled using a Bernoulli distribution.
+
+The expected value of a Bernoulli random variable $X$ with parameter $p$ is $E(X) = p$. This makes intuitive sense, as the expected value represents the average outcome of many trials, which would tend toward the probability of success. The variance of a Bernoulli random variable is given by $\text{Var}(X) = p(1 - p)$. The variance measures the spread or dispersion of the distribution around the expected value. The product $p(1 - p)$ achieves its maximum value when $p = 0.5$, indicating maximum uncertainty when the probabilities of success and failure are equal.
+
+\begin{definition}
+Let $X_{1}, X_{2}, \ldots$ be a sequence of random variables that follows a Bernoulli distribution with parameter $p$, then it is said that $X_{1}, X_{2}, \ldots$ are \emph{Bernoulli trials}\index{Bernoulli trial} with parameter $p$. An infinite sequence of independent Bernoulli trials is called a \emph{Bernoulli process}\index{Bernoulli process}.
+\end{definition}
+
+The Bernoulli process serves as a foundation for more complex stochastic processes and is used in various applications, such as modeling binary events over time.
+
+%
+% Binomial Distribution
+%
+
+\subsection{Binomial Distribution}
+
+The binomial distribution is a discrete probability distribution that models the number of successes in a fixed number of independent Bernoulli trials, each with the same probability of success. This distribution is widely used in probability theory for various applications involving binary outcomes.
+
+\begin{definition}
+A random variable $X$ is said to follow a \emph{binomial distribution}\index{Binomial distribution} with parameters $n$ and $p$ if it represents the number of successes in $n$ independent Bernoulli trials, each with success probability $p$. The probability mass function is given by:
+\[
+P(X = k) = \binom{n}{k} p^k (1 - p)^{n - k} \quad \text{for } k = 0, 1, 2, \ldots, n.
+\]
+\end{definition}
+
+The parameter $n$ is the number of trials, and $p$ is the probability of success on each trial. The term $\binom{n}{k}$ is the binomial coefficient, representing the number of ways to choose $k$ successes out of $n$ trials.
+
+The binomial distribution arises naturally in many applied problems where the outcomes are binary (success/failure).
+
+\begin{example}
+Suppose a company produces light bulbs, and historically, they know that 95\% of the bulbs they produce are functional (success) and 5\% are defective (failure). The company wants to check the quality of a batch of 20 light bulbs by randomly selecting and testing them. This problem can be modeled using the binomial distribution, where the number of trials is $n = 20$ and the probability of success is $p = 0.95$. For example, the probability of exactly 18 out of 20 light bulbs being functional is:
+\[
+P(X = 18) = \binom{20}{18} (0.95)^{18} (0.05)^2.
 \]
 \end{example}
 
+The expected value of a binomial random variable $X$ with parameters $n$ and $p$ is $E(X) = np$. This represents the average number of successes in $n$ trials. The variance of a binomial random variable is $Var(X) = np(1 - p)$. The variance measures the spread or dispersion of the distribution around the expected value.
+
+%
+% Discrete Normal Distribution
+%
+
+\subsection{Discrete Normal Distribution}
+
+The \textit{normal distribution} is a continuous probability distribution that arises frequently in natural and social sciences due to the Central Limit Theorem (see Theorem \ref{th:central_limit_theorem}). However, many real-world scenarios involve discrete outcomes, such as counts of events or integer-valued random variables. In such cases, we require a discrete analog to the normal distribution. This is not a limitation, since the concept of continuous distributions often arises as a limiting abstraction of inherently discrete processes.
+
+In this section, we introduce the \textit{discrete normal distribution} as the limit of a binomial distribution, which provides an approximation of a normal distribution for integer-valued random variables. We also derive its key properties through formal definitions and propositions.
+
+To define the discrete normal distribution as a limit of the binomial distribution, we have to introduce the concept of normalized version of a random variable.
+
 \begin{definition}
-The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
-{n \choose x}p^{x}\left(1-p\right)^{n-x} & for\,x=0,1,\ldots,n\\
-0 & otherwise
-\end{cases}$
+Let $X$ a discrete random variable with expected value $E(X)$ and variance $Var(X)$. The standardized random variable of $X$, denoted by $Z$, is defined as:
+\[
+Z = \frac{X - E(X)}{\sqrt{Var(X)}}
+\]
 \end{definition}
 
-{\color{red} is called the binomial distribution with parameters $n$ and $p$.}
+This normalization centers the distribution around 0 (the standardized mean) and scales it by the standard deviation. 
 
-{\color{red} Consider a general experiment that consists of observing $n$ independent trials with only two possible results for each trial: success and failure. Then the distribution of the number of trials that result in success will be binomial with parameters $n$ and $p$, where $p$ is the probability of success on each trial.} 
+\begin{example}
+If the random variable $X$ is follows a binomial distribution with parameters $n$ and $p$, it standarized version $Z$ would be given by:
+\[
+Z = \frac{X - np}{\sqrt{np(1-p)}}
+\]
+The probability mass function of $Z$ can be written as:
+\[
+P\left(Z = k\right) = P\left( Z = \frac{k - np}{\sqrt{np(1-p)}} \right) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, \dots, n.
+\]
+\end{example}
+
+The \textit{discrete normal distribution} is defined as the limit of a normalized binomial distribution as $n \to \infty$.
+
+\begin{definition}
+A random variable $X$ is said to follow a \emph{discrete normal distribution}\index{Discrete normal distribution} with expected value 0 and variance 1 if it has the following probability mass function:
+\[
+P(X = k) = \lim_{n \to \infty} P\left( Z_n = \frac{k - np}{\sqrt{np(1-p)}} \right),
+\]
+where $Z_n$ is a normalized binomial variable with parameters $n$ and $p$.
+\end{definition}
+
+This distribution can be thought of as a fundamental model for systems where outcomes are inherently discrete, such as the distribution of counts or events.
+
+In practice, this distribution retains the discreteness of the binomial distribution, while taking on the bell-shaped curve characteristic of the normal distribution. The discrete normal distribution thus captures the essence of the normal distribution while remaining defined on the set of integers.
+
+We approximate the binomial coefficient for large \( n \) using Stirling's approximation. This leads to a distribution that resembles the normal distribution. The probability mass function for the discrete normal distribution \( Z \) can be expressed as:
+\[
+P(Z = x) = \frac{1}{Z} \exp\left(-\frac{x^2}{2\sigma^2}\right),
+\]
+where \( \sigma^2 = np(1-p) \) is the variance, and \( Z \) is a normalizing constant that ensures the total probability sums to 1:
+\[
+Z = \sum_{x \in \mathbb{Z}} \exp\left(-\frac{x^2}{2\sigma^2}\right).
+\]
+
+Thus, the closed formula for the probability mass function of the discrete normal distribution is:
+\[
+P(Z = x) = \frac{\exp\left(-\frac{x^2}{2\sigma^2}\right)}{\sum_{x' \in \mathbb{Z}} \exp\left(-\frac{x'^2}{2\sigma^2}\right)},
+\]
+where the denominator is the normalization factor that sums over all integer values of \( x \).
+
+This formula provides a discrete analog to the continuous normal distribution, preserving the bell-shaped curve while keeping the random variable in the discrete domain.
+
+\begin{proposition}
+The discrete normal distribution is symmetric about its mean $\mu$. Formally, for any integer $k$:
+\[
+P(X = \mu + k) = P(X = \mu - k).
+\]
+\end{proposition}
+\begin{proof}
+The symmetry follows directly from the functional form of the PMF:
+\[
+P(X = \mu + k) = \frac{1}{Z} \exp\left(-\frac{(\mu + k - \mu)^2}{2\sigma^2}\right) = \frac{1}{Z} \exp\left(-\frac{k^2}{2\sigma^2}\right).
+\]
+Similarly,
+\[
+P(X = \mu - k) = \frac{1}{Z} \exp\left(-\frac{(\mu - k - \mu)^2}{2\sigma^2}\right) = \frac{1}{Z} \exp\left(-\frac{k^2}{2\sigma^2}\right).
+\]
+Since both expressions are equal, the distribution is symmetric about $\mu$.
+\end{proof}
+
+
+\begin{proposition}
+As $\sigma$ becomes large, the discrete normal distribution converges to the continuous normal distribution.
+\end{proposition}
+\begin{proof}
+Consider the PMF of the discrete normal distribution:
+\[
+P(X = k) = \frac{1}{Z} \exp\left(-\frac{(k - \mu)^2}{2\sigma^2}\right).
+\]
+As $\sigma \to \infty$, the difference between consecutive integer values $k$ becomes negligible compared to $\sigma$, making the discrete distribution behave like a continuous distribution. Formally, we compare the discrete normal PMF with the probability density function (PDF) of the continuous normal distribution:
+\[
+f(x) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right).
+\]
+For large $\sigma$, the normalization constant $Z$ of the discrete normal distribution approaches $\sqrt{2\pi \sigma^2}$, the normalization constant of the continuous normal distribution, and the PMF of the discrete normal distribution approaches the PDF of the continuous normal distribution evaluated at integer points.
+
+Therefore, in the limit $\sigma \to \infty$, the discrete normal distribution converges to the continuous normal distribution.
+\end{proof}
+
+\begin{example}
+TOD
+\end{example}
+
+The discrete normal distribution serves as a bridge between the discrete and continuous worlds of probability distributions. It retains many of the key properties of the continuous normal distribution, such as symmetry, centrality, and the bell-shaped curve, while accommodating the discrete nature of certain random variables. By defining the distribution formally and studying its properties, we gain a powerful tool for modeling real-world phenomena where outcomes are discrete but exhibit normal-like behavior.
+
+This distribution is especially useful in areas such as manufacturing, education, and epidemiology, where event counts or integer-valued outcomes naturally arise, and where the underlying variability can be captured using a normal-like distribution. The discrete normal distribution allows us to model these scenarios more precisely, ensuring that our probabilistic models align with the real-world structure of the data.
 
 
 %
@@ -1004,73 +1189,132 @@ The discrete distribution represented by the p.f.f $\left(x\right)=\begin{cases}
 \section{Large Random Samples}
 \label{sec:probability_random_samples}
 
-The law of large numbers provides the mathematical foundation to the intuition that the average of a large sample of independent and identically distributed random variables should be close to their mean. The central limit theorem is a practical method that allow us to approximate the probability that the sample average is close to the true mean.
+A random sample is a collection of independent and identically distributed random variables. Random samples are fundamental in probability theory, providing a basis for making inferences about an unknown probability distribution. Two key results that arise from random samples are the law of large numbers, which ensures that the sample mean converges to the expected value of the distribution as the sample size increases, and the central limit theorem, which states that the distribution of the sample mean approaches a normal distribution as the sample size becomes large, regardless of the original population's distribution.
 
-{\color{red} Write a more elaborated introduction to the section.}
+% Random Samples
+
+\subsection{Random Samples}
+
+The concept of a random sample is pivotal in the field of statistical learning, as assuming a set of random variables constitutes a random sample greatly simplifies the mathematical underpinnings of inferential methods. Nevertheless, the criteria for a collection of variables to be considered a random sample are not always met in real-world scenarios.
+
+\begin{definition}
+Let $f$ be a probability mass function, and let $X_1, X_2, \ldots, X_n$ a collection of random variables.  The variables $X_1, X_2, \ldots, X_n$ form a \emph{random sample}\index{Random sample} from the distribution $f$ if each random variable $X_i$ follows the probability mass function $f$, and the variables $X_1, X_2, \ldots, X_n$ are independent of each other. These random variables are also referred to as \emph{independent and identically distributed or i.i.d.}\index{Independent and identically distributed}. The number $n$ of random variables is referred to as the \emph{sample size}\index{Sample size}.
+\end{definition}
+
+The joint distribution $g$ of a random sample $X_1, X_2, \ldots, X_n$ is given by:
+\[
+g \left( x_1, x_2, \ldots, x_n \right) = f \left( x_1 \right) f \left( x_2 \right) \ldots f \left( x_n \right)
+\]
+
+\begin{example}
+A factory produces light bulbs, and the quality control department is interested in determining the proportion of defective bulbs. The number of defective bulbs in a batch of 100 bulbs is modeled using a binomial distribution, where each bulb has a probability $p$ of being defective. The department randomly selects 5 batches, each containing 100 bulbs each. Let the random variables $X_1, X_2, X_3, X_4, X_5$ represent the number of defective bulbs in each of these 5 batches. Each $X_i$ follows the binomial distribution \( \text{Binomial}(100, p) \). The random variables $X_1, X_2, X_3, X_4, X_5$ are independent and identically distributed, and so, they form a random variable.
+\end{example}
+
+In the area of statistical inference, it is also highly convenient to compute the sample mean, as the average of $n$ random variables.
+\begin{definition}
+Let $X_1, X_2, \ldots, X_n$ be $n$ random variables. The \emph{sample mean}\index{Sample mean} of $X_1, X_2, \ldots, X_n$, denoted by $\bar{X}_n$, is defined as:
+\[
+\bar{X}_n = \frac{1}{n} \sum_{i=1}^n X_i
+\]
+\end{definition}
+
+Do not confuse $\frac{1}{n} \left( X_1 + X_2 + \ldots + X_n \right)$, which is a random variable\footnote{recall that with $X_1 + \ldots + X_n$ we are defining a new random variable over the cartesian product of the original sample spaces, not adding $n$ probability distributions} with the expected value $E \left( X_1 + X_2 + \ldots + X_n \right)$, which is a real number.
+
+As we will show in the next proposition, the concept of sample mean is particurlarly relevant for the case of $X_1, X_2, \ldots, X_n$ being a random sample.
+
+\begin{proposition}\label{prop:sample_mean}
+Let $X_1, \ldots, X_n$ be a random sample with finite mean $E \left( X_i \right) = \mu$ and finite variance $Var \left( X_i \right) = \sigma^2$, and let $\overline {X}_n = \frac {1}{n} \left( X_1 + \ldots + X_n \right)$ be the sample mean. Then we have that $E\left(\bar{X}_{n}\right)=E(X)$ and that $Var\left(\bar{X}_{n}\right)=Var(X)/n$.
+\end{proposition}
+\begin{proof}
+Using the linearity of expectation, we have:
+\[
+E\left(\overline{X}_n\right) = E\left(\frac{1}{n} \sum_{i=1}^{n} X_i\right) = \frac{1}{n} \sum_{i=1}^{n} E(X_i) = \frac{1}{n} \cdot n \cdot \mu = \mu
+\]
+Using the properties of variance and the fact that the \(X_i\) are independent, we have:
+\[
+Var\left(\overline{X}_n\right) = Var\left(\frac{1}{n} \sum_{i=1}^{n} X_i\right)
+\]
+Since variance is homogeneous of degree 2, we can factor out the constant \( \frac{1}{n} \):
+\[
+Var\left(\overline{X}_n\right) = \frac{1}{n^2} Var\left(\sum_{i=1}^{n} X_i\right)
+\]
+For independent random variables, the variance of the sum is the sum of the variances:
+\[
+Var\left(\sum_{i=1}^{n} X_i\right) = \sum_{i=1}^{n} Var(X_i) = n \cdot \sigma^2
+\]
+Thus:
+\[
+Var\left(\overline{X}_n\right) = \frac{1}{n^2} \cdot n \cdot \sigma^2 = \frac{\sigma^2}{n}
+\]
+\end{proof}
+
+The probability distribution of $\bar{X}_n$ will be more concentrated arount the mean value $\mu$ that was the original distribution. 
 
 % Law of Large Numbers
 
 \subsection{Law of Large Numbers}
 
-The \emph{law of large numbers} is a theorem that states that the average of a large sample of independent and identically distributed random variables should be close to their mean, and that the more variables we add, the closer will be to that value. In practice, the law of large numbers allow us to describe the expected value of performing the same experiment a large number of times.
+The law of large numbers is a theorem that states that the sample mean of a large random sample, i.e. a large number of independent and identically distributed random variables, should be close to the expected value of the random variables, and that the more variables we add, the closer will be to that value. Before to prove this important theorem we have to prove two other related propostions: Markov's inequality and Chebyshev's inequality.
 
-In this section we are going to prove the weak version of law of large numbers. {\color{red} Explain the difference between the weak and the strong versions of the law.}
+Markov's inequality provides a simple way to measure how unlikely it is for a random variable to take on large values, given its expected value. It leverages the fact that if the average value of random variable $X$ is small, then it is improbable for $X$ to take on a large value (recall Example \ref{ex:expected_salary}). Markov's inequality is particularly useful because it makes no assumptions about the distribution of the random variable, apart from it being non-negative and having a finite expected value.
 
-Before to prove the law of large numbers we need to prove two other related propostions: Markov's inequality and Chebyshev's inequality. Markov's inequality puts a bound on how much arbitrarily large can be the values of a nonnegative random variable given its mean. 
-
-\begin{proposition}[Markov's Inequality]
-Let $X$ be a nonnegative random variable, i.e. $P\left( X \geq 0 \right) = 1$ with mean $\mu$. Then for every real number $t>0$ we have that 
+\begin{proposition}[Markov's Inequality]\index{Markov's Inequality}
+Let $X$ be a nonnegative random variable, i.e. $P\left( X \geq 0 \right) = 1$, with expected value $E(X)$. Then for every real number $t>0$ we have that 
 \[
-P \left( X \geq t \right) \leq \frac{\mu}{t}
+P \left( X \geq t \right) \leq \frac{E(X)}{t}
 \]
 \end{proposition}
 \begin{proof}
-Let $f$ be the probability mass function of $X$. The mean $\mu$ of $X$ is given by $\mu = \sum_{x} x f \left( x \right)$, but since $X$ is non-negative we have that $\mu = \sum_{x>0} x f \left( x \right)$. Then
-% \begin{multline}
+Let $f$ be the probability mass function of $X$. Since $X$ is non-negative we have that $E(X) = \sum_{x>0} x f \left( x \right)$. Then
 \[
-\mu = \sum_{x>0} x f \left( x \right) = \sum_{x=0}^{t} x f \left( x \right) + \sum_{x=t}^{\infty} x f \left( x \right) \geq
+E(X) = \sum_{x>0} x f \left( x \right) = \sum_{x=0}^{t} x f \left( x \right) + \sum_{x=t}^{\infty} x f \left( x \right) \geq
 \sum_{x=t}^{\infty} x f \left( x \right) \geq \sum_{x=t}^{\infty} t f \left( x \right) = t \sum_{x=t}^{\infty} f \left( x \right) =
 t P \left( X \geq t \right)
 \]
-% \end{multline}
-that is, $\mu \geq t P \left( X \geq t \right)$.
+that is, $E(X) \geq t P \left( X \geq t \right)$.
 \end{proof}
 
-Chebyshev's inequality uses the variance to bound on how much arbitrarily large can be the values of the random variable given its mean. Chebyshev's inequality does not require the random variable to be nonnegative.
+For example, if the expected value of a random variable $X$ is $10$, and we are interested in the probability that $X$ is at least $50$, Markov's inequality tells us that $P(X \geq 50) \leq 10/50 = 0.2$. While Markov's inequality is very general and easy to use, it is often not tight (i.e., the bound is not very close to the true probability). This is because it does not use any other information about the distribution of $X$ other than its expectation.
 
-\begin{corollary}[Chebyshev's inequality]
- Let $X$ be a random variable with mean $\mu$ and variance $\sigma^2$. Then for every real number $t > 0$ we have that
+Chebyshev's inequality provides a bound on the probability that a random variable deviates from its expected value by more than a specified number of standard deviations. Unlike Markov's inequality, which only requires non-negativity, Chebyshev's inequality does not require the random variable to be nonnegative, but it requires knowledge of both the mean and variance of the random variable. The inequality is applicable to any random variable with a finite mean and variance, regardless of the specific distribution.
+
+\begin{corollary}[Chebyshev's inequality]\index{Chebyshev's inequality}
+ Let $X$ be a random variable with expected value $E(X)$ and variance $Var(X)$. Then for every real number $t > 0$ we have that
 \[
-P \left( \left| X - \mu \right| \geq t \right) \leq \frac{\sigma^2}{t^2}
+P \left( \left| X - E(X) \right| \geq t \right) \leq \frac{var(X)}{t^2}
 \]
 \end{corollary}
 \begin{proof}
 Applying Markov's inequality we have that
 \[
-P \left( \left| X - \mu \right| \geq t \right) = P \left( \left( X - \mu \right)^2 \geq t^2 \right) \leq \frac{E \left( \left( X - \mu \right)^2 \right)}{t^2} = \frac{\sigma^2}{t^2}
+P \left( \left| X - E(X) \right| \geq t \right) = P \left( \left( X - E(X) \right)^2 \geq t^2 \right) \leq \frac{E \left( \left( X - E(X) \right)^2 \right)}{t^2} = \frac{var(X)}{t^2}
 \]
 \end{proof}
 
-The last element we need to formally prove the law of large numbers is to introduce the concept of convergence in probability for random variables. A sequence of random variables converges in probability to a value $b$ if $X_n$ lies in all the intervals around $b$.
+Chebyshev's inequality provides insight into the concentration of a random variable around its mean. It quantifies the idea that most of the probability mass of a random variable lies within a certain range of its mean, with fewer values appearing further away. This concept is particularly useful in understanding the spread of a distribution and the likelihood of large deviations.
+
+The last element we need to formally prove the law of large numbers is to introduce the concept of convergence in probability for random variables. Intuitively, a sequence of random variables converges in probability to a value $b$ if $X_n$ lies around $b$.
 
 \begin{definition}
-Let $X_{1}, X_{2}, \ldots$ be a sequence  of random variables. It is said that the sequence $X_{1}, X_{2}, \ldots$ \emph{converges in probability} to $b$ , denoted by $X_{n} \overset{p}{\rightarrow}b$, if for every positive real number $\varepsilon>0$ we have that
+Let $X_{1}, X_{2}, \ldots$ be a sequence  of random variables. It is said that the sequence $X_{1}, X_{2}, \ldots$ \emph{converges in probability}\index{Convergence in probability} to $b$ , denoted by $X_{n} \overset{p}{\rightarrow}b$, if for every positive real number $\varepsilon>0$ we have that
 \[
 \lim_{n \rightarrow \infty} P \left( \left| X_{n} - b \right| < \varepsilon \right) = 1
 \]
 \end{definition}
 
-Given the above definitions and partial results, we can now formally introduce and proove the law of large numbers.
+Convergence in probability essentially means that as the sequence progresses (i.e., as $n$ increases), the random variables $X_n$ become arbitrarily close to the number $b$ with high probability. The distance between $X_n$ and $b$ can be made as small as desired, and the likelihood of $X_n$ being far from $b$ diminishes as $n$ increases.
 
-\begin{theorem}[Law of Large Numbers]
+Given the above definitions and partial results, we can now formally introduce and prove the law of large numbers.
+
+\begin{theorem}[Law of Large Numbers]\index{Law of Large Numbers}
 \label{th:law_large_numbers}
-Let $X_1, \ldots, X_n$ be a random sample with finite mean $E \left( X_i \right) = \mu <\infty$ for all $i$ and finite variance $Var \left( X_i \right) = \sigma^2 <\infty$ for all $i$, and let $\overline {X}_n = \frac {1}{n} \left( X_1 + \ldots + X_n \right)$ be the sample mean. Then we have that
+Let $X_1, \ldots, X_n$ be a random sample with finite expected value and finite variance, and let $\overline {X}_n = \frac {1}{n} \left( X_1 + \ldots + X_n \right)$ be the sample mean. Then we have that
 \[
-X_n \overset{p}{\rightarrow} \mu
+\overline {X}_n \overset{p}{\rightarrow} \mu
 \]
 \end{theorem}
 \begin{proof}
-Since the variables $X_1, \ldots, X_n$ are independent and identically distributed, we have that the variance of the sample mean is $Var \left( \overline {X}_n \right) = \frac{\sigma^2}{n}$ and that the mean is $E \left( \overline {X}_n \right) = \mu$ (see XX). Applying the Chebyshev's inequality to the random variable $\overline {X}_n$ we have that
+Since the variables $X_1, \ldots, X_n$ are independent and identically distributed, we have that the variance of the sample mean is $Var \left( \overline {X}_n \right) = \frac{\sigma^2}{n}$ and that the mean is $E \left( \overline {X}_n \right) = \mu$ (see Proposition \ref{prop:sample_mean}). Applying the Chebyshev's inequality to the random variable $\overline {X}_n$ we have that
 \[
 P \left( \left| \overline {X}_n- \mu \right| \geq \varepsilon \right) \leq \frac{\sigma ^2}{n \varepsilon^2}.
 \]
@@ -1086,7 +1330,94 @@ As n approaches infinity, the above expression approaches 1. Aplying the definit
 
 It is very important to note that the law of large numbers only works in case that the random variables are independent and identicaly distributed. Also, that the law is true only in the limit. If we have a finite number of random variables, the sample mean will be close to the distribution mean, but not necesarily equal.
 
-Also it is important to mention that the law refers to the average of the sample mean, that is, $\sum_{i=1}^{n} \frac {X_{i}}{n}$ and it is not necesarily true for other formulas, like for example, the deviation from the theoretical values $\sum_{i=1}^{n} X_{i} - n \times \overline {X}$ which not only it does not convers, but that it inscrases in absolute value as $n$ increases (see Example \ref{ex:gambler's_fallacy}).
+Let's see an example of the use of the law of large numbers in practice.
+
+\begin{example}
+Consider the experiment of rolling a fair six-sided die $\Omega = \{1, 2, 3, 4, 5, 6\}$, being each side equally probable with $P(\omega)=1/6$ for $\omega \in \Omega$. Let $X:\Omega \rightarrow \mathbb{R}$ be a random variable that maps each side of the die with the number depicted on it. The probability mass function $f: range(X) \rightarrow [0, 1]$ of $X$ assigns $1/6$ to each value of $range(X)$. The expected value of $X$ is $E(X) = 3.5$.
+
+Let's consider a random sample of size two, that is, trowing two dice (one after the other, so they are distinguishible), and call the corresponding random variables $X_1$ and $X_2$. The sample mean would be the random variable $\frac{X_1 + X_2}{2}: \Omega \times \Omega \rightarrow \mathbb{R}$ that maps each pair $(\omega_1, \omega_2) \in \Omega \times \Omega$ to the real value $X_1(\omega_1) + X_2(\omega_2) / 2$. 
+
+The law of large numbers proposes to study the random variable $\frac{X_1 + X_2}{2} - E(X): \Omega \times \Omega \rightarrow \mathbb{R}$, whose probability mass function is depicted in Figure \ref{fig:law_large_numbers_1}. And lets, for example, compute the probability $P(  |\frac{X_1 + X_2}{2} - E(X)| < 1 )$ which is $0.444$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        bar width=12pt,
+        ymin=0,
+        xlabel={Random Variable},
+        ylabel={Probability},
+        xtick={-2.5,-2,...,2.5},
+        xticklabel style={font=\footnotesize},
+        yticklabel style={font=\footnotesize, /pgf/number format/fixed},
+        xlabel style={font=\footnotesize},
+        ylabel style={font=\footnotesize},
+        xticklabel style={/pgf/number format/fixed},
+        enlargelimits=0.15,
+        ymajorgrids=true,
+        grid style=dashed
+    ]
+    \addplot[fill={rgb,255:red,243;green,102;blue,25}] coordinates {
+        (-2.5, 0.0278)
+        (-2.0, 0.0556)
+        (-1.5, 0.0833)
+        (-1.0, 0.1111)
+        (-0.5, 0.1389)
+        (0.0, 0.1667)
+        (0.5, 0.1389)
+        (1.0, 0.1111)
+        (1.5, 0.0833)
+        (2.0, 0.0556)
+        (2.5, 0.0278)
+    };
+    \end{axis}
+\end{tikzpicture}
+\caption{\label{fig:law_large_numbers_1}Probability mass function of the random variable $\frac{X_1 + X_2 }{2} - \mathbb{E}(X)$.}
+\end{figure}
+
+Now let's consider a random sample of size ten. In Figure \ref{fig:law_large_numbers_2} is depicted the probability mass function of the random variable $\frac{X_1 + X_2 + \ldots +  X_{10}}{10} - E(X): \Omega \times \ldots \times \Omega \rightarrow \mathbb{R}$. The probability $P(  |\frac{X_1 + X_2 + \ldots +  X_{10}}{10} - E(X)| < 1 )$ is $0.973$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        bar width=10pt,
+        ymin=0,
+        xlabel={Random Variable},
+        ylabel={Probability},
+        xtick={-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5},
+        xticklabel style={font=\footnotesize},
+        yticklabel style={font=\footnotesize},
+        xlabel style={font=\footnotesize},
+        ylabel style={font=\footnotesize},
+        xticklabel style={/pgf/number format/fixed},
+        enlargelimits=0.15,
+        ymajorgrids=true,
+        grid style=dashed
+    ]
+    \addplot[fill={rgb,255:red,243;green,102;blue,25}] coordinates {
+        (-2.5, 0.0010)
+        (-2.0, 0.0100)
+        (-1.5, 0.0400)
+        (-1.0, 0.1200)
+        (-0.5, 0.2100)
+        (0.0, 0.2380)
+        (0.5, 0.2100)
+        (1.0, 0.1200)
+        (1.5, 0.0400)
+        (2.0, 0.0100)
+        (2.5, 0.0010)
+    };
+    \end{axis}
+\end{tikzpicture}
+\caption{\label{fig:law_large_numbers_2}Probability mass function of the random variable $\frac{X_1 + X_2 + \ldots +  X_{10}}{10} - E(X)$.}
+\end{figure}
+
+\end{example}
+
+It is important to clarify that the law of large numbers refers to the sample mean, that is $\frac {1}{n} \sum_{i=1}^{n} X_{i}$, and it is not necesarily true for other formulas, like for example, the deviation from the theoretical expected value $\sum_{i=1}^{n} X_{i} - n \times E(X)$ which not only it does not converge, but inscreases in absolute value as $n$ increases (see Example \ref{ex:gambler's_fallacy}).
 
 \begin{example}
 \label{ex:gambler's_fallacy}
@@ -1100,6 +1431,7 @@ If we toss a fair coin, the probability that the outcome will be head is equal t
 Let $X_1, \ldots, X_n$ be a sample of $n$ independent and identically distributed random variables with mean $\mu$ and variance $\sigma^2$. As we saw in the previous section, the law of large numbers states that the sample average $\overline {X}_n$ converges in probability to $\mu$ as $n$ increases. The central limit theorem states that the distribution of the difference between the sample average $\overline {X}_n$ and the population mean $\mu$, when multiplied by the factor $\sqrt {n}$ approximates to the normal distribution with mean $0$ and variance $\sigma^2 / n$. The theorem is true regardless of the shape of the original random vairables.
 
 \begin{theorem}[Central Limit Theorem]
+\label{th:central_limit_theorem}
 Let $X_{1}, \ldots, X_{n}$ be a random sample of size $n$ from a distribution with mean $\mu$ and a finite variance $\sigma^{2}$. Then  for each fixed number $\varepsilon > 0$ we have that
 \[
 \lim_{n \rightarrow \infty} Pr \left( \frac{\overline{X}_{n}-\mu}{\sigma/n^{1/2}} \leq \varepsilon \right) = \Phi \left( x \right)

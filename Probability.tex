@@ -9,21 +9,22 @@
 
 \begin{quote}
 \begin{flushright}
-\emph{Inference from data is nothing other than the revision of an opinion\\
-in the light of relevant new information.}\\
-Thomas Bayes
+\emph{The purpose of models is not to fit the data\\
+but to sharpen the questions.}\\
+Samuel Karlin
 \end{flushright}
 \end{quote}
 \bigskip
 
-Probability theory is the branch of mathematics that studies random experiments and random phenomena. Probability assigns a numerical description to all the possible outcomes of an experiment, according to how likely is that these outcomes will occur. Even if the outcome of an experiment cannot be determined in advance, we can study its properties with probability theory and come to relevant results and conclusions. For example, we cannot predict the next number that will appear in a lottery game, but probability theory can help us to understand why it is not a good strategy to spend all our savings on lottery tickets with the goal of becoming rich.
+Probability theory is the branch of mathematics that studies random experiments and random phenomena. Probability assigns a numerical description to all the possible outcomes of an experiment based on how likely these outcomes are to occur. Even if the outcome of an experiment cannot be determined in advance, we can study its properties with probability theory and draw relevant results and conclusions. For example, while we cannot predict the next number that will appear in a lottery game, probability theory can help us understand why it is not a good strategy to spend all our savings on lottery tickets with the goal of becoming rich.
 
-Probability theory provides the mathematical foundations for statistical inference, one of the most relevant aproaches we have today for gathering knowledge based on the analysis of the results of carefully designed experiments. Probability theory also provides the foundation of machine learning, that is, the analysis of large volumes of data to derive intelligent algorithms.
+The importance of probability theory extends far beyond games of chance. It provides the mathematical foundation for statistical inference, enabling us to draw conclusions from data, and for machine learning, where it underpins algorithms used for classification and forecasting based on large datasets. Additionally, probability theory plays a crucial role in fields such as finance, risk management, and the natural sciences, where understanding uncertainty and variability is essential.
 
-In this chapter we are going to focus in the area of discrete probability. In this version of the theory, the possible outcomes of an event are finite, or at most, countably infinite. We are interested in the area of discrete probability, first because its applications in practice to the area of learning from data, and second, because discrete probability has some very interesting connections to theories used in this book: the length of optimal codes, the probability that a random machine will halt, and the derivation of universal distributions based on Kolmogorov complexity. All of these connections are relevant in our theory of nescience. We are going to study probability theory from a formal, axiomatic, point of view. We will start by formulating a very basic collection of fundamental axioms, and then we will derive the major results and properties from them. 
+In this chapter, we are going to focus on the area of discrete probability. In this version of the theory, the possible outcomes of an event are finite or, at most, countably infinite. We are interested in discrete probability, first because of its practical applications in the area of learning from data, and second, because discrete probability has some very interesting connections to theories used in this book: the length of optimal codes, the probability that a random machine will halt, and the derivation of universal distributions based on Kolmogorov complexity. All of these connections are relevant to our theory of nescience.
 
-This chapter is an of probability theory. We will cover only the most important techniques and results. The contents have been selected based on their applicability to the theory of nescience. For example, moment generating functions are not covered. For a more comprehensive introduction to probability theory, see the References section at the end of the Chapter.
+We will cover only the most important concepts and results of probability theory. The contents have been selected based on their applicability to the theory of nescience. For example, moment-generating functions are not covered. For a more comprehensive introduction to probability theory, see the References section at the end of the chapter.
 
+We are going to study probability theory from a formal, axiomatic point of view. We will start by formulating a basic collection of fundamental axioms and then derive the major results and properties from them. Axioms are crucial in mathematical theory because they provide the foundation for constructing a consistent, universal, and rigorous framework. In probability theory, they allow us to define and manipulate the elusive concept of probability in a way that is both precise and broadly applicable.
 
 %
 % Section: Foundations of Probability Theory
@@ -34,13 +35,13 @@ This chapter is an of probability theory. We will cover only the most important 
 
 The concept of \emph{probability} represents a profound intellectual challenge. Let us consider an instance where a dice is rolled and the objective is to compute the probability of an even number being the outcome. The dice comprises six distinct outcomes, and given that half of these are even numbers, we posit that the probability of yielding an even number is $3/6$ or equivalently $1/2$. This embodies the \emph{classical interpretation}\index{Classical interpretation of probability} of probability which asserts that in an experiment where all finite potential outcomes possess an equal likelihood of occurrence, the probability of an event equates to the count of favorable instances over the total number of instances. This interpretation, however, confronts the issue of circularity in its definition as "equally likely" essentially amounts to "possessing the same probability". An alternative method for probability assignment might be the implementation of the \emph{principle of indifference}\index{Principle of indifference}, which postulates that in the absence of any relevant evidence, all potential outcomes should possess identical probability. This principle, however, encounters a predicament when there exists evidence that contradicts the presumption of equivalence amongst all outcomes. For instance, how should probability be assigned when knowledge of a loaded dice suggests that not all sides possess an equal likelihood of occurrence?
 
-The \emph{frequentist interpretation}\index{Frequentist interpretation of probability} of probability posits that one should roll the dice multiple times and contrast the frequency of even numbers with the total number of rolls. The fundamental notion is to execute the experiments repeatedly under similar conditions and assign the relative frequency of each outcome as its probability. This interpretation, however, faces two primary limitations. Firstly, the definition of repeating an experiment under "similar conditions" remains vague; if the conditions were truly identical, the results across all trials would invariably be the same. Secondly, the notion of a "large number of times" is undefined (technically, the experiment should be executed an infinite number of times). From a practical standpoint, implementing the frequentist interpretation is fraught with challenges. Some experiments, such as predicting the probability of a candidate winning an election, cannot be repeated numerous times. Furthermore, probability is defined in the context of a sequence of experiments, hence precluding the computation of the probability of a solitary outcome. Lastly, this interpretation necessitates the existence of a relative frequency limit, a condition which is not always satisfied, as illustrated by financial time series.
+The \emph{frequentist interpretation}\index{Frequentist interpretation of probability} of probability posits that one should roll the dice multiple times and contrast the frequency of even numbers with the total number of rolls. The fundamental notion is to execute the experiments repeatedly under similar conditions and assign the relative frequency of each outcome as its probability. This interpretation, however, faces two primary limitations. Firstly, the definition of repeating an experiment under "similar conditions" remains vague; if the conditions were truly identical, the results across all trials would invariably be the same. Secondly, the notion of a "large number of times" is undefined (technically, the experiment should be executed an infinite number of times). From a practical standpoint, implementing the frequentist interpretation is fraught with challenges. Some experiments, such as predicting the probability of a candidate winning an election, cannot be repeated multiple times. Furthermore, probability is defined in the context of a sequence of experiments, hence precluding the computation of the probability of a solitary outcome. Lastly, this interpretation necessitates the existence of a relative frequency limit, a condition which is not always satisfied, as illustrated by financial time series.
 
 The \emph{subjective interpretation}\index{Subjective interpretation of probability}, representing a third approach to the concept of probability, suggests assigning probabilities to each event that reflect our degree of belief: the higher our conviction in the event's occurrence, the greater its assigned probability. However, it's important to note that not all potential probability allocations are viable; certain coherence rules need to be satisfied. For instance, when placing bets on the outcome of a dice roll, an assignment of probabilities that ensures a complete loss of money - a scenario known as a \emph{dutch book}\index{Dutch book} - would contravene the conditions of the subjective interpretation. It transpires that the conditions both necessary and sufficient to ensure a fair bet align with the axioms of probability introduced subsequently. Hence, we are free to assign any probabilities we desire to events, provided they remain consistent with the axioms of probability. A key drawback of the subjective interpretation is the inherent variability in individuals' degrees of belief. The \emph{Bayesian interpretation}\index{Bayesian interpretation of probability} of probability offers a solution: we commence with a provisional assignment of probabilities and, upon accruing further evidence, adjust our degree of belief or probability accordingly. With the accumulation of more evidence, estimated probabilities will converge to the true probabilities. Regardless, the task of assigning probabilities to an infinite number of events is typically unattainable for humans in general.
 
-Currently, the notion of probability is defined axiomatically via the \emph{axiomatic interpretation}\index{Axiomatic interpretation of probability}. This implies that we abandon attempts to explicitly define probability and instead accept some of its properties as inherently true. Intuitively, a probability should be a value between $0$ and $1$, wherein an event with a zero probability is deemed impossible, and an event with a probability of one is certain to occur. Additional properties are required of probabilities. For instance, should two events $A$ and $B$ with probabilities $P \left( A \right)$ and $P \left( B \right)$ respectively, be disjoint, the probability of either $A$ or $B$ occurring should be $P \left( A \right) + P \left( B \right)$. If $A$ and $B$ could occur simultaneously and are independent (however that is defined), the probability of both events occurring concurrently should be $P \left( A \right) P \left( B \right)$. Moreover, the probability of $A$ occurring given that $B$ has already happened should be the fraction of the probability of $A$ that intersects with $B$. Thus, anything that satisfies these properties could be considered a probability. The issue with the axiomatic interpretation is that an abundance of constructs meet these requirements, including physical quantities such as normalized mass or normalized volume.
+Currently, the notion of probability is defined axiomatically via the \emph{axiomatic interpretation}\index{Axiomatic interpretation of probability}. This implies that we abandon attempts to explicitly define the concept of probability and instead accept some of its properties as inherently true. Intuitively, a probability should be a value between $0$ and $1$, wherein an event with a zero probability is deemed impossible, and an event with a probability of one is certain to occur. Additional properties are required of probabilities. For instance, should two events $A$ and $B$ with probabilities $P \left( A \right)$ and $P \left( B \right)$ respectively, be disjoint, the probability of either $A$ or $B$ occurring should be $P \left( A \right) + P \left( B \right)$. If $A$ and $B$ could occur simultaneously and are independent (however that is defined), the probability of both events occurring concurrently should be $P \left( A \right) P \left( B \right)$. Moreover, the probability of $A$ occurring given that $B$ has already happened should be the fraction of the probability of $A$ that intersects with $B$. Anything that satisfies these properties could be considered a probability.
 
-Probability theory is fundamentally concerned with the task of assigning a numerical value to specific events drawn from a sample space. The term "event" in this context may be somewhat misleading, as it intimates the occurrence of something, which is not always applicable. For instance, consider the sample space of all possible outcomes when tossing a fair coin. A subset of this sample space could be the empty set, which represents no coin toss happening at all. In the conventional understanding of an "event", this scenario is rather counterintuitive, as it does not correspond to something "happening". Nonetheless, for the sake of clarity, we will continue to employ the term "events" to designate what essentially are subsets.
+Probability theory is fundamentally concerned with the task of assigning a numerical value to specific events drawn from a sample space. The term "event" in this context may be somewhat counterintuitive, as it suggest the occurrence of something, which is not always applicable. For instance, consider the sample space of all possible outcomes when tossing a fair coin. A subset of this sample space could be the empty set, which represents no coin toss happening at all. In the conventional understanding of an "event", this scenario may confuse people who aren’t familiar with the mathematical meaning, as it does not correspond to something "happening". Nonetheless, for the sake of clarity, we will continue to employ the term "events" to designate what essentially are subsets.
 
 \begin{definition}
 Given $\left( \Omega, \mathcal{A} \right)$ as a field over a non-empty discrete set, $\Omega$ is referred to as the \emph{sample space}\index{Sample space}, its constituents are termed \emph{outcomes}\index{Outcome}, and the components of $\mathcal{A}$ are referred to as \emph{events}\index{Event}. Specifically, $\Omega$ is designated the \emph{certain event}\index{Certain event}, while the empty set $\varnothing$ is deemed the \emph{impossible event}\index{Impossible event}.
@@ -48,9 +49,9 @@ Given $\left( \Omega, \mathcal{A} \right)$ as a field over a non-empty discrete 
 
 As previously discussed in Section \ref{sec:sets}, given that $\left( \Omega, \mathcal{A} \right)$ is a field, we can deduce that $\Omega \in \mathcal{A}$ and that $\varnothing \in \mathcal{A}$. Additionally, the union of a finite collection of events constitutes an event $A_1 \cup A_2 \cup \ldots \cup A_n \in \mathcal{A}$, and the intersection of a finite collection of events is likewise deemed an event $A_1 \cap A_2 \cap \ldots \cap A_n \in \mathcal{A}$.
 
-As alluded to in the introduction of this chapter, our principal interest lies in discrete mathematics, and hence, we will largely focus on probabilities pertaining to discrete sets (be they finite or countably infinite). An extension of the concept of probability to continuous sets would necessitate the utilization of $\sigma$-algebras\index{$\sigma$-algebra} of sets instead of fields and the application of measure theory. For example, consider a sample space representing the possible outcomes of a roll of a continuous, rather than discrete, die. Instead of the discrete outcomes 1, 2, 3, 4, 5, and 6, we might have any real number between 1 and 6. In this case, it doesn't make sense to talk about the probability of the outcome being exactly 2.5 (or any other specific real number), as there are infinitely many possible outcomes. Instead, we would talk about the probability of the outcome being in a certain interval, such as between 2 and 3.
+As alluded to in the introduction of this chapter, our principal interest lies in discrete mathematics, and hence, we will largely focus on probabilities pertaining to discrete sets (be they finite or countably infinite). An extension of the concept of probability to continuous sets would necessitate the utilization of $\sigma$-algebras\index{$\sigma$-algebra} of sets instead of fields and the application of measure theory. For example, consider a scenario where we measure the electric current in a circuit, which can take any value between -5 and 5 volts. Unlike a discrete set of outcomes, such as specific whole numbers, here we have infinitely many possible values within this interval. In this case, it doesn't make sense to talk about the probability of the current being exactly 2.5 volts (or any other specific real number), as there are infinitely many possible outcomes. Instead, we would talk about the probability of the current falling within a certain range, such as between 2 and 3 volts.
 
-The prevailing axiomatization utilized in the realm of probability theory is encapsulated within the framework of the \emph{Kolmogorov axioms}.
+The prevailing axiomatization utilized in the realm of probability theory is encapsulated within the framework of the \emph{Kolmogorov axioms}\footnote{In discrete probability theory, the sample space consists of a finite or countably infinite set of distinct outcomes, which means events are typically composed of individual, separable outcomes. Since probabilities are assigned directly to these discrete events, only finite unions of disjoint events need to be considered in Axiom 3 to cover all practical cases.}.
 
 \begin{definition} (\emph{Kolmogorov's Axioms})\index{Kolmogorov's axioms}\label{Kolmogorov_axioms}
 A \emph{probability}\index{Probability} is a real number $P(A) \in \mathbb{R}$ allocated to each event $A \in \mathcal{A}$ in the field $\left( \Omega, \mathcal{A} \right)$. This allocation adheres to the following axioms:
@@ -66,7 +67,7 @@ A \emph{probability}\index{Probability} is a real number $P(A) \in \mathbb{R}$ a
 The triplet $\left( \Omega, \mathcal{A}, P \right)$ constitutes what is known as a \emph{probability space}\index{Probability space}.
 \end{definition}
 
-Despite their significance, the Kolmogorov axioms encounter certain complexities. One challenge is that they are incompatible with the reduction to first-order logic, as elaborated in Appendix \ref{apx:foundations_mathematics}. This incompatibility arises due to the fact that real numbers, to which probabilities are assigned, are not describable within the ambit of first-order logic. Furthermore, the axioms do not provide explicit guidance on the assignment of probabilities to events. Essentially, they set out the foundational principles that probabilities must conform to but do not dictate the process of how these probabilities should be determined.
+Despite their significance, the Kolmogorov axioms encounter certain complexities. While they provide the foundational principles that probabilities must conform to, such as non-negativity, normalization, and additivity, they do not offer explicit guidance on how to assign probabilities to specific events. Essentially, the axioms define the rules that probability must follow but leave the determination of those probabilities open. This stems from the fact that Kolmogorov's axioms are highly general and abstract, designed to apply to any measure-theoretic structure. This level of generality means they can accommodate a wide range of constructs beyond probability, such as normalized mass, volume, or other physical quantities. Finally, the connection between model theory (as discussed in Appendix \ref{apx:foundations_mathematics}) and probability theory through the Kolmogorov axioms is not straightforward. Model theory primarily deals with first-order logic, which can express basic properties like non-negativity and finite additivity of sets. However, when it comes to formally defining a continuous quantity, such as probability as a real number, it fails because first-order logic cannot fully capture the complexity of real numbers and continuous structures.
 
 \begin{example}
 \label{ex:discrete_sample_space}
@@ -91,16 +92,7 @@ The probability of the impossible event equals zero, that is, $P \left( \varnoth
 Since $P \left( \varnothing \right) = 1 - P \left( \Omega \right) = 0$.
 \end{proof}
 
-As it was expected, sub-events (subsets) have smaller probabilities than events.
-
-\begin{proposition}
-If $A\subset B$ then $P \left( A \right) \leq P \left( B \right)$
-\end{proposition}
-\begin{proof}
-The event $B$ can be decomposed as the union of two disjoint events $A$ and $A^c \cap B$, so we have that $P \left( B \right) = P \left( A \right) + P \left( A^c \cap B \right)$, that combined with the fact that  $P \left( A^c \cap B \right) \geq 0$ proves the proposition.
-\end{proof}
-
-As anticipated, sub-events (subsets) are associated with lesser probabilities than their corresponding events.
+As anticipated, sub-events (subsets) are associated with smaller probabilities than their corresponding events.
 
 \begin{proposition}
 Given that $A\subset B$, it follows that $P \left( A \right) \leq P \left( B \right)$.
@@ -682,7 +674,9 @@ Let's consider a practical example involving three discrete random variables $X$
 
 A \emph{measure of central tendency} is a number derived from a probability distribution, intended as a summary of that distribution. The most common measures of central tendency in use are the expected value and the median. Each of these measures provides a different approach to characterize distributions. It is also common to use \emph{metrics of dispersion} to describe the variability of a distribution around the measures of centrality. We will review two metrics of dispersion, the variance and the standard deviation. The metrics of disperson can also be used in case of bivariate distributions, under the names of covariance and correlation, to measure the \emph{statistical relationship} between two random variables. All these measures allow us to summarize and compare distributions.
 
+%
 % Subsection: Measures of Central Tendency
+%
 
 \subsection{Measures of Central Tendency}
 
@@ -782,7 +776,6 @@ The median is a robust measure of central tendency, especially useful when the d
 \begin{example}
 Consider the company from Example \ref{ex:expected_salary}. The median of the salaries is calculated as the value $m$ for which $Pr\left(X\leq m\right)\geq \frac{1}{2}$. In this case, $m=300$. Now, suppose that one of the base employees is promoted to the executive level with the same salary of \$6000. The recalculated median would still be $m=300$. This example shows that the median is a more robust measure than the expected value in the presence of outliers.
 \end{example}
-
 
 %
 % subsection: Measures of Dispersion
@@ -893,10 +886,43 @@ S^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X}_n)^2
 
 Do not confuse the sample variance, which is a statistic based on observed values, with the theoretical variance of the distribution. We will study some important properties of the variance of large random samples in Section \ref{sec:probability_random_samples}.
 
-
 % Standard Deviation
 
 \subsubsection*{Standard Deviation}
+
+The standard deviation is also a statistical measure that quantifies the dispersion or variability in a set of data values. However, unlike variance, which squares the differences from the mean, resulting in units that are the square of the original data units, the standard deviation is the square root of the variance. This adjustment is crucial because it brings the units back to the original units of the data, making the measure more intuitive and directly interpretable.
+
+\begin{definition}
+Let $X$ be a discrete random variable with expected value $E(X)$,  variance $Var(X)$ and probability mass function $f$. The \emph{standard deviation}\index{Standar deviation} of $X$, denoted by $\sigma$, is defined as:
+\[
+\sigma = \sqrt{Var(X)} = \sqrt{\sum_{x} (x - E(X))^2 f(x)}
+\]
+\end{definition}
+
+The standard deviation provides a numerical summary of how scattered the values of $X$ are around the mean. A smaller standard deviation indicates that the values tend to be closer to the mean (less spread out), whereas a larger standard deviation indicates that the values are more spread out from the mean.
+
+\begin{proposition}
+Let $X$ be a random variable with standard deviation $\sigma_X$, and $a$ and $b$ be arbitrary constants, then the standard deviation $\sigma_Y$ of the random variable $Y = aX + b$ is $|a|$ times the standard deviation of $X$, i.e., $\sigma_Y = |a| \sigma_X$.
+\end{proposition}
+\begin{proof}
+The variance of $Y$ can be calculated as:
+\[
+\sigma_Y^2 = \sum_{x} (a x + b - (a E(X) + b))^2 f(x) = a^2 \sum_{x} (x - E(X))^2 f(x) = a^2 \sigma_X^2
+\]
+Taking the square root of both sides, we get:
+\[
+\sigma_Y = \sqrt{a^2 \sigma_X^2} = |a| \sigma_X.
+\]
+\end{proof}
+
+The sample standard deviation is used to estimate the standard deviation of a population based on a sample taken from it. Unlike the population standard deviation, which uses the true mean of the entire population, the sample standard deviation uses the mean of the sample as an estimate of the true mean.
+
+\begin{definition}
+Let $X_1, X_2, \ldots, X_n$ be $n$ random variables with sample mean $\bar{X}_n$ and sample variance $S^2$. The \emph{sample standard deviation}\index{Sample standard deviation} of $X_1, X_2, \ldots, X_n$, denoted by $S$, is defined as:
+\[
+S = \sqrt{S^2} = \sqrt{\frac{1}{n-1} \sum_{x} (X - \bar{X})^2}
+\]
+\end{definition}
 
 %
 % Measures of Statistical Relationship
@@ -904,47 +930,99 @@ Do not confuse the sample variance, which is a statistic based on observed value
 
 \subsection{Measures of Statistical Relationship}
 
+{\color{red} Covariance and correlation are attempst to measure the linear dependence between to random variables.}
 
+% Covariance
 
-Covariance and correlation are attempst to measure the linear dependence between to random variables.
+\subsubsection*{Covariance}
 
-Covarance
+Covariance is a measure used to determine the degree to which two random variables \(X\) and \(Y\) vary together. It gives an indication of the direction of the linear relationship between the variables.
 
 \begin{definition}
-Definition 183. Let X and Y be random variables having finite means. Let $E\left(X\right)=\mu_{X}$ and $E\left(Y\right)=\mu_{Y}$. The covariance of X and Y, which is denoted by $Cov\left(X,Y\right)$ is defined as $Cov\left(X,Y\right)=E\left[\left(X-\mu_{X}\right)\left(Y-\mu_{Y}\right)\right]$
+Let $X$ and $Y$ be two random variables with finite means $E(X)$ and $E(Y)$ respectively. The \emph{covariance}\index{Covariance} of $X$ and $Y$, denoted by $Cov\left(X, Y\right)$ is defined as $Cov\left(X, Y\right) = E\left[\left(X- E(X) \right) \left(Y - E(Y) \right) \right]$
 \end{definition}
 
-if the expectation exists.
+The sign of the covariance indicates the direction of the relationship. A positive covariance indicates that as \(X\) increases, \(Y\) tends to increase. A negative covariance indicates that as \(X\) increases, \(Y\) tends to decrease. A covariance of zero suggests no linear relationship between the variables. However, it is crucial to note that zero covariance does not preclude the existence of a non-linear relationship between \(X\) and \(Y\). Variables can still be related in complex, non-linear ways that are not captured by covariance.
 
-The covariance between X and Y is intended to measre the degree to which X and Y tend to be large at the same time or the degree to which one tends to be large while the other is small.
+Next proposition represents a fundamental way to calculate covariance, showing how it measures the degree to which two variables vary together in relation to their individual means. 
 
 \begin{proposition}
-For all random variables X and Y such that $\sigma_{X}^{2}<\infty$ and $\sigma_{Y}^{2}<\infty Cov\left(X,Y\right)=E\left(XY\right)-E\left(X\right)E\left(Y\right)$
+Let $X$ and $Y$ be two random variables with finite means $E(X)$ and $E(Y)$ respectively. We have that $Cov\left(X,Y\right)=E\left(XY\right)-E\left(X\right)E\left(Y\right)$.
 \end{proposition}
 \begin{proof}
+The covariance of \(X\) and \(Y\) is defined as the expected value of the product of their deviations from their respective means. Expanding the product within the expectation gives:
+\[
+\operatorname{Cov}(X, Y) = \mathrm{E}[(X - \mathrm{E}(X))(Y - \mathrm{E}(Y))] = \mathrm{E}[XY - X\mathrm{E}(Y) - Y\mathrm{E}(X) + \mathrm{E}(X)\mathrm{E}(Y)]
+\]
+Using the linearity of expectation, this expression can be simplified as:
+\[
+\mathrm{E}[XY - X\mathrm{E}(Y) - Y\mathrm{E}(X) + \mathrm{E}(X)\mathrm{E}(Y)] = \mathrm{E}(XY) - \mathrm{E}(X\mathrm{E}(Y)) - \mathrm{E}(Y\mathrm{E}(X)) + \mathrm{E}(\mathrm{E}(X)\mathrm{E}(Y))
+\]
+And since \(\mathrm{E}(Y)\) and \(\mathrm{E}(X)\) are constants:
+\[
+\mathrm{E}(X\mathrm{E}(Y)) = \mathrm{E}(X)\mathrm{E}(Y) \quad \text{and} \quad \mathrm{E}(Y\mathrm{E}(X)) = \mathrm{E}(Y)\mathrm{E}(X)
+\]
+Hence, the expression further simplifies to:
+\[
+\mathrm{E}(XY) - \mathrm{E}(X)\mathrm{E}(Y) - \mathrm{E}(Y)\mathrm{E}(X) + \mathrm{E}(X)\mathrm{E}(Y) = \mathrm{E}(XY) - \mathrm{E}(X)\mathrm{E}(Y)
+\]
+Thus, the covariance of \(X\) and \(Y\) is proved to be:
+\[
+\operatorname{Cov}(X, Y) = \mathrm{E}(XY) - \mathrm{E}(X)\mathrm{E}(Y)
+\]
 \end{proof}
 
-Correlation
-
-Correlation is a measure of association between two random variables that is not driven by arbitrary changes in the scales.
+The sample covariance is used to estimate the covarianze of two populations based on a sample taken from them.
 
 \begin{definition}
-Let X and Y be random variables with finite variances $\sigma_{X}^{2}$ and $\sigma_{Y}^{2}$ respectively. Then the correlation of X and Y, which is denoted by $\rho\left(X,Y\right)$, is defined as follows $\rho\left(X,Y\right)=\frac{Cov\left(X,Y\right)}{\sigma_{X}\sigma_{Y}}$
+Let \(X_1, X_2, \ldots, X_n\) and \(Y_1, Y_2, \ldots, Y_n\) be two sets of random variables with sample means $\bar{X}$ and $\bar{Y}$ respectively. The \emph{sample covariance}\index{Sample covariance} between \(X\) and \(Y\) is defined as follows:
+\[
+s_{XY} = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})
+\]
 \end{definition}
 
-XX
+% Correlation
+
+\subsubsection*{Correlation}
+
+The magnitude of the covariance is not standardized, meaning that it can be difficult to interpret the strength of the relationship without context. This is why correlation, which normalizes covariance, is often used to measure the strength of the linear relationship between two variables.
 
 \begin{definition}
-It is said that X and Y are positively correlated if $\rho\left(X,Y\right)>0$, that X and Y are negatively correlated if $\rho\left(X,Y\right)<0$ and that X and Yare uncorrelated if $\rho\left(X,Y\right)=0$.
+Let $X$ and $Y$ be two random variables with finite variances $Var(X)$ and $Var(Y)$ respectively. Then the \emph{correlation}\index{Correlation} of $X$ and $Y$, denoted by $Cor\left(X,Y\right)$, is defined as $Cor\left(X,Y\right)=\frac{Cov\left(X,Y\right)}{Var(X) Var(Y)}$
 \end{definition}
 
-Properties of Covariance and Correlation
+Correlation is a statistical measure that quantifies the strength and direction of a linear relationship between two random variables. Unlike covariance, correlation is dimensionless and standardized, providing a value between -1 and 1.
 
 \begin{proposition}
-Moreover $-1 \leq \rho\left(X,Y\right) \leq 1$
+The correlation coefficient \(\rho_{X,Y}\) lies in the range \([-1, 1]\), where:
+- \(+1\) indicates a perfect positive linear relationship,
+- \(-1\) indicates a perfect negative linear relationship,
+- \(0\) indicates no linear relationship (but not necessarily no relationship).
 \end{proposition}
 \begin{proof}
+Correlation normalizes covariance by the product of the standard deviations of \(X\) and \(Y\), thus it is dimensionless:
+\[
+\rho_{X,Y} = \frac{\operatorname{Cov}(X, Y)}{\sigma_X \sigma_Y}
+\]
+where \(\sigma_X = \sqrt{\operatorname{Var}(X)}\) and \(\sigma_Y = \sqrt{\operatorname{Var}(Y)}\). By the Cauchy-Schwarz inequality, we have:
+\[
+(\mathrm{E}[XY])^2 \leq \mathrm{E}[X^2] \mathrm{E}[Y^2]
+\]
+Substituting for expectations from the definitions of variance and covariance, and rearranging terms, the absolute value of the covariance does not exceed the product of the standard deviations of \(X\) and \(Y\):
+\[
+|\operatorname{Cov}(X, Y)| \leq \sigma_X \sigma_Y
+\]
+This implies:
+\[
+-1 \leq \frac{\operatorname{Cov}(X, Y)}{\sigma_X \sigma_Y} \leq 1
+\]
+Thus:
+\[
+-1 \leq \rho_{X,Y} \leq 1
+\]
 \end{proof}
+
+Correlation is a vital tool in statistics for assessing how strong a linear relationship exists between two variables. A correlation close to \(-1\) or \(+1\) indicates a strong linear relationship, whereas a correlation close to \(0\) suggests a weak linear relationship. This metric is particularly useful in fields such as finance, economics, and the natural sciences where understanding the relationship between variables is crucial for modeling and prediction.
 
 \begin{proposition}
 If X and Y are independent random variables with $0<\text{\ensuremath{\sigma_{X}^{2}}}<\infty$ and $0<\text{\ensuremath{\sigma_{Y}^{2}}}<\infty$ then $Cov\left(X,Y\right)=\rho\left(X,Y\right)=0$
@@ -1080,14 +1158,14 @@ The expected value of a binomial random variable $X$ with parameters $n$ and $p$
 
 \subsection{Discrete Normal Distribution}
 
-The \textit{normal distribution} is a continuous probability distribution that arises frequently in natural and social sciences due to the Central Limit Theorem (see Theorem \ref{th:central_limit_theorem}). However, many real-world scenarios involve discrete outcomes, such as counts of events or integer-valued random variables. In such cases, we require a discrete analog to the normal distribution. This is not a limitation, since the concept of continuous distributions often arises as a limiting abstraction of inherently discrete processes.
+The \textit{normal distribution} is a continuous probability distribution that frequently appears in natural and social sciences, primarily due to the Central Limit Theorem (see Theorem \ref{th:central_limit_theorem}). However, many real-world situations involve discrete outcomes, such as counts of events or integer-valued random variables. In these cases, a discrete analog to the normal distribution is required. This need does not represent a limitation, as continuous distributions often emerge as limiting abstractions of inherently discrete processes.
 
-In this section, we introduce the \textit{discrete normal distribution} as the limit of a binomial distribution, which provides an approximation of a normal distribution for integer-valued random variables. We also derive its key properties through formal definitions and propositions.
+In this section, we introduce the \textit{discrete normal distribution}, derived as the limit of a binomial distribution. This distribution serves as an approximation of the normal distribution for integer-valued random variables. We also derive its key properties through formal definitions and propositions.
 
-To define the discrete normal distribution as a limit of the binomial distribution, we have to introduce the concept of normalized version of a random variable.
+To define the discrete normal distribution as a limit of the binomial distribution, we first need to introduce the concept of a normalized version of a random variable.
 
 \begin{definition}
-Let $X$ a discrete random variable with expected value $E(X)$ and variance $Var(X)$. The standardized random variable of $X$, denoted by $Z$, is defined as:
+Let $X$ be a discrete random variable with expected value $E(X)$ and variance $Var(X)$. The standardized random variable of $X$, denoted by $Z$, is defined as:
 \[
 Z = \frac{X - E(X)}{\sqrt{Var(X)}}
 \]
@@ -1096,7 +1174,7 @@ Z = \frac{X - E(X)}{\sqrt{Var(X)}}
 This normalization centers the distribution around 0 (the standardized mean) and scales it by the standard deviation. 
 
 \begin{example}
-If the random variable $X$ is follows a binomial distribution with parameters $n$ and $p$, it standarized version $Z$ would be given by:
+If the random variable $X$ follows a binomial distribution with parameters $n$ and $p$, its standardized version $Z$ is given by:
 \[
 Z = \frac{X - np}{\sqrt{np(1-p)}}
 \]
@@ -1116,26 +1194,31 @@ P(X = k) = \lim_{n \to \infty} P\left( Z_n = \frac{k - np}{\sqrt{np(1-p)}} \righ
 where $Z_n$ is a normalized binomial variable with parameters $n$ and $p$.
 \end{definition}
 
-This distribution can be thought of as a fundamental model for systems where outcomes are inherently discrete, such as the distribution of counts or events.
+This distribution can be regarded as a fundamental model for systems where outcomes are inherently discrete, such as the distribution of counts or events.
 
-In practice, this distribution retains the discreteness of the binomial distribution, while taking on the bell-shaped curve characteristic of the normal distribution. The discrete normal distribution thus captures the essence of the normal distribution while remaining defined on the set of integers.
+In practice, this distribution retains the discrete nature of the binomial distribution while adopting the bell-shaped curve characteristic of the normal distribution. The discrete normal distribution thus encapsulates the essence of the normal distribution while remaining defined on the set of integers.
 
-We approximate the binomial coefficient for large \( n \) using Stirling's approximation. This leads to a distribution that resembles the normal distribution. The probability mass function for the discrete normal distribution \( Z \) can be expressed as:
+\begin{proposition}
+As $\sigma$ becomes large, the closed-form expression for the probability mass function of the discrete normal distribution is:
 \[
-P(Z = x) = \frac{1}{Z} \exp\left(-\frac{x^2}{2\sigma^2}\right),
+P(X = k) = \frac{1}{Z} \exp\left(-\frac{(k - \mu)^2}{2\sigma^2}\right),
 \]
-where \( \sigma^2 = np(1-p) \) is the variance, and \( Z \) is a normalizing constant that ensures the total probability sums to 1:
-\[
-Z = \sum_{x \in \mathbb{Z}} \exp\left(-\frac{x^2}{2\sigma^2}\right).
-\]
+where $Z$ is the normalization constant.
+\end{proposition}
 
-Thus, the closed formula for the probability mass function of the discrete normal distribution is:
+\begin{proof}
+As $\sigma \to \infty$, the difference between consecutive integer values $k$ becomes negligible compared to $\sigma$, causing the discrete distribution to behave like a continuous distribution. Formally, we compare the discrete normal PMF with the probability density function (PDF) of the continuous normal distribution:
 \[
-P(Z = x) = \frac{\exp\left(-\frac{x^2}{2\sigma^2}\right)}{\sum_{x' \in \mathbb{Z}} \exp\left(-\frac{x'^2}{2\sigma^2}\right)},
+f(x) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right).
 \]
-where the denominator is the normalization factor that sums over all integer values of \( x \).
+For large $\sigma$, the normalization constant $Z$ of the discrete normal distribution approaches $\sqrt{2\pi \sigma^2}$, the normalization constant of the continuous normal distribution, and the PMF of the discrete normal distribution approaches the PDF of the continuous normal distribution evaluated at integer points.
 
-This formula provides a discrete analog to the continuous normal distribution, preserving the bell-shaped curve while keeping the random variable in the discrete domain.
+Therefore, in the limit $\sigma \to \infty$, the discrete normal distribution converges to the continuous normal distribution.
+\end{proof}
+
+\begin{example}
+Please insert a practical example here.
+\end{example}
 
 \begin{proposition}
 The discrete normal distribution is symmetric about its mean $\mu$. Formally, for any integer $k$:
@@ -1143,6 +1226,7 @@ The discrete normal distribution is symmetric about its mean $\mu$. Formally, fo
 P(X = \mu + k) = P(X = \mu - k).
 \]
 \end{proposition}
+
 \begin{proof}
 The symmetry follows directly from the functional form of the PMF:
 \[
@@ -1155,32 +1239,9 @@ P(X = \mu - k) = \frac{1}{Z} \exp\left(-\frac{(\mu - k - \mu)^2}{2\sigma^2}\righ
 Since both expressions are equal, the distribution is symmetric about $\mu$.
 \end{proof}
 
-
-\begin{proposition}
-As $\sigma$ becomes large, the discrete normal distribution converges to the continuous normal distribution.
-\end{proposition}
-\begin{proof}
-Consider the PMF of the discrete normal distribution:
-\[
-P(X = k) = \frac{1}{Z} \exp\left(-\frac{(k - \mu)^2}{2\sigma^2}\right).
-\]
-As $\sigma \to \infty$, the difference between consecutive integer values $k$ becomes negligible compared to $\sigma$, making the discrete distribution behave like a continuous distribution. Formally, we compare the discrete normal PMF with the probability density function (PDF) of the continuous normal distribution:
-\[
-f(x) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right).
-\]
-For large $\sigma$, the normalization constant $Z$ of the discrete normal distribution approaches $\sqrt{2\pi \sigma^2}$, the normalization constant of the continuous normal distribution, and the PMF of the discrete normal distribution approaches the PDF of the continuous normal distribution evaluated at integer points.
-
-Therefore, in the limit $\sigma \to \infty$, the discrete normal distribution converges to the continuous normal distribution.
-\end{proof}
-
-\begin{example}
-TOD
-\end{example}
-
-The discrete normal distribution serves as a bridge between the discrete and continuous worlds of probability distributions. It retains many of the key properties of the continuous normal distribution, such as symmetry, centrality, and the bell-shaped curve, while accommodating the discrete nature of certain random variables. By defining the distribution formally and studying its properties, we gain a powerful tool for modeling real-world phenomena where outcomes are discrete but exhibit normal-like behavior.
+The discrete normal distribution serves as a bridge between the discrete and continuous realms of probability distributions. It retains many key properties of the continuous normal distribution, such as symmetry, centrality, and the bell-shaped curve, while accommodating the discrete nature of certain random variables. By formally defining the distribution and studying its properties, we gain a powerful tool for modeling real-world phenomena where outcomes are discrete but exhibit normal-like behavior.
 
 This distribution is especially useful in areas such as manufacturing, education, and epidemiology, where event counts or integer-valued outcomes naturally arise, and where the underlying variability can be captured using a normal-like distribution. The discrete normal distribution allows us to model these scenarios more precisely, ensuring that our probabilistic models align with the real-world structure of the data.
-
 
 %
 % Section: Large Random Samples
@@ -1431,63 +1492,129 @@ If we toss a fair coin, the probability that the outcome will be head is equal t
 Let $X_1, \ldots, X_n$ be a sample of $n$ independent and identically distributed random variables with mean $\mu$ and variance $\sigma^2$. As we saw in the previous section, the law of large numbers states that the sample average $\overline {X}_n$ converges in probability to $\mu$ as $n$ increases. The central limit theorem states that the distribution of the difference between the sample average $\overline {X}_n$ and the population mean $\mu$, when multiplied by the factor $\sqrt {n}$ approximates to the normal distribution with mean $0$ and variance $\sigma^2 / n$. The theorem is true regardless of the shape of the original random vairables.
 
 \begin{theorem}[Central Limit Theorem]
-\label{th:central_limit_theorem}
-Let $X_{1}, \ldots, X_{n}$ be a random sample of size $n$ from a distribution with mean $\mu$ and a finite variance $\sigma^{2}$. Then  for each fixed number $\varepsilon > 0$ we have that
+\label{th:central_limit_theorem_pdf}\index{Central limit theorem}
+Let $X_{1}, \ldots, X_{n}$ be a random sample of size $n$ from a distribution with mean $\mu$ and finite variance $\sigma^{2}$. Define the standardized sum as
 \[
-\lim_{n \rightarrow \infty} Pr \left( \frac{\overline{X}_{n}-\mu}{\sigma/n^{1/2}} \leq \varepsilon \right) = \Phi \left( x \right)
+Z_n = \frac{\overline{X}_{n}-\mu}{\sigma/\sqrt{n}},
 \]
-where $\Phi \left( x \right)$ denotes the cumulative distribution function of the standard normal distribution.
+where $\overline{X}_{n} = \frac{1}{n} \sum_{i=1}^{n} X_i$ is the sample mean. Then, as $n \rightarrow \infty$, the probability density function of $Z_n$ converges to the probability density function of the standard normal distribution $\phi(x)$, that is,
+\[
+\lim_{n \rightarrow \infty} f_{Z_n}(x) = \phi(x),
+\]
+where $f_{Z_n}(x)$ is the probability density function of $Z_n$, and $\phi(x)$ is the probability density function of the standard normal distribution, given by
+\[
+\phi(x) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{x^2}{2}\right).
+\]
 \end{theorem}
 \begin{proof}
-{\color{red} Perhaps is too complex for this book to give a proof of the theorem.}
-\end{proof}
+Let $X_{1}, \ldots, X_{n}$ be independent and identically distributed (i.i.d.) random variables with mean $\mu$ and finite variance $\sigma^2$. Define the sample mean as
+\[
+\overline{X}_n = \frac{1}{n} \sum_{i=1}^{n} X_i.
+\]
+We are interested in the distribution of the standardized variable
+\[
+Z_n = \frac{\overline{X}_n - \mu}{\sigma / \sqrt{n}}.
+\]
 
-{\color{red} TODO: Use a formulation of the theorem that does not uses the cumulative distribution}
+First, consider the sum of the $X_i$'s, which we write as
+\[
+S_n = \sum_{i=1}^{n} X_i.
+\]
+The sample mean can then be written as
+\[
+\overline{X}_n = \frac{S_n}{n}.
+\]
+Thus, the standardized variable $Z_n$ becomes
+\[
+Z_n = \frac{S_n - n\mu}{\sigma\sqrt{n}}.
+\]
+
+To analyze the behavior of $Z_n$ as $n \to \infty$, we consider the sum $S_n = \sum_{i=1}^{n} X_i$. According to the Law of Large Numbers, $S_n/n$ converges to $\mu$, and hence $Z_n$ should converge to a normal distribution due to the nature of sums of independent random variables.
+
+For large $n$, $Z_n$ can be approximated by considering the Taylor expansion of the exponential function. Since the $X_i$'s are i.i.d., the distribution of $S_n$ can be approximated by a normal distribution with mean $n\mu$ and variance $n\sigma^2$. The key idea is that as $n$ increases, the distribution of $Z_n$ approaches a normal distribution because the sum of i.i.d. random variables tends to be normally distributed by the Central Limit Theorem.
+
+Let us consider the moment generating function (MGF) of $Z_n$. The MGF of $Z_n$ is given by:
+\[
+M_{Z_n}(t) = \mathbb{E}\left[\exp\left(t Z_n\right)\right] = \mathbb{E}\left[\exp\left(t \frac{S_n - n\mu}{\sigma\sqrt{n}}\right)\right].
+\]
+For large $n$, by the Central Limit Theorem, the MGF of $Z_n$ approaches that of a standard normal variable $N(0,1)$:
+\[
+M_{Z_n}(t) \approx \exp\left(\frac{t^2}{2}\right),
+\]
+which implies that $Z_n$ converges in distribution to $N(0,1)$ as $n \to \infty$.
+
+Since $Z_n$ converges in distribution to $N(0,1)$, the probability density function of $Z_n$, denoted by $f_{Z_n}(x)$, must converge to the probability density function of a standard normal distribution $\phi(x)$, given by:
+\[
+\phi(x) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{x^2}{2}\right).
+\]
+Thus, we have
+\[
+\lim_{n \rightarrow \infty} f_{Z_n}(x) = \phi(x).
+\]
+
+Therefore, as $n \to \infty$, the distribution of the standardized sum $Z_n$ approaches the standard normal distribution, completing the proof.
+\end{proof}
 
 The Central Limit Theorem is a fundamental concept in probability theory used in statistical analysis and inference. It allows us to compute the probability that the sample average is close to the distribution mean. It is important to recall the conditons for the central limit theorem to be true: the samples must be independent and identically distributed, the original distribution has to have a finite variance, and the sample size must be sufficiently large.
 
 \begin{example}
-{\color{red} Start with a uniform distribution, for example, throwing a dice. Explain and show how the aritmethic mean can be described with a binomial distribution. Explain that going to the limit results in the normal distribution.}
-\end{example}
+Suppose a factory produces light bulbs, and the lifespan of each light bulb is a random variable with a mean of $\mu = 1000$ hours and a standard deviation of $\sigma = 50$ hours. The factory tests a random sample of $n = 36$ light bulbs to estimate the average lifespan of the bulbs produced in a particular batch. What is the probability that the sample mean lifespan of these 36 bulbs is between 990 and 1010 hours?
 
-{\color{red} Elaborate in the fact the central limit theorem, and the law of large numbers, do not help too much if our target metric is not the arithmetic mean. Mention the implications, for example, in machine learning.}
+We can apply the Central Limit Theorem to solve this problem because we are dealing with the sample mean of a large number of independent, identically distributed random variables (lifespans of light bulbs). First, define the sample mean $\overline{X}_n$ as:
+\[
+\overline{X}_n = \frac{1}{n} \sum_{i=1}^{n} X_i,
+\]
+where $X_i$ represents the lifespan of the $i$-th light bulb in the sample, and $n = 36$ is the sample size.
+
+By the Central Limit Theorem, for sufficiently large $n$, the distribution of the sample mean $\overline{X}_n$ approaches a normal distribution with mean $\mu$ and standard deviation $\sigma/\sqrt{n}$:
+\[
+\overline{X}_n \sim N\left(\mu, \frac{\sigma}{\sqrt{n}}\right) = N\left(1000, \frac{50}{\sqrt{36}}\right) = N\left(1000, \frac{50}{6}\right) = N\left(1000, 8.33\right).
+\]
+
+Next, we calculate the z-scores corresponding to 990 hours and 1010 hours using the formula:
+\[
+z = \frac{X - \mu}{\sigma/\sqrt{n}},
+\]
+where $X$ is the value for which we want to find the z-score.
+
+For $X = 990$:
+\[
+z_{990} = \frac{990 - 1000}{8.33} \approx \frac{-10}{8.33} \approx -1.20.
+\]
+
+For $X = 1010$:
+\[
+z_{1010} = \frac{1010 - 1000}{8.33} \approx \frac{10}{8.33} \approx 1.20.
+\]
+
+Now, we use the standard normal distribution table (or a calculator) to find the probabilities corresponding to these z-scores:
+\[
+P(z_{990} \leq Z \leq z_{1010}) = P(-1.20 \leq Z \leq 1.20).
+\]
+
+From the standard normal distribution table:
+\[
+P(Z \leq 1.20) \approx 0.8849,
+\]
+\[
+P(Z \leq -1.20) \approx 0.1151.
+\]
+
+Thus, the probability that the sample mean lifespan of the 36 light bulbs is between 990 and 1010 hours is:
+\[
+P(990 \leq \overline{X}_n \leq 1010) = P(-1.20 \leq Z \leq 1.20) = 0.8849 - 0.1151 = 0.7698.
+\]
+
+The probability that the sample mean lifespan of the 36 light bulbs falls between 990 and 1010 hours is approximately 76.98\%. This result demonstrates how the Central Limit Theorem allows us to use the normal distribution to approximate the sampling distribution of the sample mean, even when the original data is not normally distributed, as long as the sample size is sufficiently large.
+\end{example}
 
 %
 % Section: References
 %
 \section*{References}
 
-An example of the problems associated with the misinterpretation of expected value is the St. Petersburg Paradox. Introduced by Nicholas Bernoulli in 1713, this paradox involves a gambling game with an infinite expected payoff, yet no reasonable person would pay more than \$25 to play it. Despite being three centuries old, the paradox continues to inspire new arguments and solutions in recent years (see \cite{huang2013three} for a historical review of the main proposed solutions).
+\cite{degroot1986probability} is a widely respected textbook in the fields of statistics and probability theory. First published in 1975, this book is known for its clear exposition of the fundamental concepts of probability and statistics, making it suitable for both beginners and those with some background in the subject. The book's approach balances theory and application, making it useful both for learning theoretical underpinnings and for applying probability and statistics to real-world problems.
 
-% There are a few more interpretations of the concept of probability that you might consider including:
+\cite{childers2013philosophy} offers a comprehensive introduction to the foundational aspects of probability, with a focus on the philosophical questions it raises. Childers explores various interpretations of probability, including frequentist, propensity, classical, Bayesian, and objective Bayesian, and presents these complex ideas in a way that is accessible even to those without a strong background in probability or mathematics.
 
-% 1. **Propensity Interpretation**: This interpretation, often associated with the philosopher Karl Popper, suggests that probabilities express physical propensities, or tendencies, of situations. It is often applied in quantum mechanics and other fields where repeated experiments under exactly the same conditions give different outcomes.
-
-% 2. **Logical Interpretation**: The logical interpretation, associated with philosophers like John Maynard Keynes and Rudolf Carnap, views probabilities as logical relations between statements or propositions. In this view, the probability of a statement is a measure of the degree to which the available evidence supports the statement.
-
-% 3. **Empirical Interpretation**: This interpretation, often associated with Richard von Mises, takes the long-run frequency view of the frequentist interpretation but applies it more strictly. It states that probabilities can only be assigned to events that can be repeated indefinitely under essentially the same conditions. It emphasizes the role of empirical observation over theoretical considerations.
-
-% 4. **Constructive Interpretation**: This is a view of probability inspired by intuitionistic logic, in which the truth of a statement is regarded as something that can be constructed, rather than something that exists independently of our knowledge. In the constructive interpretation of probability, a probability is a construction rather than a description of reality. This view is less common and more controversial than the others.
-
-% Each of these interpretations has its strengths and weaknesses, and the choice between them often depends on the context and purpose for which probability is being used.
-
-% Here are some academic references for these interpretations:
-
-% 1. **Propensity Interpretation**:
-%    - Popper, K. (1959). "The Propensity Interpretation of Probability". British Journal for the Philosophy of Science. 
-%    - Miller, David. (1994). "Propensities: Popper and Probability". British Journal for the Philosophy of Science.
-
-% 2. **Logical Interpretation**:
-%    - Keynes, J. M. (1921). "A Treatise on Probability". Macmillan and Co. 
-%    - Carnap, Rudolf. (1950). "Logical Foundations of Probability". University of Chicago Press.
-
-% 3. **Empirical Interpretation**:
-%    - Von Mises, Richard. (1957). "Probability, Statistics and Truth". Dover Publications.
-%   - Hájek, Alan. (2012). "Interpretations of Probability". The Stanford Encyclopedia of Philosophy.
-
-% 4. **Constructive Interpretation**:
-%    - Per Martin-Löf. (1973). "An intuitionistic theory of types: predicative part". In Logic Colloquium '73.
-
-% Please note that some of these sources are primary, being written by the philosophers who proposed or developed the interpretation in question. Others are secondary, discussing or explaining the interpretation. In the case of the constructive interpretation, the source is not about probability per se, but about the underlying logic that inspires the interpretation. For more detailed and up-to-date discussions of these interpretations, consider checking out the more recent literature in the philosophy of probability.
-
-
+An example of the problems associated with the misinterpretation of expected value is the St. Petersburg Paradox\index{St. Petersburg Paradox}. Introduced by Nicholas Bernoulli in 1713, this paradox involves a gambling game with an infinite expected payoff, yet no reasonable person would pay more than \$25 to play it. Despite being three centuries old, the paradox continues to inspire new arguments and solutions in recent years (see \cite{huang2013three} for a historical review of the main proposed solutions).

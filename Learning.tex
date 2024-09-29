@@ -29,97 +29,215 @@ Most of the learning algorithms used today in practice are known since forty yea
 %
 
 \section{Statistical Inference}
-
-{\color{red} Move to the right place.} A \emph{parametric random variable} $X$, denoted by $f\left(X \mid \theta \right)$, is a distribution that belongs to a family of functions parameterized by $\theta$, where $\theta$ can be a single parameter, or a vector of several parameters. 
-
-\emph{Statistical inference} is the branch of probability and statistics concerned with deducing the probabilistic model behind a population after analyzing some data that, we believe, contain relevant information. Statistical inference is different from the area of \emph{descriptive statistics}, where the goal is to provide a summary of the main properties of the observed data, and \emph{probability theory}, that deals with the theoretical foundations. From the area of statistical inference, we are mostly interested in \emph{model selection} and \emph{point estimation}. Other techniques, like \emph{confidence intervals}, \emph{hypothesis testing} or \emph{experiment design} are not covered in this short review since they are not needed in the book.
+ 
+\emph{Statistical inference} is the branch of probability focused on deducing the properties of an underlying probabilistic model of a population through data analysis. Unlike descriptive statistics, which summarizes key features of observed data, statistical inference goes further by applying probability models to enhance our understanding of the population. By collecting and analyzing data, we can adjust and refine these models to better capture the population's characteristics. Statistical inference also differs from probability theory, which provides the theoretical foundation upon which it is built. In this chapter, our primary interest is in estimating the parameters of a probabilistic model. We will review two main approaches to this task: maximum likelihood and Bayesian methods. Other techniques in statistical inference, such as hypothesis testing and experimental design, are not covered in this brief review, as they are not needed for the purposes of this book.
 
 \begin{definition}
-A \emph{statistical model} is a random variable, together with a specification of its probability distribution, and the identification of the parameters, denoted by $\theta$, of that distribution. When the parameter $\theta$ is unknown, it is said that the distribution of the random variable is conditional to $\theta$.
+A \emph{statistical model}\index{Statistical model} is a random variable, together with a specification of its probability distribution, and the identification of the parameters, denoted by $\theta$, of that distribution. 
 \end{definition}
 
-We assume that the actual value of the unknown parameter $\theta$ can be inferred, usually trough a collection of data samples. The parameter $\theta$ could be a single scalar or a vector of values, and it is also considered a random variable that follows a particular probability distribution. The set $\Theta = \{ \theta_1, \theta_2, \ldots \}$ composed by all the possible values of the parameter $\theta$ is called the \emph{parameter space}.
+A \emph{parametric random variable}\index{Parametric random variable} $X$ represents a distribution that belongs to a family of functions parameterized by $\theta$. The parameter $\theta$ can either be a single scalar or a vector of values, and it is treated itself as a random variable that follows a probability distribution. The set $\Theta = \{ \theta_1, \theta_2, \ldots \}$, consisting of all possible values of $\theta$, is called the \emph{parameter space}\index{Parameter space}, and its elements are referred to as \emph{parameters}\index{Parameter of a probability distribution}. When the parameter $\theta$ is unknown, the distribution of the random variable $X$ is said to be conditional on $\theta$, denoted by $f\left(X \mid \theta \right)$.
+
+As it was the case of Chapter \ref{chap:Probability Theory}, in this section we are only considering parametric discrete random variables defined over discrete probability spaces.
 
 \begin{example}
-\label{ex:binomial}
-{\color{red} TODO: Rewrite this example, or find another one.}
-The binomial distribution with parameters $n$ and $p$ is a model for a family of experiments in which we are interested to know the number of successes in a sequence of $n$ independent binary trials (that is, each trial could be either a success or a failure), being the probability of success $p$. If $X$ is a random variable following a binomial distribution, denoted by $X \sim B(n,p)$, the probability of getting exactly $k$ successes is given by:
+We have seen in Definition \ref{def:binomial_distribution} that a binomial distribution with parameters $n$ and $p$ is a model for a family of experiments in which we are interested to know the number of successes in a sequence of $n$ independent binary trials, being the probability of success is $p$. If $X$ is a random variable following a binomial distribution, the probability of getting exactly $k$ successes is given by:
 \[
 Pr(X=k) = {\binom {n}{k}}p^{k}(1-p)^{n-k}
 \]
-In statistical inference we are usually interested in the inverse problem. That is, we have the actual result of an experiment composed by $n$ samples, in which we know how many success $k$ we have got, and we would like to know the probability $p$ of success.
+In statistical inference, we are usually interested in the inverse problem. That is, we have the actual result of an experiment composed of $n$ trials, in which we know how many successes $k$ we have obtained, and we would like to estimate the parameter $p$, that is, the probability of success.
 \end {example}
 
-On the contrary of what happens with logical deduction, where we can be sure about the trueness of a conclusion, in case of induction and inference, the knowledge gathered is not conclusive. Probability theory is the tool we use to deal with the uncertainty of statistical inferences (probabilistic statements about one of the elements of a statistical model).
+We assume that the true value of the unknown parameter $\theta$ can be inferred, typically by analyzing a collection of data samples. The observable data $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ is modeled as a random sample from the distribution $f\left(X \mid \theta \right)$ conditional on $\theta$.
+
+An estimator of a parameter $\theta$ is a function of the random sample $\mathbf{X}$ that we hope provide a value close to the unknown parameter $\theta$.
 
 \begin{definition}
-Let $X_1, \ldots, X_n$ be $n$ random variables. A \emph{statistic} is a random variable $T = r \left( X_1, \ldots, X_n \right)$, where $r()$ an arbitrary real-valued function of $n$ variables.
+Let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be a random sample. A \emph{statistic}\index{Statistic} is a random variable $T = r \left( X_1, \ldots, X_n \right)$, where $r()$ is an arbitrary real-valued function of $n$ variables.
 \end{definition}
 
-The sample mean and the sample variance are examples of statistics. Statistics allow us to identify the elements of the inference in which we are interested, and to evaluate quantitatively the quality of the results.
+The estimator itself is a random variable, and its probability distribution can be derived from the joint distribution of $X_1, \ldots, X_n$. The sample mean and the sample variance are examples of statistics. Statistics allow us to estimate the elements of the inference in which we are interested, and to evaluate quantitatively the quality of the results.
+
+Usually we start our analysis by deriving a distribution for the parameter $\theta$ based on theoretical considerations about our current knowledge of the experiment.
 
 \begin{definition}
 Let $f$ be the distribution of a random variable $X$ with parameter $\theta$. The probability distribution of the parameter $\theta$, denoted by $\xi\left(\theta\right)$, is called the \emph{prior distribution}.
 \end{definition}
 
-The prior distribution is also the marginal distribution of $f(x \mid \theta)$ for all the possible samples $x$. The prior distribution must be defined over the parameter space $\Omega$. $\xi\left(\theta\right)$ is called the prior distribution because it is the distribution of the parameter $\theta$ that we have before observing any samples of data. Normally, the prior distribution is derived based on theoretical considerations about our current knowledge of the experiment, and so, they might be incorrect.
+The prior distribution must be defined over the parameter space $\Theta$. $\xi\left(\theta\right)$ is called the prior distribution because it is the distribution of the parameter $\theta$ that we have before observing any samples of data.
 
 \begin{definition}
-Let $f$ be the distribution of a random variable $X$ with parameter $\theta$, and let $X_1, \ldots, X_n$ be $n$ random variables. The conditional probability distribution of the parameter $\theta$ given the observed values $X_1 = x_1, \ldots, X_n = x_n$, denoted $f \left( \theta \mid x_1, \ldots, x_n \right)$, is called the \emph{posterior distribution}.
+Let $f$ be the probability mass function of a random variable $X$ with parameter $\theta$, and let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be a random sample from $X$. The conditional probability distribution of the parameter $\theta$ given the observed values $X_1 = x_1, \ldots, X_n = x_n$, denoted $\xi \left( \theta \mid x_1, \ldots, x_n \right)$, is called the \emph{posterior distribution}.
 \end{definition}
 
-Baye's theorem is the tool we have at our disposal to derive the posterior distribution given a prior distribution and the observations.
-
-{\color{red} 
+Bayes' theorem is the tool we have at our disposal to derive the posterior distribution given a prior distribution and the observations.
 
 \begin{proposition}
-Suppose that the $n$ random variables $X_1, \ldots, X_n$ form a random sample from a distribution for which the p.d.f. or de p.f. is $f \left( x \mid \theta \right)$. Suppose also that the value of the parameter $\theta$ is unknonw and the prior p.d.f. or p.f. of $\theta$ is $\psi \left( \theta \right)$. Then the posterior p.d.f. or p.f. of $\theta$ is
+{\color{red} TODO: Review}
+Let $\mathbf{X} = \left( X_{1}, \ldots, X_{n} \right)$ be a random sample from a random variable $X$ with parameter $\theta$ and probability mass function $f\left( x \mid \theta \right)$. Suppose that the value of the parameter $\theta$ is unknown and its prior probability mass function is $\xi\left( \theta \right)$. Then the posterior probability mass function $\xi\left( \theta \mid \mathbf{x} \right)$ of $\theta$ is
 \[
-\xi\left(\theta\mid\mathbf{x}\right)=\frac{f\left(x_{1}\mid\theta\right)\cdots f\left(x_{n}\mid\theta\right)\xi\left(\theta\right)}{g_{n}\left(\mathbf{x}\right)}\quad for\;\theta\in\Omega
+\xi\left( \theta \mid \mathbf{x} \right) = \frac{ f\left( x_{1} \mid \theta \right) \cdots f\left( x_{n} \mid \theta \right) \pi\left( \theta \right) }{ m\left( \mathbf{x} \right) } \quad \text{for } \theta \in \Theta
 \]
-where $g_{n}$ is the marginal distribution of $X_{1},\ldots,X_{n}$
+where $m\left( \mathbf{x} \right)$ is the marginal probability mass function of the observed data $\mathbf{x}$:
 \[
-g_{n}\left(\mathbf{x}\right)=\int_{\Omega}f_{n}\left(\mathbf{x}\mid\theta\right)\xi\left(\theta\right)d\theta
+m\left( \mathbf{x} \right) = \sum_{\theta \in \Theta} f\left( x_{1} \mid \theta \right) \cdots f\left( x_{n} \mid \theta \right) \pi\left( \theta \right)
 \]
 \end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
 
-}
-
-The consequences of assuming a wrong prior distribution can be mitigated by increasing the number of observations.
+There is no guarantee that the posteriory distribution $\xi\left(\theta\mid\mathbf{x}\right)$ belong to the same family of distributions that the prior distribution $\xi\left(\theta\right)$. That situation only happens for special kinds of probability distributions called \emph{conjugate families}\index{Conjugate probability distribution}. Please, refer to the references included at the end of this chapter for more information on conjugate families of probability distributions.
 
 \begin{example}
+{\color{red} TODO: Review}
+Suppose we are interested in estimating the probability $p$ that a coin lands on heads. Before conducting any experiments, we have no prior preference for any value of $p$, so we use a uniform prior over $p$ in the interval $[0,1]$. We flip the coin $n = 10$ times and observe $k = 7$ heads.
+
+The likelihood function is given by the binomial probability mass function:
+\[
+f(k \mid p) = \binom{n}{k} p^{k} (1 - p)^{n - k}
+\]
+The prior distribution of $p$ is uniform on $[0,1]$, so the prior density is:
+\[
+\pi(p) = 1 \quad \text{for } 0 \leq p \leq 1
+\]
+Using Bayes' theorem, the posterior distribution of $p$ given the data is proportional to the likelihood times the prior:
+\[
+\pi(p \mid k) \propto f(k \mid p) \pi(p) = \binom{n}{k} p^{k} (1 - p)^{n - k}
+\]
+Since the prior is uniform (a Beta distribution with parameters $\alpha = 1$, $\beta = 1$), the posterior distribution is a Beta distribution with parameters $\alpha = k + 1$ and $\beta = n - k + 1$:
+\[
+\pi(p \mid k) = \frac{1}{B(k + 1, n - k + 1)} p^{k} (1 - p)^{n - k}
+\]
+where $B(\alpha, \beta)$ is the Beta function.
+
+In our case, with $k = 7$ and $n = 10$:
+\[
+\pi(p \mid k) = \frac{1}{B(8, 4)} p^{7} (1 - p)^{3}
+\]
+Thus, after observing the data, our posterior distribution of $p$ is a Beta distribution with parameters $\alpha = 8$ and $\beta = 4$, reflecting that we now believe $p$ is more likely to be around $0.7$.
 \end{example}
 
-{\color{red} If they are required in the text, extend this section with the following topics: How to estimate priors (maximum likelihood, uninformative, and maximum entropy). Conjugate priors. Sensitivity analysis.}
+Recall that the random variables that compose the random sample $\mathbf{X}$ must be independent and identically distributed according to the probability mass function $\xi\left(\theta\mid\mathbf{x}\right)$. Also, recall our theoretical concerns on Bayes' theorem being a direct consequence of the definition of conditional probability (see Theorem \ref{th:Bayes_theorem}), rather than being derived from Kolmogorov's axioms.
 
-{\color{red} Log-likelihood [...] natural logarithm is a monotonically increasing function [...] ensures that the maximum value of the log of the probability occurs at the same point as the original probability function [...]}
+It might also happen that our assumptions on the prior distribution of the parameter $\theta$ might are wrong. Fortunately, in practice, the consequences of assuming a wrong prior distribution can be mitigated by increasing the number of observations.
 
-{\color{red} An estimator of a parameter is some function of the data that we hope is close to the parameter.}
+\begin{example}
+{\color{red} TODO: Review}
+Suppose we are estimating the probability $p$ of success in a Bernoulli trial (e.g., flipping a biased coin). We mistakenly believe that $p$ is likely to be small, so we choose a Beta prior distribution with parameters $\alpha = 1$, $\beta = 5$, which favors small values of $p$.
 
-{\color{red}
+Now, suppose we perform a large number of trials, say $n = 1000$, and observe $k = 600$ successes.
 
-\begin{definition}
-Let $X_1, \ldots, X_n$ be observable data whose joint distribution is indexed by a parameter $\theta$ taking values in a subset $\Omega$ of the real line. An \emph{estimator} of the parameter $\theta$ is a real-valued function $\delta \left( X_1, \ldots, X_n \right)$. If $X_1=x_1, \ldots, X_n=x_n$ are observed, then $\delta \left( X_1, \ldots, X_n \right)$ is called the \emph{estimate} of $\theta$.
-\end{definition}
-
-TODO: Relate the concepts of statistic and estimator. Provide a more generic definition of estimator.
-
-The estimator itself is a random variable, and its probability distribution can be derived from the joint distribution of $X_1, \ldots, X_n$ if desired.
-
-\begin{definition}
-
-A \emph{loss function} is a real-valued function of two variables, $L \left( \theta, a \right)$, where $\theta \in \Omega$ and $a$ is a real number. The interpretation is that the statistician loses $L \left( \theta, a \right)$ if the parameter equal $\theta$ and the estimate equals $a$.
-
-\end{definition}
-
-TODO: How this definiton relates to other definitions of loss functions?
-
-Let $\psi \left( \theta \right)$ deonote the prior p.d.f. of $\theta$ on the set $\Omega$. If the statistician choses a particular estimate $a$, then her expected loss will be
+The likelihood function is:
 \[
-E\left[L\left(\theta,a\right)\right]=\int_{\Omega}L\left(\theta,a\right)\xi\left(\theta\right)d\theta
+f(k \mid p) = \binom{n}{k} p^{k} (1 - p)^{n - k}
 \]
-The statistician wishes to choose an estimate $a$ for which the expected loss is a minimum.
-}
+The prior distribution is:
+\[
+\pi(p) = \frac{1}{B(1,5)} p^{0} (1 - p)^{4}, \quad 0 \leq p \leq 1
+\]
+The posterior distribution is proportional to the likelihood times the prior:
+\[
+\pi(p \mid k) \propto p^{k} (1 - p)^{n - k + 4}
+\]
+This is a Beta distribution with parameters $\alpha' = k + \alpha = 600 + 1 = 601$, and $\beta' = n - k + \beta = 400 + 5 = 405$.
+
+Even though our prior favored small values of $p$, the posterior distribution reflects the data, indicating that $p$ is around $0.597$. As the sample size increases, the influence of the prior diminishes, and the posterior distribution becomes more concentrated around the maximum likelihood estimate.
+\end{example}
+
+% Maximum likelihood estimator
+
+\subsection{Maximum Likelihood Estimator}
+
+The Maximum Likelihood Estimator (abreviated MLE) is a method of estimating the parameters of a probability model. It is one of the most commonly used techniques in statistics for fitting model parameters to observed data. The core idea behind MLE is to find the parameter values that maximize a likelihood function, which represents the probability of observing the given data under the model. MLE is widely used due to its desirable properties for large samples, but its effectiveness relies on correct model specification and may struggle with small sample sizes or computational difficulties.
+
+The likelihood represents the probability (or likelihood) of observing the data as a function of the parameters of the model.
+
+\begin{definition}
+Let \( X_1, X_2, \dots, X_n \) be $n$ independent and identically distributed discrete random variables, and let \( P(X_i = x_i \mid \theta) \) be the probability mass function of \( X_i \), where \( \theta \in \Theta \) is an unknown parameter, and \( \Theta \) is the parameter space. The \emph{likelihood function}\index{Likelihood function} is then defined as:
+\[
+L(\theta \mid X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i = x_i \mid \theta)
+\]
+where \( x_1, x_2, \dots, x_n \) are the observed data points.
+\end{definition}
+
+The likelihood function is a product of probabilities. Taking the logarithm of the likelihoodm, what it is called the \emph{log-likelihood function}\index{Log-likelihood function}, simplifies this product into a sum:
+\[
+\ell(\theta \mid X_1, X_2, \dots, X_n) = \log L(\theta \mid X_1, X_2, \dots, X_n) = \sum_{i=1}^{n} \log f(X_i \mid \theta)
+\]
+Sums are generally much easier to work with than products, particularly when performing differentiation for optimization purposes. This transformation makes it more straightforward to compute derivatives and apply optimization algorithms.
+
+Maximum likelihood estimation is a method that determines values for the parameters of a model. The parameter values are found such that they maximise the likelihood that the process described by the model produced the data that were actually observed.
+
+\begin{definition}
+The \emph{Maximum Likelihood Estimator}\index{Maximum Likelihood Estimator}, abreviated as MLE, for discrete random variables is defined as the parameter value that maximizes the likelihood function, i.e.,
+\[
+\hat{\theta}_n = \arg \max_{\theta \in \Theta} L(\theta \mid X_1, X_2, \dots, X_n)
+\]
+\end{definition}
+
+Equivalently, the MLE can also be found by maximizing the log-likelihood function:
+\[
+\hat{\theta}_n = \arg \max_{\theta \in \Theta} \ell(\theta \mid X_1, X_2, \dots, X_n)
+\]
+
+\begin{example}
+Consider \( X_1, X_2, \dots, X_n \) i.i.d. random variables from a Bernoulli distribution with parameter \( p \). The probability mass function is:
+\[
+P(X_i = x_i \mid p) = p^{x_i}(1 - p)^{1 - x_i}
+\]
+where \( X_i \in \{0, 1\} \). The likelihood function for this sample is:
+\[
+L(p \mid X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} p^{X_i}(1 - p)^{1 - X_i}
+\]
+Which can be rewritten as:
+\[
+L(p) = p^S (1 - p)^{n - S}
+\]
+where \( S = \sum_{i=1}^{n} X_i \) is the total number of successes (number of times \( X_i = 1 \)).  The function \( f(p) = p^a (1 - p)^b \) attains its maximum at \( p = \dfrac{a}{a + b} \). In our case, \( a = S \) and \( b = n - S \), so the likelihood function \( L(p) \) reaches its maximum at:
+\[
+\hat{p} = \dfrac{S}{S + (n - S)} = \dfrac{S}{n}
+\]
+Therefore, the maximum likelihood estimator for \( p \) is:
+\[
+\hat{p} = \dfrac{1}{n} \sum_{i=1}^{n} X_i
+\]
+which is simply the sample mean of the Bernoulli trials (the proportion of successes).
+\end{example}
+
+The maximun likelihood estimator is consitant.
+
+\begin{proposition}
+Let \( \hat{\theta}_n \) be the MLE for \( \theta \) when the random variables are discrete. Under regularity conditions (such as identifiability of the model and the existence of a unique maximizer of the likelihood function), the MLE is consistent, i.e.,
+\[
+\hat{\theta}_n \xrightarrow{\text{P}} \theta_0 \quad \text{as} \quad n \to \infty
+\]
+where \( \theta_0 \) is the true value of the parameter.
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Finish}
+1. Show that the expected log-likelihood is maximized at the true parameter \( \theta_0 \).
+2. Prove that the empirical likelihood function converges uniformly to the expected log-likelihood as the sample size increases.
+3. Establish that \( \hat{\theta}_n \) converges to \( \theta_0 \) as \( n \to \infty \).
+\end{proof}
+
+The MLE has several notable disadvantages. Firstly, it is highly dependent on sample size; for small samples, MLE may exhibit bias or high variance, as its desirable asymptotic properties, such as consistency, are guaranteed only for large datasets. Additionally, MLE requires correct model specification. It is sensitive to assumptions about the underlying model, and if the model is misspecified, the resulting estimates can be misleading. From a computational perspective, maximizing the likelihood function can pose numerical challenges, often necessitating complex optimization techniques that are computationally demanding and may result in convergence to local rather than global maxima. Furthermore, MLE is sensitive to outliers; since it seeks to maximize the likelihood based on observed data, extreme values can disproportionately affect the estimates, leading to distortions.
+
+\begin{example}
+Consider a situation where we are dealing with a uniform distribution \( U(0, \theta) \), where \( \theta \) is the unknown upper bound of the distribution. We have a sample \( X_1, X_2, \dots, X_n \) of i.i.d. observations from this distribution, and we wish to estimate the parameter \( \theta \) using the maximum likelihood estimator. The log-likelihood function is:
+\[
+\ell(\theta \mid X_1, X_2, \dots, X_n) = -n \log \theta, \quad \text{subject to} \quad \theta \geq \max(X_1, X_2, \dots, X_n)
+\]
+To maximize the log-likelihood, observe that \( \ell(\theta) \) is a decreasing function of \( \theta \). Therefore, the maximum likelihood occurs when \( \theta \) is minimized, subject to the constraint \( \theta \geq \max(X_1, X_2, \dots, X_n) \). Hence, the MLE for \( \theta \) is:
+\[
+\hat{\theta} = \max(X_1, X_2, \dots, X_n)
+\]
+The MLE \( \hat{\theta} \) tends to underestimate the true value of \( \theta \) when the sample size is small. This is because the maximum observation in a sample is unlikely to exactly reach the true upper bound, leading to a systematic bias. For example, if \( \theta = 10 \) and we take a sample of size 5, the expected value of \( \hat{\theta} \) is \( \frac{5}{6} \cdot 10 = 8.33 \), meaning we systematically underestimate the true parameter.
+
+Since the MLE depends only on the maximum observed value, the estimate \( \hat{\theta} \) is highly sensitive to outliers. If an unusually large value appears in the sample, it can drastically inflate the estimate of \( \theta \), even if the rest of the data suggests a much smaller upper bound. This makes the MLE fragile in the presence of anomalous observations.
+
+Another issue with the MLE in this case is that it ignores most of the data. The MLE is solely determined by the largest value in the sample, meaning the other \( n-1 \) data points do not contribute to the estimate. This seems inefficient because the estimator does not use all available information, which could be helpful in producing a more reliable estimate.
+\end{example}
 
 % Bayesian Inference
 
@@ -169,19 +287,6 @@ The theory of Bayes estimators provies a satisfactory and coherent theory for th
 
 }
 
-% Non-Bayesian Inference
-
-\subsection{Non-Bayesian Inference}
-
-We would like to infer a statement about which model, or which parameters for a model, we should prefer given the collected data.
-
-\begin{definition}
-    Let $f$ be the distribution of a random variable $X$ with parameter $\theta$. We call $Pr(X \mid \theta)$ the \emph{likelihood function}.
-\end{definition}
-
-{\color{red} Maximum likelihood estimation is a method that determines values for the parameters of a model. The parameter values are found such that they maximise the likelihood that the process described by the model produced the data that were actually observed.}
-
-Let $\Theta$ be a family of models (probability distributions) with a discrete parameter $\left\{ \theta_1,\theta_2,\ldots \right\}$ and with prior probabilities $Pr\left(\theta_i \right)$, $\theta_i$ could be a single scalar value or a vector value, and let $x$ the data collected {\color{red} iid}. For each model $\theta$, we assume the probability of getting data x given model $\theta$, $Pr\left(x\mid\theta\right)$, is known. The \emph{Maximum Likelihood Estimator}, or MLE, selects as best estimate the value of $\theta$ that maximizes the likelihood $f\left(x\mid\theta\right)$.
 
 
 

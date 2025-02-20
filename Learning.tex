@@ -29,12 +29,20 @@ Most of the learning algorithms used today in practice are known since forty yea
 %
 
 \section{Statistical Inference}
- 
-\emph{Statistical inference} is the branch of probability that allows us to make reasoned conclusions about an underlying population by analyzing data. From predicting election outcomes to estimating the effectiveness of new drugs, statistical inference plays a crucial role in decision-making under uncertainty. While descriptive statistics summarize and describe the main features of observed data, statistical inference takes this further by leveraging probability models to draw conclusions about the larger population.
 
-By utilizing data collected from samples, statistical inference helps us refine these probabilistic models and estimate unknown parameters that describe the population. Unlike probability theory, which forms the foundation by providing the rules for handling uncertainty, statistical inference applies these rules to real-world data, turning theory into practice.
+\emph{Statistical inference}\index{Statistical inference} has traditionally been presented as the way to make sense of reality through data. It applies probabilistic models to relate finite observations to broader populations, aiming to offer predictions and structured conclusions. However, statistical inference is not a direct reflection of reality but rather a tool that depends heavily on assumptions and idealized models. These models simplify complex phenomena, and the validity of their conclusions relies on how well these assumptions align with the underlying data-generating processes.
 
-In this section, we focus on parameter estimation within probabilistic models. Two primary approaches to estimation will be explored: maximum likelihood estimation and Bayes estimators. While other techniques such as hypothesis testing and experimental design are also part of statistical inference, these are beyond the scope of this chapter and are not required for the purposes of this book.
+The random sampling model serves as a stepwise framework in statistical inference, guiding how we connect finite samples to broader populations:
+
+Step 1.- Defining the Population and Collecting Data: The first step is to define the population of interest and determine how data will be collected. This involves specifying the sampling process and ensuring that each data point is drawn independently and identically distributed (iid) from the same population, with every unit having a nonzero probability of selection. Once the sampling process is defined, data is collected as a sample from the population, and each observation is treated as a realization of a random variable following the specified distribution.
+
+Step 2.- Constructing and Checking the Random Sampling Model: Based on the assumptions about how the data was generated, the random sampling model is mathematically expressed. For example, , where  is the unknown population distribution with parameter . This step formalizes the relationship between the data and the population. Real-world data rarely fits these idealized assumptions perfectly, so it is essential to check for deviations such as selection biases or lack of independence and address them appropriately.
+
+Step 3.- Applying the Likelihood Function and Estimating Parameters: The likelihood function plays a central role in parameter estimation by quantifying how plausible different parameter values are given the observed data . Methods such as maximum likelihood estimation (MLE) or Bayesian inference refine these estimates, translating raw data into structured knowledge about the population. For example, the sample mean  is often used as an estimate of the population mean .
+
+Step 4.- Quantifying Uncertainty and Generalizing to the Population: Recognizing that the sample is just one realization of a random process, uncertainty must be quantified to understand how sample statistics behave across repeated samples. Sampling distributions, confidence intervals, and hypothesis tests help describe this variability. The Central Limit Theorem ensures that for large samples, the sample mean  approximates a normal distribution, making inference more reliable. Finally, results are generalized from the sample to the population using frequentist methods such as confidence intervals and p-values or Bayesian methods that update beliefs about  by incorporating prior knowledge.
+
+The random sampling model provides a structured, step-by-step approach for making inferences from data. However, each step depends on assumptions that rarely hold perfectly in practice. As such, conclusions drawn from statistical inference should be viewed as tentative and context-dependent, subject to revision when new data or insights become available.
 
 \begin{definition}
 A \emph{statistical model}\index{Statistical model} is a random variable, together with a specification of its probability distribution, and the identification of the parameters, denoted by $\theta$, of that distribution.
@@ -71,24 +79,6 @@ The estimator itself is a random variable, and its probability distribution can 
 Estimators help us estimate the quantities of interest in statistical inference and quantitatively assess the quality of the results. A good estimator is one where it is highly likely that the error $\delta(\mathbf{X}) - \theta$ will be close to zero.
 
 In practice, we begin our analysis by deriving a distribution for the parameter $\theta$ based on theoretical assumptions and our current knowledge of the experiment.
-
-\begin{definition}
-Let $f$ be the distribution of a random variable $X$ with parameter $\theta$. The probability distribution of the parameter $\theta$, denoted by $\xi\left(\theta\right)$, is called the \emph{prior distribution}.
-\end{definition}
-
-The prior distribution must be defined over the parameter space $\Theta$. It is called the prior distribution because it represents our knowledge or belief about the parameter $\theta$ before observing any data.
-
-\begin{definition}
-Let $f$ be the probability mass function of a random variable $X$ with parameter $\theta$, and let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be a random sample from $X$. The conditional probability distribution of the parameter $\theta$ given the observed values $X_1 = x_1, \ldots, X_n = x_n$, denoted $\xi \left( \theta \mid x_1, \ldots, x_n \right)$, is called the \emph{posterior distribution}.
-\end{definition}
-
-The posterior distribution represents our updated knowledge of the parameter $\theta$ after taking into account the observed data.
-
-{\color{red}
-\begin{definition}
-A sequence of estimators that converges in probability to the unknown value of the parameter being estimated, as $n \rightarrow \infty$, is called a consistent sequence of estimators.
-\end{definition}
-}
 
 When selecting an estimator, it is important to measure how "good" an estimate is. One common approach is to quantify the loss or cost associated with choosing an estimate that deviates from the true parameter value. This is done using a loss function, which assigns a numerical penalty to the difference between the estimate and the actual parameter.
 
@@ -204,46 +194,106 @@ Since the MLE depends only on the maximum observed value, the estimate \( \hat{\
 Another issue with the MLE in this case is that it ignores most of the data. The MLE is solely determined by the largest value in the sample, meaning the other \( n-1 \) data points do not contribute to the estimate. This seems inefficient because the estimator does not use all available information, which could be helpful in producing a more reliable estimate.
 \end{example}
 
-% Bayes Estimator
+% Bayesian inference
 
-\subsection{Bayes Estimator}
-\label{sec:bayes_estimator}
+\subsection{Bayesian Inference}
+\label{sec:bayesian_inference}
 
-{\color{red} A Bayes estimator is an estimator that is chosen to minimize the posterior mean of some measure of how far the estimator is from the parameters, such as squared error or absolute error.}
-
-{\color{red} 
-
-Suppose we can observe the value $\mathbf{x}$ of the random vector $\mathbf{X}$ before estimating $\theta$, and let $\xi\left(\theta\mid\mathbf{x}\right)$ denote the posterior p.d.f. of $\theta$ on $\Omega$. For each estimate a the expected loss will be
-\[
-E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]=\int_{\Omega}L\left(\theta,a\right)\xi\left(\theta\mid\mathbf{x}\right)d\theta
-\]
+Unlike the Maximum Likelihood Estimator (MLE), which selects the parameter values that maximize the probability of the observed data, \emph{Bayesian inference}\index{Bayesian inference} takes a fundamentally different approach by treating parameters as probability distributions rather than fixed values. Bayesian inference also incorporates prior knowledge, allowing for an informed estimation process even before observing data. This approach enables Bayesian methods to dynamically update beliefs as new data becomes available. Bayes’ theorem (see Theorem \ref{th:Bayes_theorem})\index{Bayes theorem}) formalizes this process by combining a prior probability mass function with the likelihood of the observed data to produce a posterior probability mass function, which represents the updated belief about the parameter.
 
 \begin{definition}
-Let $L\left(\theta,a\right)$ be a loss function. For each possible value $\mathbf{x}$ of $\mathbf{X}$, let $\delta^{\ast}\left(\mathbf{x}\right)$ be a value of a such that $E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]$ is minimized. Then $\delta^{\ast}$ is called a \emph{Bayes estimator} of $\theta$. Once $\mathbf{X=\text{\ensuremath{\mathbf{x}}}}$ is observed, $\delta^{\ast}\left(\mathbf{x}\right)$ is called a \emph{Bayes estimate} of $\theta$.
+Let $f\left(X \mid \theta \right)$ be the probability mass function of a discrete random variable $X$ with parameter $\theta$. The probability distribution of the parameter $\theta$, denoted by $\xi\left(\theta\right)$, is called the \emph{prior distribution}\index{Prior distribution}.
+\end{definition}
+
+The prior distribution must be defined over the parameter space $\Theta$. It is called the prior distribution because it represents our knowledge or belief about the parameter $\theta$ before observing any data.
+
+\begin{definition}
+Let $f\left(X \mid \theta \right)$ be the probability mass function of a discrete random variable $X$ with parameter $\theta$, and let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be a random sample from $X$. The conditional probability mass function of the parameter $\theta$ given the observed values $X_1 = x_1, \ldots, X_n = x_n$, denoted $\xi \left( \theta \mid x_1, \ldots, x_n \right)$, is called the \emph{posterior distribution}\index{Posterior distribution}.
+\end{definition}
+
+The posterior distribution represents our updated knowledge of the parameter $\theta$ after taking into account the observed data. A strongly informative prior will dominate the posterior, while a weak or uniform prior will let the data speak for itself.
+
+The posterior pmf is computed using Bayes’ theorem:
+\[
+\xi(\theta \mid \mathbf{X}) = \frac{L(\mathbf{X} \mid \theta) \xi(\theta)}{P(\mathbf{X})}
+\]
+where:
+\begin{itemize}
+\item \(\xi(\theta)\) is the prior distribution, which encodes our belief about \(\theta\) before seeing the data.
+\item \(L(\mathbf{X} \mid \theta)\) is the likelihood function, representing the probability of observing the data given a particular value of \(\theta\).
+\item \(P(\mathbf{X})\) is the marginal probability, ensuring the posterior pmf is a valid probability mass function, computed as:
+\[
+P(\mathbf{X}) = \sum_{\theta \in \Theta} L(\mathbf{X} \mid \theta) \xi(\theta)
+\]
+\end{itemize}
+
+Thus, the posterior pmf $\xi(\theta \mid \mathbf{X})$ represents an updated belief about $\theta$ after incorporating the observed data.
+
+\begin{example}
+Suppose we have a biased coin with an unknown probability \(\theta\) of landing heads. We want to estimate \(\theta\) using Bayesian inference after observing a few coin flips. Before flipping the coin, we assume a prior belief about \(\theta\). Let's say we assume a uniform prior:
+\[
+\xi(\theta) = 
+\begin{cases}
+\frac{1}{3}, & \theta \in \{0.2, 0.5, 0.8\} \\
+0, & \text{otherwise}
+\end{cases}
+\]
+This prior suggests we believe \(\theta\) is equally likely to be 0.2, 0.5, or 0.8 before any data is observed. Now, we flip the coin \(n=3\) times and observe \(x=2\) heads. Assuming independent flips, the likelihood function is given by:
+\[
+p(X = x \mid \theta) = \binom{3}{2} \theta^2 (1 - \theta)^1
+\]
+For the possible values of \(\theta\):
+\[
+p(2 \mid 0.2) = \binom{3}{2} (0.2)^2 (0.8)^1 = 3(0.04)(0.8) = 0.096
+\]
+\[
+p(2 \mid 0.5) = \binom{3}{2} (0.5)^2 (0.5)^1 = 3(0.25)(0.5) = 0.375
+\]
+\[
+p(2 \mid 0.8) = \binom{3}{2} (0.8)^2 (0.2)^1 = 3(0.64)(0.2) = 0.384
+\]
+Using Bayes’ rule:
+\[
+\xi(\theta \mid X = 2) = \frac{p(X = 2 \mid \theta) \xi(\theta)}{P(X = 2)}
+\]
+where the denominator is the marginal probability:
+\[
+P(X = 2) = \sum_{\theta} p(X = 2 \mid \theta) \xi(\theta)
+\]
+\[
+P(X = 2) = (0.096 \times \frac{1}{3}) + (0.375 \times \frac{1}{3}) + (0.384 \times \frac{1}{3})
+\]
+\[
+P(X = 2) = 0.032 + 0.125 + 0.128 = 0.285
+\]
+Now, calculating the posterior probabilities:
+\[
+\xi(0.2 \mid X = 2) = \frac{0.096 \times \frac{1}{3}}{0.285} = \frac{0.032}{0.285} \approx 0.112
+\]
+\[
+\xi(0.5 \mid X = 2) = \frac{0.375 \times \frac{1}{3}}{0.285} = \frac{0.125}{0.285} \approx 0.439
+\]
+\[
+\xi(0.8 \mid X = 2) = \frac{0.384 \times \frac{1}{3}}{0.285} = \frac{0.128}{0.285} \approx 0.449
+\]
+Before observing the data, we believed \(\theta\) was equally likely to be 0.2, 0.5, or 0.8. After observing 2 heads in 3 flips, our belief has shifted: the most probable value for \(\theta\) is now 0.8 (44.9\% probability), followed by 0.5 (43.9\% probability). The probability that \(\theta = 0.2\) has dropped significantly to 11.2\%.
+\end{example}
+
+A Bayes estimator is a point estimate derived from the posterior distribution in Bayesian inference, similar to the Maximum Likelihood Estimator (MLE), which selects the parameter values that maximize the likelihood function. However, while MLE relies solely on observed data, the Bayes estimator incorporates both prior knowledge and observed data through the posterior distribution. It is a single value that represents the "best guess" for the unknown parameter by minimizing the expected loss under a given loss function.
+
+Suppose we can observe the value $\mathbf{x}$ of the random vector $\mathbf{X}$ before estimating $\theta$, and let $\xi\left(\theta\mid\mathbf{x}\right)$ denote the posterior pmf of $\theta$ on $\Omega$. For each estimate $a$ the expected loss will be
+\[
+E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]=\sum_{\theta \in \Theta} L\left(\theta,a\right)\xi\left(\theta\mid\mathbf{x}\right)
+\]
+\begin{definition}
+Let $L\left(\theta,a\right)$ be a loss function. For each possible value $\mathbf{x}$ of $\mathbf{X}$, let $\delta^{\ast}\left(\mathbf{x}\right)$ be a value of $a$ such that $E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]$ is minimized. Then $\delta^{\ast}$ is called a \emph{Bayes estimator} of $\theta$. Once $\mathbf{X=\text{\ensuremath{\mathbf{x}}}}$ is observed, $\delta^{\ast}\left(\mathbf{x}\right)$ is called a \emph{Bayes estimate} of $\theta$.
 \end{definition}
 
 Another way to describe a Bayes estimator $\delta^{\ast}$ is to note that, for each possible value $\mathbf{x}$ of $\mathbf{X}$, the value $\delta^{\ast}\left( \mathbf{x} \right)$ is chosen so that
 \[
 E\left[L\left(\theta, \delta^{\ast}\left(\mathbf{x}\right) \right)\mid \mathbf{x} \right] = \min_{\forall a} E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]
 \]
-
-The Bayes estimator will depend on both the loss function that is used in the problem and the prior distribution that is assigned to $\theta$.
-
-Under fairly general conditions and for a wide class of loss functions, the Bayes estimators of some parameters $\theta$ will form a consistent sequence of estimators as the sample size $n \rightarrow \infty$.
-
-The theory of Bayes estimators provies a satisfactory and coherent theory for the estimation of parameters. To apply the theory, it is necessary to specify a particular loss function, and also a prior distribution for the parameter. It is specially difficult to specify a meaningful prior distribution on the multidimensional parameter space $\Omega$.
-
-\begin{proposition}
-Let $\theta$ be a real-valued parameter. Suppose that the squared error loss function is used and that the posterior mean of $\theta$, $E\left(\theta\mid\mathbf{X}\right)$, is finite. Then, a Bayes estimator of $\theta$ is $\delta^{\ast}\left(\mathbf{X}\right)=E\left(\theta\mid\mathbf{X}\right)$.
-\end{proposition}
-
-\begin{proposition}
-When the absolute error loss function is used, a Bayes estimator of a real-valued parameter $\delta^{\ast}\left(\mathbf{X}\right)$ equal to a median of the posterior distributin of $\theta$.
-\end{proposition}
-
-}
-
-
+The theory of Bayes estimators provides a satisfactory and coherent theory for the estimation of parameters. To apply the theory, it is necessary to specify a particular loss function, and also a prior distribution for the parameter. Specifying a meaningful prior distribution in a multidimensional parameter space $\Omega$ is particularly challenging because it requires incorporating dependencies between multiple parameters, which may not be well understood. Additionally, computational complexity increases significantly as the number of parameters grows, making posterior calculations more difficult.
 
 %
 % Section: Machine Learning

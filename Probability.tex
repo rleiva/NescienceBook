@@ -22,6 +22,8 @@ The importance of probability theory extends far beyond games of chance. It prov
 
 In this chapter, we are going to focus on the area of discrete probability. In this version of the theory, the possible outcomes of an event are finite or, at most, countably infinite. We are interested in discrete probability, first because of its practical applications in the area of learning from data, and second, because discrete probability has some very interesting connections to theories used in this book: the length of optimal codes, the probability that a random machine will halt, and the derivation of universal distributions based on Kolmogorov complexity. All of these connections are relevant to our theory of nescience.
 
+{\color{red} On a philosophical level, it might be argued that there can only be countable sample spaces, since measurements cannot be made with infinite accuracy. [...] While in practice this is true, probabilistic and statistical methods associated with uncountable sample spaces are, in general, less cumbersome than those for countable spaces, and privde a close approximation to the true (countable) situation.}
+
 We will cover only the most important concepts and results of probability theory. The contents have been selected based on their applicability to the theory of nescience. For example, moment-generating functions are not covered. For a more comprehensive introduction to probability theory refer to the references section of this chapter.
 
 We are going to study probability theory from a formal, axiomatic point of view. We will start by formulating a basic collection of fundamental axioms and then derive the major results and properties from them. Axioms are crucial in mathematical theory because they provide the foundation for constructing a consistent, universal, and rigorous framework. In probability theory, they allow us to define and manipulate the elusive concept of probability in a way that is both precise and broadly applicable.
@@ -38,6 +40,10 @@ The concept of \emph{probability} represents a profound intellectual challenge. 
 The \emph{frequentist interpretation}\index{Frequentist interpretation of probability} of probability posits that one should roll the dice multiple times and contrast the frequency of even numbers with the total number of rolls. The fundamental notion is to execute the experiments repeatedly under similar conditions and assign the relative frequency of each outcome as its probability. This interpretation, however, faces two primary limitations. Firstly, the definition of repeating an experiment under "similar conditions" remains vague; if the conditions were truly identical, the results across all trials would invariably be the same. Secondly, the notion of a "large number of times" is undefined (technically, the experiment should be executed an infinite number of times). From a practical standpoint, implementing the frequentist interpretation is fraught with challenges. Some experiments, such as predicting the probability of a candidate winning an election, cannot be repeated multiple times. Furthermore, probability is defined in the context of a sequence of experiments, hence precluding the computation of the probability of a solitary outcome. Lastly, this interpretation necessitates the existence of a relative frequency limit, a condition which is not always satisfied, as illustrated by financial time series.
 
 The \emph{subjective interpretation}\index{Subjective interpretation of probability}, representing a third approach to the concept of probability, suggests assigning probabilities to each event that reflect our degree of belief: the higher our conviction in the event's occurrence, the greater its assigned probability. However, it's important to note that not all potential probability allocations are viable; certain coherence rules need to be satisfied. For instance, when placing bets on the outcome of a dice roll, an assignment of probabilities that ensures a complete loss of money - a scenario known as a \emph{dutch book}\index{Dutch book} - would contravene the conditions of the subjective interpretation. It transpires that the conditions both necessary and sufficient to ensure a fair bet align with the axioms of probability introduced subsequently. Hence, we are free to assign any probabilities we desire to events, provided they remain consistent with the axioms of probability. A key drawback of the subjective interpretation is the inherent variability in individuals' degrees of belief. The \emph{Bayesian interpretation}\index{Bayesian interpretation of probability} of probability offers a solution: we commence with a provisional assignment of probabilities and, upon accruing further evidence, adjust our degree of belief or probability accordingly. With the accumulation of more evidence, estimated probabilities will converge to the true probabilities. Regardless, the task of assigning probabilities to an infinite number of events is typically unattainable for humans in general.
+
+{\color{red} Probability theory builds upon set theory}
+
+{\color{red} We do not define probabilities in terms of frequencies but instead take the mathematically simpler axiomatic approach. [...] The axiomatic approach is not concerned with the interpretation of probabilities, but is concerned only that the probabilities are defined by a function satisfying the axioms.}
 
 Currently, the notion of probability is defined axiomatically via the \emph{axiomatic interpretation}\index{Axiomatic interpretation of probability}. This implies that we abandon attempts to explicitly define the concept of probability and instead accept some of its properties as inherently true. Intuitively, a probability should be a value between $0$ and $1$, wherein an event with a zero probability is deemed impossible, and an event with a probability of one is certain to occur. Additional properties are required of probabilities. For instance, should two events $A$ and $B$ with probabilities $P \left( A \right)$ and $P \left( B \right)$ respectively, be disjoint, the probability of either $A$ or $B$ occurring should be $P \left( A \right) + P \left( B \right)$. If $A$ and $B$ could occur simultaneously and are independent (however that is defined), the probability of both events occurring concurrently should be $P \left( A \right) P \left( B \right)$. Moreover, the probability of $A$ occurring given that $B$ has already happened should be the fraction of the probability of $A$ that intersects with $B$. Anything that satisfies these properties could be considered a probability.
 
@@ -73,6 +79,22 @@ Despite their significance, the Kolmogorov axioms encounter certain complexities
 \label{ex:discrete_sample_space}
 Consider a sample space $\Omega$ composed of $n$ equally probable elements. If we have an event $A \subset \Omega$ comprised of $d(A) = m$ elements, then the probability of event $A$ can be represented as $P(A) = m/n$.
 \end{example}
+
+{\color{red}
+
+We need general methods of defining probability functions that we know will always satisfy Kolmogorov's Axioms.
+
+\begin{proposition}
+Let $\mathcal{S} = \{ s_1, \ldots, s_n \}$ be a finite set. Let $\mathcal{B}$ be any sigma algebra of subsets of $\mathcal{S}$. Let $p_1, \ldots, p_n$ be nonnegative numbers that sum to 1. For any $A \in \mathcal{B}$, define $P(A)$ by:
+\[
+P(A) = \sum_\{ i : s_i \in A \} p_i
+\]
+(The sum over an empty set is defined to be 0.) Then $P$ is a probability function on $\mathcal{B}$. This remains true if $\mathcal{S} = \{ s_1, s_2, \ldots \}$ is a countable set.
+\end{proposition}
+\begin{proof}
+\end{proof}
+
+}
 
 We now venture to establish certain fundamental theorems concerning probabilities, beginning with the calculation of the complement of an event, which represents the probability of an event not occurring.
 
@@ -154,7 +176,7 @@ In Example \ref{ex:discrete_sample_space}, we introduced a discrete probability 
 The principle of conditional probability is a cornerstone within the discipline of statistical learning. Conditional probability allow us refine the probability of an event based on new information or conditions. Under the axiomatization prescribed by Kolmogorov, conditional probability is introduced as a definition.
 
 \begin{definition}
-Let $A$ and $B$ be two events such that $P \left( B \right) \neq 0$. The \emph{conditional probability}\index{Conditional probability} of $A$ given $B$, symbolized as $P \left( A \mid B \right)$, is defined as:
+Let $A$ and $B$ be two events such that $P \left( B \right) > 0$. The \emph{conditional probability}\index{Conditional probability} of $A$ given $B$, denoted by $P \left( A \mid B \right)$, is defined as:
 \[
 P\left(A\mid B\right) = \frac{P\left(A\cap B\right)}{P\left(B\right)}
 \]
@@ -186,6 +208,8 @@ Two events $A$ and $B$ are declared to be \emph{independent} if $P \left( A \cap
 
 From an intuitive perspective, the events $A$ and $B$ are considered independent if witnessing the occurrence of event B does not influence the probability of event A. This characteristic can be logically inferred from the definition of independence.
 
+{\color{red} I think it is better start with this intuition, and then provide the defintion of independence. See Casella.}
+
 \begin{proposition}
 Given two events $A$ and $B$ such that $P \left( A \right) > 0$ and $P \left( B \right)>0$, $A$ and $B$ are independent if and only if $P \left( A \mid B\right) = P \left( A \right)$.
 \end{proposition}
@@ -205,6 +229,8 @@ If $P \left( A \mid B\right) = P \left( A \right)$ we have also that $P \left( B
 Similar to the case of conditional probability, certain authors posit that independence, as a foundational concept in probability theory, ought to be a logical extension of the axioms, rather than being imposed as a definition.
 
 The principle of independence can be expanded to accommodate multiple events: the events $A_{1}, \ldots, A_{n}$ are deemed to be independent (or mutually independent) if for every subset $A_{i_1}, \ldots, A_{i_j}$ comprising $j$ events $\left( j = 2, 3, \ldots, n \right)$, it holds true that $P \left( A_{i_1} \cap \ldots \cap A_{i_j} \right) = P \left( A_{i_1} \right) \ldots P \left( A_{i_j}\right)$.
+
+{\color{red} Perhaps mention that it is not sufficient with pairwise independence.}
 
 \begin{example}
 A degree of confusion often arises regarding the distinction between mutually exclusive (or disjoint) events and independent events. For two mutually exclusive events $A$ and $B$, the computation of the probability that $A$ will transpire given $B$ is somewhat nonsensical, since if $B$ occurs, $A$ is inherently impossible. Analogously, discussing the conditional probability that $A$ will occur given $B$ when the probability of $B$ is zero is likewise flawed. However, as Definition \ref{independent_events} does not explicitly exclude the instance of $A$ and $B$ being mutually exclusive, we are compelled to conclude that two mutually exclusive events are independent if, and only if, the probability of at least one (or both) of them is zero.
@@ -342,6 +368,15 @@ Considering that $X$ is a total function, that each outcome in the sample space 
 \end{split}
 \end{equation*}
 \end{proof}
+
+{\color{red}
+\begin{proposition}
+A function $f(x)$ is a probability mass function of a random variable $X$ if, and only if, i) $f(x) \geq 0$ for all $x$, ii) $\sum_{i=1}^{\infty} f(x_i) = 1$.
+\end{proposition}
+\begin{proof}
+TODO
+\end{proof}
+}
 
 The cumulative distribution function represents the probability that a random variable takes on a value less than or equal to a specific point.
 
@@ -1306,6 +1341,8 @@ This distribution is especially useful in areas such as manufacturing, education
 \label{sec:probability_random_samples}
 
 A random sample is a collection of independent and identically distributed random variables. Random samples are fundamental in probability theory, providing a basis for making inferences about an unknown probability distribution. Two key results that arise from random samples are the law of large numbers, which ensures that the sample mean converges to the expected value of the distribution as the sample size increases, and the central limit theorem, which states that the distribution of the sample mean approaches a normal distribution as the sample size becomes large, regardless of the original population's distribution.
+
+{\color{red} [...] statistical methods do not directly describe reality but provide a conceptual framework (i.e., a model) for understanding how data is generated and how we can make inferences about the population from which the data comes. [...] Random sampling assumes that every member of the population has an equal probability of being selected, and selections are independent of one another. This means the sample is a simplified, idealized representation of how real-world data might be generated. [...] The model assumes perfect randomness, which rarely occurs in practice. True random sampling is often an unattainable ideal, but it provides a baseline against which deviations can be measured. [...] Random sampling allows for the development of probability distributions that describe the expected behavior of sample statistics (e.g., sample mean, variance). This makes it possible to quantify uncertainty and draw conclusions about the population. [...] The random sampling model is a representation of how data might be collected, but it is not the same as reality [...] models are tools that work well in specific contexts, but their assumptions often do not hold universally. The practical use of random sampling depends on how well the model fits the real-world context. }
 
 % Random Samples
 

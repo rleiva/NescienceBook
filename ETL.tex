@@ -1,0 +1,226 @@
+%
+% Appendix - Appendix: Wikipedia Data Processing
+%
+
+\chapterimage{TuringMachine.pdf} % Chapter heading image
+
+\chapter{Appendix: Wikipedia Data Processing}
+\label{apx:wikipedia}
+
+\begin{quote}
+\begin{flushright}
+\emph{We are to admit no more causes of natural things \\
+than such as are both true and sufficient \\
+to explain their appearances.}\\
+Isaac Newton
+\end{flushright}
+\end{quote}
+\bigskip
+
+Wikipedia dumps\footnote{\texttt{http://dumps.wikimedia.org/enwiki/latest/}} are periodic, downloadable backups of Wikipedia's content, including full article texts, edit histories, and metadata. They are provided in structured formats like XML or SQL, allowing researchers, developers, and archivists to analyze or reuse Wikipedia data offline. A full dump of all the Wikipedia information requires 4.5 TB of storage (Feb 2019). Fortunately, we do not requre the full dump, since our interest is restricted to scientific pages, and only in the text of these pages.
+
+We start by dow
+
+\texttt{http://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2}
+
+\texttt{wikiextractor --json -c -o extracted enwiki-latest-pages-articles.xml.bz2}
+
+\texttt{https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-page.sql.gz}
+
+\texttt{https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-categorylinks.sql.gz}
+
+\texttt{https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pagelinks.sql.gz}
+
+{\color{red} TODO: Describe Mediawiki dabase, and database schema.}
+
+{\color{red} Describe the \texttt{pagelinks} table.}
+
+This query selects all non-redirect pages within the main namespace (i.e., actual articles, defined by \texttt{page\_namespace = 0} and \texttt{page\_is\_redirect = 0}), while excluding pages that belong to certain specified categories. The resulting pages are exported to a file in CSV format (fields enclosed by double quotes, separated by semicolons, and each row placed on a new line).
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+SELECT
+    categorylinks.cl_to, page.page_title
+FROM
+    page, categorylinks
+WHERE
+    page.page_id = categorylinks.cl_from
+AND
+    categorylinks.cl_type = 'page'
+AND
+    page.page_namespace = 0
+AND 
+    page.page_is_redirect = 0
+AND page.page_id NOT IN (
+        SELECT
+            cl_from
+        FROM
+            categorylinks
+        WHERE
+            cl_to = 'All_article_disambiguation_pages'
+
+            /* Spam, vandalism, ...*/
+           OR cl_to = 'Candidates_for_speedy_deletion'
+
+            /* Stub categories */
+           OR cl_to = 'All_stub_articles'
+           OR cl_to LIKE '%_stubs%'
+           OR cl_to LIKE '%_stub_%'
+           OR cl_to LIKE '%Stub-Class_%'
+
+            /* People or institutions */
+           OR cl_to LIKE '%_theorists%'
+           OR cl_to LIKE '%_researchers%'
+           OR cl_to LIKE '%_scientists%'
+           OR cl_to LIKE '%Professorships_in%'
+           OR cl_to LIKE '%_organizations%'
+
+            /* Secondary culture or recognition */
+           OR cl_to LIKE '%_books%'
+           OR cl_to LIKE '%_awards%'
+           OR cl_to LIKE '%_competitions%'
+           OR cl_to LIKE '%_literature%'
+           OR cl_to LIKE '%_prizes%'
+           OR cl_to LIKE '%_events%'
+           OR cl_to LIKE '%_conferences%'
+           OR cl_to LIKE '%Books_about%'
+
+            /* Publications */
+           OR cl_to LIKE '%_websites%'
+           OR cl_to LIKE '%_journals%'
+
+            /* Wikipedia portals  */
+           OR cl_to LIKE '%_portals%'
+
+            /* Lists and enumerations */
+           OR cl_to LIKE '%_lists%'
+           OR cl_to LIKE '%_list_%'
+           OR cl_to LIKE 'List_of%'
+           OR cl_to LIKE 'Outline_of%'
+           OR cl_to LIKE 'Index_of%'
+           
+            /* Class and maintenance categories */
+           OR cl_to LIKE '%List-Class%'
+           OR cl_to LIKE '%Disambiguation-Class%'
+           OR cl_to LIKE '%Redirect-Class%'
+           OR cl_to LIKE '%Template-Class%'
+           OR cl_to LIKE '%WikiProject_science_articles_needing_attention%'
+           OR cl_to LIKE '%Articles_needing_additional_references%'
+           OR cl_to LIKE '%Articles_with_unsourced_statements%'
+           OR cl_to LIKE '%Pages_needing_cleanup%'
+
+            /* Biographies */
+           OR cl_to LIKE '%_people'
+           OR cl_to LIKE '%living_people%'
+           OR cl_to LIKE '%births%'
+           OR cl_to LIKE '%deaths%'
+           OR cl_to LIKE '%Nobel_laureates_in_%'
+           OR cl_to LIKE '%_physicists%'
+           OR cl_to LIKE '%_chemists%'
+           
+            /* Set index */
+           OR cl_to LIKE '%set_index%'
+
+    )
+INTO OUTFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\PagesGraph.csv'
+FIELDS ENCLOSED BY '"'
+TERMINATED BY ';'
+ESCAPED BY '"'
+LINES TERMINATED BY '\n';
+\end{verbatim}}
+\end{sourcecode}
+
+The subquery within the \texttt{NOT IN (...)} clause identifies \texttt{page\_ids} associated with pages in the categories specified for exclusion, utilizing the \texttt{categorylinks} table. These categories, detailed below, represent content that is irrelevant for our analysis:
+
+\begin{itemize}
+
+\item Stub categories (e.g., \texttt{\_stubs}, \texttt{\_stub\_}, \texttt{Stub-Class\_}, \texttt{All\_stub\_articles}): Stub articles are typically incomplete or very brief, which makes them unsuitable for analysis using the theory of nescience, despite potentially containing unique but insufficiently documented topics.
+
+\item \texttt{Candidates\_for\_speedy\_deletion}: These articles are flagged by Wikipedia for quick removal, usually due to spam, vandalism, or obvious lack of significance, and thus rarely hold analytical value.
+
+\item Categories relating to individuals or institutions (e.g., \texttt{\_theorists}, \texttt{\_researchers}, \texttt{\_scientists}, \texttt{Professorships\_in}, \texttt{\_organizations}): Our focus is strictly on concepts or phenomena (e.g., physical concepts, chemical substances), so biographical or institutional articles are excluded.
+
+\item Categories covering books, literature, awards, prizes, events, and conferences (e.g., \texttt{\_books}, \texttt{\_awards}, \texttt{\_literature}, \texttt{\_prizes}, \texttt{\_events}, \texttt{\_conferences}, \texttt{Books\_about}): We exclude content related to secondary cultural elements or recognitions, such as books and awards.
+
+\item Categories related to publications (\texttt{\_journals}, \texttt{\_websites}): These represent meta-information about publication venues rather than scientific content itself.
+
+\item \texttt{\_portals}: Wikipedia portals primarily serve navigation rather than providing article content.
+
+\item Lists and enumeration pages (categories such as \texttt{\_lists} or titles starting with \texttt{List\_of}, \texttt{Outline\_of}, \texttt{Index\_of}): These pages typically provide lists or catalogs (e.g., "List of scientists from Brazil") without substantive explanatory text.
+
+\item Classification or maintenance categories (\texttt{List-Class}, \texttt{Disambiguation-Class}, \texttt{Redirect-Class}, \texttt{Template-Class}, \texttt{WikiProject\_science\_articles\_needing\_attention}, \texttt{Articles\_needing\_additional\_references}, \texttt{Pages\_needing\_cleanup}, \texttt{Articles\_with\_unsourced\_statements}, etc.): These categories are editorial or maintenance-related, indicating content that is not directly useful for scientific analysis.
+
+\item Biography categories (\texttt{Living\_people}, \texttt{20th-century\_scientists}, \texttt{American\_physicists}, \texttt{Nobel\_laureates\_in\_Physics}, \texttt{Births}, \texttt{Deaths}, or categories organized by year such as \texttt{1918\_births}): Our research explicitly excludes biographies or organizational information.
+
+\item Portal, Book, or Draft namespace categories (e.g., \texttt{Wikipedia\_books\_on\_science}, \texttt{Draft\_articles}, \texttt{Portal:Physics}): These pages are primarily navigational or editorial and not typical article content.
+
+\item Disambiguation or set index categories (e.g., \texttt{All\_article\_disambiguation\_pages}, \texttt{Set\_indices\_on\_scientific\_topics}, \texttt{Disambiguation\_pages}, \texttt{Chemistry\_set\_index\_articles}): These are primarily navigation-oriented pages, offering minimal substantive explanatory content.
+
+\end{itemize}
+
+
+The follwing query extracts the subcategory–parent category relationships from the wikimedia database by looking at rows where \texttt{cl\_type = 'subcat'}. Each row in output file \texttt{SubcatGraph.csv} shows: the subcategory’s title (from \texttt{page.page\_title}), and the parent category name (from \texttt{cl\_to}). Essentially, the query it’s building a list of edges in the category hierarchy: child category to parent category. The same filters as the previous query are applied.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+SELECT
+    page.page_title, categorylinks.cl_to
+FROM
+    page, categorylinks
+WHERE
+    page.page_id = categorylinks.cl_from
+AND 
+    categorylinks.cl_type = 'subcat'
+
+/* Apply Filters */
+AND categorylinks.cl_to != 'All_article_disambiguation_pages'
+AND categorylinks.cl_to != 'Candidates_for_speedy_deletion'
+AND categorylinks.cl_to != 'All_stub_articles'
+AND categorylinks.cl_to NOT LIKE '%_stubs%'
+AND categorylinks.cl_to NOT LIKE '%_stub_%'
+AND categorylinks.cl_to NOT LIKE '%Stub-Class_%'
+AND categorylinks.cl_to NOT LIKE '%_theorists%'
+AND categorylinks.cl_to NOT LIKE '%_researchers%'
+AND categorylinks.cl_to NOT LIKE '%_scientists%'
+AND categorylinks.cl_to NOT LIKE '%Professorships_in%'
+AND categorylinks.cl_to NOT LIKE '%_organizations%'
+AND categorylinks.cl_to NOT LIKE '%_books%'
+AND categorylinks.cl_to NOT LIKE '%_awards%'
+AND categorylinks.cl_to NOT LIKE '%_competitions%'
+AND categorylinks.cl_to NOT LIKE '%_literature%'
+AND categorylinks.cl_to NOT LIKE '%_prizes%'
+AND categorylinks.cl_to NOT LIKE '%_events%'
+AND categorylinks.cl_to NOT LIKE '%_conferences%'
+AND categorylinks.cl_to NOT LIKE '%Books_about%'
+AND categorylinks.cl_to NOT LIKE '%_websites%'
+AND categorylinks.cl_to NOT LIKE '%_journals%'
+AND categorylinks.cl_to NOT LIKE '%_portals%'
+AND categorylinks.cl_to NOT LIKE '%_lists%'
+AND categorylinks.cl_to NOT LIKE '%_list_%'
+AND categorylinks.cl_to NOT LIKE 'List_of%'
+AND categorylinks.cl_to NOT LIKE 'Outline_of%'
+AND categorylinks.cl_to NOT LIKE 'Index_of%'
+AND categorylinks.cl_to NOT LIKE '%List-Class%'
+AND categorylinks.cl_to NOT LIKE '%Disambiguation-Class%'
+AND categorylinks.cl_to NOT LIKE '%Redirect-Class%'
+AND categorylinks.cl_to NOT LIKE '%Template-Class%'
+AND categorylinks.cl_to NOT LIKE '%WikiProject_science_articles_needing_attention%'
+AND categorylinks.cl_to NOT LIKE '%Articles_needing_additional_references%'
+AND categorylinks.cl_to NOT LIKE '%Articles_with_unsourced_statements%'
+AND categorylinks.cl_to NOT LIKE '%Pages_needing_cleanup%'
+AND categorylinks.cl_to NOT LIKE '%_people'
+AND categorylinks.cl_to NOT LIKE '%living_people%'
+AND categorylinks.cl_to NOT LIKE '%births%'
+AND categorylinks.cl_to NOT LIKE '%deaths%'
+AND categorylinks.cl_to NOT LIKE '%Nobel_laureates_in_%'
+AND categorylinks.cl_to NOT LIKE '%_physicists%'
+AND categorylinks.cl_to NOT LIKE '%_chemists%'
+AND categorylinks.cl_to NOT LIKE '%set_index%'
+INTO OUTFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\SubcatGraph.csv'
+FIELDS ENCLOSED BY '"'
+TERMINATED BY ';'
+ESCAPED BY '"'
+LINES TERMINATED BY '\n';
+\end{verbatim}}
+\end{sourcecode}
+

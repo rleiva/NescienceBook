@@ -302,11 +302,145 @@ The theory of Bayes estimators provides a satisfactory and coherent theory for t
 \section{Machine Learning}
 \label{sec:machine_learning}
 
-{\color{red} Rewrite this section using a schema of definition-proposition-proof.}
+{\color{red} Machine learning is the sicence of programming computers so they can learn from data.}
+
+{\color{red} "A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E" Tom Mitchell, 1997}
+
+{\color{red} Digging into large amounts of data to discover hidden patterns is called data mining, and machine learning excels at it.}
+
+
+\begin{definition}
+Let $\mathcal{S}$ be a set referred to as the \emph{population}\index{Population}. Its constituents are termed \emph{individuals}\index{Individual}.
+\end{definition}
+
+The set $\mathcal{S}$ must be well-defined, non-empty, and it can be either finite or infinite. 
+
+
+
 
 There is a controversy between mathematicians and computer scientists about the difference between statistical inference and machine learning. From our point of view there are important differences. In statistical inference, given a target variable $\mathbf{y}$ and a training data $\mathbf{X}$, the goal is to find a model that infer a value $\hat{y}_i$ that maximizes the probability $P(\hat{y}_i \mid \mathbf{x}_i)$; meanwhile, in machine learning, finding the value with the highest probability is not necessarily our objective, perhaps we are more interested in minimize the number of false positives, or minimize the number of errors among under-represented categories (see below). Another difference is that statistical inference models are mathematical functions, meanwhile machine learning models are usually computer programs that can not be easily manipulated algebraically. Finally, in statistics we are also interested in the mathematical properties of the methods in use, that is, if there exists a solution, if we can guarantee that search algorithms converge, and to estimate how far the selected models are from the real ones; in machine learning our interest is mostly finding models that work in practice, without caring too much about their mathematical properties. The goal of this book is to reconcile both worlds into one single theoretical framework.
 
-Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning we have a collection of training samples and the corresponding observed target values, and our interests is to predict the output of new, previously unseen, observations; meanwhile in \emph{unsupervised} learning there are no targets, just training samples, and what we are looking for is to learn the structure of the data. Supervised learning algorithms can be applied to \emph{regression} problems, where the value to predict is quantitative, and to solve \emph{classification} problems, where the targets are qualitative. \emph{Qualitative} attributes take values from a finite collection of distinct non-numerical categories, and so, no arithmetic operations can be applied to them, although in some cases they can be ranked in order. \emph{Quantitative} attributes are numerical, and they can be either \emph{discrete} if the range of possible values is countable, or \emph{continuous} if it is not countable.
+
+A variable is a symbol used to represent the characteristics or attributes of individuals within a population. It is called 'variable' because these attributes can vary from one individual to another, although from a pure mathematical perpective the term function might have been more appropriate.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population, and let $\mathcal{D}$ be the set containing all possible values that the individuals of $\mathcal{S}$ can assume. A variable $X$ is a function $X: \mathcal{S} \rightarrow \mathcal{D}$ that maps individuals from the population $\mathcal{S}$ to the values in $\mathcal{D}$.
+\end{definition}
+
+The set $\mathcal{D}$ can be any set, such as the real numbers, a set of integers, or a set of categorical labels. A variable is called a \emph{quantitative variable}\index{Quantitative variable} if it the elements of $\mathcal{S}$ can be measured numerically. These can be further classified as \emph{discrete variables}\index{Discrete variable} if they can take a countable number of distinct values, and \emph{continuous variables}\index{Continuous variable} if they can take any value within a given range or interval. A variable is called a \emph{qualitative}\index{Qualitative variable} or \emph{categorical variable}\index{Categorical variable} if it represents quantities that cannot be measured numerically. A qualitative variable can be a \emph{nominal variable}\index{Nominal variable} if no natural order exists among the categories, or an \emph{ordinal variable}\index{Ordinal variable} if a natural order exists among the categories.
+
+\begin{example}
+Consider a population consisting of the inhabitants of a small village, where we are interested in studying three attributes of these individuals: age, gender, and daily water consumption. The variable representing age, mapping individuals to their ages in years, is a quantitative discrete variable because it can be counted precisely in integer values. Gender, mapping individuals to categories like "Male" or "Female," is a qualitative nominal variable because the categories have no inherent order. Finally, daily water consumption, mapping individuals to the amount of water they drink in liters, is a quantitative continuous variable as it can take any real number within a range, reflecting precise measurements.
+\end{example}
+
+\emph{Qualitative} attributes take values from a finite collection of distinct non-numerical categories, and so, no arithmetic operations can be applied to them, although in some cases they can be ranked in order. \emph{Quantitative} attributes are numerical, and they can be either \emph{discrete} if the range of possible values is countable, or \emph{continuous} if it is not countable.
+
+% Multivariate Distributions
+
+\subsection{Multivariate Distributions}
+\label{sec:multivariate_distributions}
+
+{\color{red} TODO: Introduce the concept of multivariate distribution}
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{absolute frequency}\index{Absolute frequency}, also known simply as \emph{frequency}, denoted by $n_i$ for $1 \leq i \leq k$, quantifies the number of individuals in $\mathcal{S}$ for which $X$ assigns the value corresponding to the $i$-th category of $\mathcal{D}$.
+\end{definition}
+
+The sum of the frequencies must be equal to population size, that is, $\sum_{i=1}^k n_i = n$.
+
+% Marginal Distribution
+
+{\color{red} TODO: Marginal distributon}
+
+La suma de las frecuencias marginales es igual al tamaño de la población $\sum_{i=1}^k n_i = n$.
+
+Given a multivariate statistical vairable, the marginal distribution of a subset of variables is derived by summing the joint distribution over all possible values of the other variables. This process essentially "marginalizes" out the variables not of interest, allowing focus on the distribution of a single variable or a subset of variables within the multivariate context.
+
+\begin{definition}
+Let $\mathbf{X}$ be an $n$-dimensional statistical vector with a joint distribution $f_\mathbf{X}$. The \emph{marginal probability mass function}\index{Marginal probability mass function} of a subset of these variables, say $(X_1, X_2, \ldots, X_k)$ where $k \leq n$, is obtained by summing over the frequencies of the other variables $(X_{k+1}, \ldots, X_n)$. That is, for any subset of values $(x_1, x_2, \ldots, x_k)$ in the respective domains of $(X_1, X_2, \ldots, X_k)$,
+\[
+f_{X_1, X_2, \ldots, X_k}(x_1, x_2, \ldots, x_k) = \sum_{x_{k+1}} \sum_{x_{k+2}} \ldots \sum_{x_n} f_\mathbf{X}(x_1, x_2, \ldots, x_n)
+\]
+where $f_{X_1, X_2, \ldots, X_k}$ is the marginal probability mass function of the variables $(X_1, X_2, \ldots, X_k)$.
+\end{definition}
+
+This definition underscores the process of marginalization in a discrete setting, which is key to understanding and analyzing the behavior of specific variables within a larger multivariate framework.
+
+\begin{example}
+{\color{red} TODO: Provide an example based on random variables.}
+\end{example}
+
+While the marginal PMF of the random variables $X_1, \ldots, X_n$ can be obtained from their joint PMF by summing over the range of the other variables, the reverse process is not straightforward. Specifically, reconstructing the joint PMF of $X_1, \ldots, X_n$ from their marginal PMF alone is not feasible without extra information about the dependence between $X_1, \ldots, X_n$. This limitation arises because marginal PMF encapsulate only the individual behavior of each variable, omitting details about how the variables interact or are related.
+
+\begin{example}
+{\color{red} TODO: Provide an example based on random variables.}
+\end{example}
+
+A set of $n$ random variables $X_1, X_2, \ldots, X_n$ are considered independent if the occurrence of an event associated with any one of these variables does not influence the probability of an event associated with any other variable in the set. Independence among these variables indicates that there is no association or correlation among them, implying that knowing the outcome of one provides no information about the outcomes of the others.
+
+\begin{definition}
+A set of random variables $X_1, X_2, \ldots, X_n$ are said to be independent if, for every choice of sets $A_1, A_2, \ldots, A_n$ of real numbers such that each $\left\{ X_i \in A_i \right\}$ is an event, the joint probability of these events can be expressed as the product of their individual probabilities:
+\[
+P\left(X_1 \in A_1 \text{ and } X_2 \in A_2 \text{ and } \ldots \text{ and } X_n \in A_n\right) = P\left(X_1 \in A_1\right)P\left(X_2 \in A_2\right)\ldots P\left(X_n \in A_n\right)
+\]
+\end{definition}
+
+The concept of independence for a random vector $\mathbf{X}$ simplifies the computation and understanding of joint probability distributions, particularly in complex problems involving multiple variables. It allows the joint probability distribution of the vector $\mathbf{X}$ to be expressed as the product of the individual marginal distributions of $X_1, X_2, \ldots, X_n$. 
+
+\begin{proposition}
+A set of random variables \(X_1, X_2, \ldots, X_n\) forming a random vector \(\mathbf{X}\) are independent if and only if the following is satisfied for all real numbers \(x_1, x_2, \ldots, x_n\): 
+\[
+f\left(x_1, x_2, \ldots, x_n\right) = f_1\left(x_1\right) f_2\left(x_2\right) \ldots f_n\left(x_n\right)
+\]
+where \(f\) is the joint probability mass function (PMF) or probability density function (PDF) of \(\mathbf{X}\), and \(f_i(x_i)\) is the marginal PMF or PDF of \(X_i\).
+\end{proposition}
+
+\begin{proof}
+Assuming \(X_1, X_2, \ldots, X_n\) are independent, by definition, for any sets \(A_1, A_2, \ldots, A_n\) of real numbers, we have that 
+\[
+P(X_1 \in A_1 \text{ and } X_2 \in A_2 \text{ and } \ldots \text{ and } X_n \in A_n) = P(X_1 \in A_1)P(X_2 \in A_2)\ldots P(X_n \in A_n).
+\]
+Applying this definition to the PMFs or PDFs, for all \(x_1, x_2, \ldots, x_n\), the independence of \(X_1, X_2, \ldots, X_n\) implies 
+\[
+P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = P(X_1 = x_1)P(X_2 = x_2)\ldots P(X_n = x_n).
+\]
+Since \(P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f(x_1, x_2, \ldots, x_n)\), and the marginal probabilities \(P(X_i = x_i)\) are given by \(f_i(x_i)\) respectively, we get 
+\[
+f(x_1, x_2, \ldots, x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n).
+\]
+
+Conversely, assume that for all \(x_1, x_2, \ldots, x_n\), the joint PMF or PDF of \(\mathbf{X}\) can be expressed as 
+\[
+f(x_1, x_2, \ldots, x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n),
+\]
+where \(f_i(x_i)\) are the marginal PMFs or PDFs of \(X_i\) respectively. We need to show that this implies \(X_1, X_2, \ldots, X_n\) are independent. The probability that \(X_1, X_2, \ldots, X_n\) simultaneously take on values \(x_1, x_2, \ldots, x_n\) is given by 
+\[
+P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f(x_1, x_2, \ldots, x_n).
+\]
+Substituting the given condition into this expression yields 
+\[
+P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n).
+\]
+By the definition of independence, if the joint probability of any \(x_1, x_2, \ldots, x_n\) equals the product of their individual probabilities for all possible values of \(x_1, x_2, \ldots, x_n\), then \(X_1, X_2, \ldots, X_n\) must be independent.
+\end{proof}
+
+\begin{example}
+{\color{red} TODO: Provide an example based on random variables.}
+\end{example}
+
+
+{\color{red} TODO: Conditional distribution}
+
+
+
+
+{\color{red} Features, predictors or atttibutes.}
+
+Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning we have a collection of training samples and the corresponding observed target values (or \emph{labels}), and our interests is to predict the output of new, previously unseen, observations; meanwhile in \emph{unsupervised} learning there are no targets, just training samples, and what we are looking for is to learn the structure of the data. Supervised learning algorithms can be applied to \emph{regression} problems, where the value to predict is quantitative, and to solve \emph{classification} problems, where the targets are qualitative. 
+
+{\color{red} In unsupervised learning, the training data is unlabeled. [...] a clustering algorithm to try to detect groups of similar visitors [...] dimensionality reduction, in which the goal is to simplify the data without losing too much information [...] feature extraction [...] anomaly detection [...] novelty detection: it aims to detect new instances that look differnt from all instances in the training set. [...] association rule learning, in which the goal is to dig into large amounts of data and discover interesting relations between attributes.}
+
+Rather than studying an entire population, statistics examines a smaller subset known as a sample. When a sample accurately represents a population, significant insights about the population can often be deduced from the sample analysis. The branch of statistics that addresses the conditions under which such deductions are valid is known as inductive statistics, or statistical inference. Since these inferences are not completely certain, probabilistic language is commonly employed when presenting conclusions. Conversely, the branch of statistics that solely aims to describe and analyze a specific group, without making any broader conclusions or inferences, is referred to as descriptive statistics. {\color{red} The examples that the system uses to learn are called training set. Each training sample is called a training instance (or sample). The part of a machine learning system that learn and makes predictions is called a model.}
 
 Let $\mathbf{X} = \{ \mathbf{x}_1, \ldots, \mathbf{x}_p \}$ be a training dataset composed by $p$ features, where each individual feature $\mathbf{x}_i = \{ x_{i1}, x_{i2}, \ldots, x_{in} \}$ is composed by $n$ observed values, and let $\mathbf{y} = \{ y_1, \ldots, y_n \}$ be a target variable. We assume there is some relationship between the target values $y_i$ and the samples $\mathbf{x}_i$ that can be expressed in the form
 
@@ -329,7 +463,7 @@ There are two main reasons why we want to estimate the function $f$: prediction 
 
 The error term $\epsilon$ introduced in Equation \ref{eq:machine_learning_model} correspond to variables that have not been taken into account in our study, and other effects that can not be measured. This kind of error is called \emph{irreducible}, since there is nothing we can do to reduced it. A second type of error, called \emph{reducible}, refers t the fact that our estimate $\hat{f}$ of the function $f$ might not be perfect. It is called reducible because with better estimates the error will decrease.
 
-    {\color{red} Derive this property}
+{\color{red} Derive this property}
 
 We are interested in the average error made by our model. Assuming that both $\hat{f}$ and $X$ are fixed, it can be shown that
 \[
@@ -380,6 +514,68 @@ where $\hat{f}(X_i)$ is the predicted class for the $i$th observation, and $I$ i
 \label{sec:generative_discriminative}
 
 {\color{red} TODO: Pending}
+
+% Discretization of Continuous Variables
+
+\subsection{Discretization of Continuous Variables}
+\label{subsec:discretization_continuous_variables}
+
+When summarizing large masses of raw data, it is often useful to distribute the data into classes, or categories, and to determine the number of individuals belonging to each class, called absolute frequency. The following definition formally introduces this concept.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{absolute frequency}\index{Absolute frequency}, also known simply as \emph{frequency}, denoted by $n_i$ for $1 \leq i \leq k$, quantifies the number of individuals in $\mathcal{S}$ for which $X$ assigns the value corresponding to the $i$-th category of $\mathcal{D}$.
+\end{definition}
+
+The sum of the frequencies must be equal to population size, that is, $\sum_{i=1}^k n_i = n$.
+
+If the variable $X$ is continuous, the elements of $\mathcal{D}$ are referred to as \emph{class intervals}\index{Class interval}. The endpoints of these intervals are known as \emph{class limits}\index{Class limits}; the smaller number is termed the \emph{lower class limit}\index{Lower class limit}, and the larger number, the \emph{upper class limit}\index{Upper class limit}. A \emph{class interval}\index{Class interval} that lacks either an upper or a lower class limit is known as an \emph{open class interval}\index{Open class interval}. The \emph{width}\index{Class interval width} of a class interval is defined as the difference between the upper and lower class boundaries, denoted by $a_i = e_i - e_{i-1}$. The \emph{class mark}\index{Class mark}, or the midpoint of a class interval, is calculated as $a_i = \frac{e_i + e_{i-1}}{2}$. It is assumed that all observations within a specific class interval are equivalent concerning their categorical assignment. Refer to Section \ref{sec:discretization_algorithms} for more information about how to discretize a continous variable into discrete intervals.
+
+\begin{example}
+In a study measuring adult heights within a community, researchers record heights ranging from 150 cm to 200 cm and organize them into 10 cm class intervals: 150-159 cm, 160-169 cm, 170-179 cm, 180-189 cm, and 190-199 cm. Each interval's lower and upper class limits are respectively the start and end points, such as 150 cm and 159 cm for the first interval. If the last interval had no specified upper limit, it would be considered an open class interval. The class width, typically 10 cm, is the operational span between boundaries, and the class mark, calculated as the midpoint of each interval (e.g., 154.5 cm for the first interval), provides a central value for summarizing data within that range.
+\end{example}
+
+A tabular arrangement of data by classes together with the corresponding class frequencies is called a frequency distribution, or frequency table.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let $X: \mathcal{S} \rightarrow \mathcal{D}$ be a variable that maps individuals in $\mathcal{S}$ to $k$ distinct values of the set $\mathcal{D}$. A \emph{frequency distribution}\index{Frequency distribution} is represented the set of pairs $\{(d_i, n_i) : 1 \leq i \leq k\}$, where $d_i$ denotes the $i$-th interval and $n_i$ represents the number of individuals from $\mathcal{S}$ whose value under $X$ falls within the interval $d_i$.
+\end{definition}
+
+Frequency distributions are useful for statistical analysis and helps in visualizing data by grouping values, which simplifies the understanding of distribution and central tendencies within the data.
+
+The relative frequency of a class is the frequency of the class divided by the total frequency of all classes
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{relative frequency}\index{Relative frequency}, denoted by $f_i$, is the ratio $f_i = \frac{n_i}{n}$ for $1 \leq i \leq k$.
+\end{definition}
+
+The sum of the relative frequencies is equal to one, that is, $\sum_{i=1}^k f_i = 1$.
+
+The total frequency of all values less than the upper class boundary of a given class interval is called the cumulative frequency up to and including that class interval.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{cumulative frequency}\index{Cumulative frequency}, denoted by $N_i$ for $1 \leq i \leq k$, represents the total number of individuals in $\mathcal{S}$ for which $X$ assigns a value less than or equal to the upper limit of the $i$-th category of $\mathcal{D}$. This is mathematically expressed as $N_i = \sum_{j=1}^i n_j$, where $n_j$ is the absolute frequency of the $j$-th category.
+\end{definition}
+
+By accumulating the frequencies up to each category or interval, cumulative frequencies provides a running total that shows how many data points fall below a certain value.
+
+\subsubsection*{Discretization Algorithms}
+
+{\color{red} TODO: Rewrite this section.}
+
+Let $\mathcal{X}$ a continuous random variable that follows a probability density function $P_\mathcal{X}$, and assume we have collected $n$ independent and identically distributed samples $\bold{x} = \{x_1, \ldots, x_n\}$ from $\mathcal{X}$. We are interested in computing the length of a compressed version of $\bold{x}$ using an optimal compressor. Unfortunately, and except for some degenerate distributions, there is no lossless compression algorithm that produces a string with fewer bits than encoding directly the elements $\bold{x}$. Compression algorithms for continuous data only work in case that the elements of $\bold{x}$ are not independent, as it is the case with images or sound. But, if this is not the case, the only option available to compress $\bold{x}$ is to use a lossy compression algorithm, where some information is lost.
+
+We are looking for an algorithm to produce a finite non-overlapping partition of $m$ discrete intervals $D=\{ [d_o, d_1], (d_1, d_2], \ldots, (d_{m-1}, d_m] \}$, where $d_o = \min{\bold{x}_j}$, and $d_m = \max{\bold{x}_j}$, and $d_i < d_{i+1}$ for $i = 0, 1, \ldots, m-1$, assign a unique label to each interval, and encode the elements of $\bold{x}$ using this labeling schema. As compression algorithm we will use an optimal length code given the relative frequencies of the labels in the encoded vector. In this sense, our goal is to have a collection of intervals with sufficiently number of samples (so they are statistically significant) and that the distribution of frequencies resembles the original probability distribution $P_\mathcal{X}$.
+
+A discretization algorithm is a mapping between a (possibly huge) number of numeric values and a reduced set of discrete values, and so, it is a process in which some information is potentially lost. The choice of discretization algorithm is something that could have a high impact in the practical computation of the nescience. We are interested in a discretization algorithm that produces a large number of intervals (low bias), with a large number of number of observations per interval (low variance). Common techniques include \emph{equal width discretization}, \emph{equal frequency discretization} and \emph{fixed frequency discretization}. However, these techniques require the optimization of an hyperparameter, and so, they are not suitable for our purposes.
+
+In a \emph{proportional discretization approach} the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. The algorithm starts by sorting the values of $\bold{x}_j$ in ascending order and then discretizing them into $m$ intervals of approximately $s$ (possibly identical) values each. In this way, as the number of training observations increases, both interval frequency and number of intervals increases, taking advantage of the larger number of observations. In the same way, when the number of observations decreases, we reduce both.
+
+\subsection{k-means Clustering}
+\label{sec:kmeans_clustering}
+
+K-means clustering is an algorithms that partitions n observations into k clusters in such a way that each observation belongs to the cluster with the nearest mean. In this way, we can replace the observation that belong to a cluster by its means, as a discretization. The optimization criteria in k-means is to minize the within-cluster variance. Given the fact that the problem is NP-Complete, some approximation algorithms are used instead.
+
+{\color{red} TODO: Define the concept of Voronoi diagram / Voronoi cell}
 
 % Decision Trees
 

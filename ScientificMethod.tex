@@ -28,140 +28,395 @@ At the end of the chapter we will extend the analysis from individual research t
 %
 % Section: Describing Current Knowledge
 %
-\section{Existing Knowledge}
+\section{Describing Current Knowledge}
 
-According to the theory of nescience, the evaluation of human knowledge begins by selecting a specific set of entities we want to understand. Within our theory, we cannot use universal sets that include every possible entity, whether known or unknown. This is because universal sets lead to logical paradoxes, such as Cantor's theorem, which shows that the set of all possible subsets of a set has a strictly greater cardinality than the set itself, and Russell's paradox, which concerns sets that are not members of themselves (see Section XX). Therefore, in this chapter, since our aim is to assess the current state of human knowledge, we will focus on the set of all entities that are already known and have been studied by science. These are the entities about which humanity has at least some information, making them suitable for analysis, as the set is finite.
+According to the theory of nescience, evaluating our current knowledge begins by selecting a specific set of entities we want to understand. Within this framework, universal sets that include every possible entity, whether known or unknown, are not permitted. This restriction arises from the logical paradoxes associated with such sets, including Cantor's theorem, which demonstrates that the set of all subsets has a strictly greater cardinality than the set itself, and Russell's paradox, which involves sets that are not members of themselves (see Section \ref{sec:descriptions_entities}). Therefore, in this chapter, since our objective is to assess the current state of human knowledge, we focus on a finite set composed of entities that are already known and have been studied by science. These entities are suitable for analysis because humanity possesses at least some information about them.
 
-The next step is to identify the best available encoding of the selected entities as representations, composed by data or facts, followed by determining the most accurate descriptions we have about them, such as models, theories, and laws. In the theory of nescience, we make a clear distinction between representations and descriptions because this separation helps us discover new knowledge—either by improving the representation or by finding a better description. However, when assessing the current state of our knowledge, we simplify the process by using only descriptions, allowing them to serve both as the description and the representation of an entity (see Section XX, which explains why descriptions can also serve as representations). This approach is appropriate because our goal is not to increase our knowledge but to evaluate its current status.
+The next step involves identifying the best available encoding of the selected entities as representations, typically composed of data or facts, followed by determining the most accurate descriptions we have, such as models, theories, and laws. In the theory of nescience, we maintain a clear distinction between representations and descriptions because this separation facilitates the discovery of new knowledge: either by improving the representation or by refining the description. However, since our aim here is to evaluate rather than expand our knowledge, we simplify the process by using only descriptions. These descriptions serve both as the representation and the description of an entity (see Section {\color{red} XX}, which explains why descriptions can fulfill both roles). Moreover, we will drop the requirement that these descriptions be computable, since very few scientific descriptions in practice are actually computable. Requiring computability would severely limit the scope of our analysis and exclude a significant portion of scientific knowledge.
 
-The descriptions used for the analysis of knowledge will be based on the collection of scientific pages from Wikipedia\index{Wikipedia}. Wikipedia is a free, collaborative online encyclopedia that allows anyone with internet access to create, edit, and update articles on a wide range of topics.  Launched in 2001, it aims to provide reliable, neutral, and verifiable information to the public, maintained by a global community of volunteer contributors. Several features make Wikipedia particularly suitable for our analysis of scientific knowledge: it maintains a transparent version history that tracks the evolution of content over time, supports collaborative validation through contributions from a global community which helps reduce individual bias, enforces citation requirements to ensure information is verifiable and sourced from authoritative references, offers broad and consistent coverage across scientific domains, and benefits from dynamic updating to incorporate new findings and corrections.
+For our analysis, we use descriptions derived from the collection of scientific pages from Wikipedia\index{Wikipedia}. Wikipedia is a free, collaborative online encyclopedia launched in 2001 that allows anyone with internet access to create, edit, and update articles on a wide array of topics. It is maintained by a global community of volunteer contributors and aims to provide reliable, neutral, and verifiable information to the public. Several features make Wikipedia particularly suitable for analyzing scientific knowledge: it maintains a transparent version history that tracks content changes over time; supports collaborative validation that reduces individual bias; enforces strict citation requirements to ensure information is verifiable and based on authoritative sources; offers broad and consistent coverage across scientific disciplines; and is dynamically updated to reflect new findings and corrections.
 
-Wikipedia pages are written in the MediaWiki Markup Language, a simplified system for formatting text that allows users without technical knowledge of XHTML or CSS to easily edit articles. Before we can analyze the content of a scientific page, it is essential to remove all markup tags and formatting elements to isolate only the meaningful textual information. To achieve this, we employed an advanced Wikipedia Extractor utility that processes the articles and extracts the relevant text. In addition to stripping out the markup, the extractor was configured to eliminate other non-relevant elements, such as images, references, and lists, which do not contribute directly to our analysis of knowledge. A detailed explanation of the entire extraction and preparation process can be found in Appendix XXX, allowing any interested reader to reproduce the steps and ensure the consistency of the analysis.
+Wikipedia is fundamentally a tertiary source. It compiles and synthesizes information from primary sources, such as firsthand accounts of events or discoveries, and secondary sources, which interpret and evaluate those primary materials. Tertiary sources play a key role in academia by summarizing information that has already been thoroughly discussed and vetted. High-quality Wikipedia articles strive to be comprehensive, covering all major aspects of a topic in appropriate detail while avoiding undue emphasis on minor or peripheral information.
 
-{\color{red} Explain which articles have been removed and why.}
+Furthermore, Wikipedia is inherently citational. Every statement included in a Wikipedia article must be supported by a published, reliable, and verifiable source. Original research is not allowed, meaning that novel claims, hypotheses, or breakthroughs must already be published in credible sources such as academic journals or books before being included. Wikipedia also employs a form of peer review, where one or more editors review and suggest improvements to an article. While this process is not anonymous or uniformly applied like traditional academic peer review, it still acts as a quality control mechanism that enhances the coverage, clarity, and accuracy of articles through community oversight.
+
+Wikipedia pages are written in the MediaWiki\index{MediaWiki} Markup Language, a simplified system for formatting text that allows users without technical knowledge of XHTML or CSS to easily edit articles. Before we can analyze the content of a scientific page, it is essential to remove all markup tags and formatting elements to isolate only the meaningful textual information.  To achieve this, we used the Python library \texttt{wikitextparser}\index{Wikitextparser}, which allows us to parse and process the raw wikitext of Wikipedia articles to extract the relevant content. In addition to stripping out the markup, the library was configured to eliminate other non-relevant elements, such as images, references, and lists, which do not contribute directly to our analysis of knowledge.
+
+Wikipedia articles are written in the MediaWiki\index{MediaWiki} Markup Language, a simplified formatting system that allows users without technical expertise to contribute easily. Before we can analyze this content, it is necessary to remove all markup tags and formatting elements to isolate only the meaningful text. To do this, we used the Python library \texttt{wikitextparser}\index{Wikitextparser}, which parses raw wikitext and extracts relevant content. In addition to removing markup, the library was configured to exclude other non-essential elements such as images, references, and lists, which do not directly support our knowledge analysis.
+
+Wikipedia hosts a vast collection of articles covering disciplines such as history, literature, politics, entertainment, and science. Since our goal is to evaluate scientific knowledge specifically, we limited our analysis to articles categorized under the "Science" category. This subset includes topics related to the natural and formal sciences—such as physics, biology, chemistry, and mathematics—ensuring that our study remains aligned with the goal of assessing scientific understanding. We further refined this selection by excluding articles focused on individuals, organizations, awards, lists, portals, and similar metadata-oriented content. This filtering ensures that our analysis includes only those articles centered on scientific concepts, processes, or phenomena.
+
+Both the list of articles and the full content of each article were retrieved directly from Wikipedia using the MediaWiki API\index{MediaWiki API}. This API provides programmatic access to Wikipedia's content, allowing automated queries for page metadata, article text in wikitext format, category information, and revision history. It ensures we are working with the most current and accurate versions of each article while offering a reproducible and efficient method for gathering large-scale data\footnote{The articles analized in this chapter correspond to April 2025.}. A detailed explanation of the entire extraction and preparation process can be found in Appendix \ref{apx:wikipedia}, allowing any interested reader to reproduce the steps and ensure the consistency of the analysis.
 
 %
 % Section: Measuring Knowledge
 %
 \section{Measuring Knowledge}
 
-As we said in the previous section, for the purpose of evaluating our current knowledge in practice, we usually to use as encoding of a entity our current best description (recall Section XX that said that descritions are also representations). In this sense, since representation and descriptions are the same, inaccuracy would be zero, remaining miscoding and sufeit as our metrics of interest.
+As mentioned in the previous section, to evaluate our current knowledge in practice, we used the collection of scientific pages from Wikipedia, which we pre-processed to extract the relevant information for our analysis. We focused exclusively on the topic descriptions, treating descriptions and representations as equivalent. In this context, since descriptions and representations are considered the same, the inaccuracy of a topic is effectively zero, leaving miscoding and surfeit as our primary metrics of interest.
 
-In order to evaluate the classification metrics proposed we have used the set of topics corresponding to the discipline of \emph{theory of computation}.
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{theoretical_computer_science_category_graph}
+\caption{\label{fig:theoretical_computer_science_category_graph}Categories in Theoretical Computer Science}
+\end{figure}
 
-{\color{red} TODO: Repeat this analysis for all scientific topics, and then particularize for a cuple of scientific areas relevant for this book (e.g. theoretical computer science, philosophy of science.}
+To demonstrate how our theory can be practically applied to assess the current state of knowledge, we selected a collection of topics listed under the Theoretical Computer Science category on Wikipedia. This includes all pages within the main category, as well as those in its subcategories and their respective subcategories, up to a depth of five levels. Figure \ref{fig:theoretical_computer_science_category_graph} illustrates the Theoretical Computer Science category (Level 1) alongside all its Level 2 subcategories, such as Theory of Computation, Graph Theory, and Logic in Computer Science.
 
-Also, and since these studied quantities, relevance, applicability, nescience and maturity, do not have the same scale, it is highly convenient to apply the following additional transformation: ???
+Only pages classified as "GA" have been considered. Articles in the GA class are considered complete, and they have been examined by one or more impartial reviewers. From these list, we have removed pages related to non-relevant topics, such as journals, symposiums, associations, or awards. Additionally, we have removed articles too generic pages (e.g. parallel computing) or pages describing multiple algorihtms (e.g. Tropical cyclone forecasting). For a detailed description of the Wikipedia page preprocessing, please refer to Appendix \ref{apx:wikipedia}.
 
-\[
-\mu_{t}^{,}=\frac{\mu_{t}-\min(\mu)}{\max(\mu)-\min(\mu)}
-\]
+Only pages classified as "GA" (Good Article) have been considered. GA articles are regarded as complete and have been reviewed by one or more impartial evaluators. From this list, we excluded pages related to non-relevant topics, such as journals, symposiums, associations, or awards. We also removed overly generic articles (e.g., Parallel Computing) and pages describing multiple algorithms (e.g., Tropical Cyclone Forecasting). For a detailed description of the Wikipedia page preprocessing, please refer to Appendix \ref{apx:wikipedia}.
 
-where $\mu_t$ refers to the considered metric (nescience, relevance, ...). 
+The topics analyzed cover a wide range of areas within theoretical computer science and mathematics. In graph theory, we explored topics such as graph coloring (Greedy coloring), structural properties and special classes (Snark, Perfect graph, Halin graph, Laves graph, Rook's graph, Rado graph, Well-covered graph, Pseudoforest, Component, Unit distance graph, Cop-win graph), graph transformations (Graph homomorphism, Logic of graphs), and graph-based theorems (Steinitz's theorem, De Bruijn–Erdős theorem, Turán's brick factory problem). In algorithms and data structures, we considered classical techniques like Binary search, Selection algorithm, Euclidean algorithm, Fast inverse square root, Farthest-first traversal, Linear probing, Trie, as well as more specialized algorithms such as the Gale–Shapley algorithm, Widest path problem, and data structures like the Cartesian tree. Topics in logic and computational foundations included 2-satisfiability, the Rule of inference, and the BIT predicate. In mathematical methods and theorems, we covered results such as Pick's theorem, Viète's formula, Sylvester–Gallai theorem, Sylvester's sequence, Shapley–Folkman lemma, and the Handshaking lemma. The list also touches on applied mathematics and modeling, through topics like the Dirac delta function, Earth–Moon problem, Tropical cyclone forecast model, Finite subdivision rule, and Network synthesis. Furthermore, in machine learning and computational complexity, we included Reinforcement learning from human feedback and the Small set expansion hypothesis. Finally, some topics address computer science system design and principles, such as the Allocator (C++), Book embedding, Three utilities problem, the Commutative property, and visualization techniques like the Arc diagram. Overall, the list covers a broad spectrum of topics within the area of theoretical computer science, highlighting its diversity and interdisciplinary connections.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|}
+\hline 
+Algorithm & Analysis of Boolean functions & Automated reasoning \tabularnewline
+\hline 
+Farthest-first traversal & Gale–Shapley algorithm & Widest path problem \tabularnewline
+\hline
+Cartesian tree & Viète's formula & Dirac delta function \tabularnewline
+\hline
+Euclidean algorithm & Fast inverse square root & Rule 184 \tabularnewline
+\hline
+Binary search & Linear probing & Selection algorithm \tabularnewline
+\hline
+2-satisfiability & Graph homomorphism & Logic of graphs \tabularnewline
+\hline
+Steinitz's theorem & De Bruijn–Erdős theorem & Earth–Moon problem \tabularnewline
+\hline
+Turán's brick factory problem & Laves graph & Rook's graph \tabularnewline
+\hline
+Snark & Perfect graph & Clique problem \tabularnewline
+\hline
+Feedback arc set & Euclidean minimum spanning tree & Component \tabularnewline
+\hline
+Unit distance graph & Halin graph & Cop-win graph \tabularnewline
+\hline
+Pseudoforest & Well-covered graph & Rado graph \tabularnewline
+\hline
+Network synthesis & Telephone number (mathematics) & Book embedding \tabularnewline
+\hline
+Three utilities problem & BIT predicate & Pick's theorem \tabularnewline
+\hline
+Sylvester–Gallai theorem & RL from human feedback & Finite subdivision rule \tabularnewline
+\hline
+Sylvester's sequence & Tropical cyclone forecast model & Shapley–Folkman lemma \tabularnewline
+\hline
+Theil–Sen estimator & Trie & Rule of inference \tabularnewline
+\hline
+Commutative property & Allocator (C++) & Handshaking lemma \tabularnewline
+\hline
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Topics-in-theoretical-computer-science}Topics in Theoretical Computer Science}
+\end{table}
 
 % Surfeit
 \subsection{Surfeit}
 
-{\color{red} TODO: briefly recall the concept of surfeit, our inability to compute it in practice, and the approximation of redundancy.}
+In Section \ref{sec:Definition_redundancy}, we introduced the concept of surfeit\index{Surfeit} as a relative measure to quantify the unnecessary effort involved in explaining an entity using a particular description. The surfeit of a description $d$ for a representation $r$ is defined as:
+\[
+\sigma (d, r) = \frac{ | l(d) - K(r) |}{l(d)}
+\]
+where $r \in \mathcal{B}^\ast$ and $d \in \mathcal{D}$ is a description of $r$. Intuitively, the less we know about an entity, the longer our description tends to be. As our understanding of the entity improves, we should be able to remove all redundant elements from its description.
 
-As it was the case in Capter {\color{red} XXX} the Kolmogorov complexity of a page was estimated using the compressed version of the text. As compressed tool we have used the Unix \texttt{gzip}
-utility, that it is based on a combination of the Lempel-Ziv LZ77 algorithm {\color{red} ref} and Huffman coding {\color{red} ref}. Figure \ref{fig:Nescience-of-Topics} shows a plot of nescience for all the topics after normalization.
+In practice, when descriptions and representations are considered equivalent, the concept of surfeit simplifies to:
+\[
+\rho(d) = 1 - \frac{K(d)}{l(d)}
+\]
+This is referred to as the redundancy\index{Redundancy} of a description.
 
-{\color{red} TODO: This fugure is useless. Better use an histogram or a boxplot, or violin plot.}
+The Kolmogorov complexity of the Wikipedia pages was estimated by compressing the raw text. For compression, we used \texttt{bzip2}\index{bzip2}, a free and open-source program based on the Burrows–Wheeler algorithm\index{Burrows–Wheeler algorithm}. bzip2 is commonly used in practice to estimate Kolmogorov complexity because it employs a very large compression buffer. It is well known that if the buffer size is too small, the estimation of a text's Kolmogorov complexity can be significantly distorted. For example, the \texttt{gzip} compressor uses a 32 KB buffer, which is too small for our purposes. In contrast, \texttt{bzip2} offers a buffer size of 900 KB at its highest compression setting (compression level of 9), which is more than sufficient for compressing Wikipedia pages.
 
-{\color{red} TODO: Say something ingelligent based on what it is depicted in the figure.}
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{NescienceTopics}
-\caption{\label{fig:Nescience-of-Topics}Nescience of topics}
-\end{figure}
-
-{\color{red} Table \ref{tab:Nescience-of-topics} contain the ten topics with highest redundancy, and the normalized version of this number. The identification of the topics with highest nescience is even more controversial. Some authors would argue that the topics listed in the table are the least known topics in the area of theory of computation, like for example \emph{UML state machine} or \emph{Kleene's recursion theorem}. However the list includes very difficult to address topics, \emph{computability} and \emph{computability theory}, and hot research topics like the \emph{Kolmogorov structure function}. It is also remarkable that the list contains three related topics, \emph{analytical hierarchy}, \emph{arithmetical hierarchy} and \emph{hyperarithmetical theory}, suggesting that this is a highly unknown area of knowledge. An important point to mention is that our computed nescience is not directly proportional to the length of the article, and so, the list of the topics with the higher nescience does not mimic the list of the lengthiest articles.}
-
-\begin{table}
-\begin{centering}
-\begin{tabular}{|c|c|c|}
-\hline 
-Topic & Nescience & Norm.\tabularnewline
-\hline 
-\hline 
-Arithmetical hierarchy & 2.28 & 1.00\tabularnewline
-\hline 
-Analytical hierarchy & 2.28 & 1.00\tabularnewline
-\hline 
-Hyperarithmetical theory & 2.13 & 0.90\tabularnewline
-\hline 
-Kolmogorov struct. funct. & 2.08 & 0.87\tabularnewline
-\hline 
-Behavior of DEVS & 2.06 & 0.86\tabularnewline
-\hline 
-UML state machine & 2.05 & 0.85\tabularnewline
-\hline 
-Computability & 2.05 & 0.85\tabularnewline
-\hline 
-Kleene's recursion th. & 2.05 & 0.85\tabularnewline
-\hline 
-Computability theory & 2.04 & 0.84\tabularnewline
-\hline 
-Computation in the limit & 2.00 & 0.82\tabularnewline
-\hline 
-\end{tabular}
-\par\end{centering}
-
-\caption{\label{tab:Nescience-of-topics}Nescience of topics}
-\end{table}
-
-In practice, our definition of redundancy is problematic when we work with very short descriptions, since the compressed version of the text could be larger than the uncompressed version, given an negative nescience. This is still an open problem that must be addressed, perhaps by borrowing some techniques from the minimum description length principle.
-
-The maturity of a topic is estimated based on the length of the Wikipedia article (only the text), and the length of the compressed version. Figure \ref{fig:Maturity-of-Topics} shows a plot of the maturity of the selected set of topics after the normalization process.
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{MaturityTopics}
-\caption{\label{fig:Maturity-of-Topics}Maturity of topics}
-\end{figure}
-
-Table \ref{tab:Maturity-of-Topics} contains the ten most relevant topics according to its maturity. For each topic it is shown the maturity and the normalized version of this number. Well classified topics, that is, topics that our intuition tell us that are well understood, could include \emph{Read-only right moving Turing machines}, \emph{Crossing sequence (Turing machines)}, and perhaps the \emph{P'' language}. Other topics that perhaps are misclassified include \emph{communication X-Machine}, \emph{Power DEVS}, \emph{MIPR}, and \emph{constraint automaton}.
+Figure \ref{fig:Surfeit-of-Topics} (left) depicts an histogram of the redundancy for the 50 theoretical computer science articles studied. The histogram shows that, once markup and boiler-plate are stripped, redundancy of articles is tightly concentrated between $\approx 0.75$ and $0.82$, peaking near $0.80$. In practical terms, even the clean prose of these pages can typically be shrunk to about three-quarters of its original size, indicating a common stock of recurring phrases, technical jargon, and definitional patterns across the corpus. The scatter plot in figure \ref{fig:Surfeit-of-Topics} (rigth) adds a systematic dimension: redundancy rises by roughly 2–3 percentage points for every additional 10000 characters. Because every file fits inside the single 900 kB block used at \texttt{bzip2}’s highest setting (‐9), block-size effects are neutralised and the only compressor artefacts left—headers and model warm-up—explain at most a few tenths of that increase. The bulk of the slope therefore reflects the prose itself: longer articles increasingly reuse terminology, theorem–proof templates, and explanatory scaffolding, making them intrinsically more compressible. In short, both figures together show that theoretical-computer-science pages share a fairly uniform baseline of linguistic redundancy, and that this redundancy grows gradually with article length because the writing becomes more internally self-similar rather than because of any quirk of the compression tool.
 
 \begin{table}
 \begin{centering}
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{c c}
+\includegraphics[width=0.455\textwidth]{Histogram_surfeit}
+&
+\includegraphics[width=0.5\textwidth]{regression_surfeit}\tabularnewline
+\end{tabular}
+\par\end{centering}
+\caption{\label{fig:Surfeit-of-Topics}Redundancy of Topics}
+\end{table}
+
+Table \ref{tab:Higher-redundancy-of-topics} lists the ten topics from Wikipedia within the area of Theoretical Computer Science that exhibit higher redundancy. Each page revolves around a single, well-defined object—a classic algorithm (binary search, Euclidean algorithm, clique problem), a mathematical construct (Dirac delta, Rado graph), or a concise metatheorem (2-SAT, Shapley–Folkman lemma). Pages of this kind inevitably iterate the same symbol palette, definitions, and step-by-step explanations: every subsection restates the object, walks through an example, then re-expresses the same idea in a different formalism (pseudocode, recurrence, proof sketch, code snippet). That self-similar scaffolding gives compressors a wealth of repeated n-grams to exploit, driving redundancy up to 0.79 – 0.82 even after boiler-plate has been stripped. While the list includes some of the longer articles in the corpus (e.g. Dirac delta at 117 kB), it also contains mid-sized pages such as Rado graph (38 kB). In other words, high redundancy is not just a by-product of length; rather, it emerges when a compact conceptual core is expanded through multiple parallel presentations (history, intuition, formal statement, variations, applications, proof, pseudocode).
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|c|}
 \hline 
-Topic & Maturity & Norm.\tabularnewline
+Topic & Redundancy & Page Length & Length Compressed \tabularnewline
 \hline 
 \hline 
-Carry operator & 5.34 & 1.00\tabularnewline
-\hline 
-Binade & 4.54 & 0.99\tabularnewline
-\hline 
-Comm. X-Machine & 3.01 & 0.97\tabularnewline
-\hline 
-PowerDEVS & 2.35 & 0.94\tabularnewline
-\hline 
-MPIR & 2.00 & 0.92\tabularnewline
-\hline 
-Constraint automaton & 1.84 & 0.90\tabularnewline
-\hline 
-RO right moving TM & 1.73 & 0.89\tabularnewline
-\hline 
-P'' & 1.71 & 0.89\tabularnewline
-\hline 
-Crossing sequence (TM) & 1.63 & 0.88\tabularnewline
-\hline 
-Microsoft Binary Format & 1.53 & 0.86\tabularnewline
+Dirac delta function & 0.821 & 117121 & 20969 \tabularnewline
+\hline
+Binary search & 0.819 & 69838 & 12634 \tabularnewline
+\hline
+Euclidean algorithm & 0.811 & 113242 & 21455 \tabularnewline
+\hline
+2-satisfiability & 0.811 & 76225 & 14442 \tabularnewline
+\hline
+Shapley–Folkman lemma & 0.805 & 63172 & 12323 \tabularnewline
+\hline
+Clique problem & 0.801 & 63125 & 12574 \tabularnewline
+\hline
+RL from human feedback & 0.797 & 64981 & 13160 \tabularnewline
+\hline
+Book embedding & 0.796 & 53046 & 10831 \tabularnewline
+\hline
+Rule of inference & 0.795 & 43158 & 8826 \tabularnewline
+\hline
+Rado graph & 0.793 & 38626 & 7989 \tabularnewline
 \hline 
 \end{tabular}
 \par\end{centering}
-
-\caption{\label{tab:Maturity-of-Topics}Maturity of topics}
+\caption{\label{tab:Higher-redundancy-of-topics}Topics with higher redundancy}
 \end{table}
 
-% Subsection: Miscoding
-\subsection{Miscoding}
+Table \ref{tab:Lower-redundancy-of-topics} lists the ten topics that exhibit lower redundancy. These articles sit in the low–redundancy tail (between 0.60 and 0.67) differ from the high-redundancy ones in both size and content mix. (i)  Every entry is under 17 kB—well below the corpus median. Because bzip2’s fixed header and model “warm-up” overhead account for a larger share of such small files, their redundancy starts a few percentage points lower even before content is considered. This matches the positive slope in the scatter-plot: shorter pages naturally cluster toward the left-hand foot of the trend line. (ii) Many of these topics centre on a single formula, sequence, or code idiom (e.g. Viète’s formula, Sylvester’s sequence, Allocator). They pack unique symbols, numeric constants and one-off identifiers that appear only once or twice, so compressors see far fewer repeated n-grams than in algorithm-walk-through articles. Others, such as "Tropical cyclone forecast model" and "Finite subdivision rule", read more like concise surveys, stringing together disparate subtopics rather than iterating one core definition from multiple angles; that heterogeneity also suppresses repetition.
+
+Together, the list illustrates the floor of the redundancy spectrum: pages that are (i) short enough for compression overhead to matter and (ii) information-dense or eclectic enough to avoid recycling the same prose patterns never reach the 0.70–0.80 plateau seen elsewhere.  Their position reinforces the earlier finding that rising redundancy with length is not merely a compressor artefact; it also depends on how much authors reuse terminology and explanatory scaffolding as an article grows.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Topic & Redundancy & Page Length & Length Compressed \tabularnewline
+\hline 
+\hline 
+Tropical cyclone forecast model & 0.667 & 16675 & 5550 \tabularnewline
+\hline
+Allocator (C++) & 0.658 & 14887 & 5085 \tabularnewline
+\hline
+Finite subdivision rule & 0.658 & 14416 & 4933 \tabularnewline
+\hline
+Snark (graph theory) & 0.648 & 11020 & 3882 \tabularnewline
+\hline
+Theil–Sen estimator & 0.643 & 9171 & 3275 \tabularnewline
+\hline
+Earth–Moon problem & 0.638 & 7640 & 2762 \tabularnewline
+\hline
+Halin graph & 0.637 & 7953 & 2885 \tabularnewline
+\hline
+Viète's formula & 0.61 & 7016 & 2733 \tabularnewline
+\hline
+Turán's brick factory problem & 0.605 & 5427 & 2146 \tabularnewline
+\hline
+Sylvester's sequence & 0.604 & 9994 & 3960 \tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Lower-redundancy-of-topics}Topics with Lower redundancy}
+\end{table}
+
+% Subsection: Inaccuracy
+\subsection{Inaccuracy}
+
+Inaccuracy serves as the second metric in assessing our understanding of a research entity. The underlying idea is that the more accurate our model, the better our understanding of the entity. Formally, we calculate the inaccuracy of a description $d$ as the normalized information distance between the original representation $r$ and the output representation $r'$ generated by our description $d$. That is, inaccuracy is quantified as the length of the smallest computer program capable of correcting the erroneous output of our model.
+
+Inaccuracy, serving as the second gauge to measure our comprehension of a research entity, is based on the principle that the more precise our model, the better our grasp of the entity. Formally, the inaccuracy of a description $d$ is computed as the normalized information distance between the original representation $r$ and the output representation $r'$ generated by the description $d$. Thus, inaccuracy is assessed as the extent of the smallest computer program that can rectify the incorrect output of our model.
+
+Inaccuracy evaluates how well the output of our description aligns with the selected representation encoding the entity. However, this representation could be flawed itself, as discussed in the preceding chapter. Inaccuracy focuses solely on the description $d$, neglecting the potential miscoding within the representation $r$. Furthermore, even though it doesn't require an oracle, inaccuracy cannot be calculated for every case, so it needs to be estimated in practical situations, as we will explore in Part III of this book.
+
+Let us consider $r \in \mathcal{B}^\ast$ as a representation, and $d \in \mathcal{D}$ as a description, where $d = \langle TM, a \rangle$. We then define the \emph{inaccuracy} of the description $d$ with respect to the representation $r$, denoted as $\iota(d, r)$, according to the following formula:
+\[
+\iota(d, r) = \frac{ \max\{ K \left(r \mid \delta(d) \right), K \left( \delta(d) \mid r \right) \} } { \max\{ K(r), K \left(\delta(d) \right) \} }
+\]
+Intuitively, accuracy measures the difficulty in converting an incorrect representation $r'$ produced by a desription $d$ into the original representation $r$. In essence, this involves the computation of the normalized information distance between $r'$ and $r$.
+
+In practice, and in the particular case of descriptions based on the scientific articles of Wikipedia, we cannot apply this definition, because an article of Wikipedia is not a Turing machine that produces a string based output.
+
+Figure \ref{fig:Nescience-of-Topics} left depicts a histogram showing the inaccuracy of the analyzed topics, and right side shows a scatterplot of the article lenghts vs. the length of the correspondign talk pages, toghether with a regression line fitted to the data. The two plots suggest that, within this sample of good-quality theoretical computer science pages, talk pages chatter is generally modest and becomes proportionally smaller as articles grow. Inaccuracy, approximated as talk / (article + talk), is highly right-skewed.  Roughly half the pages fall below 0.05 and more than three-quarters below 0.15, meaning their talk pages contain at most one word of discussion for every six to twenty words of main-text content.  Only a small tail of articles pushes beyond 0.40, indicating a handful of topics that still attract extensive debate or revision despite their “good” label. In the scatter plot we can observe that the best-fit line ( $y \approx -2.44 \times 10^{-6} \dot length + 0.271$ ) slopes downward, so predicted inaccuracy drops from about 0.27 for a 0-length stub to $\approx 0.10$ at 70 kB.  Empirically, short articles (< 15 kB) show the widest spread—from virtually no talk to talk pages two-thirds the size of the article—whereas long articles (> 50 kB) cluster below 0.15 with only rare outliers.  In other words, once an article expands to tens of thousands of characters, the relative volume of unresolved discussion shrinks, suggesting that length correlates with maturity and consensus. Taken together, the figures imply that most good theoretical-CS pages are comparatively settled, that the few contentious ones are disproportionately short, and that growing an article tends to absorb or resolve the issues reflected on its talk page rather than magnifying them.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{c c}
+\includegraphics[width=0.455\textwidth]{Histogram_inaccuracy}
+&
+\includegraphics[width=0.5\textwidth]{regression_inaccuracy}\tabularnewline
+\end{tabular}
+\par\end{centering}
+\caption{\label{fig:Inaccuracy-of-Topics}Inaccuracy of Topics}
+\end{table}
+
+Table \ref{tab:Lower-nescience-of-topics} lists topics exhibiting the lowest levels of nescience. The topics with the lowest inaccuracy values ($\leq 0.04$) look like settled science. They cover classical, mathematically-rigorous results—matching algorithms (Gale–Shapley), structural graph properties (perfect graphs, Steinitz’s theorem), and well-studied data-structures or routing primitives (Cartesian tree, widest-path problem). For such topics there is little room for interpretive dispute: statements are either formally correct or not, and once a clean exposition is in place subsequent editors rarely need lengthy back-and-forth. That is why some talk pages are only a few dozen words long (25 for Gale–Shapley) even when the article itself spans tens of kilobytes. Length alone does not guarantee a quiet talk page—the list includes both mid-sized texts ($\approx 20$ kB) and the 72 kB Network synthesis article—yet all of them keep the ratio of discussion to content below 4\%. Where talk does appear (e.g. 1 989 words for Book embedding or 1 145 for Steinitz’s theorem) it is still dwarfed by the main text, implying that open issues tend to be minor wording tweaks, sourcing details, or peripheral expansions rather than fundamental disagreements. In short, low-inaccuracy articles are those whose subject matter is uncontroversial, formally locked-down, and already presented in a stable, comprehensive fashion, leaving editors with little need for ongoing debate.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Topic & Inaccuracy & Article length & Talk length \tabularnewline
+\hline 
+\hline
+Gale–Shapley algorithm & 0.001656 & 15072 & 25 \tabularnewline
+\hline
+Perfect graph & 0.004412 & 44683 & 198 \tabularnewline
+\hline
+Unit distance graph & 0.012203 & 20479 & 253 \tabularnewline
+\hline
+Rook's graph & 0.013267 & 23576 & 317 \tabularnewline
+\hline
+Network synthesis & 0.014493 & 71945 & 1058 \tabularnewline
+\hline
+Logic of graphs & 0.022260 & 31933 & 727 \tabularnewline
+\hline
+Steinitz's theorem & 0.027765 & 40094 & 1145 \tabularnewline
+\hline
+Cartesian tree & 0.030849 & 27395 & 872 \tabularnewline
+\hline
+Widest path problem & 0.035644 & 19128 & 707 \tabularnewline
+\hline
+Book embedding & 0.036141 & 53046 & 1989 \tabularnewline
+\hline
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Lower-inaccuracy-of-topics}Topics with lower inaccuracy}
+\end{table}
+
+Finally, Table \ref{tab:Higher-inaccuracy-of-topics} lists the topics with the highest nescience values. The articles with the highest inaccuracy scores are not necessarily the most error-ridden; rather, they are the ones whose talk pages have become arenas for protracted discussion because their subjects invite disagreement or continual refinement—foundational concepts like the commutative property and tries that draw many first-time editors, folklore-tinged algorithms such as the fast inverse square root, or theorems and graph classes (e.g., Sylvester–Gallai, pseudoforests, Halin graphs) that have multiple equivalent statements, proofs, or naming conventions.  In every case the talk page approaches or even exceeds the size of the main text, so anywhere from 40\% to 65\% of the combined bytes are debate rather than exposition; this ratio is amplified by the fact that most of these articles are relatively short ($\approx 10–30$ kB), meaning even modest amounts of conversation loom large.  Together they illustrate that a high inaccuracy score chiefly signals ongoing editorial contention—about scope, presentation order, historical credit, or performance claims—rather than a simple lack of factual correctness, and that such contention is most pronounced where definitions are ambiguous, folklore collides with formalism, or broad audiences repeatedly revisit basic material.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Topic & Inaccuracy & Article length & Talk length \tabularnewline
+\hline 
+\hline 
+Sylvester–Gallai theorem & 0.394610 & 29810 & 19431 \tabularnewline
+\hline
+Pseudoforest & 0.454130 & 18999 & 15806 \tabularnewline
+\hline
+Selection algorithm & 0.461374 & 31578 & 27049 \tabularnewline
+\hline
+BIT predicate & 0.463016 & 10817 & 9327 \tabularnewline
+\hline
+Halin graph & 0.467671 & 7953 & 6987 \tabularnewline
+\hline
+Three utilities problem & 0.485948 & 13846 & 13089 \tabularnewline
+\hline
+Fast inverse square root & 0.528723 & 29001 & 32536 \tabularnewline
+\hline
+Sylvester's sequence & 0.567808 & 9994 & 13130 \tabularnewline
+\hline
+Trie & 0.570980 & 23503 & 31280 \tabularnewline
+\hline
+Commutative property & 0.650826 & 17583 & 32773 \tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Higher-inaccuracy-of-topics}Topics with higher inaccuracy}
+\end{table}
+
+% Subsection: Nescience
+\subsection{Nescience}
+
+According to the theory of nescience, our understanding of an entity should be based on the quality of the description used to explain it. In Chapter \ref{chap:Nescience}, we introduced a quantitative measure of our ignorance regarding a research entity. This measure depends on the miscoding of a string-based representation of the entity, as well as the inaccuracy and surfeit of the model describing this representation. Ideally, we seek representations and descriptions that simultaneously minimize these three aspects.
+
+In practical terms, particularly when entities correspond to topics covered by scientific Wikipedia pages, we consider only the surfeit and inaccuracy of a description. In this scenario, the representation of a topic coincides with its description, rendering the computation of miscoding irrelevant.
+
+To address the multi-objective optimization problem posed by nescience, we apply a global criterion approach (see Section \ref{sub:multiobjective_global_criterion}). This method solves multi-objective optimization problems by minimizing the distance between a chosen reference point and the feasible region of the objective space. We select the origin vector $(0, 0)$ as our reference point. The distance metric used will be the harmonic mean of surfeit and inaccuracy, defined as:
+\[
+\frac{2}{ \iota(d, r)^{-1} + \sigma(d, r)^{-1} }
+\]
+As described in previous sections, surfeit is approximated by the redundancy of the topic's description (the Wikipedia page), while inaccuracy is estimated by the length of the corresponding Talk page.
+
+As it was explained in Section {\color{red} XX}, since we are using a decision maker to compute nescience based on redundancy and inaccuracy, and since these quantities do not have the same scale, it is highly convenient to apply the following additional transformation to them:
+\[
+\mu_{t}^{,}=\frac{\mu_{t}-\min(\mu)}{\max(\mu)-\min(\mu)}
+\]
+where $\mu_t$ refers to the considered metric (nescience, relevance, ...). 
+
+Figure \ref{fig:Nescience-of-Topics} left depicts a histogram showing the nescience levels of the analyzed topics, and right side shows a scatterplot of the article lenghts vs. the nescience, toghether with a regression line fitted to the data. The two panels paint a mixed picture of how much “unknown-ness” remains in these 50 “good” theoretical-CS articles once both redundancy (compressibility of the prose) and inaccuracy (relative size of the talk page) are factored in. Histogram — a long, uneven tail. Roughly one-third of the articles cluster below nescience $\approx 0.10$, meaning they are simultaneously concise (low redundancy) and largely uncontested (little talk).  Frequency then stays fairly flat through the 0.15 – 0.35 band and drops again, before a second bump appears between 0.60 and 0.75.  That small peak corresponds to pages that are both highly repetitive and heavily debated—the same ones that topped the earlier redundancy and inaccuracy lists.  In short, while many good-class pages are well understood, a non-trivial minority still exhibits a pronounced knowledge gap. Scatter plot — almost length-neutral. The best-fit line rises only 0.007 points for every additional 10 000 characters (slope $\approx 7.5 \times 10^{-7}$), so article length alone is not a strong predictor of nescience.  Short pages can swing from near-zero to 0.7, depending on how contentious they are, whereas long pages (> 50 kB) compress more (pushing nescience up) but also attract proportionally less talk (pushing it down), leaving them parked in a mid-range around 0.25–0.35.  The gentle upward tilt therefore reflects the fact that redundancy grows with length a bit faster than inaccuracy falls, but the wide vertical spread shows that editorial stability—rather than size—is the decisive factor. Overall, “good” status keeps most theoretical-CS articles in a low-to-moderate nescience zone, yet about a quarter of them still suffer from enough repetition and unresolved discussion to signal that our coverage of those topics remains less mature than the label might suggest.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{c c}
+\includegraphics[width=0.455\textwidth]{Histogram_nescience}
+&
+\includegraphics[width=0.5\textwidth]{regression_nescience}\tabularnewline
+\end{tabular}
+\par\end{centering}
+\caption{\label{fig:Nescience-of-Topics}Nescience of Topics}
+\end{table}
+
+Table \ref{tab:Lower-nescience-of-topics} lists topics exhibiting the lowest levels of nescience. The topics with the smallest nescience values include "Dynamic Data Driven Applications Systems," which describes systems that dynamically integrate real-time data into simulations and analytical models to improve decision-making processes; "Quantum complexity theory," which studies the computational complexity of problems within quantum computing; and "Algorithmic technique," which refers to systematic methods for designing efficient algorithms to solve computational problems.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Topic & Nescience & Norm. Inaccuracy & Norm. Redundancy \tabularnewline
+\hline 
+\hline
+Sylvester's sequence & 0.000000 & 0.872117 & 0.000000 \tabularnewline
+\hline
+Gale–Shapley algorithm & 0.000000 & 0.000000 & 0.499166 \tabularnewline
+\hline
+Turán's brick factory problem & 0.007362 & 0.370945 & 0.003718 \tabularnewline
+\hline
+Perfect graph & 0.008448 & 0.004245 & 0.864084 \tabularnewline
+\hline
+Unit distance graph & 0.031744 & 0.016248 & 0.686717 \tabularnewline
+\hline
+Rook's graph & 0.035003 & 0.017887 & 0.812327 \tabularnewline
+\hline
+Network synthesis & 0.038635 & 0.019774 & 0.836612 \tabularnewline
+\hline
+Viète's formula & 0.057626 & 0.437415 & 0.030845 \tabularnewline
+\hline
+Logic of graphs & 0.061030 & 0.031738 & 0.791546 \tabularnewline
+\hline
+Steinitz's theorem & 0.076638 & 0.040219 & 0.811139 \tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Lower-nescience-of-topics}Topics with lower nescience}
+\end{table}
+
+Finally, Table Finally, Table XX lists the topics with the highest nescience values. These include "Quasi-empiricism in mathematics," which refers to the viewpoint that mathematical knowledge evolves through empirical and heuristic methods similar to those used in empirical sciences; "Spintronics," a research area investigating the intrinsic spin of electrons for potential applications in electronic devices and data storage; and "Chemical computer," a computational system utilizing chemical reactions to perform computations, potentially providing advantages in parallel processing and information storage. lists the topics with the highest nescience values. These include "Quasi-empiricism in mathematics," which refers to the viewpoint that mathematical knowledge evolves through empirical and heuristic methods similar to those used in empirical sciences; "Spintronics," a research area investigating the intrinsic spin of electrons for potential applications in electronic devices and data storage; and "Chemical computer," a computational system utilizing chemical reactions to perform computations, potentially providing advantages in parallel processing and information storage.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|}
+\hline 
+Topic & Nescience \tabularnewline
+\hline 
+\hline
+Quasi-empiricism in mathematics & 0.462308 \tabularnewline
+\hline
+Spintronics & 0.502053 \tabularnewline
+\hline
+Chemical computer & 0.528075 \tabularnewline
+\hline
+Simulation & 0.535296 \tabularnewline
+\hline
+Indirect self-reference & 0.540197 \tabularnewline
+\hline
+Semigroup action & 0.540236 \tabularnewline
+\hline
+Correctness & 0.546969 \tabularnewline
+\hline
+Pseudorandomness & 0.566308 \tabularnewline
+\hline
+Categorical logic & 0.616337 \tabularnewline
+\hline
+Full-employment theorem & 0.616850 \tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Higher-nescience-of-topics}Topics with higher nescience}
+\end{table}
 
 %
 % Section: Measuring Resarch Areas
 %
 \section{Measuring Research Areas}
+
+In this section we analyze the interests of the different research areas, instead of the interest of individual topics.
 
 Wikipedia's category system organizes articles into groups based on similar topics, facilitating navigation and information retrieval. Categories are interconnected, forming a flexible and overlapping structure rather than a strict hierarchy. Each category can contain multiple subcategories, and a subcategory may have multiple parent categories, allowing diverse classification schemes to coexist. However, care must be taken to avoid circular relationships, where a category indirectly becomes its own subcategory. This structure resembles a partially ordered set in mathematics and computer science. 
 
@@ -172,75 +427,158 @@ Category:Contents - This is the top level of Wikipedia's category system (it has
 Contents - Articles - Main topic classification - Academic disciplines - Science - Branches of science
 
 
-In this section we analyze the interests of the different research areas, instead of the interest of individual topics. The areas analyzed are \emph{sociology} (Level 1 \emph{social sciences}, 6,004 topics),
+Applied sciences (28 C, 32 P)
+ - Health Sciences
+   * Medicine
+Formal sciences (4 C, 37 P)
+ - Mathematics
+Natural sciences (6 C, 10 P)
+ - Life Sciences
+   * Biology
+ - Physical Sciences
+   * Physics
+   * Chemistry
+Social sciences (54 C, 66 P)
+ - Psychology
+Humanities
+ - Philosophy
+
+Mathematics > Physics > Chemistry > Biology > Medicine > Psychology > Philosophy
+
+Mathematics -> Fields of Mathematics
+Physics         -> Subfields of Physics
+Chemistry     -> Subfields of Chemistry 
+Biology         -> Branches of Biology
+Psychology    -> Branches of Psychology
+Philosophy    -> Branches of Philosophy
+ 
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|}
+\hline 
+Area & Num. Topics \tabularnewline
+\hline 
+\hline
+Biology & 3475 \tabularnewline
+\hline
+Philosophy & 761 \tabularnewline
+\hline
+Psychology & 1049 \tabularnewline
+\hline
+Mathematics & 1546 \tabularnewline
+\hline
+Chemistry & 1621 \tabularnewline
+\hline
+Physics & 1599 \tabularnewline
+\hline
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:num_topics_per_area}Number of topics analyzed per area}
+\end{table}
+
+, \emph{epistemology} (Level 1 \emph{cognitive science}, 4,268 topics), \emph{psychology} (Level 1 \emph{behavioral science}, 7,905 topics), \emph{chemistry} (Level 1 \emph{physical sciences}, 11,589 topics), and \emph{mathematics} (Level 1 \emph{formal sciences}, 4,688 topics).
+
+The areas analyzed are \emph{sociology} (Level 1 \emph{social sciences}, 6,004 topics),
 \emph{biology} (Level 1 \emph{natural sciences}, 6,989 topics), \emph{computer science} (Level 1 \emph{applied sciences}, 1,331 topics), \emph{epistemology} (Level 1 \emph{cognitive science}, 4,268 topics), \emph{psychology} (Level 1 \emph{behavioral science}, 7,905 topics), \emph{chemistry} (Level 1 \emph{physical sciences}, 11,589 topics), and \emph{mathematics} (Level 1 \emph{formal sciences}, 4,688 topics).
 
-Table \ref{tab:Interestingness-of-Areas-as-Tools} shows the average applicability and average maturity of each of the selected areas, and the average interestingness of each area as a source of interesting tools. The table largely fits our intuitive idea of which areas are more important as a source of tools: computer science is the area of highest interest, and sociology is the area with less interest. The only extrange elements is that epistemology appears as a source of very interesting tools, even more interesting, on average, than topics from mathematics (probably because it contains a large ratio of poorly written articles).
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{redundancy_by_area}
+\caption{\label{fig:Surfeit-of-Topics}Redundancy by Area}
+\end{figure}
 
-\begin{table*}
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{inaccuracy_by_area}
+\caption{\label{fig:Surfeit-of-Topics}Inaccuracy by Area}
+\end{figure}
+
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{nescience_by_area}
+\caption{\label{fig:Surfeit-of-Topics}Nescience by Area}
+\end{figure}
+
+
+\begin{table}
 \begin{centering}
 \begin{tabular}{|c|c|c|c|}
 \hline 
-Research Area & Applicability & Maturity & Tools\tabularnewline
+Category & Inaccuracy & Redundancy & Nescience \tabularnewline
 \hline 
-\hline 
-Sociology & $1.00\times10^{-3}$ & $2.93\times10^{-3}$ & $3.09\times10^{-3}$\tabularnewline
-\hline 
-Biology & $9.20\times10^{-4}$ & $4.65\times10^{-3}$ & $4.74\times10^{-3}$\tabularnewline
-\hline 
-Chemistry & $3.11\times10^{-3}$ & $5.01\times10^{-3}$ & $5.90\times10^{-3}$\tabularnewline
-\hline 
-Psychology & $1.14\times10^{-3}$ & $6.91\times10^{-3}$ & $7.00\times10^{-3}$\tabularnewline
-\hline 
-Mathematics & $9.32\times10^{-3}$ & $9.47\times10^{-3}$ & $1.32\times10^{-2}$\tabularnewline
-\hline 
-Epistemology & $1.55\times10^{-3}$ & $1.75\times10^{-2}$ & $1.76\times10^{-2}$\tabularnewline
-\hline 
-Computer\_science & $9.93\times10^{-3}$ & $1.90\times10^{-2}$ & $2.15\times10^{-2}$\tabularnewline
-\hline 
+\hline
+Biology & 0.201696 & 0.667481 & 0.261082 \tabularnewline
+\hline
+Philosophy & 0.304744 & 0.665383 & 0.350786 \tabularnewline
+\hline
+Psychology & 0.234171 & 0.684478 & 0.293427 \tabularnewline
+\hline
+Mathematics & 0.299780 & 0.667391 & 0.360493 \tabularnewline
+\hline
+Chemistry & 0.227896 & 0.661364 & 0.291546 \tabularnewline
+\hline
+Physics & 0.270205 & 0.671662 & 0.332797 \tabularnewline
+\hline
 \end{tabular}
 \par\end{centering}
-
-\caption{\label{tab:Interestingness-of-Areas-as-Tools}Interestingness of Areas
-as Tools}
-\end{table*}
-
-Finally, Table \ref{tab:Interestingness-of-Areas-as-Problems} shows the relevance and nescience of the selected areas, and their interest as a source of interesting problems. Again, the results largely match
-our intuitive idea of which areas are less understood: sociology is the area with the highest number of interesting problems, and mathematics is the area with the lower number of problems.
-
-\begin{table*}
-\begin{centering}
-\begin{tabular}{|c|c|c|c|}
-\hline 
- & Relevance & Nescience & Problems\tabularnewline
-\hline 
-\hline 
-Mathematics & $4.22\times10^{-2}$ & $3.51\times10^{-1}$ & $3.53\times10^{-1}$\tabularnewline
-\hline 
-Computer\_science & $2.35\times10^{-2}$ & $4.43\times10^{-1}$ & $4.44\times10^{-1}$\tabularnewline
-\hline 
-Chemistry & $5.95\times10^{-2}$ & $4.66\times10^{-1}$ & $4.70\times10^{-1}$\tabularnewline
-\hline 
-Biology & $3.85\times10^{-2}$ & $4.75\times10^{-1}$ & $4.77\times10^{-1}$\tabularnewline
-\hline 
-Psychology & $5.06\times10^{-2}$ & $5.28\times10^{-1}$ & $5.31\times10^{-1}$\tabularnewline
-\hline 
-Epistemology & $4.54\times10^{-2}$ & $5.30\times10^{-1}$ & $5.32\times10^{-1}$\tabularnewline
-\hline 
-Sociology & $4.21\times10^{-2}$ & $5.43\times10^{-1}$ & $5.44\times10^{-1}$\tabularnewline
-\hline 
-\end{tabular}
-\par\end{centering}
-
-\caption{\label{tab:Interestingness-of-Areas-as-Problems}Interestingness of Areas as Problems}
-\end{table*}
-
+\caption{\label{tab:average_metrics_by_area}Average metrics by area}
+\end{table}
+           
 %
 % Section: The Evolution of Knowledge
 %
 \section{The Evolution of Knowledge}
 
 {\color{red} TODO: Show the evolution of a research topic, preferably by using historical data from centuries ago, if not possible, using the evolution of a tipic given wikipedia.}
+
+To demonstrate how our theory works in practice for evaluating the state of current knowledge, we have selected three highly relevant scientific topics as illustrative examples: the theory of computation, graphene, and CRISPR. The theory of computation\index{Theory of comptation} is a branch of computer science and mathematics that explores the fundamental limits of what problems can be solved by algorithms. Graphene\index{Graphene} is a single layer of carbon atoms arranged in a two-dimensional honeycomb lattice, known for its exceptional strength, conductivity, and versatility. CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats)\index{CRISPR} is a revolutionary gene-editing technology that allows for precise, targeted modifications to DNA. These topics were chosen for their scientific importance and the richness of their associated descriptions, allowing us to apply our methodology and illustrate its effectiveness.
+
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|}
+\hline 
+\includegraphics[width=0.3\textwidth]{redundancy_deep_learning}
+&
+\includegraphics[width=0.3\textwidth]{inaccuracy_deep_learning}
+&
+\includegraphics[width=0.3\textwidth]{nescience_deep_learning}\tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:evolution-deep-learning}Knowledge evolution of deep learning}
+\end{table}
+
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|}
+\hline 
+\includegraphics[width=0.3\textwidth]{redundancy_graphene}
+&
+\includegraphics[width=0.3\textwidth]{inaccuracy_graphene}
+&
+\includegraphics[width=0.3\textwidth]{nescience_graphene}\tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:evolution-deep-learning}Knowledge evolution of graphene}
+\end{table}
+
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|}
+\hline 
+\includegraphics[width=0.3\textwidth]{redundancy_CRISPR}
+&
+\includegraphics[width=0.3\textwidth]{inaccuracy_CRISPR}
+&
+\includegraphics[width=0.3\textwidth]{nescience_CRISPR}\tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:evolution-deep-learning}Knowledge evolution of CRISPR}
+\end{table}
+
 
 \begin{example}
 In Figure \ref{fig:TheoreticalPerfectKnowledge} is depicted the evolution of a hypothetical research topic. Every point in the graph represents a new current best description for that topic (descriptions are ordered with respect to time). New descriptions could be based on novel theories that explain the topic, refinements over already existing ones, or on a reduction of the number of assumptions. In general, each new description should be shorter than the previous one. However, as we can see in the figure, it might happen that some descriptions are longer than its previous. That could be the case, for example, when we discover new facts that have to be taken into account by the theory. But the important thing is that nescience should decrease, in average, with time.
@@ -288,10 +626,6 @@ to reals.%
 If the complexity $C_{t}$ of the concept of limit is less that 31 characters, then there must be possible to come up with a even shorter definition.\hfill{}$\square$
 \end{example}
 
-%
-% Section: Knowledge by Category
-%
-\section{Knowledge by Category}
 
 %
 % Section: The Demarcation Problem
@@ -456,5 +790,7 @@ Other alternative interpretations of science, with a stronger orientation toward
 {\color{red} Provide a reference to Wikpedia}
 
 The behavior of compressors depending of the size of objects and window (buffer) size is studied in detail in \cite{cebrian2005common} with applications to the normalized compression distance (a measure of similarity between objects proposed in \cite{li2004similarity}).
+
+Add a reference to the Burrows–Wheeler algorithm and to bzip2, and gzip. Perhaps a comparison, or more bib in NCD in practice.
 
 

@@ -95,7 +95,7 @@ The representation of the entities that compose the set $\mathcal{E}$, which can
     \draw[-{Latex[length=3mm]}] (descriptions) -- node[above,midway] {model} (representations);
     \draw[dashed,-{Latex[length=3mm]}] (descriptions) to [bend right=45] node[above,midway] {explain?} (entities);
 \end{tikzpicture}
-\caption{\label{fig:representationProblem}The Problem of Understanding}
+\caption{The Problem of Understanding}
 \end{figure}
 
 Within the field of Kolmogorov complexity\index{Kolmogorov complexity}, the representation issue is tackled by presupposing that the set $\mathcal{E}$ is well-defined, countable, and that a total encoding function $f:\mathcal{E} \rightarrow \mathbb{N}$ exists, mapping the set of entities to the set of natural numbers (akin to Gödel numbering\index{Gödel numbering}). The nescience theory similarly embraces this concept of encoding entities via numbers, or, in other words, strings of symbols. However, our approach to the problem of encoding an arbitrary set $\mathcal{E}$ involves an inversion of the problem. This involves defining a partial function $\mathcal{O}_\mathcal{E}:\mathcal{S}^\ast \rightarrow \mathcal{E}$ that maps the well-defined set $\mathcal{S}^\ast$ (comprising all possible finite strings from an alphabet $\mathcal{S}$) to the potentially non-countable and non-well defined set $\mathcal{E}$ containing the entities of interest.
@@ -537,101 +537,101 @@ Apply Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:j
 
 \section{Conditional Descriptions}
 
-It is usually cumbersome to include all the information needed to reconstruct an entity in its description, since that would require very large strings for the majority of the entities. It is more convenient to assume some already existing background knowledge, and compute how much we do not know about an entity given that background. In this section we are going to study the concept of \emph{conditional descriptions}, that is, computing a description given another description. Conditional descriptions also play a very important role in the discovery of new knowledge: if by conditioning a description to some prior knowledge we reduce significantly the inaccuracy of a model, that would mean this prior knowledge is relevant to understand the entity.
+It is often cumbersome to include all the information required to reconstruct an entity within a single description, as this would typically result in very long strings for most entities. A more practical approach is to assume the existence of some background knowledge and to quantify our lack of knowledge about an entity relative to that background. In this section, we study the concept of \emph{conditional descriptions}, that is, constructing a description given some prior description. Conditional descriptions also play a crucial role in the discovery of new knowledge: if conditioning a description on some prior knowledge significantly reduces the inaccuracy of a model, it indicates that this prior knowledge is relevant to understanding the entity.
 
 \begin{definition}
 \label{def:conditional_description}
 Let $r, d, s \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the string $s$, denoted by $d_{r \mid s}$, if $d = \langle TM, a \rangle$ is a description, and $TM \left(\langle a, s \rangle \right) = r$.
 \end{definition}
 
-The conditional description $d_{r \mid s}$ is based on two strings $a$ and $s$, that play very different roles. The string $a$ is the input to the Turing machine $TM$,  and it should contain the non-compresible part of the representation $r$. The string $s$ should be the description, or representation, of another entity whose knowledge can helps to understand the entity in which we are interested. For example, as we will see in Chapter \ref{chap:Redundancy}, the string $s$ is not taken into account when computing the surfeit of a conditional description.
+The conditional description $d_{r \mid s}$ relies on two distinct strings: $a$ and $s$, each fulfilling a different role. The string $a$ is provided as input to the Turing machine $TM$ and is intended to contain the portion of the representation $r$ that cannot be derived from prior knowledge, that is, the incompressible or novel part. In contrast, the string $s$ represents background knowledge: it is a description or representation of another entity that is assumed to be already known and that can facilitate the reconstruction or understanding of $r$. For example, as we will explain in Chapter \ref{chap:Redundancy}, when evaluating the redundancy of a conditional description, the contribution of the string $s$ is disregarded—only the length and content of $a$ are taken into account.
 
-Note that the conditional description $d_{r \mid s}$ does not belong to the set of valid description $\mathcal{D}$ for the representation $r$, since $s$ is required to compute the representation $r$, but it is not part of the description itself. A new definition is required to capture this new concept.
+Note that the conditional description $d_{r \mid s}$ does not belong to the set of valid descriptions $\mathcal{D}$ for the representation $r$, since computing $r$ requires the additional string $s$, which is not part of the description itself. Therefore, a new definition is needed to formally capture this concept.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string, we define the \emph{set of conditional descriptions}\index{Set of conditional descriptions} of $r$ given $s$, denoted by $\mathcal{D}_{r \mid s}$, as:
+Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string. We define the \emph{set of conditional descriptions}\index{Set of conditional descriptions} of $r$ given $s$, denoted by $\mathcal{D}_{r \mid s}$, as:
 \[
 \mathcal{D}_{r \mid s} = \{ d \in \mathcal{B}^\ast, d = \langle TM, a \rangle : TM \left(\langle a, s \rangle \right) = r \}.
 \]
 \end{definition}
 
-For each representation $r \in \mathcal{B}^\ast$ there always exists a conditional description $d_{r \mid s}$ that describes $r$, as next proposition shows.
+For each representation $r \in \mathcal{B}^\ast$, there always exists a conditional description $d_{r \mid s}$ that describes $r$, as the following proposition shows.
 
 \begin{proposition}
 \label{prop:description_implies_conditional}
 Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string. If $d \in \mathcal{D}_{r}$ then $d \in \mathcal{D}_{r \mid s}$.
 \end{proposition}
 \begin{proof}
-We can use a conditional description $\langle \langle TM, a \rangle, s \rangle$ based on a Turing $TM$ machine that given the input $\langle a, s \rangle$ safely ignores the $s$ string.
+We can construct a conditional description $\langle \langle TM, a \rangle, s \rangle$ based on a Turing machine $TM$ such that, when given the input $\langle a, s \rangle$, the machine safely ignores the string $s$.
 \end{proof}
 
-The converse of Proposition \ref{prop:description_implies_conditional} is not true. The fact that $d$ is a conditional description ($d \in \mathcal{D}_{r \mid s}$) does not implies that $d$ is also a description ($d \in \mathcal{D}_{r})$. We require that $TM \left(\langle a, s \rangle \right) = r$ but $TM \left( a \right) = r$ is not required, and it might not be the case.
+The converse of Proposition \ref{prop:description_implies_conditional} is not true. The fact that $d$ is a conditional description (i.e., $d \in \mathcal{D}_{r \mid s}$) does not implies that $d$ is also a valid description (i.e., $d \in \mathcal{D}_{r})$. Indeed, while we require that $TM \left(\langle a, s \rangle \right) = r$, we do not require that $TM(a) = r$, and in general, this may not hold.
 
-We are interested in the concept of perfect conditional description. The perfect conditional description of a representation given a prior knowledge is the shortest possible string that allow us to fully reconstruct the representation assuming this prior knowledge.
+We are interested in the concept of a perfect conditional description. The perfect conditional description of a representation, given some prior knowledge, is the shortest possible string that allows us to fully reconstruct the representation, assuming that the prior knowledge is already known.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star_{r \mid s}$ be the shortest possible description of $r$ given the string $s$. We call $d^\star_{r \mid s}$ the \emph{perfect conditional description} of the representation $r$ given the string $s$, or perfect conditional description of $r$ given $s$ for short.
+Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star_{r \mid s}$ be the shortest possible description of $r$ given the string $s$. We call $d^\star_{r \mid s}$ the \emph{perfect conditional description}\index{Perfect conditional description} of the representation $r$ given the string $s$, or simply perfect conditional description of $r$ given $s$ for short.
 \end{definition}
 
-Note that $d^\star_{r \mid s}$ is a perfect description of the representation $r$ conditional to the string $s$. That is, it might happen that the string $s$ is not a perfect description itself, or it is a representation that contains non-relevant symbols. In that case, we would have reached a perfect knowledge with respect to the $d$ part, but not for the $s$ part, of the combined $\langle d, s \rangle$ string.
+Note that $d^\star_{r \mid s}$ is a perfect description of the representation $r$ *conditional on* the string $s$. This does not imply that $s$ is a perfect description itself; it may be an incomplete or partially irrelevant representation. In such a case, we would have achieved perfect knowledge with respect to the $d$ component, but not with respect to the $s$ component of the combined string $\langle d, s \rangle$.
 
-The length of perfect conditional description is equal or shorter that their unconditional counterparts. That is, assuming some already existing background knowledge could reduce the effort required to describe a representation.
+The length of a perfect conditional description is always less than or equal to that of its unconditional counterpart. In other words, assuming the existence of some background knowledge can reduce the effort required to describe a representation.
 
 \begin{proposition}
 \label{prop:description_conditional_inequality}
-Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string. We have that $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right)$.
+Let $r \in \mathcal{B}^\ast$ be a representation and $s \in \mathcal{B}^\ast$ an arbitrary string. Then $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right)$.
 \end{proposition}
 \begin{proof}
-The statement $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right)$ is equivalent to $K(r \mid s) \leq K(r)$, then apply Proposition \ref{prop:kolmogorov_conditional}.
+The inequality $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right)$ is equivalent to the well-known result $K(r \mid s) \leq K(r)$. The proposition follows directly by applying Proposition \ref{prop:kolmogorov_conditional}.
 \end{proof}
 
-Next proposition shows the relation between the lengths of descriptions, join descriptions and conditional descriptions.
+The notions of unconditional, conditional, and joint descriptions are closely related. In particular, the availability of prior knowledge (as captured by a conditional description) can reduce the length of a description, while describing multiple entities jointly (via a joint description) typically requires more information than describing a single entity. The following proposition formalizes these relationships by comparing the lengths of the perfect conditional description, the perfect (unconditional) description, and the perfect joint description.
 
 \begin{proposition}
 \label{prop:description_conditional_joint}
-Let $r, s \in \mathcal{B}^\ast$ two different representations. We have that:
+Let $r, s \in \mathcal{B}^\ast$ two different representations. Then:
 \[
 l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{rs} \right)
 \]
 \end{proposition}
 \begin{proof}
-The statement $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{rs} \right)$ is equivalent to $K(r | s ) \leq K(r)$ and $K(r) \leq K(rs)$, then apply Proposition \ref{prop:kolmogorov_relations}.
+The inequality $l \left( d^\star_{r \mid s} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{rs} \right)$ is equivalent to the Kolmogorov complexity relations $K(r \mid s) \leq K(r)$ and $K(r) \leq K(rs)$. The result follows directly by applying Proposition \ref{prop:kolmogorov_relations}.
 \end{proof}
 
-As it was the case of joint descriptions, the concept of conditional description can be extended to finite collections of representations.
+As was the case with joint descriptions, the concept of conditional description can be naturally extended to finite collections of representations.
 
 \begin{definition}
-Let $r, d, s_1, s_2, \ldots, s_n \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s_1, s_2, \ldots, s_n \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the strings $s_1, s_2, \ldots, s_n$, denoted by $d \mid s_1, s_2, \ldots, s_n$, if $d = \langle TM, a \rangle$ is a description, and $TM \left(\langle a, s_1, s_2, \ldots, s_n \rangle \right) = r$.
+Let $r, d, s_1, s_2, \ldots, s_n \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s_1, s_2, \ldots, s_n \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the strings $s_1, s_2, \ldots, s_n$, denoted by $d_{r \mid s_1, s_2, \ldots, s_n}$, if $d = \langle TM, a \rangle$ is a description, and $TM \left(\langle a, s_1, s_2, \ldots, s_n \rangle \right) = r$.
 \end{definition}
 
-In the next definition we provide the generalization of the concept of perfect conditional descriptions.
+The following definition generalizes the notion of a perfect conditional description to the case of multiple conditioning strings.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star_{r \mid s_1, s_2, \ldots, s_n}$ be the shortest possible description of $r$ given the strings $s_1, s_2, \ldots, s_n$. We call $d^\star_{r \mid s_1, s_2, \ldots, s_n}$ the \emph{perfect conditional description} of the representation $r$ given the string $s_1, s_2, \ldots, s_n$, or perfect conditional description of $r$ given $s_1, s_2, \ldots, s_n$ for short.
+Let $r \in \mathcal{B}^\ast$ be a representation, and let $d^\star_{r \mid s_1, s_2, \ldots, s_n}$ be the shortest possible description of $r$ given the strings $s_1, s_2, \ldots, s_n$. We call $d^\star_{r \mid s_1, s_2, \ldots, s_n}$ the \emph{perfect conditional description}\index{Perfect conditional description} of the representation $r$ given the string $s_1, s_2, \ldots, s_n$, or perfect conditional description of $r$ given $s_1, s_2, \ldots, s_n$ for short.
 \end{definition}
 
-Next proposition generalizes Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to any arbitrary, but finite, collection of strings $s_1, s_2, \ldots, s_n$. Moreover, the proposition shows that the more background knowledge we assume for a representation, the shorter is the perfect description for that representation.
+The next proposition generalizes Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to any arbitrary (but finite) collection of strings $s_1, s_2, \ldots, s_n$. In particular, it shows that the more background knowledge we assume for a given representation, the shorter its perfect description becomes.
 
 \begin{proposition}
-Let $r, s_1, s_2, \ldots, s_n \in \mathcal{B}^\ast$ be a finite collection of strings. Then, we have that:
+Let $r, s_1, s_2, \ldots, s_n \in \mathcal{B}^\ast$ be a finite collection of strings. Then:
 \[
 l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n} \right) \leq l \left( d^\star_r \right) \leq l \left( d^\star_{r,s_1, s_2, \ldots, s_n} \right)
 \]
 \end{proposition}
 \begin{proof}
-Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
+This follows from the Kolmogorov complexity inequalities $K(r \mid s_1, s_2, \ldots, s_n) \leq K(r) \leq K(r, s_1, s_2, \ldots, s_n)$, which generalize the results stated in Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint}.
 \end{proof}
 
-The following proposition generalizes the idea that assuming more background knowledge to a description cannot increase its length.
+The following proposition further generalizes the idea that assuming additional background knowledge cannot increase the length of a perfect conditional description.
 
 \begin{proposition}
-Let $r, s_1, s_2, \ldots, s_n, s_{n+1} \in \mathcal{B}^\ast$ be a finite collection of strings. Then, we have that:
+Let $r, s_1, s_2, \ldots, s_n, s_{n+1} \in \mathcal{B}^\ast$ be a finite collection of strings. Then:
 \[
 l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n, s_{n+1}} \right) \leq l \left( d^\star_{r \mid s_1, s_2, \ldots, s_n} \right)
 \]
 \end{proposition}
 \begin{proof}
-Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:description_conditional_joint} to individual pairs of representations $i$ and $j$.
+This follows directly from the monotonicity property of conditional Kolmogorov complexity: adding more conditioning information cannot increase the complexity. Formally, $K(r \mid s_1, s_2, \ldots, s_n, s_{n+1}) \leq K(r \mid s_1, s_2, \ldots, s_n)$.
 \end{proof}
 
 %
@@ -641,33 +641,33 @@ Apply Propositions \ref{prop:description_conditional_inequality} and \ref{prop:d
 \section{Research Areas}
 \label{sec:areas}
 
-Entities can be grouped into research areas. The concept of area is useful as long as all the entities included in the area are related to a common knolewdge subdomain, or share a common property. The particular details of the grouping criteria depend on the practical applications in which the theory of nescience is being used.
+Entities can be grouped into research areas. The concept of an area is useful insofar as all the entities included in the area are related to a common subdomain of knowledge or share a common property. The specific criteria used for grouping depend on the practical application of the theory of nescience.
 
 \begin{definition}
-Given a set of entities $\mathcal{E}$, we define a \emph{research area}\index{Research area} $\mathcal{A}$ as a subset of entities $\mathcal{A} \subset \mathcal{E}$.
+Given a set of entities $\mathcal{E}$, we define a \emph{research area}\index{Research area} $\mathcal{A}$ as a subset of entities, $\mathcal{A} \subset \mathcal{E}$.
 \end{definition}
 
-If we want to know how much we do not know about a research area, first we have to provide a representation for that area. In general areas are infinite, but the number of known representations is finite, and so, we can only describe the areas with respect to our current knowledge.
+If we want to quantify how much we do not know about a research area, we must first provide a representation for that area. In general, research areas are infinite, but the number of known representations is finite. Therefore, we can only describe an area with respect to our current state of knowledge.
 
 \begin{definition}
-Let $\mathcal{A} \subset \mathcal{E}$ be an area. We define the \emph{known subset of the area}\index{Known subset of an area} $\mathcal{A}$, denoted by $\hat{\mathcal{A}}$, as the set composed by those entities $e_1, e_2, \ldots, e_n \in A$ for which at least one non-pleonastic description is known.
+Let $\mathcal{A} \subset \mathcal{E}$ be a research area. We define the \emph{known subset of the area}\index{Known subset of an area} $\mathcal{A}$, denoted by $\hat{\mathcal{A}}$, as the set of entities $e_1, e_2, \ldots, e_n \in A$ for which at least one non-pleonastic description is known.
 \end{definition}
 
-We have to distinguish between the knowable subset of $\mathcal{A}$, composed by those entities for which there exists a representation, and the know subset of $\mathcal{A}$, composed by those entities for which we know a non-pleonastic description, that is, those entities for which somebody has already done some research about them. Of course, the set of known entities is a subset of the set of knowable entities.
+We must distinguish between the knowable subset of $\mathcal{A}$, composed of those entities for which a representation exists, and the known subset of $\mathcal{A}$, composed of those entities for which at least one non-pleonastic description is known, that is, entities about which some research has already been conducted. Clearly, the set of known entities is a subset of the set of knowable entities.
 
-As our understanding of a research area changes, the number of entities included in its known subset changes as well. The properties of areas studied in this book will be always relative to our current knowledge.
+As our understanding of a research area evolves, the number of entities included in its known subset also changes. Throughout this book, the properties of research areas will always be considered relative to our current state of knowledge.
 
 \begin{definition}
-Let $\mathcal{A} \subset \mathcal{E}$ be an area with known subset $\hat{\mathcal{A}} = \{ e_1, e_2, \ldots, e_n \}$, and let  $R = \{ r_1, r_2, \ldots, r_n \}$ a set of representations, such that $r_i \in \mathcal{R}_{e_i}$. We call $R_{\hat{\mathcal{A}}}$ a \emph{representation of the area $\mathcal{A}$} given the known subset $\hat{\mathcal{A}}$, abbreviated as \emph{representation of $A$}.
+Let $\mathcal{A} \subset \mathcal{E}$ be a research area with known subset $\hat{\mathcal{A}} = \{ e_1, e_2, \ldots, e_n \}$, and let $R_{\hat{\mathcal{A}}} = \{ r_1, r_2, \ldots, r_n \}$ be a set of representations such that $r_i \in \mathcal{R}_{e_i}$. We call $R_{\hat{\mathcal{A}}}$ a \emph{representation of the area $\mathcal{A}$}\index{Representation of an area} given the known subset $\hat{\mathcal{A}}$, abbreviated as \emph{representation of $\mathcal{A}$}.
 \end{definition}
 
-In the same way, we can introduce the concept of description of an area.
+In a similar manner to how we describe individual entities, we can also introduce the concept of a description for an entire research area. Since a research area is represented by a collection of known representations corresponding to its known subset, a description of the area must account for the generation of this entire set. Thus, we define a description of a research area as a program that, when executed, produces the sequence of representations associated with the known entities in that area.
 
 \begin{definition}
-Let $R_{\hat{\mathcal{A}}} = \{ r_1, r_2, \ldots, r_n \}$ be the representation of an area $\mathcal{A}$. We call a \emph{description of the area $\mathcal{A}$} given the known subset $\hat{\mathcal{A}}$, abbreviated as \emph{description of $\mathcal{A}$}, and denoted by $d_{\hat{\mathcal{A}}}$, to any string in the form $\langle TM, a\rangle$ such that $TM(a) = \langle r_1, r_2, \ldots, r_n\rangle$.
+Let $R_{\hat{\mathcal{A}}} = \{ r_1, r_2, \ldots, r_n \}$ be the representation of an area $\mathcal{A}$. We call a \emph{description of the area $\mathcal{A}$}\index{} given the known subset $\hat{\mathcal{A}}$, abbreviated as \emph{description of $\mathcal{A}$}, and denoted by $d_{\hat{\mathcal{A}}}$, to any string in the form $\langle TM, a\rangle$ such that the Turing machine $TM$, when given input $a$, outputs the sequence $\langle r_1, r_2, \ldots, r_n \rangle$.
 \end{definition}
 
-We can also define the set of descriptions of an area.
+We can also consider all possible descriptions that generate the full set of known representations for a given research area. These descriptions differ in structure, length, or computational efficiency, but they all produce the same output: the sequence of representations associated with the known entities in the area.
 
 \begin{definition}
 Let $R_{\hat{\mathcal{A}}} = \{ r_1, r_2, \ldots, r_n \}$ be the representation of an area $\mathcal{A}$. We define the set of \emph{descriptions for $R_{\hat{\mathcal{A}}}$}, denoted by $\mathcal{D}_{R_{\hat{\mathcal{A}}}}$, as:
@@ -676,13 +676,14 @@ Let $R_{\hat{\mathcal{A}}} = \{ r_1, r_2, \ldots, r_n \}$ be the representation 
 \]
 \end{definition}
 
-Finally, we are interested in the perfect model for a research area, that is, the shortest possible string that fully describes its known subset. According to Definition \ref{def:trivial_model}, if we are aware of the existence of a entity $e \in A$, that entity should be part of $\hat{A}$, even in the case we have not started yet to do research about that particular topic.
+Finally, we are interested in identifying the perfect model for a research area, that is, the shortest possible string that fully describes its known subset. According to Definition \ref{def:trivial_model}, if we are aware of the existence of an entity $e \in A$, then $e$ should be included in the known subset $\hat{A}$, even if no research has yet been conducted on that specific topic.
 
 \begin{definition}
-Let $A \subset \mathcal{E}$ be an area with known subset $\hat{A}$, and let $d_{\hat{A}}^{\star} \in \mathcal{M}_{\hat{A}}$ be the shortest possible description of $A$. We call  $d_{\hat{A}}^{\star}$ the \emph{perfect description of the area $A$} given the known subset $\hat{A}$\index{Perfect description of an area}, abbreviated as \emph{perfect description of $A$}.
+Let $A \subset \mathcal{E}$ be an area with known subset $\hat{A}$, and let $d_{\hat{A}}^{\star} \in 
+\mathcal{D}_{R_{\hat{\mathcal{A}}}}$ be the shortest possible description of $A$. We call  $d_{\hat{A}}^{\star}$ the \emph{perfect description of the area $A$}\index{Perfect description of an area} given the known subset $\hat{A}$\index{Perfect description of an area}, abbreviated as \emph{perfect description of $A$}.
 \end{definition}
 
-Next proposition shows the relation between the description of an area, and the descriptions of the entities that compose the known subset of that area. In general, the models for an area are different from the collection of models of the individual topics.
+The following proposition shows the relationship between the description of a research area and the descriptions of the individual entities that compose its known subset. In general, the models for an area are not simply the collection of the models for each individual topic; instead, a joint model may offer a more concise description.
 
 \begin{proposition}
 Let $A \subset \mathcal{E}$ be an area with known subset $\hat{A} = \{e_1, e_2, \ldots, e_n\}$, then we have that $l \left( d_{\hat{A}}^{\star} \right) \leq l(d_ {e_1}^\star) + l(d_ {e_2}^\star) + \ldots + l(d_ {e_n}^\star)$.
@@ -691,37 +692,85 @@ Let $A \subset \mathcal{E}$ be an area with known subset $\hat{A} = \{e_1, e_2, 
 Apply Proposition \ref{prop:joint_multiple_topics}-ii. 
 \end{proof}
 
-Also, as it was proved in Proposition \ref{prop:joint_multiple_topics}, the order in which the representations are listed in the description of an area is not relevant when dealing with the perfect model for that area.
+Moreover, as shown in Proposition \ref{prop:joint_multiple_topics}, the order in which the representations are listed in the description of an area does not affect the length of its perfect model.
 
-Areas can overlap, that is, given two areas $A$ and $B$ it might happen that $A \cap B \neq \varnothing$. Moreover, areas can be subsets of other areas, creating an hierarchy of areas. We are interested in the length of perfect models of areas in relation to the length of perfect models of other areas.
+Research areas can overlap; that is, given two areas $A$ and $B$, it may be the case that $A \cap B \neq \varnothing$. Furthermore, one area can be a subset of another, forming a hierarchy of areas. In this context, we are particularly interested in how the length of perfect models for some areas compares to the length of perfect models for related areas.
 
 \begin{proposition}
 Let $A, B \subset \mathcal{E}$ be two areas such that $A \subset B$, and let $\hat{A}$ and $\hat{B}$ be their know subsets respectively, then we have that $l \left( d_{\hat{A}}^{\star} \right) \leq l \left( d_{\hat{B}}^{\star} \right)$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Since $A \subset B$, it follows that $\hat{A} \subset \hat{B}$.Let
+$$
+R_{\hat{A}} = \{r_1, r_2, \ldots, r_m\} \quad \text{and} \quad R_{\hat{B}} = \{r_1, r_2, \ldots, r_m, r_{m+1}, \ldots, r_n\}
+$$
+be the sets of representations corresponding to $\hat{A}$ and $\hat{B}$ respectively, and let $d_{\hat{B}}^{\star}$ be the perfect description of $\hat{B}$. Then, we can construct a description $d'$ of $\hat{A}$ by modifying $d_{\hat{B}}^{\star}$ to output only the subset $R_{\hat{A}}$. This can be achieved by appending a simple postprocessing step that discards the extra representations. The additional cost of this truncation is at most a constant number of bits, independent of the specific contents of $R_{\hat{B}}$.
+
+Formally, we have:
+$$
+l(d_{\hat{A}}^{\star}) \leq l(d') \leq l(d_{\hat{B}}^{\star}) + c
+$$
+for some constant $c$. But since $d_{\hat{A}}^{\star}$ is the shortest possible description of $R_{\hat{A}}$, we conclude:
+$$
+l(d_{\hat{A}}^{\star}) \leq l(d_{\hat{B}}^{\star}).
+$$
 \end{proof}
 
-Next proposition \label{prop:areas_union} shows how the length of the shortest possible description of areas relate to the union and intersection of such areas.
+The following proposition shows how the length of the shortest possible description of two areas relates to the length of the description of their union and intersection.
 
 \begin{proposition}
 \label{prop:areas_union}
 Let $A, B \subset \mathcal{E}$ be two areas with know subsets $\hat{A}$ and $\hat{B}$ respectively, then we have that $l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) = l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B}}^{\star} \right) - l \left( d_{\hat{A} \cap \hat{B}}^{\star} \right)$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Let $R_{\hat{A}}$, $R_{\hat{B}}$, and $R_{\hat{A} \cap \hat{B}}$ be the sets of representations corresponding to the known subsets $\hat{A}$, $\hat{B}$, and $\hat{A} \cap \hat{B}$, respectively.
+
+From the theory of Kolmogorov complexity, the minimal description length of the union of two finite sets of strings satisfies the following identity:
+$$
+K(R_{\hat{A} \cup \hat{B}}) = K(R_{\hat{A}}) + K(R_{\hat{B}}) - K(R_{\hat{A} \cap \hat{B}}),
+$$
+Since, by definition, the perfect description $d_{\hat{A}}^\star$ satisfies:
+$$
+l(d_{\hat{A}}^\star) = K(R_{\hat{A}}), \quad l(d_{\hat{B}}^\star) = K(R_{\hat{B}}), \quad l(d_{\hat{A} \cap \hat{B}}^\star) = K(R_{\hat{A} \cap \hat{B}}),
+$$
+it follows that:
+$$
+l(d_{\hat{A} \cup \hat{B}}^\star) = K(R_{\hat{A} \cup \hat{B}}) = l(d_{\hat{A}}^\star) + l(d_{\hat{B}}^\star) - l(d_{\hat{A} \cap \hat{B}}^\star).
+$$
 \end{proof}
 
-A consequence of Proposition \label{prop:areas_union} is that $l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) \leq l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B}}^{\star} \right)$, that is, when we combines two different research areas, how much we do not know about these areas decreases.
+A consequence of Proposition \ref{prop:areas_union} is that $l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) \leq l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B}}^{\star} \right)$, that is, when we combines two different research areas, how much we do not know about these areas decreases.
 
-In the same way we introduced a chain rule for entropy in Proposition \ref{prop:chain_rule_entropy}, we can provide a chain rule for the shortest length for a description of a research area.
+Just as we introduced a chain rule for entropy in Proposition \ref{prop:chain_rule_entropy}, we can also establish a chain rule for the shortest length of a description of a research area.
 
 \begin{proposition}
 Let $A, B \subset \mathcal{E}$ be two areas with know subsets $\hat{A}$ and $\hat{B}$, then we have that $l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) = l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B} \backslash \hat{A}}^{\star} \right)$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Let $R_{\hat{A}}$ be the set of representations associated with $\hat{A}$, and let $R_{\hat{B} \backslash \hat{A}}$ be the set of representations corresponding to entities in $\hat{B}$ that are not in $\hat{A}$.
+
+By definition, the known subset of the union $\hat{A} \cup \hat{B}$ corresponds to the set of representations:
+$$
+R_{\hat{A} \cup \hat{B}} = R_{\hat{A}} \cup R_{\hat{B} \backslash \hat{A}}.
+$$
+Let $d_{\hat{A}}^{\star}$ be the shortest (perfect) description that generates $R_{\hat{A}}$, and let $d_{\hat{B} \backslash \hat{A}}^{\star}$ be the shortest description that generates $R_{\hat{B} \backslash \hat{A}}$. Because the two subsets are disjoint, we can concatenate these two descriptions to produce a description of $R_{\hat{A} \cup \hat{B}}$.
+
+Hence, the length of the shortest description of the union satisfies:
+$$
+l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) \leq l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B} \backslash \hat{A}}^{\star} \right).
+$$
+To prove equality, assume there exists a shorter description $d'$ for $\hat{A} \cup \hat{B}$ such that:
+$$
+l(d') < l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B} \backslash \hat{A}}^{\star} \right).
+$$
+Then, one could extract from $d'$ both $R_{\hat{A}}$ and $R_{\hat{B} \backslash \hat{A}}$, which would imply that at least one of $d_{\hat{A}}^{\star}$ or $d_{\hat{B} \backslash \hat{A}}^{\star}$ is not minimal—contradicting the assumption that they are perfect descriptions.
+
+Therefore:
+$$
+l \left( d_{\hat{A} \cup \hat{B}}^{\star} \right) = l \left( d_{\hat{A}}^{\star} \right) + l \left( d_{\hat{B} \backslash \hat{A}}^{\star} \right).
+$$
 \end{proof}
+
 
 %
 % Section: References
@@ -729,70 +778,4 @@ Let $A, B \subset \mathcal{E}$ be two areas with know subsets $\hat{A}$ and $\ha
 
 \section{References}
 
-{\color{red} TODO: Review this section.}
-
-For more information about Russell's paradox, Cantor theorem and universal sets refer, for example, to \cite{jech2013set}. The idea of using a function to assigns to each symbol and well-formed formula of some formal language a unique natural number (Gödel number) was introduced by Kurt Gödel for the proof of his incompleteness theorems \cite{godel1931formal}. A detailed description of the Berry paradox from the point of view of computability can be found at \cite{chaitin1995berry}. For a detailed account of the implications of Kolmogorov complexity being true up to a constant, please refer to \cite{li2013introduction}. That oracle machines are not mechanical was stated by Turing when he introduced the concept of oracle machine in \cite{turing1939systems}.
-
-\begin{itemize}
-\item Intro to ontology: the things we can know about
-\item Intro to epistemology: the problem of representation
-\item Cantor theorem
-\item Rusell paradox
-\item Zermelo-Fraenkel set of axioms
-\item Axiom of Choice
-\item What it is a representtaion: reference to oxford philosophy article
-\item Reference to the concept of what it is research topic
-\item The problem of representation in Kolmogorov complexity
-\item Godel numbering
-\item single, unique, physical world -> what it is thing called
-\item Oracle Turing machine
-\item Michelson-Morley experiment
-
-
-\item ptolomeo and tycho
-\end{itemize}
-
-\emph{universal oracle machine}
-
-Should be require the oracles to be minimal?
-
-
-% Here are some general references on foundational concepts that might be relevant:
-
-% Zermelo, E. (1908). Investigations in the Foundations of Set Theory I. In Heijenoort, J. (ed), From Frege to Gödel: A Source Book in Mathematical Logic, 1879-1931, Harvard University Press, 1999, pp. 199-215.
-
-% This work outlines the Zermelo-Fraenkel set theory, a widely accepted foundational system in the mathematics of sets.
-
-% Russell, B. (1903). The Principles of Mathematics, Cambridge University Press, Cambridge.
-
-% This work contains a comprehensive discussion of Russell's paradox, a well-known problem in the theory of sets.
-
-% Jech, T. (2003). Set Theory: The Third Millennium Edition, Revised and Expanded, Springer.
-
-% This is a comprehensive book on set theory, which would cover Cantor's theorem, the axiom of choice, and many related topics.
-
-% Popper, K. (1959). The Logic of Scientific Discovery, Routledge, London.
-
-% While this doesn't cover the concept of "nescience" per se, it's a key work on the philosophy of science, which might be relevant to the discussions of research entities and knowledge discovery.
-
-% Hutter, M. (2005). Universal Artificial Intelligence: Sequential Decisions based on Algorithmic Probability, Springer, Berlin.
-
-% The ideas about encoding entities as strings of symbols might be related to topics discussed in this book, which is about artificial intelligence but includes substantial discussion of computability, algorithmic information theory, and related topics.
-
-% These can include the nature and scope of the topic, the methodology employed, and the epistemological stance of the researcher. Here are a couple of references that delve into these concepts:
-
-% Booth, W. C., Colomb, G. G., & Williams, J. M. (2008). The Craft of Research (3rd ed.), University of Chicago Press, Chicago.
-
-% This comprehensive guide provides insights into how to define and develop a research topic, and is often used in academic research methods courses. It's also a good reference for understanding the broader research process.
-
-% Creswell, J. W. (2013). Research Design: Qualitative, Quantitative, and Mixed Methods Approaches (4th ed.), SAGE Publications, Los Angeles.
-
-% Creswell's book includes discussions about how to define a research problem and develop a research question, making it a valuable resource for understanding what constitutes a research topic.
-
-% Maxwell, J. A. (2012). Qualitative Research Design: An Interactive Approach (3rd ed.), SAGE Publications, Los Angeles.
-
-% This reference provides an in-depth discussion on how to develop a research topic in the context of qualitative research.
-
-% Robson, C. & McCartan, K. (2016). Real World Research (4th ed.), Wiley, Chichester.
-
-% This book is a practical guide for those undertaking research in the social sciences, and it includes substantial discussions about formulating a research topic.
+For more information about Russell's paradox, Cantor's theorem, and universal sets, refer, for example, to \cite{jech2013set}. This book also covers the Zermelo–Fraenkel system of axioms, including the Axiom of Choice. The idea of using a function to assign to each symbol and well-formed formula of a formal language a unique natural number (called a Gödel number) was introduced by Kurt Gödel in his proof of the incompleteness theorems \cite{godel1931formal}. A detailed discussion of the Berry paradox from the perspective of computability can be found in \cite{chaitin1995berry}. For a review of the problem of representation in Kolmogorov complexity, as well as a detailed account of the implications of Kolmogorov complexity being defined only up to an additive constant, see \cite{li2013introduction}. That oracle machines are not mechanical was originally stated by Turing when he introduced the concept of the oracle machine in \cite{turing1939systems}. For a comprehensive review of oracle Turing machines, refer to \cite{robivc2015foundations}.

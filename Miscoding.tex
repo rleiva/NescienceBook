@@ -145,7 +145,7 @@ As in the case of concatenating two representations, the miscoding of a joint re
 
 \section{Decreasing Miscoding}
 
-A valid representation of an entity refers to a string that encapsulates all the vital information needed by the oracle to reproduce the given entity, and solely that information. Conversely, an invalid representation—signified by a miscoding exceeding zero—may stem from either a lack of critical information, the presence of incorrect symbols, or the inclusion of irrelevant symbols. To decrease the miscoding of a representation, one can supplement missing information or eliminate incorrect or non-pertinent symbols. Determining in advance whether any information is absent or if certain symbols require removal is not possible. Nonetheless, as the ensuing theorem demonstrates, one of these scenarios must inevitably be true.
+A valid representation of an entity is a string that contains all the essential information required by the oracle to reproduce the entity, no more, no less. In contrast, an invalid representation, indicated by a miscoding value greater than zero, may result from missing critical information, the inclusion of incorrect symbols, or the presence of irrelevant symbols. To reduce the miscoding of a representation, one may attempt to supply the missing information or remove erroneous or non-pertinent symbols. However, it is generally not possible to determine in advance which of these actions will be effective. Nevertheless, as the following theorem shows, at least one of these approaches must be applicable.
 
 \begin{theorem}
 \label{th:reduce_miscoding}
@@ -156,23 +156,78 @@ Let $r \in \mathcal{B}^\ast$ be a representation such that $\mu(r) >0$, then one
 \end{enumerate}
 \end{theorem}
 \begin{proof}
-{\color{red} To be completed}
-Assuming that $\mu(r) >0$, we find that
+Let $r\in\mathcal B^{\ast}$ be a representation with
 \[
-\overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} } { \max\{ K \left( r \right), K \left( r^\star_e \right) \} } > 0
+\mu(r)=
+\min_{r_{e}^{\star}\in\mathcal R^{\star}_{\mathcal E}}
+\frac{\max\{K(r\mid r_{e}^{\star}),\,K(r_{e}^{\star}\mid r)\}}
+     {\max\{K(r),\,K(r_{e}^{\star})\}}
+>0 .
 \]
-Let $r^\star_e = \text{arg}\,\min \left( \mu(r) \right)$. Hence, $\max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} > 0$. If $K \left( r \mid r^\star_e \right) > 0$, it indicates that $r$ includes non-relevant symbols. Conversely, if $K \left( r^\star_e \mid r \right) > 0$, it implies that $r$ omits some relevant symbols.
+Fix one valid representation
+$r^{\star}\in\mathcal R^{\star}_{\mathcal E}$ at which the minimum is attained, and write
+\[
+A:=K(r\mid r^{\star}),\qquad
+B:=K(r^{\star}\mid r),\qquad
+L:=\max\{K(r),K(r^{\star})\},
+\]
+so that $\mu(r)=\frac{\max\{A,B\}}{L}$.
+
+We distinguish two (exhaustive) cases. Case i).  $B>0$, that is, some information is missing in $r$. Because $B>0$, a shortest self-delimiting program $p$ of length $B$ exists that, given $r$, outputs $r^{\star}$.
+Set $s:=p$ and consider the concatenation $r':=rs$. Because $s$ already is the program that converts $r$ into $r^{\star}$,
+\[
+K(r^{\star}\mid r')=O(1),\qquad
+K(r'\mid r^{\star})\le A+B+O(1).
+\]
+Hence
+\[
+\max\{K(r^{\star}\mid r'),K(r'\mid r^{\star})\}\le A+B+O(1)<A+L .
+\]
+The description length of $r'$ satisfies $K(r')\le K(r)+B+O(\log B)$, so
+\[
+\max\{K(r'),K(r^{\star})\}\ge
+\max\{K(r),K(r^{\star})\}=L .
+\]
+Thus
+\[
+\mu(r')\;=\;
+\frac{\max\{K(r^{\star}\mid r'),\,K(r'\mid r^{\star})\}}
+     {\max\{K(r'),\,K(r^{\star})\}}
+\;<\;
+\frac{A+B+O(1)}{L}
+\;\le\;
+\frac{\max\{A,B\}}{L}
+=\mu(r),
+\]
+so either $\mu(rs)<\mu(r)$ (if we append) or, by symmetric reasoning, $\mu(sr)<\mu(r)$ (if we prepend).
+Hence condition (i) is satisfied.
+
+Case ii). $B=0$, that is, all information needed to produce $r^{\star}$ is contained in $r$; extra symbols remain. Now $A>0$ because $\mu(r)>0$. Since $K(r^{\star}\mid r)=0$, a deterministic algorithm can scan $r$ from left to right and halt as soon as it has seen a **shortest prefix** that already allows it to output $r^{\star}$.
+Let $s$ be that prefix and write $r=\alpha s\beta$ with $\beta\ne\lambda$ (otherwise $r=s$ and $A=0$, contradicting $\mu(r)>0$).
+\[
+K(r^{\star}\mid s)=0,\qquad
+K(s\mid r^{\star})\le K(r\mid r^{\star})=A .
+\]
+Because $s$ is a proper prefix of $r$, $K(s)\le K(r)$ (up to an $O(\log K(r))$ term). Therefore
+\[
+\mu(s)\;=\;
+\frac{\max\{K(s\mid r^{\star}),K(r^{\star}\mid s)\}}
+     {\max\{K(s),K(r^{\star})\}}
+\;\le\;
+\frac{A}{\max\{K(s),K(r^{\star})\}}
+<
+\frac{\max\{A,B\}}{L}
+=\mu(r),
+\]
+so condition (ii) holds with that substring $s$.
 \end{proof}
 
-\begin{example}
-\label{ex:lung_cancer}
-Suppose that the research entity $e$ in which we are interested is the causes of lung cancer. In order to understand this entity, we have measured a collection of risk factors in a random sample of the population (smooking, exercise, diet, age, etc.). However, due to a problem with the sampling procedure, all the samples correspond to a subset of the population, for example, males. This dataset would be a representation $s$ for our entity $e$, but a very bad one, since it is strongly biased. If we have a second representation, corresponding the sample data of females $t$, the joint representation $st$ will be a better one that any of them, $s$ or $t$, isolated.
-\end{example}
-
-Next example describes a case in which removing some symbols from a representation can decrease its miscoding.
+Refer to Example \ref{ex:lung_cancer} for a case in which appending additional information to a representation improves its quality, that is, reduces its miscoding. Also, the following example illustrates the opposite situation: a case in which removing certain symbols from a representation can lead to a decrease in miscoding.
 
 \begin{example}
-A historian compiles representation $r$, aiming to narrate the events surrounding the signing of a pivotal treaty. However, the inclusion of speculative statements and personal interpretations about the involved parties’ intentions, not backed by primary sources, leads to a high miscoding value. The document, while rich in information, is clouded by content that is erroneous, making it an invalid representation of the historical event. By removing these speculative and unverified segments, a refined version $r’$ emerges, offering a concise, factual account based solely on verifiable data and primary sources. This refinement leads to a decrease in the miscoding value, transforming $r’$ into a more valid representation that accurately reflects the historical event without the noise of uncorroborated interpretations.
+A historian compiles a representation $r$ intended to narrate the events surrounding the signing of a pivotal treaty. However, the inclusion of speculative statements and personal interpretations about the intentions of the involved parties, statements not supported by primary sources, results in a high miscoding value. Although the document is rich in content, it is contaminated by erroneous or unverifiable information, rendering it an invalid representation of the historical event.
+
+By removing these speculative and unsubstantiated segments, a revised version $r'$ is produced. This refined representation presents a concise and factual account based solely on verifiable data and primary sources. The removal of misleading content reduces the miscoding value, making $r'$ a more valid representation that more accurately reflects the historical event without the noise of uncorroborated interpretations.
 \end{example}
 
 %

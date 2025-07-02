@@ -237,46 +237,54 @@ By removing these speculative and unsubstantiated segments, a revised version $r
 \section{Targetless Representations}
 \label{sec:targetless_representations}
 
-In the most extreme scenario, the miscoding value could escalate to its maximum limit of 1. This situation transpires when our prevailing representation $r$ does not contain a single symbol that corresponds to the encoding of any entity within the set of entities $\mathcal{E}$. In this case, $r$ would be a targetless representation\index{Targetless representation}, an abstract construct without a concrete or meaningful interpretation. We could assign ramdomly the targetless representations to an entity, but that would violate the highly desirable property of subgetive reasoning.
+In the most extreme scenario, the miscoding value can reach its upper bound of 1. This occurs when the current representation $r$ does not contain a single symbol that contributes to the encoding of any entity in the set $\mathcal{E}$. In such a case, $r$ is said to be a targetless representation, an abstract string with no concrete or meaningful interpretation.
 
-Next proposition formalices this idea.
+\begin{definition}
+Let $r \in \mathcal{B}^\ast$ be a representation. If $\mu(r) = 1$ we say that $r$ is a \emph{targetless}\index{Targetless representation} representation.
+\end{definition} 
+
+Although one could, in principle, assign a targetless representation to an arbitrary entity, doing so would violate the essential requirement of surrogative reasoning\index{Surrogative reasoning} (see Section \ref{sec:scientific_representation}). The following proposition formalizes this idea.
 
 \begin{proposition}
 \label{prop:miscoding_upper_bound}
-Given a representation $r \in \mathcal{B}^\ast$, the miscoding $\mu(r)$ reaches its maximum value of 1 if and only if there is no symbol in $r$ that contributes to the encoding of any of the entities of $\mathcal{E}$.
+Given a representation $r \in \mathcal{B}^\ast$, the miscoding $\mu(r)$ reaches its maximum value of 1 if and only if no symbol in $r$ contributes to the encoding of any entity in $\mathcal{E}$.
 \end{proposition}
 \begin{proof}
-Assume that $r$ does not contain any symbol that contributes to the encoding of $e$. Let $r^\star_e$ be any valid representation of $e$. Then the shortest program capable of generating $r^\star_e$ from $r$ would need to append every symbol in $r^\star_e$ to $r$, effectively resulting in $r^\star_e$. Hence, $K(r^\star_e | r) = K(r^\star_e)$, indicating no symbolic overlap between $r$ and $r^\star_e$.
-
-Following the definition of miscoding, we have $\mu(r) = \max{ K(r | r^\star_e), K(r^\star_e | r) } / \max{K(r), K(r^\star_e)}$. Because $K(r | r^\star_e) = K(r)$ and $K(r^\star_e | r) = K(r^\star_e)$, we get $\mu(r) = 1$, assuming that $K(r) \neq 0$.
-
-The converse also holds. If $\mu(r) = 1$, this means that there's no information in $r$ that assists in generating $r^\star_e$ or vice versa, which implies that $r$ does not contain any symbol that contributes to the encoding of $e$.
+Assume that $r$ contains no symbol that contributes to the encoding of any entity $e \in \mathcal{E}$. Let $r^\star_e$ be a valid representation of some $e \in \mathcal{E}$. Then, the shortest program capable of generating $r^\star_e$ from $r$ must encode the entirety of $r^\star_e$ without reuse of any symbols from $r$. Thus, $K(r^\star_e \mid r) = K(r^\star_e)$. Similarly, since no symbol in $r^\star_e$ contributes to the generation of $r$, we have $K(r \mid r^\star_e) = K(r)$. Substituting into the definition of miscoding:
+\[
+\mu(r) = \frac{ \max\{ K(r \mid r^\star_e), K(r^\star_e \mid r) \} }{ \max\{ K(r), K(r^\star_e) \} } = \frac{ \max\{ K(r), K(r^\star_e) \} }{ \max\{ K(r), K(r^\star_e) \} } = 1
+\]
+assuming $K(r) \neq 0$ and $K(r^\star_e) \neq 0$. Conversely, suppose that $\mu(r) = 1$. Then:
+\[
+\max\{ K(r \mid r^\star_e), K(r^\star_e \mid r) \} = \max\{ K(r), K(r^\star_e) \}
+\]
+which implies that neither $r$ can help generate $r^\star_e$ nor $r^\star_e$ can help generate $r$. Therefore, there is no overlap in information, and $r$ contains no symbol that contributes to the encoding of any entity in $\mathcal{E}$.
 \end{proof}
 
-For every finite or countable infinite set of entities $\mathcal{E}$, there exists a infinite number of targetless represention. We will prove this property using a constructive method. That is, we will prove that there exists at least one targetless representation and define a method to construct more targetless representations given the original one.
+For every finite or countably infinite set of entities $\mathcal{E}$, there exists an infinite number of targetless representations. We will prove this result constructively by showing that at least one targetless representation exists and then defining a method to generate infinitely many more from it.
 
 \begin{proposition}
 For every finite or countably infinite set of entities $\mathcal{E}$, there exists an uncountably infinite set of targetless representations.
 \end{proposition}
 \begin{proof}
-Let $\mathcal{R}$ denote the set of all possible representations for entities in $\mathcal{E}$, such that for each entity $e \in \mathcal{E}$, there exists a unique representation $r \in \mathcal{R}$ and vice versa. Since $\mathcal{E}$ is finite or countably infinite, so is $\mathcal{R}$.
+Let $\mathcal{R}$ denote the set of all valid representations of entities in $\mathcal{E}$, such that for each entity $e \in \mathcal{E}$, there exists a representation $r \in \mathcal{R}$ and vice versa. Since $\mathcal{E}$ is finite or countably infinite, $\mathcal{R}$ is also countable.
 
-Consider the set $\mathcal{B}^\ast$ of all possible binary strings of finite length. This set is uncountably infinite, because it includes all possible sequences of two symbols ('0' and '1') of finite length.
+Now consider the set $\mathcal{B}^\ast$ of all finite binary strings. This set is countably infinite, as it includes all possible finite sequences over the alphabet ${0,1}$. Because $\mathcal{R}$ is a subset of $\mathcal{B}^\ast$ and is countable, and $\mathcal{B}^\ast \setminus \mathcal{R}$ is non-empty and infinite, there must exist binary strings that are not valid representations of any entity in $\mathcal{E}$.
 
-Since $\mathcal{R}$ is countable (either finite or countably infinite), and $\mathcal{B}^\ast$ is uncountably infinite, there must exist some strings in $\mathcal{B}^\ast$ that are not in $\mathcal{R}$. We can select any such string and call it $r_0$. By definition, $r_0$ is a targetless representation, as it does not correspond to any entity in $\mathcal{E}$.
+Let $r_0 \in \mathcal{B}^\ast \setminus \mathcal{R}$ be any such string. By definition, $r_0$ is a targetless representation.
 
-Given a targetless representation $r_i$, we can construct a new targetless representation $r_{i+1}$ by appending either a '0' or a '1' to $r_i$. Since $r_i$ does not correspond to any entity in $\mathcal{E}$, $r_{i+1}$, being a lengthened version of $r_i$, also cannot correspond to any entity in $\mathcal{E}$. Therefore, $r_{i+1}$ is also a targetless representation.
+Given any targetless representation $r_i$, we can construct a new targetless representation $r_{i+1}$ by appending a symbol (either '0' or '1') to $r_i$. Since $r_i$ does not encode any entity in $\mathcal{E}$, and $\mathcal{R}$ is prefix-free with respect to targetless extensions (i.e., extending a non-representation cannot turn it into a valid one), the new string $r_{i+1}$ also does not correspond to any entity. Therefore, $r_{i+1}$ is also targetless.
 
-By repeating this process, we can construct an infinite sequence of targetless representations $\{r_0, r_1, r_2, \ldots\}$, demonstrating that there exists an uncountably infinite set of targetless representations for any finite or countably infinite set of entities $\mathcal{E}$. 
+By iterating this process, we generate an infinite sequence of distinct targetless representations ${r_0, r_1, r_2, \ldots} \subset \mathcal{B}^\ast \setminus \mathcal{R}$. This proves that there exists a countably infinite set of targetless representations corresponding to any finite or countably infinite set of entities $\mathcal{E}$.
 \end{proof}
 
-What it is a targetless representation for an oracle is not necesarily a target representation for another oracle, as next example shows.
+What constitutes a targetless representation for one oracle may not necessarily be targetless for another, as the following example illustrates.
 
 \begin{example}
-Imagine two machines, A and B, each controlling a robotic arm adept at crafting nuts and bolts. Machine A operates on a low-level assembly language, while Machine B utilizes a more sophisticated high-level programming language. Consequently, a particular set of instructions that proves inadequate and fails to yield a finished product with Machine A could be perfectly executed by Machine B, resulting in a completed bolt.
+Imagine two machines, A and B, each controlling a robotic arm capable of manufacturing nuts and bolts. Machine A operates using a low-level assembly language, whereas Machine B uses a more sophisticated high-level programming language. As a result, a particular set of instructions that fails to produce a valid output on Machine A—thus being considered a targetless representation—could be perfectly interpretable by Machine B, successfully yielding a finished bolt.
 \end{example}
 
-The normalized compression distance between a targetless representation and the closest non-targetless representation might be less that one, meaning that the target-less representation contains some information about the non-targetless one. However, this is not sufficient to guarantee scientific progress, given the size of the Turing machine needed to benefit from this knowledge.
+The normalized compression distance between a targetless representation and the closest valid (non-targetless) representation may be less than one. This indicates that the targetless representation shares some information with a valid one. However, this is not sufficient to ensure scientific progress, as the computational effort, reflected in the size or complexity of the Turing machine required to extract useful knowledge, may be larger.
 
 %
 % Section: Miscoding of Areas

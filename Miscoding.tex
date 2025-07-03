@@ -292,32 +292,44 @@ The normalized compression distance between a targetless representation and the 
 \section{Miscoding of Areas}
 \label{sec:miscoding_areas}
 
-The concept of miscoding can be extended to research areas in order to quantitative measure the amount of effort required to fix an inaccurate representation of an area. Unfortunately, as we have discussed in Section \ref{sec:areas}, there is no way to check if the strings included in a $n$-fold representation correspond to entities of that area, or to avoid the fact there may be instances where some of these strings represent the same entity.
+The concept of miscoding can be extended to research areas to quantitatively measure the amount of effort required to correct an inaccurate representation of an area. Unfortunately, as discussed in Section \ref{sec:areas}, there is no reliable way to verify whether the strings included in an $n$-fold representation actually correspond to entities within that area. Moreover, it is not possible to prevent cases in which some of these strings represent the same entity.
 
-Let's consider the strings $r_1, r_2, \ldots, r_n$, where each $r_i \in \mathcal{B}^\ast$ for $i=1, 2, \ldots, n$. Recall that when we write $r_1 r_2 \ldots r_n$, we refer to the concatenation of these strings. This operation could potentially meld the individual strings in such a way that they cannot be separated back into their original components. Conversely, by $\langle r_1, r_2, \ldots, r_n \rangle$ we denote a re-encoding of the individual strings $r_i$ into a single string, but with the provision that it retains the ability to decompose into the original strings. Moreover, the joint representation $r_1 r_2 \ldots r_n$ encodes a single entity, while the $n$-folded representation $\langle r_1, r_2, \ldots, r_n \rangle$ might encode to up to $n$ distinct entities.
+Consider the strings $r_1, r_2, \ldots, r_n$, where each $r_i \in \mathcal{B}^\ast$ for $i = 1, 2, \ldots, n$. Recall that the expression $r_1 r_2 \ldots r_n$ refers to the concatenation of these strings into a single binary string. This operation may merge the individual components in a way that makes them inseparable. In contrast, the notation $\langle r_1, r_2, \ldots, r_n \rangle$ denotes a re-encoding of the individual strings into a single string that preserves the ability to recover each original component.
 
-The following defintion extend the concept of miscoding to $n$-fold representations.
+Furthermore, the joint representation $r_1 r_2 \ldots r_n$ is assumed to encode a single entity, while the $n$-fold representation $\langle r_1, r_2, \ldots, r_n \rangle$ may encode up to $n$ distinct entities.
+
+The following definition extends the concept of miscoding to $n$-fold representations.
 
 \begin{definition}
-Let $R = \left( r_1, r_2, \ldots, r_n \right) \in \mathcal{B}^\ast \times \mathcal{B}^\ast \times \overset{n} \ldots \times \mathcal{B}^\ast$  be an $n$-fold representation. We define the \emph{miscoding} of $R$, denoted by $\mu(R)$, as:
-\[
-\mu(R) = \overset{o}{ \underset{ (r^\star_{e_1}, \ldots, r^\star_{e_n}) \in \mathcal{R}^\star_\mathcal{E} \times \overset{n} \ldots \times \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( \langle r_1, \ldots, r_n \rangle \mid \langle r^\star_{e_1}, \ldots, r^\star_{e_n} \rangle \right), K \left( \langle  r^\star_{e_1}, \ldots, r^\star_{e_n} \rangle \mid \langle r_1, \ldots, r_n \rangle \right) \} } { \max\{ K \left( \langle r_1, \ldots, r_n \rangle \right), K \left( \langle r^\star_{e_1}, \ldots, r^\star_{e_n} \rangle \right) \} }
-\]
-where $\overset{o}{\min}$ denotes that the minimum has to be computed by an oracle.
+Let $R = \left( r_1, r_2, \ldots, r_n \right) \in \mathcal{B}^\ast \times \mathcal{B}^\ast \times \cdots \times \mathcal{B}^\ast$ be an $n$-fold representation. We define the \emph{miscoding} of $R$, denoted by $\mu(R)$, as:
+\begin{multline*}
+\mu(R) = \overset{o}{\underset{(r^\star_{e_1}, \ldots, r^\star_{e_n}) \in \mathcal{R}^\star_\mathcal{E} \times \cdots \times \mathcal{R}^\star_\mathcal{E}}{\min}} \\
+\frac{
+\max\left\{
+K\left( \langle r_1, \ldots, r_n \rangle \mid \langle r^\star_{e_1}, \ldots, r^\star_{e_n} \rangle \right),
+K\left( \langle r^\star_{e_1}, \ldots, r^\star_{e_n} \rangle \mid \langle r_1, \ldots, r_n \rangle \right)
+\right\}
+}{
+\max\left\{
+K\left( \langle r_1, \ldots, r_n \rangle \right),
+K\left( \langle r^\star_{e_1}, \ldots, r^\star_{e_n} \rangle \right)
+\right\}
+}
+\end{multline*}
+where $\overset{o}{\min}$ indicates that the minimum is to be computed by an oracle.
 \end{definition}
 
-The miscoding of the representation of an area falls within the range of $0$ and $1$, as illustrated by the following proposition.
+The miscoding of the representation of an area falls within the range $[0, 1]$, as demonstrated by the following proposition.
 
 \begin{proposition}
-\label{prop:inaccuracy:inaccuracy:range}
-For all known subsets $R = \left( r_1, r_2, \ldots, r_n \right) \in \mathcal{B}^\ast \times \mathcal{B}^\ast \times \overset{n} \ldots \times \mathcal{B}^\ast$, we have that $0 \leq \mu(R) \leq 1$.
+\label{prop:miscoding:area:range}
+For all known subsets $R = \left( r_1, r_2, \ldots, r_n \right) \in \mathcal{B}^\ast \times \mathcal{B}^\ast \times \cdots \times \mathcal{B}^\ast$, it holds that $0 \leq \mu(R) \leq 1$.
 \end{proposition}
 \begin{proof}
-Given that $\langle r_1, r_2, \ldots, r_n \rangle$ is a string and Proposition \ref{prop:ncd_between_zero_and_one}.
+Since $\langle r_1, r_2, \ldots, r_n \rangle$ is a string in $\mathcal{B}^\ast$, we can apply Proposition \ref{prop:ncd_between_zero_and_one}, which guarantees that the normalized compression-based distance lies between 0 and 1.
 \end{proof}
 
-By extending the concept of miscoding to encompass areas, we can quantitatively evaluate the quality of representations for specific subsets of entities. This mathematical framework offers a robust tool to assess and rectify inaccuracies in both individual entities and broader research areas.
-
+By extending the concept of miscoding to cover research areas, we gain a quantitative means of evaluating the quality of representations for specific subsets of entities. This mathematical framework provides a rigorous tool to assess and correct inaccuracies, both at the level of individual entities and across broader scientific domains.
 
 %
 % Section: References
@@ -325,5 +337,14 @@ By extending the concept of miscoding to encompass areas, we can quantitatively 
 
 \section*{References}
 
-Misrepresentation or inaccuracies in scientific representation carry substantial implications for scientific discovery, technological advancement, policymaking, among others. However, no book or paper explicitly addresses the subject of "incorrect representations in science," from the perspective adopted in this book, in which we dissect the issue of scientific representation into two complementary subproblems: representation of entities and description of representations. Despite the absence of a direct focus, a variety of researchers have ventured into this domain indirectly. Their discussions often touch on concerns such as scientific fraud, the replication crisis, and the usage of incorrect models, to name a few. 
+Misrepresentation or inaccuracies in scientific representation have significant implications for scientific discovery, technological progress, policymaking, and other domains. However, no book or paper explicitly addresses the topic of "incorrect representations in science" from the perspective adopted in this work. Here, we decompose the problem of scientific representation into two complementary subproblems: the representation of entities and the description of those representations.
+
+\cite{suppes2002representation} provides a formal foundation for scientific representation and emphasizes the role of structure-preserving mappings; his analysis is crucial for understanding when and how representations fail to capture relevant features of phenomena. \cite{van1980scientific} introduces the concept of "constructive empiricism" and highlights the model-dependent nature of scientific representation. \cite{latour2013laboratory} offers an ethnographic study of how scientific representations are socially constructed—and, at times, distorted—in scientific practice.
+
+Although the specific topic of incorrect representations has not been directly examined in this way, various researchers have addressed related concerns indirectly. Their discussions often focus on issues such as scientific fraud, the replication crisis, and the use of incorrect or misleading models. For example, \cite{ioannidis2005most} presents a widely cited empirical and philosophical analysis of how methodological biases, poor model design, and selective reporting contribute to unreliable or misleading scientific results.
+
+
+
+
+
 

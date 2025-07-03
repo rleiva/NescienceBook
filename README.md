@@ -1,17 +1,17 @@
-## The Mathematics of the Unknown
-#### Bringing to the present the knowledge of the future
+## A Mathematical Theory of the Unknown
+#### Journey Beyond the Frontiers of Human Understanding
 
 Free eBook [download](https://github.com/rleiva/NescienceBook/blob/012b3c9d85a512d3c2ba11df75e5c5094cabc3f4/main.pdf)
 
 ## About
 
-The main idea of this book is that perfect knowledge implies randomness. This is a counterintuitive idea, since a lot of effort in science deals with the task to name and organize our chaotic world. Even the kind of knowledge that explains how things work requires a previous ordering and classification. Knowledge, apparently, is anything but random, yet this is not the case. If a theory is perfect, that is, it presents no redundant elements we can remove, it description must be an incompressible string of symbols. Thus, a model is random if it contains the maximum amount of information in the less space possible.
+We celebrate knowledge, build machines of dazzling complexity, and unlock the secrets of nature. Yet the vastness of what we do not know still dwarfs our achievements. The new Theory of Nescience invites readers on a journey not through what is known, but into the very depths of ignorance itself.
 
-In this book it is described the minimum nescience principle, a novel mathematical theory that address the problem of what it is science and how scientific knowledge can be acquired. Our main assumption is that it is easier to measure how much we do not know than measuring how much we do know, because randomness posses a limit to how much we can know. A second assumption is that the computer is the right tool that can provide this quantitative measure.
+At its core lies a radical idea: perfect knowledge implies randomness. From this insight emerges a rigorous mathematical framework (grounded in the principles of computability, complexity, and artificial intelligence) that enables us to measure ignorance, evaluate scientific progress, and guide research toward a deeper understanding of the unknown unknowns, the deeper mysteries we have not even imagined.
 
-That randomness effectively imposes a limit on how much we can know about a particular problem or area, far from being a handicap, opens new opportunities in science and technology. Its proper understanding allow us to automate the solution of problems, and use computers to discover new interesting research topics.
+But this is not merely a theoretical pursuit. The theory presented here is not only elegant, it is practical. It offers concrete tools to confront some of the most challenging open problems in science and technology, to extract meaning from data, and to uncover discoveries beyond the reach of intuition alone.
 
-In the book we describe in detail the practical applications of the new theory of nescience, not only in the context of artificial intelligence, but also to computational creativity and software engineering.
+Whether you're building advanced systems or grappling with foundational questions, this book offers a new lens for understanding how knowledge is acquired, structured, and ultimately constrained. It's not about knowing more, it's about better understanding what we don't know.
 
 ## Contents
 

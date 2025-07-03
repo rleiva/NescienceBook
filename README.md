@@ -1,7 +1,7 @@
 ## A Mathematical Theory of the Unknown
 #### Journey Beyond the Frontiers of Human Understanding
 
-Free eBook [download](https://github.com/rleiva/NescienceBook/blob/012b3c9d85a512d3c2ba11df75e5c5094cabc3f4/main.pdf)
+Free eBook: download main.pdf file.
 
 ## About
 

@@ -31,78 +31,112 @@ In this chapter, we formally introduce the concept of surfeit and examine its pr
 %
 
 \section{Surfeit}
-\label{sec:Definition_redundancy}
+\label{sec:Definition_surfeit}
 
-Given the length of a description of a representation for an entity and the length of its shortest possible description, we can introduce a relative measure to quantify the unnecessary effort expended in explaining the entity with that particular description. We term this quantity \emph{surfeit}, and it constitutes an integral component of our definition of nescience, representing the extent of our ignorance about the research entity.
+Given the length of a description of a representation for an entity and the length of its shortest possible description, we can introduce a relative measure to quantify the unnecessary effort involved in explaining the entity using that particular description. We call this quantity \emph{surfeit}. Surfeit is a key component of our definition of nescience, as it reflects the degree to which our current understanding of the research entity includes superfluous or redundant information.
 
 \begin{definition}[Surfeit]
-Given a representation $r \in \mathcal{B}^\ast$, and $d \in \mathcal{D}$ a description for $r$, we define the \emph{surfeit of the description $d$ for the representation $r$}, denoted by $\sigma(d, r)$, as
+Given a representation $r \in \mathcal{B}^\ast$, and a description $d \in \mathcal{D}$ for $r$, we define the \emph{surfeit of the description $d$ for the representation $r$}\index{Surfeit}, denoted by $\sigma(d, r)$, as
 \[
 \sigma (d, r) = \frac{ | l(d) - K(r) |}{l(d)}
 \]
 \end{definition}
 
-For the majority of descriptions, it will be the case that the length of the description $l(d)$ for $r$ exceeds the length of its shortest possible description $K(r)$. Intuitively, the more ignorant we are about an entity, the longer our description will be. A refined understanding of the entity should enable us to eliminate all redundant elements from its description. However, there might also be instances where the description is shorter than the optimal one. In such cases, we are oversimplifying the problem, which is equally detrimental. This is the rationale behind using the absolute value $| l(d) - K(r) |$ instead of simply $l(d) - K(r)$. Naturally, the current description might also be inaccurate, and the representation could be invalid. However, these issues are addressed by the metrics of inaccuracy and miscoding.
+For most descriptions, the length of the description $l(d)$ for $r$ will exceed the length of its shortest possible description $K(r)$. Intuitively, the less we know about an entity, the longer our description tends to be. As our understanding of the entity improves, we should be able to remove all redundant elements from the description. There may also be cases where the description is shorter than the optimal one. In such instances, the description oversimplifies the problem, which can be equally problematic. This justifies the use of the absolute value $| l(d) - K(r) |$ rather than simply $l(d) - K(r)$. Naturally, the current description might also be inaccurate, or the representation may be invalid. These concerns are addressed separately by the metrics of inaccuracy and miscoding.
 
-In our definition of surfeit, we opted for a relative measure rather than an absolute one (i.e., $| l(d) - K(r) |$) because we are interested not only in comparing the surfeit of different models for the same entity but also in comparing the surfeit across different entities. We prefer to use $K(r)$ instead of the equivalent $l \left( r^\star \right)$ to maintain consistency with the definition of inaccuracy provided in Section \ref{sec:inaccuracy:inaccuracy}.
+In our definition of surfeit, we chose a relative measure rather than an absolute one (i.e., $| l(d) - K(r) |$) because we aim to compare the surfeit not only among different models of the same entity but also across models of different entities. We prefer to use $K(r)$ instead of the equivalent $l \left( r^\star \right)$ to maintain consistency with the definition of inaccuracy provided in Section \ref{sec:inaccuracy:inaccuracy}.
 
 \begin{example}
-In a practical machine learning scenario, consider a task of classifying images of cats and dogs, being our representation a set of training images. An initial complex model, encumbered with excessive parameters and unnecessary features, represents a lengthy "description" of the problem. The optimal model, however, balances accuracy and simplicity. The surfeit measures the excess complexity of the initial model compared to this optimal one. It quantifies the "extra" elements that aren't essential for accurate classification. A high surfeit indicates an overly complicated model, signaling the need for refinement to achieve efficiency and effectiveness, a principle crucial in machine learning for developing models that generalize well to unseen data.
+In a practical machine learning scenario, consider the task of classifying images of cats and dogs, where the representation consists of a set of training images. An initial complex model, burdened with excessive parameters and irrelevant features, can be seen as a lengthy "description" of the problem. The optimal model, by contrast, achieves a balance between accuracy and simplicity. Surfeit quantifies the excess complexity of the initial model relative to this optimal one. It measures the "extra" components that are not essential for accurate classification. A high surfeit indicates that the model is overly complicated, highlighting the need for simplification to improve both efficiency and generalization, a fundamental principle in machine learning for building models that perform well on unseen data.
 \end{example}
 
 The surfeit of a description is a number between $0$ and $1$.
 
 \begin{proposition}
-\label{prop:range_redundancy}
-Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}^\star_r$ one of its {\color{red} XXX valid descriptions}, then we have that $0 \leq \sigma(d, r) \leq 1$.
+\label{prop:range_surfeit}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}^\star_r$ one of its valid descriptions, then we have that $0 \leq \sigma(d, r) \leq 1$.
 \end{proposition}
 \begin{proof}
-Given that $l\left( d \right)>0$ and $K\left( r \right)>0$, as they are the lengths of non-empty strings, and $l\left( d \right) \geq K\left( r \right)$ because we are not considering {\color{red} XXX pleonastic descriptions}.
+The numerator $|l(d) - K(r)|$ is non-negative for all $d$ and $r$, and the denominator $l(d) > 0$ (as descriptions must be non-empty). Hence, the entire expression is non-negative $\sigma(d, r) \geq 0$.
+
+To show that $\sigma(d, r) \leq 1$, observe that:
+\[
+|l(d) - K(r)| = l(d) - K(r) \leq l(d).
+\]
+since $d$ is a valid description of $r$, and so $l(d) \geq K(r)$. Thus:
+\[
+\sigma(d, r) = \frac{|l(d) - K(r)|}{l(d)} \leq \frac{l(d)}{l(d)} = 1.
+\]
 \end{proof}
 
-The surfeit is zero when the length of the description \(l(d)\) is equal to the Kolmogorov complexity \(K(r)\) of the representation of the entity, signifying that the description has achieved theoretical conciseness.
+The surfeit is zero when the length of the description $l(d)$ equals the Kolmogorov complexity $K(r)$ of the representation $r$ of the entity, indicating that the description has achieved theoretical conciseness.
 
 \begin{proposition}
 \label{prop:zero_surfeit}
-Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}$ a description for $r$, then we have that  $\sigma(d, r) = 0$ if and only if $l(d) = l(d^\star)$.
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}^\star_r$ a valid description for $r$, then we have that  $\sigma(d, r) = 0$ if and only if $l(d) = l(d^\star)$.
 \end{proposition}
 \begin{proof}
-As a direct consequence of the definition of Kolmogorov complexity.
+Assume $l(d) = l(d^\star) = K(r)$. Then:
+\[
+\sigma(d, r) = \frac{ |l(d) - K(r)| }{ l(d) } = \frac{ |K(r) - K(r)| }{ K(r) } = \frac{0}{K(r)} = 0.
+\]
+Assume $\sigma(d, r) = 0$. Then:
+\[
+\frac{ |l(d) - K(r)| }{ l(d) } = 0.
+\]
+This implies that the numerator must be zero, i.e.:
+\[
+|l(d) - K(r)| = 0 \Rightarrow l(d) = K(r) = l(d^\star).
+\]
 \end{proof}
 
-It is essential to distinguish between conciseness and correctness. A zero surfeit highlights the optimal brevity of the description, but not necessarily its accuracy. The accuracy, or correctness, of the description is evaluated by the metric inaccuracy. Thus, while a zero surfeit points to a minimally lengthy, streamlined description, the inaccuracy metric is consulted to determine the extent to which this concise description is correct and reliable. Together, surfeit and inaccuracy offer a comprehensive assessment of the description's efficiency and validity.
+It is important to distinguish between conciseness and correctness. A surfeit of zero indicates that the description is as brief as theoretically possible, but not necessarily accurate. The accuracy of a description is evaluated using the inaccuracy metric. Thus, while a zero surfeit reflects the optimal compactness of a description, its correctness and reliability must be assessed separately through inaccuracy. Together, surfeit and inaccuracy provide a more complete assessment of the description's efficiency and validity.
+
+The following example underscores the need to balance minimal surfeit with low inaccuracy in order to develop models that are both efficient and reliable.
 
 \begin{example}
-In a machine learning scenario, a model designed to classify emails as spam or not has achieved a surfeit of zero, indicating optimal conciseness with no superfluous elements. However, despite its streamlined complexity, the model is found to have high inaccuracy, frequently misclassifying emails. This illustrates the dichotomy between surfeit and inaccuracy. While the model is theoretically as concise as possible, signified by the zero surfeit, its practical application is hampered by incorrect classifications, highlighted by the inaccuracy metric. This underscores the necessity to balance a minimal surfeit with low inaccuracy to achieve a model that is both efficient and accurate.
+In a machine learning scenario, consider a model designed to classify emails as spam or not. Suppose this model achieves a surfeit of zero, indicating optimal conciseness with no superfluous elements in its description. However, despite this streamlined complexity, the model exhibits high inaccuracy, frequently misclassifying emails. This illustrates the distinction between surfeit and inaccuracy: while the model is theoretically as concise as possible, reflected in its zero surfeit, its practical utility is compromised by incorrect classifications, as captured by the inaccuracy metric. 
 \end{example}
 
-{\color{red} Explain  that there could be more than one description that makes surfeit zero for the same representation.}
+It is important to note that, in theory, more than one description may yield a surfeit of zero for the same representation. This occurs when two distinct, yet incompressible, descriptions have exactly the same length. In such cases, both descriptions are equally concise and minimal, meaning that neither contains redundant information that could be further compressed. Since surfeit measures the relative difference between the actual length of a description and the shortest possible one, any description whose length equals the Kolmogorov complexity $K(r)$ of the representation will result in $\sigma(d, r) = 0$. Therefore, while the perfect description is often referred to as unique, from a theoretical standpoint, multiple descriptions of equal minimal length and incompressibility may coexist.
 
-Our definition of surfeit compares the length of a description with the Kolmogorov complexity of the representation, not with the Kolmogorov complexity of the description itself (i.e., $K\left( d \right)$). That is, surfeit is not a measure of the redundancy of a description. It might happen that we come up with an incompressible description (no redundant elements to remove), that it is not the shortest possible one that describes the representation (see Example \ref{ex:description_neural}). Such a description would not be redundant in the traditional sense, but it still will present some surfeit in the sense of the theory of nescience. Moreover,it migth happen that the description $d$ we are considering does not describe the representation $r$, that is, $d \in \mathcal{D}_r$. In practice it is highly convenient to introduce the following alternative (we could say weaker) characterization of the concept of redundant model:
+%
+% Section: Redundancy
+%
+
+\section{Redundancy}
+\label{sec:Definition_redundancy}
+
+Our definition of surfeit compares the length of a description with the Kolmogorov complexity of the representation, not with the Kolmogorov complexity of the description itself (i.e., $K(d)$). In other words, surfeit is not a measure of the redundancy within a description. It is possible to construct an incompressible description (i.e., one without any internal redundancy) that is not the shortest possible description of the representation it refers to (see Example \ref{ex:description_neural}). Such a description would not be redundant in the traditional sense, yet it would still exhibit surfeit according to the theory of nescience.
+
+Moreover, it might happen that the description $d$ under consideration does not describe the representation $r$; in other words, $d \notin \mathcal{D}_r$. For practical applications, it is useful to introduce an alternative, and arguably weaker, notion of redundancy that applies solely to the description itself, independently of any particular representation.
 
 \begin{definition}[Redundancy]
-Given a description $d \in \mathcal{D}$, we define the \emph{redundancy} of the description $d$, denoted by $\rho(d)$, as
+Given a description $d \in \mathcal{D}$, we define the \emph{redundancy}\index{Redundacy} of the description $d$, denoted by $\rho(d)$, as
 \[
 \rho(d) = 1 - \frac{K(d)}{l(d)}
 \]
 \end{definition}
 
-The redundancy of a description $d$ is a quantity related to the description itself, and it does not depend on the representation $r$ being described.
+The redundancy of a description $d$ is a quantity related to the description itself, and it does not depend on the representation $r$ being described. The following example shows that a description can have low redundancy (being incompressible) and still have high surfeit if it is longer than necessary to describe the underlying task.
 
 \begin{example}
-{\color{red} TODO: Provide an example to clarify the concept.}
+Consider the task of computing the first $n$ digits of $\pi$. Description $d_1$ is a program that implements an algorithm to generate and print these $n$ digits. Description $d_2$ is a self-extracting compressed program that simply stores the first $n$ digits of $\pi$ as a hard-coded string, followed by a basic routine to print them. 
+
+Description $d_2$ does not exploit the mathematical structure of $\pi$, it merely reproduces the result. Therefore, relative to the representation of the task (computing $\pi$), the surfeit \( \sigma(d_2, r) \) is high because \( l(d_2) \gg K(r) \). 
+
+In contrast, description $d_1$ is significantly shorter since it captures the generative process behind $\pi$. While $d_1$ may still contain some redundancy \( \rho(d_1) > 0 \), for instance due to suboptimal coding practices, its surfeit remains low since it is near the minimal length required to describe the task effectively.
 \end{example}
 
-We have that the redundancy of a description is  a number between $0$ and $1$.
+The redundancy of a description always falls within the range $[0, 1]$.
 
 \begin{proposition}
 We have that $0 \leq \rho(d) \leq 1$ for all $d \in \mathcal{D}$.
 \end{proposition}
 \begin{proof}
-Apply Proposition \ref{prop:kolmogorov_length}.
+Since Kolmogorov complexity is always less than or equal to the length of the string, we have $0 \leq K(d) \leq l(d)$, 
+which implies that $0 \leq \frac{K(d)}{l(d)} \leq 1$. Subtracting from 1 reverses the inequalities.
 \end{proof}
-
-{\color{red} Clarify when the redundancy is zero}
 
 Finally, next proposition formalizes our intuition that the surfeit of a description is greater or equal than its redundancy.
 
@@ -114,13 +148,7 @@ Let $r \in \mathcal{B}^\ast$ be a representation , and $d \in \mathcal{D}^\star_
 Proving that $\rho(d) \leq \sigma(d, r)$ is equivalent to prove that $K(d) \geq K(r)$ for all $d$. Lets assume that there exist a $d$ such that $K(d) < K(r)$, that would mean there exists a Turing machine $\langle TM, a \rangle$ such that $TM(a)=r$ but $l(<TM, a>) < K(r)$. That is a contradiction with the fact that $K(r)$ is the length of the shortest possible Turing machine that prints $r$.
 \end{proof}
 
-It would be very nice if Proposition \ref{prop:surfeit_comparison} applies to all possible description. Unfortunately, the proposition is true only when we deal with valid descriptions (from $\mathcal{D}^\star_r$), as Example \ref{ex:surfeit_non_comparison} shows.
-
-\begin{example}
-\label{ex:surfeit_non_comparison}
-{\color{red} TODO: Provide an example.}
-\end{example}
-
+It would be very nice if Proposition \ref{prop:surfeit_comparison} applies to all possible description. Unfortunately, the proposition is true only when we deal with valid descriptions (from $\mathcal{D}^\star_r$).
 
 %
 % Section: Conditional Surfeit
@@ -128,16 +156,16 @@ It would be very nice if Proposition \ref{prop:surfeit_comparison} applies to al
 
 \section{Conditional Surfeit}
 
-We are interested into study how the surfeit of a description for a representation is affected when some background knowledge is assumed. That is, we want to know the surfeit of a conditional description for a representation, what we call \emph{conditional surfeit}.
+We are interested in studying how the surfeit of a description for a representation is affected when some background knowledge is assumed. In particular, we examine the case where a description is constructed under the assumption that some prior information is already known. The surfeit of such a description is referred to as the \emph{conditional surfeit}.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation, $s \in \mathcal{B}^\ast$ be a string, and $d \in \mathcal{D}$ be a description of $r$ given $s$. We define the \emph{conditional surfeit} of the conditional description $d_{r \mid s}$, denoted by $\sigma(d_{r \mid s})$, as: 
+Let $r \in \mathcal{B}^\ast$ be a representation, $s \in \mathcal{B}^\ast$ a string, and $d \in \mathcal{D}$ a description of $r$ given $s$. We define the \emph{conditional surfeit}\index{Conditional surfeit} of the conditional description $d_{r \mid s}$, denoted by $\sigma(d_{r \mid s})$, as: 
 \[
 \sigma(d_{r \mid s}) = 1 - \frac{K\left( r \mid s \right)}{l \left( d_{r \mid s} \right)}
 \]
 \end{definition}
 
-This definition is required mostly for practical purposes, since given that our knowledge of $s$ is perfect, we can focus on studying what it is new in topic $t$, that is, in that part not covered by the assumed (perfect) background knowledge.
+This definition is primarily motivated by practical considerations. When we assume perfect knowledge of $s$, we can isolate and study the informational content of $r$ that is not already covered by $s$, that is, the new knowledge introduced by $r$ relative to $s$. Conditional surfeit thus allows us to quantify the conciseness of a description in light of what is already known.
 
 Conditional surfeit, being a relative measure, is a number between $0$ and $1$.
 
@@ -145,8 +173,7 @@ Conditional surfeit, being a relative measure, is a number between $0$ and $1$.
 Let $r \in \mathcal{B}^\ast$ be a representation, $s \in \mathcal{B}^\ast$ be a string, and $d \in \mathcal{D}$ be a description of $r$ given $s$. We have that $0 \leq \sigma(d_{r \mid s}) \leq 1$.
 \end{proposition}
 \begin{proof}
-Given that $l \left( d_{r \mid s} \right) > 0$ and that $K\left( r \mid s \right) > 0$, since they are the lengths of non-empty strings, {\color{red} and that $l\left( d \right) \geq K\left( r \right)$ since we do not consider pleonastic descriptions}.
-
+Given that $l \left( d_{r \mid s} \right) > 0$ and that $K\left( r \mid s \right) > 0$, since they are the lengths of non-empty strings, and that $ll \left( d_{r \mid s} \right) \geq K\left( r \mid s \right)$.
 \end{proof}
 
 Intuition tell us that the surfeit of a description could only decrease if we assume the background knowledge given by the description of another topic. This is because we require that this background knowledge must be a perfect description (it presents no surfeit). However, as it was the case of joint surfeit, we have to wait until Chapter \ref{chap:Nescience} to formalize this intuition.
@@ -190,24 +217,97 @@ It is easy to show that the properties of conditional surfeit and conditional re
 
 \section{Decreasing Surfeit}
 
-{\color{red} Write this section}
+Our objective is to reduce the surfeit of our current best description $d_1$, thereby enhancing our understanding of the original entity. This improvement may involve either refining $d_1$ to eliminate redundant symbols or developing an entirely new description based on a different modeling approach. In either case, the result is a new description $d_2$. In this section, we analyze how the introduction of a new description $d_2$ affects the surfeit relative to that of the original description $d_1$.
+
+\begin{definition}
+Let $r \in \mathcal{B}^\ast$ be a representation, and let $d_1, d_2 \in \mathcal{D}$ be two descriptions. We define the \emph{variation of surfeit}\index{Variation of surfeit} between the descriptions $d_1$ and $d_2$, with respect to $r$, denoted by $\Delta^{a}_{\sigma} ( d_1, d_2, r )$, as:
+\[
+\Delta^{a}_{\sigma} ( d_1, d_2, r ) = \sigma(d_1, r) - \sigma(d_2, r)
+\]
+\end{definition}
+
+Since surfeit is bounded between 0 and 1, the maximum possible variation is $\pm 1$. A positive value of $\Delta_{\sigma}$ indicates that $d_2$ is preferable to $d_1$ in terms of surfeit. Conversely, a negative value suggests that $d_1$ is more concise than $d_2$.
+
+It is important to emphasize that a new description may also introduce a substantial increase in inaccuracy, potentially offsetting the improvement in surfeit. For a detailed discussion of inaccuracy, refer to Chapter \ref{chap:Error}, and for an explanation of how inaccuracy and surfeit combine into the unified metric of nescience, see Chapter \ref{chap:Nescience}.
+
+We can also introduce a relative measure of the variation in surfeit when transitioning from description $d_1$ to $d_2$.
+
+\begin{definition}
+Let $r \in \mathcal{B}^\ast$ be a representation, and $d_1, d_2 \in \mathcal{D}$ be two descriptions. We define the \emph{relative variation of surfeit}\index{Relative variation of surfeit} between descriptions $d_1$ and $d_2$, denoted by $\Delta^{r}_{\sigma}(d_1, d_2, r)$, as:
+\[
+\Delta^{r}_{\sigma}(d_1, d_2, r) = \frac{\sigma(d_1, r) - \sigma(d_2, r)}{\sigma(d_1, r)}
+\]
+provided that $\sigma(d_1, r) \neq 0$.
+\end{definition}
+
+A value of $0$ indicates that there is no change in surfeit between the two descriptions. A value of $1$ corresponds to a complete elimination of surfeit, meaning that the new description $d_2$ has zero surfeit, while the original description $d_1$ had a nonzero surfeit. Negative values indicate that surfeit has increased, suggesting that the new description $d_2$ either includes more irrelevant or redundant symbols than $d_1$, or is too short to adequately represent the entity, thus omitting important information. It is important to note that the relative variation can become arbitrarily negative. This occurs when the surfeit of the original description $\sigma(d_1, r)$ is close to zero, while the surfeit of the new description $\sigma(d_2, r)$ is significantly larger. In such cases, the denominator becomes very small, causing the relative variation to diverge toward $-\infty$.
+
+As surfeit approaches zero, relative variations become increasingly unstable. A small absolute change can result in a large relative variation when the initial surfeit is very low. For example, if $\sigma(d_1, r) = 0.1$ and surfeit decreases by 0.05, the relative improvement is 50\%. However, if $\sigma(d_1, r) = 0.9$ and the same absolute reduction occurs, the relative improvement is only about 5.6\%. Therefore, both absolute and relative variations are important for assessing the significance and scale of changes in surfeit.
 
 %
-% Section: Rate of Change
+% Section: Surfeit-inaccuracy rate of Change
 %
 
-\section{Rate of Change}
+\section{Surfeit-inaccuracy rate of Change}
 
-{\color{red} Write this section}
+In the preceding section, we examined how the surfeit of a description can be reduced by modifying that description, either by adding missing symbols, or by removing redundant, or irrelevant symbols. In this section, we turn our attention to a more general approach for reducing the surfeit associated with an entity, by allowing a increase in the inaccuracy of the description. Rather than reducing the surfeit in isolation, it may be more effective to modify both, surfeit and inaccuracy, simultaneously.
 
+The balance between the amount of inaccuracy we are willing to accept in order to achieve a reduction in surfeit is referred to as the \emph{surfeit-inaccuracy trade-off}. For a broader discussion of trade-offs in multi-objective optimization, refer to Section \ref{sec:trade_offs}.
+
+\begin{definition}
+Let $d_1, d_2 \in \mathcal{D}$ be two descriptions, and $r \in \mathcal{B}^\star$ a representation. We define the \emph{rate of change between the surfeit and inaccuracy} of the descriptions $d_1, d_2$ given the representation $r$, denoted by $\Delta_{\sigma \iota} (d_1, d_2, r)$ as:
+\[
+\Delta_{\sigma \iota} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{\sigma(d_2, r) - \iota(d_1, r)}{\iota(d_2, r) - \iota(d_1, r)}
+\] 
+provided that $\iota(d_2, r) - \iota(d_1, r) \neq 0$.
+\end{definition}
+
+The ratio $\Delta_{\sigma \iota}$ represents the rate of change between surfeit and inaccuracy when transitioning from the first description to the second. A positive value of $\Delta_{\sigma \iota}$ implies that both quantities, surfeit and inaccuracy, either decrease (which is desirable) or increase (which is undesirable). The interpretation becomes more nuanced when $\Delta_{\sigma \iota}$ is negative, indicating that one of the quantities decreases while the other increases. In such cases, two scenarios must be considered:
+
+\begin{enumerate}[label=(\roman*)]
+\item Surfeit decreases and inaccuracy increases, we aim for $\Delta_{\sigma \iota}(d_1, d_2, r) < M$, where $M < -1$, thereby ensuring that the reduction in surfeit compensates for the increase in inaccuracy.
+\item Surfeit increases and inaccuracy decreases, we aim for $\Delta_{\sigma \iota}(d_1, d_2, r) > M$, where $-1 < M < 0$, thereby ensuring that the reduction in inaccuracy justifies the increase in surfeit.
+\end{enumerate}
+
+In both cases, caution is warranted when the change in inaccuracy is small, as it can disproportionately affect the ratio and potentially lead to misleading conclusions.
+
+\begin{example}
+Let $d_1, d_2 \in \mathcal{D}$ be two descriptions, and $r \in \mathcal{B}^\star$ a representation. For $d_1$, the surfeit $\sigma(d_1, r_1)$ is 0.40, and the inaccuracy $\iota(d_1, r)$ is 0.15. For $d_2$, the surfeit $\sigma(d_2, r)$ is 0.20 (a decrease from 0.40), and the inaccuracy $\iota(d_2, r)$ is 0.25 (an increase from 0.15). Using the definition of the rate of change, we compute:
+\[
+\Delta_{\sigma \iota} (d_1, d_2, r) = \frac{0.40 - 0.20}{0.15 - 0.25} = \frac{0.20}{-0.10} = -2
+\]
+In this case, transitioning from description $d_1$ to $d_2$ results in a decrease of surfeit by 0.20 units and an increase in inaccuracy by 0.10 units. The rate of change is $-2$.
+\end{example}
+
+Having a very small change in inaccuracy can significantly amplify the value of the rate of change, potentially giving the misleading impression that surfeit and inaccuracy are varying at an extreme rate, even when the actual changes are minor. This phenomenon is illustrated in the following example.
+
+\begin{example}
+Let $d_1 \in \mathcal{D}$ be a description and $r \in \mathcal{B}^\star$ a representation with an surfeit $\sigma(d_1, r)$ of 0.35 and a inaccuracy $\iota(d_1, r)$ of 0.20. Let $d_1 \in \mathcal{D}$ be a second description with an surfeit $\sigma(d_2, r)$ of 0.30 (a slight decrease from 0.35) and a inaccuracy $\iota(d_2, r)$ of 0.2001 (a very small increase from 0.20). Applying the definition of the rate of change:
+\[
+\Delta_{\sigma \iota} (d_1, d_2, r) = \frac{0.35 - 0.30}{0.20 - 0.2001} = \frac{0.05}{-0.0001} = -500
+\]
+The rate of change is $-500$, which may misleadingly suggest a dramatic shift. In reality, the surfeit only decreased by 0.05 units, and the inaccuracy increased by a negligible 0.0001 units. The extremely small denominator inflates the result, making the change appear far more significant than it actually is.
+\end{example}
+
+As we attempt to optimize both surfeit and inaccuracy, we inevitably encounter descriptions where improving one objective necessitates compromising the other. The set of such "best trade-off" configurations constitutes the Pareto frontier (see Section \ref{sec:multiobjective_optimization}). Points on the Pareto frontier are said to be Pareto optimal because any attempt to improve one objective leads to a deterioration in the other.
+
+\begin{definition}
+Let $d_1 \in \mathcal{D}$ be a description and $r \in \mathcal{B}^\star$ a representation. The description $d_1$ is said to be a Pareto point\index{Pareto point} with respect to surfeit $\sigma$ and inaccuracy $\iota$ if there does not exist another description $d_2$ such that:
+\begin{enumerate}
+    \item $\sigma(d_2, r) \leq \sigma(d_1, r)$ and $\iota(d_2, r) \leq \iota(d_1, r)$, and
+    \item $\sigma(d_2, r) < \sigma(d_1, r)$ or $\iota(d_2, r) < \iota(d_2, r)$.
+\end{enumerate}
+\end{definition}
+
+In simpler terms, a description is Pareto optimal if: (i) no other description is better in both surfeit and inaccuracy, and (ii) any improvement in one metric necessarily results in a worsening of the other.
+
+The rate of change $\Delta_{\sigma \iota}$ between any two Pareto optimal points provides insight into how the trade-off between surfeit and inaccurac evolves along the Pareto frontier. If decision-makers are more sensitive to changes in surfeit than to inaccuracy, they may prefer configurations with a less negative $\Delta_{\sigma \iota}$. Conversely, if inaccuracy is of greater concern, they may accept solutions where $\Delta_{\sigma \iota}$ indicates a larger increase in surfeit in exchange for a smaller gain in inaccuracy.
 
 %
 % Section: Surfeit of Areas
 %
 
 \section{Surfeit of Areas}
-
-{\color{red} Review this section}
 
 The concept of surfeit can be extended to research areas, to quantitative measure the amount of extra effort we are using to describe the topics of the area.
 

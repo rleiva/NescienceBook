@@ -367,7 +367,7 @@ Suppose we are studying a physical phenomenon such as planetary motion. We consi
 In some scientific research scenarios, it is common to fix a particular representation, such as the result of an experiment or a dataset composed of measured data, and search only for the description that best models that representation. This motivates the definition of a related but more restricted notion: the best description for a given representation.
 
 \begin{definition}
-Let \$r \in \mathcal{R}\$ be a representation, and let \$\hat{\mathcal{D}}\_r\$ denote the collection of known descriptions of \$r\$. We designate a distinguished element of \$\hat{\mathcal{D}}\_r\$ as our \emph{current best description}\index{Current best description}.
+Let $r \in \mathcal{R}$ be a representation, and let $\hat{\mathcal{D}}_r$ denote the collection of known descriptions of $r$. We designate a distinguished element of $\hat{\mathcal{D}}_r$ as our \emph{current best description}\index{Current best description}.
 \end{definition}
 
 As in the case of the current best hypothesis, the current best description should be minimal with respect to at least one of the two components, inaccuracy and surfeit, within the set $\hat{\mathcal{D}}_r$. For most representations $r$, it is generally not possible to minimize both components simultaneously.
@@ -381,20 +381,100 @@ Consider a machine learning task to predict customer churn in a telecommunicatio
 \end{example}
 
 %
-% Section
+% Section: Unknown Unknown
 %
 
 \section{Unknonwn Unknown}
 
-{\color{red} TODO: pending}
+In Chapter \ref{chap:Introduction}, we introduced the concept of the unknown unknown region, an area encompassing problems for which we not only lack solutions but are entirely unaware of their existence. Within the framework of the theory of nescience, one of the central objectives is to develop a systematic procedure for identifying and exploring potential research entities hidden within this region (refer to Chapter \ref{chap:Interesting-Research-Questions} for a detailed procedure on how to approach this task). In this section, we provide a formal characterization of the unknown unknown region and examine its properties.
 
-Knonw unknown
+To uncover what lies hidden within the unknown unknown region, we must first establish the boundary of what is already known. We define this boundary not merely by the existence of hypotheses about a topic, but by the quality of our current knowledge.
 
-Unknown unknown
+\begin{definition}
+Let $e \in \mathcal{E}$ be an entity, and let $\hat{\mathcal{H}}_e$ denote the collection of known hypotheses about $e$. If there exists a hypothesis $h \in \hat{\mathcal{H}}_e$ that is Pareto optimal we say that $e$ belongs to the set \emph{known knowns}\index{Known knowns} (denoted by $\mathcal{E}_{KK}$).
+\end{definition}
 
-Finally, there exists a last category of unknonw, what we call the unknowable unknown unknown. This category refers to those entities we
+This definition identifies as known knowns those entities for which our current best hypotheses are not only available but have achieved a local optimum in the tradeoff between miscoding, inaccuracy, and surfeit. In practice, however, determining the exact set of known known entities is far from straightforward. Assessing whether a given hypothesis lies on the true Pareto frontier is, in general, undecidable. Consequently, our classification of entities as known knowns must be regarded as provisional and subject to revision as our knowledge evolves.
 
-Unknowable unknown unknonwn. In this book we are interested in the unknown unknown
+In addition to identifying what we already understand perfectly, we must also recognize the known unknowns, those entities or topics we acknowledge as scientifically relevant but for which our current understanding remains incomplete. These are areas where our ignorance is recognized, and active efforts are being made to reduce it through research.
+
+\begin{definition}
+Let $e \in \mathcal{E}$ be an entity, and let $\hat{\mathcal{H}}_e$ be the collection of known hypotheses about $e$. If $\hat{\mathcal{H}}_e \neq \varnothing$ and no hypothesis $h \in \hat{\mathcal{H}}_e$ is Pareto optimal, we say that $e$ belongs to the set \emph{known unknown}\index{known unknown} (denoted by $\mathcal{E}_{KU}$).
+\end{definition}
+
+Known unknowns are entities for which we possess hypotheses, but none of them lie on the Pareto frontier. That is, each known hypothesis can be improved in at least one component of nescience without increasing the others. This implies that our current models are suboptimal and that further scientific progress is achievable. As before, identifying the set of known unknowns in practice is challenging. It requires not only recognizing which entities have been explicitly studied, but also verifying that hypotheses have been formally documented, typically through publications, datasets, or other structured records.
+
+The unknown unknowns correspond to entities for which no hypothesis has ever been proposed. These are aspects of reality that lie entirely beyond the scope of our current scientific awareness. We are not only ignorant of their true nature, but also unaware of their very existence.
+
+\begin{definition}
+Let $e \in \mathcal{E}$ be an entity, and let $\hat{\mathcal{H}}_e$ be the collection of known hypotheses about $e$. If $\hat{\mathcal{H}}_e = \varnothing$, we say that $e$ belongs to the set \emph{unknown unknown}\index{unknown unknown} (denoted by $\mathcal{E}_{UU}$).
+\end{definition}
+
+In the theory of nescience, all entities for which no hypotheses are currently known are considered part of the realm of the unknown unknown. This includes both entities that may become knowable in the future (given improved representations or descriptions), and those that might remain permanently inaccessible (see Section \ref{sec:what-is-an-entity}). The theory of nescience does not distinguish between knowable and unknowable unknowns, as such a distinction is not operationally meaningful within a framework grounded in symbolic representations.
+
+Every knowable entity belongs to exactly one of three epistemic categories: known knowns, known unknowns, or unknown unknowns. The following proposition formalizes this trichotomy.
+
+\begin{proposition}
+Let $\mathcal{E}$ be the set of all entities. Then:
+\[
+\mathcal{E} = \mathcal{E}_{KK} \cup \mathcal{E}_{KU} \cup \mathcal{E}_{UU}
+\quad \text{and} \quad
+\mathcal{E}_{KK} \cap \mathcal{E}_{KU} = \mathcal{E}_{KK} \cap \mathcal{E}_{UU} = \mathcal{E}_{KU} \cap \mathcal{E}_{UU} = \varnothing
+\]
+\end{proposition}
+\begin{proof}
+Let $e \in \mathcal{E}$ be arbitrary. By definition, the hypothesis set $\hat{\mathcal{H}}_e$ associated with $e$ is either empty or non-empty. If $\hat{\mathcal{H}}_e = \varnothing$, then, by definition, $e \in \mathcal{E}_{UU}$. If  $\hat{\mathcal{H}}_e \neq \varnothing$, then two cases are possible: i) if there exists $h \in \hat{\mathcal{H}}_e$ such that $h$ is Pareto optimal, then $e \in \mathcal{E}_{KK}$; ii) if all $h \in \hat{\mathcal{H}}_e$ are not Pareto optimal, then $e \in \mathcal{E}_{KU}$. Therefore, every $e \in \mathcal{E}$ belongs to at least one of the three subsets.
+
+To show that these subsets are pairwise disjoint, assume by contradiction that an entity $e$ belongs to both $\mathcal{E}_{KK}$ and $\mathcal{E}_{KU}$. Then $\hat{\mathcal{H}}_e \neq \varnothing$, and both, $\exists h \in \hat{\mathcal{H}}_e$ that is Pareto optimal (by membership in $\mathcal{E}_{KK}$), and $\forall h \in \hat{\mathcal{H}}_e$, $h$ is not Pareto optimal (by membership in $\mathcal{E}_{KU}$), which is a contradiction.
+
+Similar contradictions arise if $e$ belongs to both $\mathcal{E}_{KU}$ and $\mathcal{E}_{UU}$ or both $\mathcal{E}_{KK}$ and $\mathcal{E}_{UU}$, since $\mathcal{E}_{UU}$ requires $\hat{\mathcal{H}}_e = \varnothing$.
+\end{proof}
+     
+We are concerned not only with what we know or do not know, but also with the structural boundaries that separate these domains. The boundary that separates the set of entities for which at least one hypothesis is currently known (i.e., the known) from those for which no hypotheses exist (i.e., the unknown unknown) is referred to as the knowledge frontier.
+
+Before doing so, we must introduce the concept of an anti-Pareto optimal hypothesis, which is one where no component of nescience can be made worse without improving at least one of the others. This notion mirrors the definition of Pareto optimality, but in reverse.
+
+\begin{definition}
+Let $\mathcal{H}_e$ be the collection of hypotheses about an entity $e \in \mathcal{E}$. We say that $(r, d) \in \mathcal{H}_e$ is \emph{anti-Pareto optimal}\index{Anti-Pareto optimal hypothesis} for $e$ if, for all $(r', d') \in \mathcal{H}_e \setminus {(r, d)}$, the following holds: if
+\[
+\mu(r') > \mu(r),\quad \iota(d', r') \geq \iota(d, r),\quad \text{and} \quad \sigma(d', r') \geq \sigma(d, r),
+\]
+then at least one of the following is strictly true:
+\[
+\iota(d', r') < \iota(d, r),\quad \text{or} \quad \sigma(d', r') < \sigma(d, r).
+\]
+The condition must also hold symmetrically for permutations involving $\iota$ and $\sigma$.
+\end{definition}
+
+This definition captures the idea that the hypothesis lies at a point of locally maximal nescience, any attempt to increase ignorance along one dimension (e.g., adding more miscoding) will necessarily force a reduction in ignorance along at least one of the remaining dimensions (e.g., increased accuracy or reduced redundancy).
+
+\begin{definition}
+Let $\mathcal{E}_{K}$ be the set of known entities. The \emph{knowledge frontier}\index{Knowledge frontier} is defined as the set:
+\[
+\mathcal{F} = \left\{ e \in \mathcal{E}_{K} \;\middle|\; \text{the current best hypothesis is anti-Pareto optimal} \right\}.
+\]
+\end{definition}
+
+This definition situates the knowledge frontier at the outermost edge of our current understanding. These are the entities for which: (i) at least one hypothesis is known; (ii) the best-known hypothesis is anti-Pareto optimal, meaning that any further degradation in one dimension of nescience necessarily leads to an improvement in at least one of the others; and (iii) no meaningful scientific degradation is possible without paradoxically improving the hypothesis. This configuration marks the conceptual boundary between the barely known and the unexplored.
+
+A new research entity is any entity that lies beyond the current knowledge frontier. That is, it is an entity for which no hypothesis has yet been formulated, recorded, or studied. These entities exist within the realm of the unknown unknown, not only do we lack understanding of them, but we are not even aware of their existence. Identifying such entities represents the initial and most foundational step in expanding scientific knowledge, since they mark the points at which our current understanding fails to even formulate a question.
+
+\begin{definition}
+Let $\mathcal{E}$ denote the set of all knowable entities, and let $\hat{\mathcal{H}}_e$ be the collection of known hypotheses about an entity $e \in \mathcal{E}$. We say that $e$ is a \emph{new research entity} if $\hat{\mathcal{H}}_e = \varnothing$.
+\end{definition}
+
+New research entities are, by definition, members of the unknown unknown region of the knowledge space. They have not been explicitly represented or described, and no attempt has yet been made to understand them through a scientific hypothesis. The identification and formalization of such entities is central to the methodology proposed by the theory of nescience: only by expanding the set of known entities can we ensure the continuous reduction of global ignorance.
+
+A new research entitie refer to those entities for which no hypothesis has yet been proposed. By definition, such entities fall into the class of unknown unknowns. The following proposition formalizes this relationship.
+
+\begin{proposition}
+Let $\mathcal{E}_{NRE} \subseteq \mathcal{E}$ be the set of all \emph{new research entities}, defined as entities $e \in \mathcal{E}$ such that $\hat{\mathcal{H}}_e = \varnothing$ and $e$ has not yet been discovered or studied. Let $\mathcal{E}_{UU} \subseteq \mathcal{E}$ be the set of all \emph{unknown unknowns}, defined by $\mathcal{E}_{UU} = \{ e \in \mathcal{E} \mid \hat{\mathcal{H}}_e = \varnothing \}$. Then, $\mathcal{E}_{NRE} \subseteq \mathcal{E}_{UU}$.
+\end{proposition}
+\begin{proof}
+Let $e \in \mathcal{E}_{NRE}$ be an arbitrary new research entity. By the definition of new research entity, we have $\hat{\mathcal{H}}_e = \varnothing$. But this condition is precisely the definition of membership in $\mathcal{E}_{UU}$. Therefore, $e \in \mathcal{E}_{UU}$. Since every element of $\mathcal{E}_{NRE}$ is also in $\mathcal{E}_{UU}$, it follows that: $\mathcal{E}_{NRE} \subseteq \mathcal{E}_{UU}$.
+\end{proof}
+
+This result captures the foundational idea that research innovation arises from exploring the unknown unknown region. By definition, any new scientific entity must originate from an epistemically uncharted area, one where no hypotheses currently exist.
 
 %
 % Section: Science vs. Pseudoscience
@@ -402,7 +482,14 @@ Unknowable unknown unknonwn. In this book we are interested in the unknown unkno
 
 \section{Science vs. Pseudoscience}
 
-{\color{red} TODO: Provide a characterization of the difference between science and pseudoscience. In science, nescience decreases with time, in pseudoscience not.}
+In the theory of nescience, scientific progress is measured by the systematic reduction of ignorance. As we propose and validate hypotheses about previously unstudied entities, those entities transition from the unknown unknown region to either the known known or known unknown regions. From this perspective, the set of unknown entities should decrease over time.
+
+\begin{proposition}
+Let $\mathcal{E}^{(t)}_{UU}$ denote the set of unknown unknown entities at time $t$ and $\mathcal{E}^{(t+1)}_{UU}$ at a posterior time. Then, $\mathcal{E}^{(t+1)}_{UU} \subseteq \mathcal{E}^{(t)}_{UU} \quad \text{for all } t \in \mathbb{N}$.
+\end{proposition}
+\begin{proof}
+At each time step $t$, let the process of scientific discovery introduce new hypotheses about entities in $\mathcal{E}$, thereby moving those entities from the unknown unknow region into the known known region (either known unknowns or known known).
+\end{proof}
 
 %
 % Section: Nescience of Areas

@@ -66,6 +66,119 @@ Microsoft Binary Format & 1.53 & 0.86\tabularnewline
 \caption{\label{tab:Maturity-of-Topics}Maturity of topics}
 \end{table}
 
+%
+% Subsection: Applicability
+%
+\subsection{Applicability}
+
+Applicability measures how likely is that a research topic can be applied to solve open problems. If a tool has been already applied to solve multiple problems, then there is a high probability that it can be used again to solve new problems. The number of problems in which a tool has been applied is computed with the aid of the applicability graph (see Definiton \ref{def:applicability-graph}), and applicability is formally defined as the out-degree of the topic in this graph (see Definiton \ref{def:applicability}). We have approximated the applicability graph by means of using the graph of internal links between the scientific pages of Wikpiedia. That is, we approximate the applicability of a topic by counting the number of pages from Wikipedia domain that links to the topic's page (we have used the \emph{``What links here''} facility from Wikipedia, a tool to see the list of the pages that link to, but not redirect to, the current page).
+
+{\color{red}TODO: Perhaps we could include a nice picture of the graph of Wikipedia internal links}
+
+The applicability of a topic Figure \ref{fig:Applicability-of-Topics} shows an histogram of the applicability of the selected set of topics. The histogram’s shape is dominated by an enormous spike in the very first bin and a sparsely populated, elongated right-hand tail. Roughly three-quarters of the theoretical-CS topics attract fewer than \~50 incoming Wikipedia links, while only a sprinkling reach the triple-digit range and just one or two break past 300. That steep drop-off is the signature of a power-law (or at least heavy-tailed) distribution: applicability, as measured here, is concentrated in a tiny set of “super-connectors,” with the median topic enjoying only modest reuse. In practical terms, the average link count is a misleadingly rosy figure—pulled upward by a few giants—whereas the typical topic remains niche.
+
+Such inequality has several implications. First, it reinforces the idea that a small core of foundational ideas underpins a large share of problem-solving across the field; investing effort in those hubs yields the greatest leverage. Second, the emptiness of the mid-range hints that rising topics face a kind of applicability “valley of death”: they must clear a substantial gap before joining the elite club of widely referenced concepts. Finally, the long tail highlights opportunity—numerous specialised notions wait at low link counts, potentially poised for breakout if new cross-disciplinary applications emerge.
+
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{applicability_theoretical_computer_science.png}
+\caption{\label{fig:Applicability-of-Topics}Applicability of topics}
+\end{figure}
+
+Table \ref{tab:Applicability-of-Topics} contains the ten most relevant topics according to its applicability. The backlink data confirm the long-tailed picture hinted at by the histogram: applicability—at least as proxied by Wikipedia’s “What links here” counts—is highly unequal. A single super-hub (the **Dirac delta function**, 625 links) dwarfs the rest, while only a handful of topics even cross the 200-link mark. This means that when researchers look for broadly reusable tools, the “return on attention” is greatest in a very small set of concepts that already function as connective tissue across many areas.
+
+Equally striking is *who* those hubs are. Alongside classic algorithmic staples such as the **Euclidean algorithm**, **Trie**, and **Binary search**, we see foundational math/logic notions (e.g., **Rule of inference**, **Commutative property**), a fast-rising AI methodology (**Reinforcement learning from human feedback**), and even a domain-specific meteorology model. In other words, high applicability favors breadth rather than disciplinary purity: ideas that spill into multiple conversations—whether introductory, theoretical, or applied—accumulate the most links. For anyone mapping future research bets, this suggests monitoring backlink growth over time (to catch newcomers like RLHF early) and normalizing counts by sub-field size to filter out topics whose popularity is driven by narrow, self-referential clusters.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|}
+\hline 
+Topic & Internal Links \tabularnewline
+\hline
+\hline
+Dirac delta function & 625\tabularnewline
+\hline
+Rule of inference & 409\tabularnewline
+\hline
+Reinforcement learning from human feedback & 351\tabularnewline
+\hline
+Euclidean algorithm & 343\tabularnewline
+\hline
+Trie & 244\tabularnewline
+\hline
+Telephone number (mathematics) & 228\tabularnewline
+\hline
+Commutative property & 214\tabularnewline
+\hline
+Tropical cyclone forecast model & 195\tabularnewline
+\hline
+Cartesian tree & 155\tabularnewline
+\hline
+Binary search & 116\tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Applicability-of-Topics}Applicability of topics}
+\end{table}
+
+\subsection{Relevance}
+
+In Definition \ref{def:relevance} we introduced the concept of relevance of a research topic as a measure of the impact that this topic could have in people's life. The idea was that the higher the relevance, the higher its potential as a source of interesting questions, since we would be addressing a problem that affects many people. Relevance was defined as the degree of the research topic in the relevance graph, a bipartite graph connecting topics and people (see Definition \ref{def:relevance-graph}). Of course, this relevance graph is a mathematical abstraction that it is very difficult to compute in practice, since we do not have information about how people is affected by each topic.
+
+As an approximation of the relevance of a topic we have used the number of links (URLs) from external web pages on the whole Internet that point to the topic's web page on Wikipedia. The rationale is that the more relevant is a topic, the more people will be talking about it on Internet, and the more URLs there will be linking to Wikipedia, since Wikipedia is a well known source of information to which many people refer. In fact, we are not interested in knowing the absolute relevance of research topics, since what we need is a measure of relative relevance between different topics. An underestimate of the relevance is not harmful as long this underestimation is equally distributed among all the topics. It requires further research to fully understand how well the the theoretical concept of relevance is approximated by this URLs counting procedure. 
+
+Another problem is that we do not know the number of links to a web page on Internet, and so, we have to apply a second approximation. In this case, the number of links was estimated using Google's \texttt{link:} facility in searches. Google's \texttt{link:} lists the links that Googlebot discovered during its crawling and indexing process of Internet. For example, the number of external pages that link to the \emph{Computer Science} article in Wikipedia is given by:
+
+\smallskip
+
+\texttt{
+link:http://en.wikipedia.org/wiki/Computer\_science
+}
+
+\smallskip
+
+As Google recognizes in its web page, not all links to a site may be listed. The number of links could vary due to redirections, crawling errors, and other problems. How these errors affect to the accuracy of the links counting is not clear, since the details of the Google's crawling algorithm are not public.
+
+Figure \ref{fig:Relevance-of-Topics} shows a plot of the relevance of the set of topics after the application of the normalization process described in {\color{red} XXX}. A practical problem is that there are too many topics with a very low number of links (as indexed by Google). That should not be a problem since we are not using at any moment those topics with very low relevance.
+
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{relevance_theoretical_computer_science.png}
+\caption{\label{fig:Relevance-of-Topics}Relevance of topics}
+\end{figure}
+
+Table \ref{tab:Relevance-of-Topics} contains the ten most relevant topics according to its relevance. For each topic it is shown it relevance (number or external links) and the normalized version of this number. The list includes basic concepts (\emph{binary number,} \emph{floating point}), advanced concepts (\emph{Turing machine}, \emph{finite-state machine, cellular automaton, lambda calculus}, \emph{Turing completeness}), highly popular tools (\emph{recursion}, \emph{regular expression}) and classical problems (\emph{halting problem}). All those topics could fit into our intuitive idea of highly relevant, although some authors could perfectly disagree that some of them are the most relevant ones in the area of theory of computation (for example, \emph{floating point}).
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|c|}
+\hline 
+Topic & Relevance & Norm.\tabularnewline
+\hline 
+\hline 
+Regular expression & 409 & 1.00\tabularnewline
+\hline 
+Turing machine & 159 & 0.90\tabularnewline
+\hline 
+Binary number & 141 & 0.89\tabularnewline
+\hline 
+Recursion & 133 & 0.88\tabularnewline
+\hline 
+Finite-state machine & 118 & 0.86\tabularnewline
+\hline 
+Halting problem & 108 & 0.85\tabularnewline
+\hline 
+Cellular automaton & 104 & 0.85\tabularnewline
+\hline 
+Floating point & 99 & 0.84\tabularnewline
+\hline 
+Lambda calculus & 95 & 0.84\tabularnewline
+\hline 
+Turing completeness & 93 & 0.83\tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+
+\caption{\label{tab:Relevance-of-Topics}Relevance of topics}
+\end{table}
 
 \section{Interesting Research Questions}
 
@@ -199,112 +312,6 @@ in such a way that can be reproduced by a computer.
 Question 7 is similar to question 1, and it asks about the possibility
 of formalize the concept of meiosis using a computer.
 \end{itemize}
-
-\subsection{Relevance}
-
-In Definition \ref{def:relevance} we introduced the concept of relevance of a research topic as a measure of the impact that this topic could have in people's life. The idea was that the higher the relevance, the higher its potential as a source of interesting questions, since we would be addressing a problem that affects many people. Relevance was defined as the degree of the research topic in the relevance graph, a bipartite graph connecting topics and people (see Definition \ref{def:relevance-graph}). Of course, this relevance graph is a mathematical abstraction that it is very difficult to compute in practice, since we do not have information about how people is affected by each topic.
-
-As an approximation of the relevance of a topic we have used the number of links (URLs) from external web pages on the whole Internet that point to the topic's web page on Wikipedia. The rationale is that the more relevant is a topic, the more people will be talking about it on Internet, and the more URLs there will be linking to Wikipedia, since Wikipedia is a well known source of information to which many people refer. In fact, we are not interested in knowing the absolute relevance of research topics, since what we need is a measure of relative relevance between different topics. An underestimate of the relevance is not harmful as long this underestimation is equally distributed among all the topics. It requires further research to fully understand how well the the theoretical concept of relevance is approximated by this URLs counting procedure. 
-
-Another problem is that we do not know the number of links to a web page on Internet, and so, we have to apply a second approximation. In this case, the number of links was estimated using Google's \texttt{link:} facility in searches. Google's \texttt{link:} lists the links that Googlebot discovered during its crawling and indexing process of Internet. For example, the number of external pages that link to the \emph{Computer Science} article in Wikipedia is given by:
-
-\smallskip
-
-\texttt{
-link:http://en.wikipedia.org/wiki/Computer\_science
-}
-
-\smallskip
-
-As Google recognizes in its web page, not all links to a site may be listed. The number of links could vary due to redirections, crawling errors, and other problems. How these errors affect to the accuracy of the links counting is not clear, since the details of the Google's crawling algorithm are not public.
-
-Figure \ref{fig:Relevance-of-Topics} shows a plot of the relevance of the set of topics after the application of the normalization process described in {\color{red} XXX}. A practical problem is that there are too many topics with a very low number of links (as indexed by Google). That should not be a problem since we are not using at any moment those topics with very low relevance.
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{RelevanceTopics}
-\caption{\label{fig:Relevance-of-Topics}Relevance of topics}
-\end{figure}
-
-Table \ref{tab:Relevance-of-Topics} contains the ten most relevant topics according to its relevance. For each topic it is shown it relevance (number or external links) and the normalized version of this number. The list includes basic concepts (\emph{binary number,} \emph{floating point}), advanced concepts (\emph{Turing machine}, \emph{finite-state machine, cellular automaton, lambda calculus}, \emph{Turing completeness}), highly popular tools (\emph{recursion}, \emph{regular expression}) and classical problems (\emph{halting problem}). All those topics could fit into our intuitive idea of highly relevant, although some authors could perfectly disagree that some of them are the most relevant ones in the area of theory of computation (for example, \emph{floating point}).
-
-\begin{table}
-\begin{centering}
-\begin{tabular}{|c|c|c|}
-\hline 
-Topic & Relevance & Norm.\tabularnewline
-\hline 
-\hline 
-Regular expression & 409 & 1.00\tabularnewline
-\hline 
-Turing machine & 159 & 0.90\tabularnewline
-\hline 
-Binary number & 141 & 0.89\tabularnewline
-\hline 
-Recursion & 133 & 0.88\tabularnewline
-\hline 
-Finite-state machine & 118 & 0.86\tabularnewline
-\hline 
-Halting problem & 108 & 0.85\tabularnewline
-\hline 
-Cellular automaton & 104 & 0.85\tabularnewline
-\hline 
-Floating point & 99 & 0.84\tabularnewline
-\hline 
-Lambda calculus & 95 & 0.84\tabularnewline
-\hline 
-Turing completeness & 93 & 0.83\tabularnewline
-\hline 
-\end{tabular}
-\par\end{centering}
-
-\caption{\label{tab:Relevance-of-Topics}Relevance of topics}
-\end{table}
-
-\subsection{Applicability}
-
-Applicability measures how likely is that a research topic can be applied to solve open problems. If a tool has been already applied to solve multiple problems, then there is a high probability that it can be used again to solve new problems. The number of problems in which a tool has been applied is computed with the aid of the applicability graph (see Definiton \ref{def:applicability-graph}), and applicability is formally defined as the out-degree of the topic in this graph (see Definiton \ref{def:applicability}). We have approximated the applicability graph by means of using the graph of internal links between the scientific pages of Wikpiedia. That is, we approximate the applicability of a topic by counting the number of pages from Wikipedia domain that links to the topic's page (we have used the \emph{``What links here''} facility from Wikipedia, a tool to see the list of the pages that link to, or redirect to, the current page). As it was the case of the relevance of a topic, we are not intersted in the absolute value of the applicability of topics. What it is important for us is the relative ordering of topics based on their applicability. Perhaps, a better approach to approximate the applicability of a topic would be to analyze the graph of citations from academic research papers, combined with the automatic identification of the topics addressed in those papers.
-
-% TODO: Perhaps we could include a nice picture of the graph of Wikipedia internal links
-
-The applicability of a topic Figure \ref{fig:Applicability-of-Topics} shows a plot of the applicability of the selected set of topics after the normalization process, and Table \ref{tab:Applicability-of-Topics} contains the ten most relevant topics according to its applicability. For each topic it is shown the number or internal links and the normalized version of this number. In the list we can find topics like \emph{regular expression}, \emph{recursion}, \emph{Turing machine}, or \emph{cellular automaton} that perfectly fits our intuitive idea of tools that can be applied to solve other problems. However, we can also find in the list the topic \emph{quantum computer} that is not very applicable, but since it is a highly popular research topic it is mentioned in many different Wikipedia's pages. Other pages like \emph{division by zero}, \emph{floating point}, or \emph{binary number}, do not seems to be good tools either. The final topic, \emph{computatibility theory}, shows that, even at the fourth level, we still can find too broad topics.
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{ApplicabilityTopics}
-\caption{\label{fig:Applicability-of-Topics}Applicability of topics}
-\end{figure}
-
-\begin{table}
-\begin{centering}
-\begin{tabular}{|c|c|c|}
-\hline 
-Topic & Applicab. & Norm.\tabularnewline
-\hline 
-\hline 
-Regular expression & 1971 & 1.00\tabularnewline
-\hline 
-Recursion & 1227 & 0.91\tabularnewline
-\hline 
-Quantum computer & 1197 & 0.91\tabularnewline
-\hline 
-Division by zero & 998 & 0.88\tabularnewline
-\hline 
-Floating point & 992 & 0.88\tabularnewline
-\hline 
-Turing machine & 748 & 0.83\tabularnewline
-\hline 
-Binary number & 710 & 0.82\tabularnewline
-\hline 
-Ternary num. sys. & 670 & 0.80\tabularnewline
-\hline 
-Cellular automaton & 433 & 0.74\tabularnewline
-\hline 
-Computability theory & 430 & 0.73\tabularnewline
-\hline 
-\end{tabular}
-\par\end{centering}
-
-\caption{\label{tab:Applicability-of-Topics}Applicability of topics}
-\end{table}
 
 
 \subsection{Intradisciplinary Questions}
@@ -511,7 +518,6 @@ Based on the given definition of "Interestingness of a topic as a tool", we can 
 These derived mathematical properties and concepts can provide a deeper understanding of the interestingness of research topics and their potential application as tools for solving problems.
 
 \end{remark}
-
 
 
 \subsection{Interdisciplinary Questions}

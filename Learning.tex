@@ -199,7 +199,7 @@ Another issue with the MLE in this case is that it ignores most of the data. The
 \subsection{Bayesian Inference}
 \label{sec:bayesian_inference}
 
-Unlike the Maximum Likelihood Estimator (MLE), which selects the parameter values that maximize the probability of the observed data, \emph{Bayesian inference}\index{Bayesian inference} takes a fundamentally different approach by treating parameters as probability distributions rather than fixed values. Bayesian inference also incorporates prior knowledge, allowing for an informed estimation process even before observing data. This approach enables Bayesian methods to dynamically update beliefs as new data becomes available. Bayes’ theorem (see Theorem \ref{th:Bayes_theorem})\index{Bayes theorem}) formalizes this process by combining a prior probability mass function with the likelihood of the observed data to produce a posterior probability mass function, which represents the updated belief about the parameter.
+Unlike the Maximum Likelihood Estimator (MLE), which selects the parameter values that maximize the probability of the observed data, \emph{Bayesian inference}\index{Bayesian inference} takes a fundamentally different approach by treating parameters as probability distributions rather than fixed values. Bayesian inference also incorporates prior knowledge, allowing for an informed estimation process even before observing data. This approach enables Bayesian methods to dynamically update beliefs as new data becomes available. Bayes' theorem (see Theorem \ref{th:Bayes_theorem})\index{Bayes theorem}) formalizes this process by combining a prior probability mass function with the likelihood of the observed data to produce a posterior probability mass function, which represents the updated belief about the parameter.
 
 \begin{definition}
 Let $f\left(X \mid \theta \right)$ be the probability mass function of a discrete random variable $X$ with parameter $\theta$. The probability distribution of the parameter $\theta$, denoted by $\xi\left(\theta\right)$, is called the \emph{prior distribution}\index{Prior distribution}.
@@ -213,7 +213,7 @@ Let $f\left(X \mid \theta \right)$ be the probability mass function of a discret
 
 The posterior distribution represents our updated knowledge of the parameter $\theta$ after taking into account the observed data. A strongly informative prior will dominate the posterior, while a weak or uniform prior will let the data speak for itself.
 
-The posterior pmf is computed using Bayes’ theorem:
+The posterior pmf is computed using Bayes' theorem:
 \[
 \xi(\theta \mid \mathbf{X}) = \frac{L(\mathbf{X} \mid \theta) \xi(\theta)}{P(\mathbf{X})}
 \]
@@ -252,7 +252,7 @@ p(2 \mid 0.5) = \binom{3}{2} (0.5)^2 (0.5)^1 = 3(0.25)(0.5) = 0.375
 \[
 p(2 \mid 0.8) = \binom{3}{2} (0.8)^2 (0.2)^1 = 3(0.64)(0.2) = 0.384
 \]
-Using Bayes’ rule:
+Using Bayes' rule:
 \[
 \xi(\theta \mid X = 2) = \frac{p(X = 2 \mid \theta) \xi(\theta)}{P(X = 2)}
 \]
@@ -302,162 +302,104 @@ The theory of Bayes estimators provides a satisfactory and coherent theory for t
 \section{Machine Learning}
 \label{sec:machine_learning}
 
-{\color{red} Machine learning is the sicence of programming computers so they can learn from data.}
+Machine learning is the study of algorithms that, given a finite sample of individuals from a population, learn a rule to make predictions about new, previously unseen individuals. Each individual is represented by a vector of attributes, one of which is designated as the target. Since the true relationship between the predictors and the target is unknown, the algorithm must approximate it. The primary objective is to construct a function, called a model, that uses the observed attributes to predict the target with minimal error, both on the training examples and on future individuals drawn from the same population.
 
-{\color{red} "A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E" Tom Mitchell, 1997}
+Although statistical inference and machine learning share the goal of using data to draw conclusions about unseen cases, they tend to emphasise different aspects of this task. Classical statistical inference often begins with a probabilistic model and seeks estimators that maximise likelihood, yield interpretable parameters, and satisfy theoretical properties such as consistency, efficiency, or convergence. In contrast, machine learning typically starts with a flexible class of functions, often implemented as large-scale software artefacts such as neural networks, and focuses on minimising an empirical loss that reflects predictive accuracy, even in the absence of formal guarantees. In practice, however, the boundary is fluid: statisticians often minimise risk functions, and many machine learning methods are grounded in statistical theory.
 
-{\color{red} Digging into large amounts of data to discover hidden patterns is called data mining, and machine learning excels at it.}
+In this book, we present machine learning as a distinct discipline, adopting a fully deterministic approach. We introduce models, residuals, and optimization criteria without relying on probability theory or its results. This choice is deliberate: by avoiding probabilistic assumptions, we align the theoretical foundations of machine learning with the framework of the theory of nescience, facilitating the integration and reuse of results across both domains.
 
-
-\begin{definition}
-Let $\mathcal{S}$ be a set referred to as the \emph{population}\index{Population}. Its constituents are termed \emph{individuals}\index{Individual}.
-\end{definition}
-
-The set $\mathcal{S}$ must be well-defined, non-empty, and it can be either finite or infinite. 
-
-
-
-
-There is a controversy between mathematicians and computer scientists about the difference between statistical inference and machine learning. From our point of view there are important differences. In statistical inference, given a target variable $\mathbf{y}$ and a training data $\mathbf{X}$, the goal is to find a model that infer a value $\hat{y}_i$ that maximizes the probability $P(\hat{y}_i \mid \mathbf{x}_i)$; meanwhile, in machine learning, finding the value with the highest probability is not necessarily our objective, perhaps we are more interested in minimize the number of false positives, or minimize the number of errors among under-represented categories (see below). Another difference is that statistical inference models are mathematical functions, meanwhile machine learning models are usually computer programs that can not be easily manipulated algebraically. Finally, in statistics we are also interested in the mathematical properties of the methods in use, that is, if there exists a solution, if we can guarantee that search algorithms converge, and to estimate how far the selected models are from the real ones; in machine learning our interest is mostly finding models that work in practice, without caring too much about their mathematical properties. The goal of this book is to reconcile both worlds into one single theoretical framework.
-
-
-A variable is a symbol used to represent the characteristics or attributes of individuals within a population. It is called 'variable' because these attributes can vary from one individual to another, although from a pure mathematical perpective the term function might have been more appropriate.
+We begin by defining the basic mathematical objects that will underpin the rest of the discussion: populations and their individuals.
 
 \begin{definition}
-Let $\mathcal{S}$ be a population, and let $\mathcal{D}$ be the set containing all possible values that the individuals of $\mathcal{S}$ can assume. A variable $X$ is a function $X: \mathcal{S} \rightarrow \mathcal{D}$ that maps individuals from the population $\mathcal{S}$ to the values in $\mathcal{D}$.
+A \emph{population}\index{Population} is a non-empty, well-defined set $\mathcal{S}$. The elements $\mathbf{x}\in\mathcal{S}$ are called \emph{individuals}\index{Individuals}.
 \end{definition}
 
-The set $\mathcal{D}$ can be any set, such as the real numbers, a set of integers, or a set of categorical labels. A variable is called a \emph{quantitative variable}\index{Quantitative variable} if it the elements of $\mathcal{S}$ can be measured numerically. These can be further classified as \emph{discrete variables}\index{Discrete variable} if they can take a countable number of distinct values, and \emph{continuous variables}\index{Continuous variable} if they can take any value within a given range or interval. A variable is called a \emph{qualitative}\index{Qualitative variable} or \emph{categorical variable}\index{Categorical variable} if it represents quantities that cannot be measured numerically. A qualitative variable can be a \emph{nominal variable}\index{Nominal variable} if no natural order exists among the categories, or an \emph{ordinal variable}\index{Ordinal variable} if a natural order exists among the categories.
+Throughout this book, we restrict our attention to countable populations. Both finite and countably infinite cases are permitted.
+
+Each individual is described by a fixed list of attributes (also called features), and each attribute has a domain that specifies its set of admissible values.
+
+\begin{definition}
+Each individual $\mathbf{x}$ in the population $\mathcal{S}$ is characterized by $p$ \emph{attributes} ($p \ge 1$), such that $\mathbf{x} = (x_{1}, x_{2}, \dots, x_{p}) \in \mathcal{S}$. For each $i \in {1, \dots, p}$, the \emph{domain} of the $i$-th attribute is defined as $\mathcal{D}_{i} = \{\,x_{i}\;:\;\mathbf{x}\in\mathcal{S}\}$.
+\end{definition}
+
+The set $\mathcal{D}_i$ may be any type of set—for example, the real numbers $\mathcal{D}_{i} = \mathbb{R}$, a set of integers such as ${0, 1, \dots, k}$, or a collection of categorical labels like ${\text{red}, \text{green}, \text{blue}}$. An attribute is called \emph{quantitative}\index{Quantitative attribute} if the elements of $\mathcal{D}\_i$ can be measured numerically. Quantitative attributes can be further classified as \emph{discrete}\index{Discrete attribute} if they take a countable number of distinct values, or \emph{continuous}\index{Continuous attribute} if they can take any value within a given range or interval.
+
+An attribute is called \emph{qualitative}\index{Qualitative attribute} or \emph{categorical}\index{Categorical attribute} if it represents characteristics that cannot be measured numerically. A qualitative attribute is said to be \emph{nominal}\index{Nominal attribute} if there is no natural order among its categories, and \emph{ordinal}\index{Ordinal attribute} if such an order exists.
 
 \begin{example}
-Consider a population consisting of the inhabitants of a small village, where we are interested in studying three attributes of these individuals: age, gender, and daily water consumption. The variable representing age, mapping individuals to their ages in years, is a quantitative discrete variable because it can be counted precisely in integer values. Gender, mapping individuals to categories like "Male" or "Female," is a qualitative nominal variable because the categories have no inherent order. Finally, daily water consumption, mapping individuals to the amount of water they drink in liters, is a quantitative continuous variable as it can take any real number within a range, reflecting precise measurements.
+Consider a population consisting of the inhabitants of a small village, where we are interested in studying three attributes: age, gender, and daily water consumption. The attribute representing age, mapping individuals to their age in years, is a quantitative discrete attribute, as it takes integer values. Gender, mapping individuals to categories like "Male" or "Female," is a qualitative nominal attribute, since the categories have no inherent order. Daily water consumption, mapping individuals to the number of liters they drink per day, is a quantitative continuous attribute, as it can take any real value within a measurable range.
 \end{example}
 
-\emph{Qualitative} attributes take values from a finite collection of distinct non-numerical categories, and so, no arithmetic operations can be applied to them, although in some cases they can be ranked in order. \emph{Quantitative} attributes are numerical, and they can be either \emph{discrete} if the range of possible values is countable, or \emph{continuous} if it is not countable.
-
-% Multivariate Distributions
-
-\subsection{Multivariate Distributions}
-\label{sec:multivariate_distributions}
-
-{\color{red} TODO: Introduce the concept of multivariate distribution}
+Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning, we are given a collection of training samples (also called \emph{predictors}) along with their corresponding observed target values (or \emph{labels}), and our goal is to predict the target for new, previously unseen observations. In contrast, in \emph{unsupervised} learning, no target values are provided; we are given only training samples, and the objective is to uncover the underlying structure of the data. We postpone the discussion of unsupervised learning to {\color{red} Section XX}.
 
 \begin{definition}
-Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{absolute frequency}\index{Absolute frequency}, also known simply as \emph{frequency}, denoted by $n_i$ for $1 \leq i \leq k$, quantifies the number of individuals in $\mathcal{S}$ for which $X$ assigns the value corresponding to the $i$-th category of $\mathcal{D}$.
+Let $\mathcal{S}$ be a population whose individuals $\mathbf{x}$ are characterized by $p$ \emph{attributes}, with $\mathbf{x} = (x\_{1}, x\_{2}, \dots, x\_{p}) \in \mathcal{S}$. A \emph{target variable}\index{Target variable}, denoted by $\mathbf{y}$, is a vector corresponding to another attribute of the individuals in $\mathcal{S}$, distinct from the $p$ attributes used as predictors. The \emph{domain} of the target variable is $\mathcal{D}_{y} = {y_{i}}$.
 \end{definition}
 
-The sum of the frequencies must be equal to population size, that is, $\sum_{i=1}^k n_i = n$.
+We typically choose statistical learning methods based on whether the target attribute is quantitative or qualitative. (Whether the predictors are qualitative or quantitative is generally considered less critical.) Supervised learning algorithms are applied to \emph{regression problems}\index{Regression problems} when the target attribute is quantitative, and to \emph{classification problems}\index{Classification problems} when the target attribute is qualitative.
 
-% Marginal Distribution
-
-{\color{red} TODO: Marginal distributon}
-
-La suma de las frecuencias marginales es igual al tamaño de la población $\sum_{i=1}^k n_i = n$.
-
-Given a multivariate statistical vairable, the marginal distribution of a subset of variables is derived by summing the joint distribution over all possible values of the other variables. This process essentially "marginalizes" out the variables not of interest, allowing focus on the distribution of a single variable or a subset of variables within the multivariate context.
+We assume the existence of an underlying function, or model, that relates the predictors to the target.
 
 \begin{definition}
-Let $\mathbf{X}$ be an $n$-dimensional statistical vector with a joint distribution $f_\mathbf{X}$. The \emph{marginal probability mass function}\index{Marginal probability mass function} of a subset of these variables, say $(X_1, X_2, \ldots, X_k)$ where $k \leq n$, is obtained by summing over the frequencies of the other variables $(X_{k+1}, \ldots, X_n)$. That is, for any subset of values $(x_1, x_2, \ldots, x_k)$ in the respective domains of $(X_1, X_2, \ldots, X_k)$,
-\[
-f_{X_1, X_2, \ldots, X_k}(x_1, x_2, \ldots, x_k) = \sum_{x_{k+1}} \sum_{x_{k+2}} \ldots \sum_{x_n} f_\mathbf{X}(x_1, x_2, \ldots, x_n)
-\]
-where $f_{X_1, X_2, \ldots, X_k}$ is the marginal probability mass function of the variables $(X_1, X_2, \ldots, X_k)$.
+Let $\mathcal{S}$ be a population and $\mathbf{y}$ a target attribute. A \emph{model}\index{Model} is a function $f: \mathcal{S} \rightarrow \mathbf{y}$ such that, for every individual $\mathbf{x} \in \mathcal{S}$, we have $y = f(\mathbf{x})$.
 \end{definition}
 
-This definition underscores the process of marginalization in a discrete setting, which is key to understanding and analyzing the behavior of specific variables within a larger multivariate framework.
+In practice, and for most of the populations, the set of attributes measured is not sufficient to fully characterize the target variable, meaning that $f(\mathbf{x})$ do not maps to $y_k$, but to something approximated. This fact is modeled in the discipline of mahcine lerning using a random variable, and saying that $y_k = f(\mathbf{x}) + \varepsilon_{k}$ where the errors $\varepsilon_{1},\dots,\varepsilon_{n}$ are independent, $\mathbb{E}[\varepsilon_{k}]=0$, and $\operatorname{Var}[\varepsilon_{k}]<\infty$.
 
-\begin{example}
-{\color{red} TODO: Provide an example based on random variables.}
-\end{example}
 
-While the marginal PMF of the random variables $X_1, \ldots, X_n$ can be obtained from their joint PMF by summing over the range of the other variables, the reverse process is not straightforward. Specifically, reconstructing the joint PMF of $X_1, \ldots, X_n$ from their marginal PMF alone is not feasible without extra information about the dependence between $X_1, \ldots, X_n$. This limitation arises because marginal PMF encapsulate only the individual behavior of each variable, omitting details about how the variables interact or are related.
+In practice, for most populations, the measured attributes are not sufficient to fully determine the target variable. This means that $f(\mathbf{x})$ does not exactly map to the observed value $\mathbf{y}$, but rather to an approximation. In the traditional formulation of machine learning, this uncertainty is modeled using a random variable, assuming that
+\[
+y_k = f(\mathbf{x}) + \varepsilon_k,
+\]
+where the errors $\varepsilon_1, \dots, \varepsilon_n$ are independent random variables, with $\mathbb{E}[\varepsilon_k] = 0$ and $\operatorname{Var}[\varepsilon_k] < \infty$.
 
-\begin{example}
-{\color{red} TODO: Provide an example based on random variables.}
-\end{example}
-
-A set of $n$ random variables $X_1, X_2, \ldots, X_n$ are considered independent if the occurrence of an event associated with any one of these variables does not influence the probability of an event associated with any other variable in the set. Independence among these variables indicates that there is no association or correlation among them, implying that knowing the outcome of one provides no information about the outcomes of the others.
+Learning algorithms operate on a finite sample of data, called the \emph{training set}, from which they infer an approximation to the unknown function $f$.
 
 \begin{definition}
-A set of random variables $X_1, X_2, \ldots, X_n$ are said to be independent if, for every choice of sets $A_1, A_2, \ldots, A_n$ of real numbers such that each $\left\{ X_i \in A_i \right\}$ is an event, the joint probability of these events can be expressed as the product of their individual probabilities:
-\[
-P\left(X_1 \in A_1 \text{ and } X_2 \in A_2 \text{ and } \ldots \text{ and } X_n \in A_n\right) = P\left(X_1 \in A_1\right)P\left(X_2 \in A_2\right)\ldots P\left(X_n \in A_n\right)
-\]
+A \emph{training data set}\index{Training set}, is a finite subset of the population $\mathcal{S}$, consisting of a collection of predictor $\mathbf{X}$ and the corresponding target $\mathbf{y}$.
 \end{definition}
 
-The concept of independence for a random vector $\mathbf{X}$ simplifies the computation and understanding of joint probability distributions, particularly in complex problems involving multiple variables. It allows the joint probability distribution of the vector $\mathbf{X}$ to be expressed as the product of the individual marginal distributions of $X_1, X_2, \ldots, X_n$. 
+Let $x_{ij}$ represent the value of the $j$-th predictor for the $i$-th observation, where $i = 1, 2, \ldots, n$ and $j = 1, 2, \ldots, p$. Correspondingly, let $y_i$ represent the target value for the $i$-th observation. Then, the training data consist of the pairs ${(x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n)}$, where each $x_i = (x_{i1}, x_{i2}, \ldots, x_{ip})$.
 
-\begin{proposition}
-A set of random variables \(X_1, X_2, \ldots, X_n\) forming a random vector \(\mathbf{X}\) are independent if and only if the following is satisfied for all real numbers \(x_1, x_2, \ldots, x_n\): 
+The objective of supervised learning is to construct a model $\hat{f}: \mathcal{S} \rightarrow \mathbf{y}$ such that the predicted value $\hat{y}$ is as close as possible to the true value $y(\mathbf{x})$.
+
+\begin{definition}
+Given a training set $\mathcal{T}$, a learning procedure returns an \emph{estimator}\index{Estimator}
 \[
-f\left(x_1, x_2, \ldots, x_n\right) = f_1\left(x_1\right) f_2\left(x_2\right) \ldots f_n\left(x_n\right)
+\hat{f}:\prod_{i \ne j} \mathcal{D}_{i} \longrightarrow \mathcal{D}_{j}.
 \]
-where \(f\) is the joint probability mass function (PMF) or probability density function (PDF) of \(\mathbf{X}\), and \(f_i(x_i)\) is the marginal PMF or PDF of \(X_i\).
-\end{proposition}
-
-\begin{proof}
-Assuming \(X_1, X_2, \ldots, X_n\) are independent, by definition, for any sets \(A_1, A_2, \ldots, A_n\) of real numbers, we have that 
+For a new individual $\mathbf{x} \notin {\mathbf{x}_{1}, \dots, \mathbf{x}_{n}}$, the predicted target value is
 \[
-P(X_1 \in A_1 \text{ and } X_2 \in A_2 \text{ and } \ldots \text{ and } X_n \in A_n) = P(X_1 \in A_1)P(X_2 \in A_2)\ldots P(X_n \in A_n).
+\hat{y} = \hat{f}\bigl(\mathbf{x}_{-j}\bigr),
 \]
-Applying this definition to the PMFs or PDFs, for all \(x_1, x_2, \ldots, x_n\), the independence of \(X_1, X_2, \ldots, X_n\) implies 
-\[
-P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = P(X_1 = x_1)P(X_2 = x_2)\ldots P(X_n = x_n).
-\]
-Since \(P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f(x_1, x_2, \ldots, x_n)\), and the marginal probabilities \(P(X_i = x_i)\) are given by \(f_i(x_i)\) respectively, we get 
-\[
-f(x_1, x_2, \ldots, x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n).
-\]
+where $\mathbf{x}\_{-j}$ denotes the vector of predictor values, excluding the target.
+\end{definition}
 
-Conversely, assume that for all \(x_1, x_2, \ldots, x_n\), the joint PMF or PDF of \(\mathbf{X}\) can be expressed as 
-\[
-f(x_1, x_2, \ldots, x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n),
-\]
-where \(f_i(x_i)\) are the marginal PMFs or PDFs of \(X_i\) respectively. We need to show that this implies \(X_1, X_2, \ldots, X_n\) are independent. The probability that \(X_1, X_2, \ldots, X_n\) simultaneously take on values \(x_1, x_2, \ldots, x_n\) is given by 
-\[
-P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f(x_1, x_2, \ldots, x_n).
-\]
-Substituting the given condition into this expression yields 
-\[
-P(X_1 = x_1 \text{ and } X_2 = x_2 \text{ and } \ldots \text{ and } X_n = x_n) = f_1(x_1) f_2(x_2) \ldots f_n(x_n).
-\]
-By the definition of independence, if the joint probability of any \(x_1, x_2, \ldots, x_n\) equals the product of their individual probabilities for all possible values of \(x_1, x_2, \ldots, x_n\), then \(X_1, X_2, \ldots, X_n\) must be independent.
-\end{proof}
+The challenge for the machine learning algorithms is to ensure that the estimator $\hat{f}$ generalizes well to the entire population $\mathcal{S}$, even though it was constructed using only the training data $\mathbf{X}$.
 
-\begin{example}
-{\color{red} TODO: Provide an example based on random variables.}
-\end{example}
+% Parametric vs. Non-parametric Models
 
+\subsection{Parametric vs. Non-parametric Models}
 
-{\color{red} TODO: Conditional distribution}
+Most of the statistical learning methods can be characterize as either parametric or non-parametric. With \emph{parametric} methods we select a priori a functional for, and the we fit the free parameters of this functional form. In contrast, with \emph{non-parametric} models we do not make any assumption about the form of the mmodels. Given their flexibility, non-parametric methods ususally require more traing data to train, and they are more difficult to interpret by human.
 
+{\color{red} Parametric methods involve a two-step model-based approach: 1) First, we make an assumption abut the functional form, or shape, of f; 2) After a model has been selected, we need a procedure that uses the training data to fit or train the model. Parametric methods reduce the problem of estimating f down to one of estimating a set of parameters. The potential disadvantage of a parametric approach is that the model we choose will usually not match the true unknown form of f. More flexible models can fit may different possible functional forms for f. But fitting a more flexible model requires estimating a greater number of parameters. More complex models can lead to a phenomenon known as overfitting the data, which essentially means they follow the errors, or noise, too closely.}
 
+{\color{red} TODO: Provide an example, like linear regression.}
 
+{\color{red} Non-parametric methods do not make explicit assumption about the functional form of f. By avoiding the assumption of a particular functional form for $f$, they have the potential to accurately fit a wider range of possible shapes for $f$. However, with non-parametric methods, a very large number of observations is required in order to obtain an accurate estimate for f.}
 
-{\color{red} Features, predictors or atttibutes.}
+{\color{red} TODO: Provide an example.}
 
-Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning we have a collection of training samples and the corresponding observed target values (or \emph{labels}), and our interests is to predict the output of new, previously unseen, observations; meanwhile in \emph{unsupervised} learning there are no targets, just training samples, and what we are looking for is to learn the structure of the data. Supervised learning algorithms can be applied to \emph{regression} problems, where the value to predict is quantitative, and to solve \emph{classification} problems, where the targets are qualitative. 
+% Regularization
 
-{\color{red} In unsupervised learning, the training data is unlabeled. [...] a clustering algorithm to try to detect groups of similar visitors [...] dimensionality reduction, in which the goal is to simplify the data without losing too much information [...] feature extraction [...] anomaly detection [...] novelty detection: it aims to detect new instances that look differnt from all instances in the training set. [...] association rule learning, in which the goal is to dig into large amounts of data and discover interesting relations between attributes.}
+{\color{red} Concept of regularization to control model complexity. Ridge and Lasso: definitions and intuition. Regularized objective: Effect on optimization and generalization. Practical considerations: choosing.}
 
-Rather than studying an entire population, statistics examines a smaller subset known as a sample. When a sample accurately represents a population, significant insights about the population can often be deduced from the sample analysis. The branch of statistics that addresses the conditions under which such deductions are valid is known as inductive statistics, or statistical inference. Since these inferences are not completely certain, probabilistic language is commonly employed when presenting conclusions. Conversely, the branch of statistics that solely aims to describe and analyze a specific group, without making any broader conclusions or inferences, is referred to as descriptive statistics. {\color{red} The examples that the system uses to learn are called training set. Each training sample is called a training instance (or sample). The part of a machine learning system that learn and makes predictions is called a model.}
+{\color{red} TODO: Talk about the overfitting problem}
 
-Let $\mathbf{X} = \{ \mathbf{x}_1, \ldots, \mathbf{x}_p \}$ be a training dataset composed by $p$ features, where each individual feature $\mathbf{x}_i = \{ x_{i1}, x_{i2}, \ldots, x_{in} \}$ is composed by $n$ observed values, and let $\mathbf{y} = \{ y_1, \ldots, y_n \}$ be a target variable. We assume there is some relationship between the target values $y_i$ and the samples $\mathbf{x}_i$ that can be expressed in the form
+{\color{red} There exists a trade-off between flexibility and interpretability of the machine learning methods. If we are interested in inference, then restrictive models are much more interpretable. If we are only interested in prediction, the interpretability of the predictive model is simply not of interest.}
 
-\begin{equation}
-    \label{eq:machine_learning_model}
-    \mathbf{y} = f\left( \mathbf{X} \right) + \epsilon
-\end{equation}
-
-where $f$ is a unknown function, and $\epsilon$ is a random terms independent of $\mathbf{X}$ and with mean zero. Our goal is to find a
-function $\hat{f}$, estimated using a machine learning algorithm, such that $\mathbf{y} \approx \hat{f} \left( \mathbf{X} \right)$. This  function $\hat{f}$ allows us to \emph{predict} the target value, denoted by $\hat{y}$, for predictors not contained in the training dataset $\mathbf{x} \notin \mathbf{X}$
-\[
-    \hat{y} = \hat{f} \left( \mathbf{x} \right)
-\]
-
-Most of the statistical learning methods can be characterize as either parametric or non-parametric. With parametric methods we select a priori a functional for, and the we fit the free parameters of this functional form. In contrast, with non-parametric models we do not make any assumption about the form of the mmodels. Given their flexibility, non-parametric methods ususally require more traing data to train. Moreiverm the risk of overfittin training data is in general higher in case of non-parametric methods that in case of non-parametric methods. Non-parametric methods are more difficult to interpret by human.
-
-There are two main reasons why we want to estimate the function $f$: prediction cand inference. In case of inference, we are interested in to learn the way that the response variable $Y$ is affected when the predictors $X$ change, but not necessary to make predictions of future values. Depending on whether we are interested in prediction or inference, different mathine learning methods are usally used.
+% Model Accuracy
 
 \subsection{Model Accuracy}
 
@@ -470,7 +412,6 @@ We are interested in the average error made by our model. Assuming that both $\h
     E\left(Y-\hat{Y}\right)^{2}=E\left[f\left(X\right)+\epsilon-\hat{f}\left(X\right)\right]^{2}=\left[f\left(X\right)-\hat{f}\left(X\right)\right]^{2}+Var\left(\epsilon\right)
 \]
 The irreducible error is an upper bound to the accuracy of our predictions. Unfortunately, in practice, this bound is almost always unknown.
-
 
 \subsubsection{Mean Squared Error}
 
@@ -492,7 +433,11 @@ where $\hat{f}(X_i)$ is the predicted class for the $i$th observation, and $I$ i
 
 \subsection{No free lunch theorem}
 
+{\color{red} Inductive Bias and the Role of Assumptions. Why learning is not possible without assumptions. Inductive bias: choosing H, priors, constraints. Examples: smoothness, sparsity, linearity. The No Free Lunch Theorem (informal statement)}
+
 {\color{red} There is no free lunch in statistics: no one method dominates all others over all possible data sets. On a particular data set, one specific method may work best, but some other method may work better on a similar but different data set}
+
+% Subsection
 
 \subsection{The bias-variance trade-off}
 
@@ -1243,6 +1188,7 @@ Although all the solutions selected by the $L_p$-based global criterion are Pare
 {\color{red} The objective functions should be normalized or scaled so that their objective values are approximately of the same magnitude [...] Only in this way can one control and manoeuvre the method to produce solutions of a desirable nature in proportion to the ranges of the objective functions. Otherwise the role of the weighting coefficients may be greatly misleading.}
 
 \begin{proposition}
+\label{prop:weighted_method_pareto_optimal}
 {\color{red} The solution of weighting problem is Pareto optimal i the weighting coefficients are positive, that is $w_i > 0$ for all $i = 1, \ldots, k$.}
 \end{proposition}
 \begin{proof}

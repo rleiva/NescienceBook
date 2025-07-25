@@ -1,11 +1,3 @@
-* Decision trees
-
-The nescience of a candidate solution will be approximated by computing the redundancy of the function that implements the tree, like the one show in \ref{ex:example_tree}, and the relative error of this function when it is applied to the original training dataset. The inaccuracy of a model $\iota(m_t)$ will by approximated by the ratio $|Comp(E)| / |Comp(\mathcal{X})|$, where $|Comp(E)|$ is the length of the compressed version of the subset $E \subset \machcal{X}$ composed by those points that have been misclassified by the tree, and $|Comp(\mathcal{X})|$ is the length of the compressed version of the full dataset. The redundancy of a model $\rho(m)$ will be approximated by computing $1 - |Comp(T)| / |T|$, where $|Comp(T)|$ is the length of the compressed string that represents the tree, and $|T|$ is the length o the uncompressed string. The approximated nescience of the candidate model will be given by the harmonic mean of these two quantities.
-
-Let $f:\mathbb{R}^p \rightarrow \mathcal{G}$ be a classification function from the set of input vectors $\mathbb{R}^p$, where each vector $\textbf{x} = \{x_1, x_2, \ldots, x_p \}$ is composed by $p$ features, to the set of classification labels $\mathcal{G} = \{0, 1, \ldots, \ell\}$, and let $\mathbb{X} \subset \mathbb{R}^p$ be a subset of $n$ training vectors with their corresponding target vector $\textbf{y} \in \mathcal{G}^n$. We are interested in to find a model $\hat{f}$ from a family $\mathcal{F}$ of non-parametric models of binary decision trees, based on the training pair $\left( \mathbb{X}, \textbf{y} \right)$, such that $\hat{f}(\textbf{x})$ is as close as possible the real values $f(\textbf{x}) = y$. That is, we are interested in to solve a supervised classification problem (refer to Section \ref{sec:machine_learning} for more information about this kind of problems).
-
---
-
 * Introduction
 
 \begin{example}
@@ -20,6 +12,15 @@ Please note that what we propose is an mathematical approach to the \emph{assist
 
 If we want to compute how much we do not know about a research topic we have to provide two things: what we already know about that topic, and where is the theoretical limit of what can be known. What we already know about a topic is given by our current best description of that topic. The most valuable descriptions are those that allow us to fully and effectively reconstruct the original topic given its description (they are computable), since this kind of descriptions allow us to avoid many of the paradoxes that arise when we try to formalize the concept of "description". The theoretical limit of what can be known about a topic is given by its perfect description. The perfect description is the shortest possible string that allows us to reconstruct the original topic. However, in general, we do not know that shortest description, since our knowledge is incomplete. Fortunately we know that this description must necessarily be a random string, and so, by means of computing how far our current description is from being a random string, we can estimate in practice how far we are from the ideal shortest one.
 
+
+Representations
+
+A \emph{research area}\index{Research area} $A$ is a subset of topics, in other words, $A \subset \mathcal{R}_\mathcal{E}$. In a practical context, areas prove valuable when their included topics share a common attribute. Our interest may lie in investigating our knowledge gaps about a particular area. For instance, if the set of topics is "animals", areas could include "invertebrates", "mammals", "birds", "amphibians", "reptiles", and "fish". To gauge our lack of knowledge about an area, we first need to describe the topics encompassed by it. However, as our understanding of the topics constituting an area is generally limited, we can only provide partial descriptions. Furthermore, as our comprehension of a research area evolves, the quantity of topics included in its known subset adjusts accordingly. As a result, we can only examine the properties of areas relative to our present knowledge.
+
+\begin{example}
+Should our topic set revolve around "astronomy," a conceivable research area might be "habitable planets," a category wherein we have knowledge of only a few currently. A model for this area could be a description compiled from our existing knowledge of these habitable planets.
+\end{example}
+
 --
 
 * Miscoding
@@ -29,6 +30,16 @@ Miscoding is a metric that quantitatively measures the quality of the representa
 \begin{example}
 In 1900 the German mathematician David Hilbert proposed his famous collection of twenty-three problems. Problem number ten required to devise \emph{"a process according to which it can be determined in a finite number of operations whether a given Diophantine equation is solvable in rational integers"}. Let's call this problem formulation topic $t_1$. In 1970, the Russian mathematician Yuri Matiyaevich proved that such a "procedure" does not exists. Let's call Matiyaevich's theorem topic $t_2$. Mathematicians have used both topics, $t_1$ and $t_2$, as representations of the same entity. Of course, the miscoding of $t_2$ is much lower\footnote{Whether $\mu(t_2)$ is equal to $0$ or not is out of the scope of this book.} than the miscoding of $t_1$. But the important point is that in 1900 mathematicians had a very different idea of what kind of entity was represented by $t_1$.
 \end{example}
+
+* Decision trees
+
+The nescience of a candidate solution will be approximated by computing the redundancy of the function that implements the tree, like the one show in \ref{ex:example_tree}, and the relative error of this function when it is applied to the original training dataset. The inaccuracy of a model $\iota(m_t)$ will by approximated by the ratio $|Comp(E)| / |Comp(\mathcal{X})|$, where $|Comp(E)|$ is the length of the compressed version of the subset $E \subset \machcal{X}$ composed by those points that have been misclassified by the tree, and $|Comp(\mathcal{X})|$ is the length of the compressed version of the full dataset. The redundancy of a model $\rho(m)$ will be approximated by computing $1 - |Comp(T)| / |T|$, where $|Comp(T)|$ is the length of the compressed string that represents the tree, and $|T|$ is the length o the uncompressed string. The approximated nescience of the candidate model will be given by the harmonic mean of these two quantities.
+
+Let $f:\mathbb{R}^p \rightarrow \mathcal{G}$ be a classification function from the set of input vectors $\mathbb{R}^p$, where each vector $\textbf{x} = \{x_1, x_2, \ldots, x_p \}$ is composed by $p$ features, to the set of classification labels $\mathcal{G} = \{0, 1, \ldots, \ell\}$, and let $\mathbb{X} \subset \mathbb{R}^p$ be a subset of $n$ training vectors with their corresponding target vector $\textbf{y} \in \mathcal{G}^n$. We are interested in to find a model $\hat{f}$ from a family $\mathcal{F}$ of non-parametric models of binary decision trees, based on the training pair $\left( \mathbb{X}, \textbf{y} \right)$, such that $\hat{f}(\textbf{x})$ is as close as possible the real values $f(\textbf{x}) = y$. That is, we are interested in to solve a supervised classification problem (refer to Section \ref{sec:machine_learning} for more information about this kind of problems).
+
+--
+
+
 
 --
 
@@ -114,3 +125,87 @@ Our definition of weak nescience is based on the Kolmogorov complexity of our be
 
 TODO: How nescience and weak nescience relates to each other
 
+--
+
+Difference between mean and expected value
+
+It is worth to clarify the difference between mean and expected value. In case of continuous statistical variables, the mean is calculated based on the frequency of each attribute value observed in the population. Typically, we aggregate individuals into class intervals, and calculate the mean using class marks. However, for random variables, the expectation is computed directly from the theoretical probabilities associated with these intervals. Consequently, the mean and the theoretical expected value may differ due to measurement errors, rounding errors of empirical values, or inaccuracies in the theoretical probability model selected. In the context of a discrete probability space $\left( \Omega, \mathcal{A}, P \right)$, which is the type of space we focus on in this book, the concepts of the mean and expected might provide the same value. This equivalence holds as long as the probability space $\left( \Omega, \mathcal{A}, P \right)$ is sufficiently granular, that is, for every $\omega$ in $\Omega$ the singleton set $\{ \omega \}$ belongs to $\mathcal{A}$, and probabilities resembles frequencies. Neither the mean nor the expected value makes sense in the case of categorical variables.
+
+---
+
+Bayesian inference
+
+Bayes' theorem is the tool we have at our disposal to derive the posterior distribution given a prior distribution and the observations.
+
+\begin{proposition}
+{\color{red} TODO: Review}
+Let $\mathbf{X} = \left( X_{1}, \ldots, X_{n} \right)$ be a random sample from a random variable $X$ with parameter $\theta$ and probability mass function $f\left( x \mid \theta \right)$. Suppose that the value of the parameter $\theta$ is unknown and its prior probability mass function is $\xi\left( \theta \right)$. Then the posterior probability mass function $\xi\left( \theta \mid \mathbf{x} \right)$ of $\theta$ is
+\[
+\xi\left( \theta \mid \mathbf{x} \right) = \frac{ f\left( x_{1} \mid \theta \right) \cdots f\left( x_{n} \mid \theta \right) \pi\left( \theta \right) }{ m\left( \mathbf{x} \right) } \quad \text{for } \theta \in \Theta
+\]
+where $m\left( \mathbf{x} \right)$ is the marginal probability mass function of the observed data $\mathbf{x}$:
+\[
+m\left( \mathbf{x} \right) = \sum_{\theta \in \Theta} f\left( x_{1} \mid \theta \right) \cdots f\left( x_{n} \mid \theta \right) \pi\left( \theta \right)
+\]
+\end{proposition}
+\begin{proof}
+{\color{red} TODO: Pending}
+\end{proof}
+
+There is no guarantee that the posteriory distribution $\xi\left(\theta\mid\mathbf{x}\right)$ belong to the same family of distributions that the prior distribution $\xi\left(\theta\right)$. That situation only happens for special kinds of probability distributions called \emph{conjugate families}\index{Conjugate probability distribution}. Please, refer to the references included at the end of this chapter for more information on conjugate families of probability distributions.
+
+\begin{example}
+{\color{red} TODO: Review}
+Suppose we are interested in estimating the probability $p$ that a coin lands on heads. Before conducting any experiments, we have no prior preference for any value of $p$, so we use a uniform prior over $p$ in the interval $[0,1]$. We flip the coin $n = 10$ times and observe $k = 7$ heads.
+
+The likelihood function is given by the binomial probability mass function:
+\[
+f(k \mid p) = \binom{n}{k} p^{k} (1 - p)^{n - k}
+\]
+The prior distribution of $p$ is uniform on $[0,1]$, so the prior density is:
+\[
+\pi(p) = 1 \quad \text{for } 0 \leq p \leq 1
+\]
+Using Bayes' theorem, the posterior distribution of $p$ given the data is proportional to the likelihood times the prior:
+\[
+\pi(p \mid k) \propto f(k \mid p) \pi(p) = \binom{n}{k} p^{k} (1 - p)^{n - k}
+\]
+Since the prior is uniform (a Beta distribution with parameters $\alpha = 1$, $\beta = 1$), the posterior distribution is a Beta distribution with parameters $\alpha = k + 1$ and $\beta = n - k + 1$:
+\[
+\pi(p \mid k) = \frac{1}{B(k + 1, n - k + 1)} p^{k} (1 - p)^{n - k}
+\]
+where $B(\alpha, \beta)$ is the Beta function.
+
+In our case, with $k = 7$ and $n = 10$:
+\[
+\pi(p \mid k) = \frac{1}{B(8, 4)} p^{7} (1 - p)^{3}
+\]
+Thus, after observing the data, our posterior distribution of $p$ is a Beta distribution with parameters $\alpha = 8$ and $\beta = 4$, reflecting that we now believe $p$ is more likely to be around $0.7$.
+\end{example}
+
+Recall that the random variables that compose the random sample $\mathbf{X}$ must be independent and identically distributed according to the probability mass function $\xi\left(\theta\mid\mathbf{x}\right)$. Also, recall our theoretical concerns on Bayes' theorem being a direct consequence of the definition of conditional probability (see Theorem \ref{th:Bayes_theorem}), rather than being derived from Kolmogorov's axioms.
+
+It might also happen that our assumptions on the prior distribution of the parameter $\theta$ might are wrong. Fortunately, in practice, the consequences of assuming a wrong prior distribution can be mitigated by increasing the number of observations.
+
+\begin{example}
+{\color{red} TODO: Review}
+Suppose we are estimating the probability $p$ of success in a Bernoulli trial (e.g., flipping a biased coin). We mistakenly believe that $p$ is likely to be small, so we choose a Beta prior distribution with parameters $\alpha = 1$, $\beta = 5$, which favors small values of $p$.
+
+Now, suppose we perform a large number of trials, say $n = 1000$, and observe $k = 600$ successes.
+
+The likelihood function is:
+\[
+f(k \mid p) = \binom{n}{k} p^{k} (1 - p)^{n - k}
+\]
+The prior distribution is:
+\[
+\pi(p) = \frac{1}{B(1,5)} p^{0} (1 - p)^{4}, \quad 0 \leq p \leq 1
+\]
+The posterior distribution is proportional to the likelihood times the prior:
+\[
+\pi(p \mid k) \propto p^{k} (1 - p)^{n - k + 4}
+\]
+This is a Beta distribution with parameters $\alpha' = k + \alpha = 600 + 1 = 601$, and $\beta' = n - k + \beta = 400 + 5 = 405$.
+
+Even though our prior favored small values of $p$, the posterior distribution reflects the data, indicating that $p$ is around $0.597$. As the sample size increases, the influence of the prior diminishes, and the posterior distribution becomes more concentrated around the maximum likelihood estimate.
+\end{example}

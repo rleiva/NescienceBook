@@ -114,7 +114,7 @@ As discussed in Section \ref{sec:range_solutions}, an objective vector that achi
 The ideal objective vector for the science problem is the origin \$(0, 0, 0)\$.
 \end{proposition}
 \begin{proof}
-Proposition \ref{prop:range_miscoding} established that miscoding is greater than or equal to zero, and Proposition \ref{prop:perfect_encoding} showed that it can be equal to zero. Likewise, Proposition \ref{prop:inaccuracy:inaccuracy:range} demonstrated that inaccuracy is non-negative, while Proposition \ref{prop:perfect_description} confirmed that a value of zero is attainable. Finally, Proposition \ref{prop:range_redundancy} stated that surfeit is at least zero, and Proposition \ref{prop:zero_surfeit} verified that zero surfeit is achievable.
+Proposition \ref{prop:range_miscoding} established that miscoding is greater than or equal to zero, and Proposition \ref{prop:perfect_encoding} showed that it can be equal to zero. Likewise, Proposition \ref{prop:inaccuracy:inaccuracy:range} demonstrated that inaccuracy is non-negative, while Proposition \ref{prop:inaccuracy_perfect_description} confirmed that a value of zero is attainable. Finally, Proposition \ref{prop:range_surfeit} stated that surfeit is at least zero, and Proposition \ref{prop:zero_surfeit} verified that zero surfeit is achievable.
 \end{proof}
 
 A hypothesis $(r, d) \in \mathcal{B}^\ast \times \mathcal{D}$ is said to be ideal if it exhibits zero miscoding, zero inaccuracy, and zero surfeit. This implies that the representation $r$ is valid, the model $d$ produces $r$ as output, and there exists no shorter model $d'$ that also achieves zero inaccuracy. Intuitively, a hypothesis $(r, d)$ is ideal if there exists an entity $e \in \mathcal{E}$ such that $r$ perfectly encodes $e$, and $d$ is both an accurate and minimal model of $r$.
@@ -131,7 +131,7 @@ The upper bound of the Pareto optimal set is given by the nadir objective vector
 The nadir objective vector of the science problem is the vector $(1, 1, 1)$.
 \end{proposition}
 \begin{proof}
-Proposition \ref{prop:range_miscoding} demonstrated that miscoding is greater than or equal to zero, and Proposition \ref{prop:perfect_encoding} showed that it can be equal to zero. Similarly, Proposition \ref{prop:inaccuracy:inaccuracy:range} established that inaccuracy is greater than or equal to zero, and Proposition \ref{prop:perfect_description} indicated that a zero value is attainable. Finally, Proposition \ref{prop:range_redundancy} showed that surfeit is greater than or equal to zero, and Proposition \ref{prop:zero_surfeit} confirmed that it can also reach zero. Therefore, since all three metrics are bounded between 0 and 1, the upper bound of the objective region is $(1, 1, 1)$.
+Proposition \ref{prop:range_miscoding} demonstrated that miscoding is greater than or equal to zero, and Proposition \ref{prop:perfect_encoding} showed that it can be equal to zero. Similarly, Proposition \ref{prop:inaccuracy:inaccuracy:range} established that inaccuracy is greater than or equal to zero, and Proposition \ref{prop:inaccuracy_perfect_description} indicated that a zero value is attainable. Finally, Proposition \ref{prop:range_surfeit} showed that surfeit is greater than or equal to zero, and Proposition \ref{prop:zero_surfeit} confirmed that it can also reach zero. Therefore, since all three metrics are bounded between 0 and 1, the upper bound of the objective region is $(1, 1, 1)$.
 \end{proof}
 
 The nadir vector represents a state of complete ignorance: a hypothesis $(r, d)$ in which the representation $r$ contains no meaningful information about the entity $e$ under study, the description $d$ generates a string entirely unrelated to $r$, and the description is of maximal length. This extreme point illustrates the worst-case scenario in terms of scientific knowledge: maximum miscoding, total inaccuracy, and maximum unnecessary complexity.
@@ -491,6 +491,26 @@ Let $\mathcal{E}^{(t)}_{UU}$ denote the set of unknown unknown entities at time 
 At each time step $t$, let the process of scientific discovery introduce new hypotheses about entities in $\mathcal{E}$, thereby moving those entities from the unknown unknow region into the known known region (either known unknowns or known known).
 \end{proof}
 
+In addition to the reduction in the cardinality of the unknown unknown region, we can also observe a progressive reduction in the nescience of individual entities as more refined hypotheses are introduced. Recall that the nescience of an entity is defined based on its current best hypothesis.
+
+\begin{proposition}
+Let $e \in \mathcal{E}$ be an entity such that $\hat{\mathcal{H}}^{(t)}_e$ and $\hat{\mathcal{H}}^{(t+1)}_e$ are the collections of known hypotheses about $e$ at times $t$ and $t+1$, respectively. Then, if a new hypothesis $h' \in \hat{\mathcal{H}}^{(t+1)}_e \setminus \hat{\mathcal{H}}^{(t)}_e$ is such that $\nu(h') < \nu(h)$ for all $h \in \hat{\mathcal{H}}^{(t)}_e$, the nescience of $e$ satisfies:
+
+$$
+\nu^{(t+1)}(e) < \nu^{(t)}(e),
+$$
+
+where $\nu^{(t)}(e)$ denotes the nescience of the current best hypothesis at time $t$.
+\end{proposition}
+
+\begin{proof}
+By definition, we have that $\nu^{(t)}(e) = \min_{h \in \hat{\mathcal{H}}^{(t)}_e} \nu(h)$ and $\nu^{(t+1)}(e) = \min_{h \in \hat{\mathcal{H}}^{(t+1)}_e} \nu(h)$. If a new hypothesis $h' \in \hat{\mathcal{H}}^{(t+1)}_e$ is added such that $\nu(h') < \nu^{(t)}(e)$, then $\nu^{(t+1)}(e) = \nu(h') < \nu^{(t)}(e)$.
+\end{proof}
+
+This result reflects the iterative nature of scientific inquiry: as we formulate new hypotheses or improve existing ones, the combined errors associated with our representations and descriptions tend to diminish. Over time, and under continued research, the nescience of most entities should asymptotically approach its minimum, potentially reaching the Pareto frontier, or in rare cases, even ideal perfect knowledge.
+
+This characteristic trend of decreasing nescience offers a powerful criterion for distinguishing scientific disciplines from pseudoscientific ones. In genuine scientific fields, the average nescience of topics demonstrably declines over time as knowledge improves. In contrast, pseudoscientific domains typically exhibit stagnation in nescience: either the number of proposed hypotheses remains static or their quality fails to improve, leading to no measurable reduction in ignorance. Thus, the presence or absence of a decreasing trend in nescience provides a formal, quantitative indicator for demarcating science from pseudoscience.
+
 %
 % Section: Nescience of Areas
 %
@@ -498,30 +518,21 @@ At each time step $t$, let the process of scientific discovery introduce new hyp
 \section{Nescience of Areas}
 \label{sec:nescience_areas}
 
-In the same way we studied the properties of individual topics, we could study the properties of areas. An \emph{area} is a subset of topics $A\subset T$. The concept of area is useful as long as all the topics included in the area share a common property. What is exactly that property tehy share depends on the particular set $T$.
+As discussed in Section \ref{sec:areas}, entities can be grouped into research areas, defined as subsets $\mathcal{A} \subset \mathcal{E}$ of the overall entity space. The concept of a research area is meaningful when the entities in $\mathcal{A}$ share a common epistemic domain or possess a unifying property, such as belonging to the same scientific field or addressing a related phenomenon. To quantify how much we do not know about a research area $\mathcal{A}$, we must work with the subset of entities within $\mathcal{A}$ for which at least one hypothesis is currently known $\hat{\mathcal{A}} \subseteq \mathcal{A}$. A representation of the area $\mathcal{A}$ is then a symbolic encoding $R_{\hat{\mathcal{A}}}$ of the known entities in $\hat{\mathcal{A}}$, suitable for further descriptive analysis. Given this representation, we define a description of the area $\mathcal{A}$ as a string $d_{\hat{\mathcal{A}}}$ that models or summarizes the structure or content of $R_{\hat{\mathcal{A}}}$.
+
+The concept of nescience can be extended from individual entities to entire research areas, allowing us to quantitatively assess how well a given area is understood. This extension relies on generalizing the core components of nescience to sets of entities. We use the notions of combined miscoding of the known subset (see Section \ref{sec:miscoding_areas}), combined inaccuracy (see Section \ref{sec:inaccuracy_areas}), and combined surfeit (see Section \ref{sec:surfeit_areas}) to define a composite measure of nescience at the area level.
+
+In practice, due to the difficulty of precisely identifying the entire known subset $\hat{\mathcal{A}} \subseteq \mathcal{A}$, it is often convenient to use approximations. One practical and interpretable approximation is the notion of average nescience, which provides a summary of the epistemic quality of the known entities within the area.
 
 \begin{definition}
-Given an area $A\subset T$, we define the \emph{average complexity of the area} $C_{A}$ as $C_{A}=\frac{1}{n}\sum_{t\in A}C_{t}$, and the \emph{average nescience of the area} $N_{A}$ as $N_{A}=\frac{1}{n}\sum_{t\in A}N_{t}$, where $n$ is the cardinality of $A$.
-\end{definition}
-
-For example, in case of research topics, an area could be a knowledge area, like biology, that will contain all the topics classified under that area. In this way we could compute and compare the complexity (how difficult is to understand) and the nescience (how ignorant we are) of mathematics, physics, biology, social sciences, and other disciplines.
-
-{\color{red} TODO: This definition can only be introduced once we have the concept of best current description.}
-
-An even easier approximation of the concept of redundancy of an area, is based on the average redundancy of the topics that compose that area.
-
-\begin{definition}
-Let $A \in \mathcal{T}$ an area, and $d_A$ a description. We define the \emph{average redundancy of the description} $d_A$ as:
+Let $\mathcal{A} \subset \mathcal{E}$ be an area, and $\hat{\mathcal{A}}$ be the subset of known entities. The \emph{average nescience of the area} is defined as:
 \[
-\bar{\rho}(d_{\hat{A}}) = \sum
+\bar{\nu}(\mathcal{A}) = \frac{1}{|\hat{\mathcal{A}}|} \sum_{e \in \hat{\mathcal{A}}} \nu(e),
 \]
+where $\nu(e)$ denotes the nescience of the current best hypothesis about entity $e$ given a particular decision maker.
 \end{definition}
 
-{\color{red} TODO: Study some properties of this definition}
-
-{\color{red} TODO: How these three definitions releate to each other?}
-
-
+For instance, when dealing with research topics, a research area may correspond to a broad disciplinary domain, such as biology, mathematics, or physics, each comprising a collection of entities that fall under that domain. In this context, the area of biology would include all research topics formally classified within the biological sciences. This classification allows us to compute and compare the nescience of distinct knowledge domains by aggregating the nescience of the individual topics they encompass (see Section \ref{sec:measuring_research_areas}). Such comparisons provide insight into which areas of human knowledge remain most poorly understood and where future research efforts might be most impactful.
 
 %
 % Section: References
@@ -529,8 +540,6 @@ Let $A \in \mathcal{T}$ an area, and $d_A$ a description. We define the \emph{av
 
 \section*{References}
 
-{\color{red} TODO: Add the paper of Chaitin about the Berry paradox}
+Here are some selected references that are particularly relevant to the concept nescience, along with brief explanations of their relevance.
 
-{\color{red} TODO: That there are numbers that are not computable can be found in the original paper of Turing}
-
-{\color{red} TODO: Perhaps Ii should provide a couple of references in epistemology and ontology}
+\cite{li2013introduction} is a foundational text in algorithmic information theory, central to defining concepts such as description length, randomness, and information content. These are directly used in our theory of nescience to formalize inaccuracy and surfeit. \cite{chaitin1969simplicity} provides key ideas on the relationship between program length and algorithmic simplicity. This work contributes to the formal underpinnings of inaccuracy and model complexity in the theory of nescience. \cite{cover2012elements} A comprehensive treatment of classical information theory, including entropy, mutual information, and coding theorems. These concepts are foundational for measuring redundancy and assessing the informativeness of representations in our framework. \cite{grunwald2007minimum} is irectly relevant to the concept of surfeit in nescience. The MDL principle formalizes model selection based on description length, which parallels the idea of seeking non-redundant descriptions. \cite{solomonoff1964formal} Solomonoff's work on algorithmic probability underlies the notion of model uncertainty and prediction, both of which are implicitly addressed in our theory's pursuit of minimal ignorance. \cite{kolmogorov1965three} lays the groundwork for the use of Kolmogorov complexity as a measure of information, randomness, and compressibility, all essential in quantifying nescience. \cite{turing1936computable} provides the foundational model of computation used throughout the theory of nescience. The theory's reliance on representations and oracle machines assumes the basic framework established by Turing. \cite{calude2002information} explores algorithmic complexity and randomness in depth, offering a broader perspective that connects well with our treatment of knowledge, representation, and incompleteness in the theory of nescience. \cite{chaitin1995berry} illustrates limits of formal descriptions and links to incompleteness phenomena. This is relevant for understanding the boundaries of compressibility and the epistemological challenges in defining knowledge. \cite{miettinen2012nonlinear} is crucial for our use of Pareto and anti-Pareto frontiers in describing tradeoffs among miscoding, inaccuracy, and surfeit. Provides the theoretical tools for reasoning about optimality in multi-dimensional knowledge spaces. \cite{popper2014conjectures} while not technical, this work provides a philosophical background on how scientific knowledge evolves through falsification, a process aligned with your model's notion of reducing nescience via hypothesis revision. \cite{suppes2002representation} addresses the problem of how scientific structures relate to the entities they describe, an issue directly relevant to your notion of representations, miscoding, and scientific models.

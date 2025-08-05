@@ -241,114 +241,126 @@ P(A) = P\left( \bigcup_{\omega \in A} \{\omega\} \right) = \sum_{\omega \in A} P
 \section{Conditional Probability}
 \label{sec:probability_conditional}
 
-The principle of conditional probability is a cornerstone within the discipline of statistical learning. Conditional probability allow us refine the probability of an event based on new information or conditions. Under the axiomatization prescribed by Kolmogorov, conditional probability is introduced as a definition.
+The concept of conditional probability plays a fundamental role in statistical learning. Conditional probability allows us to refine the probability of an event based on new information or imposed conditions. Within the axiomatic framework established by Kolmogorov, conditional probability is introduced as a definition.
 
 \begin{definition}
-Let $A$ and $B$ be two events such that $P \left( B \right) > 0$. The \emph{conditional probability}\index{Conditional probability} of $A$ given $B$, denoted by $P \left( A \mid B \right)$, is defined as:
+Let $A$ and $B$ be two events such that $P(B) > 0$. The \emph{conditional probability}\index{Conditional probability} of $A$ given $B$, denoted by $P(A \mid B)$, is defined as:
 \[
-P\left(A\mid B\right) = \frac{P\left(A\cap B\right)}{P\left(B\right)}
+P(A \mid B) = \frac{P(A \cap B)}{P(B)}.
 \]
 \end{definition}
 
-By virtue of satisfying the axioms, a conditional probability is, in itself, a probability. The conditional probability $P\left(A\mid B\right)$ is undefined in instances where $P\left(B\right)=0$.
+Because it satisfies the Kolmogorov axioms, a conditional probability is itself a valid probability. Note that $P(A \mid B)$ is undefined when $P(B) = 0$.
 
-Certain scholars posit that, given its pivotal role within probability theory, conditional probability ought to be an attribute that is logically deduced from the foundational axioms rather to be a definition. This perspective, naturally, necessitates an augmentation of Definition \ref{Kolmogorov_axioms}\index{Kolmogorov's axioms} with supplementary properties. Regrettably, there exists no agreed-upon method among mathematicians and philosophers regarding the manner in which this augmentation should be conducted.
+Some scholars argue that, given its central role in probability theory, conditional probability should be a property logically deduced from the foundational axioms, rather than introduced as a definition. This viewpoint naturally calls for an extension of Definition \ref{Kolmogorov_axioms}\index{Kolmogorov's axioms} to include additional properties. Unfortunately, there is no consensus among mathematicians or philosophers on how such an extension should be formalized.
 
-The conventional interpretation of conditional probability posits it as the recalibrated probability of event $A$ following the occurrence of event $B$. This perspective, however, potentially implies a sequential or even causative linkage between events $B$ and $A$, a suggestion which may not necessarily hold validity.
+The standard interpretation of conditional probability views it as the updated probability of event $A$ given that event $B$ has occurred. This interpretation, however, may implicitly suggest a temporal or even causal relationship between $B$ and $A$, a suggestion that is not necessarily valid.
 
 \begin{example}
 \label{ex:concurrent_events}
-Suppose we are playing a game with a standard deck of 52 cards, and we draw two cards. Let event A be "drawing at least one heart" and event B be "drawing at least one queen". These two events are dependent since the occurrence of event B affects the probability of event A. However, these two events are not temporally related because the draw of the card happens at the same time - one event does not occur before the other. This example showcases the essence of dependency in probability theory without any temporal association between the events involved.
+Suppose we are playing a game with a standard deck of 52 cards and we draw two cards. Let event $A$ be “drawing at least one heart,” and event $B$ be “drawing at least one queen.” These two events are dependent, as the occurrence of $B$ affects the probability of $A$. However, the events are not temporally related, since both cards are drawn simultaneously, one does not occur before the other. This example illustrates that dependency in probability theory does not require a temporal sequence between the events involved.
 \end{example}
 
-The probability of two events transpiring concurrently (although not necessarily contemporaneously, as previously discussed in Example \ref{ex:concurrent_events}), given their respective conditional probabilities, is encapsulated by the formula $P \left( A \cap B \right) = P \left( A \mid B \right) P \left( B \right)$. This equation offers perhaps a more intuitive comprehension of the conditional probability concept. Indeed, there exist a number of authors who advocate for this interpretation to form the basis of the definition of conditional probability, as opposed to the quotient method.
+The probability of two events occurring together (though not necessarily in a temporal sequence, as discussed in Example \ref{ex:concurrent_events}), given their conditional relationship, is captured by the formula $P \left( A \cap B \right) = P \left( A \mid B \right) P \left( B \right)$. This equation often provides a more intuitive understanding of the concept of conditional probability. In fact, several authors have argued that this formulation should serve as the primary definition of conditional probability, rather than the quotient-based approach.
 
-The extension of this formula to accommodate $n$ events, termed the \emph{multiplication rule}\index{Multiplication rule}, is expressed as follows:
+This formula generalizes to any finite number of events through what is known as the \emph{multiplication rule}\index{Multiplication rule}, which is expressed as:
 \begin{equation}\label{eq:multiplication_rule}
 P \left( A_{1} \cap A_{2} \cap \ldots \cap A_{n} \right) = P \left( A_{1} \right) P \left( A_{2} \mid A_{1}\right) \ldots  P \left( A_{n} \mid A_{1}\cap A_{2} \cap \ldots \cap A_{n-1} \right)
 \end{equation}
 
-The notion of event independence holds significant importance in the realm of probability theory and statistical learning. 
+The concept of event independence plays a central role in probability theory and statistical learning.
 
 \begin{definition}\label{independent_events}\index{Independent events}
 Two events $A$ and $B$ are declared to be \emph{independent} if $P \left( A \cap B \right) = P \left( A \right) P \left(B \right)$.
 \end{definition}
 
-From an intuitive perspective, the events $A$ and $B$ are considered independent if witnessing the occurrence of event B does not influence the probability of event A. This characteristic can be logically inferred from the definition of independence.
-
-{\color{red} I think it is better start with this intuition, and then provide the defintion of independence. See Casella.}
+Intuitively, events $A$ and $B$ are considered independent if knowing that event $B$ has occurred does not affect the probability of event $A$. This property follows logically from the definition of independence.
 
 \begin{proposition}
-Given two events $A$ and $B$ such that $P \left( A \right) > 0$ and $P \left( B \right)>0$, $A$ and $B$ are independent if and only if $P \left( A \mid B\right) = P \left( A \right)$.
+Let $A$ and $B$ be two events such that $P \left( A \right) > 0$ and $P \left( B \right) > 0$. Then $A$ and $B$ are independent if and only if $P \left( A \mid B \right) = P \left( A \right)$.
 \end{proposition}
 \begin{proof}
-Assume $A$ and $B$ are independent, implying that $P \left( A \cap B \right) = P \left( A \right) P \left(B \right)$. Then,
+Assume $A$ and $B$ are independent, i.e., $P \left( A \cap B \right) = P \left( A \right) P \left( B \right)$. Then,
 \[
-P \left( A \mid B \right) = \frac{P\left(A\cap B\right)}{P\left(B\right)} = \frac{P \left( A \right) P \left(B \right)}{P\left(B\right)} = P \left( A \right)
+P \left( A \mid B \right) = \frac{P \left( A \cap B \right)}{P \left( B \right)} = \frac{P \left( A \right) P \left( B \right)}{P \left( B \right)} = P \left( A \right).
 \]
-Proceeding from the assumption that $P \left( A \mid B \right) = P \left( A \right)$, and utilizing the multiplication rule, it follows that
+Conversely, assume that $P \left( A \mid B \right) = P \left( A \right)$. Then by the multiplication rule,
 \[
-P \left( A \cap B \right) =  P \left( A \mid B \right) P \left( B \right) = P \left( A \right) P \left( B \right)
+P \left( A \cap B \right) = P \left( A \mid B \right) P \left( B \right) = P \left( A \right) P \left( B \right),
 \]
+which confirms independence.
 \end{proof}
 
-If $P \left( A \mid B\right) = P \left( A \right)$ we have also that $P \left( B \mid  A \right) = P \left( B \right)$ which follow from the fact that the joint probability $P \left( A \cap B \right)$ can be expressed as $P \left( A \right) P \left(B \right)$.
+Note that if $P \left( A \mid B \right) = P \left( A \right)$, then it also follows that $P \left( B \mid A \right) = P \left( B \right)$. This is a direct consequence of the fact that the joint probability $P \left( A \cap B \right)$ can be expressed as $P \left( A \right) P \left( B \right)$.
 
-Similar to the case of conditional probability, certain authors posit that independence, as a foundational concept in probability theory, ought to be a logical extension of the axioms, rather than being imposed as a definition.
+As in the case of conditional probability, some scholars have argued that independence should not be treated merely as a definition, but rather as a logical consequence of the foundational axioms of probability. However, incorporating independence as a derived property would require extending or modifying the axiomatic system, a topic for which no universally accepted approach currently exists.
 
-The principle of independence can be expanded to accommodate multiple events: the events $A_{1}, \ldots, A_{n}$ are deemed to be independent (or mutually independent) if for every subset $A_{i_1}, \ldots, A_{i_j}$ comprising $j$ events $\left( j = 2, 3, \ldots, n \right)$, it holds true that $P \left( A_{i_1} \cap \ldots \cap A_{i_j} \right) = P \left( A_{i_1} \right) \ldots P \left( A_{i_j}\right)$.
-
-{\color{red} Perhaps mention that it is not sufficient with pairwise independence.}
+The concept of independence can be generalized to collections of more than two events. The events $A_{1}, \ldots, A_{n}$ are said to be \emph{mutually independent}\index{Mutually independent events} if, for every subset of events $A_{i_1}, \ldots, A_{i_j}$ with $j \in {2, 3, \ldots, n}$, the following condition holds:
+\[
+P \left( A_{i_1} \cap \ldots \cap A_{i_j} \right) = P \left( A_{i_1} \right) \cdots P \left( A_{i_j} \right).
+\]
+It is important to emphasize that \emph{pairwise independence}\index{Pairwise independent events}, that is, the condition $P(A_i \cap A_j) = P(A_i)P(A_j)$ for all $i \neq j$, is not sufficient to guarantee mutual independence. Mutual independence requires that the product rule holds for \emph{every} subset of two or more events, not just for pairs.
 
 \begin{example}
-A degree of confusion often arises regarding the distinction between mutually exclusive (or disjoint) events and independent events. For two mutually exclusive events $A$ and $B$, the computation of the probability that $A$ will transpire given $B$ is somewhat nonsensical, since if $B$ occurs, $A$ is inherently impossible. Analogously, discussing the conditional probability that $A$ will occur given $B$ when the probability of $B$ is zero is likewise flawed. However, as Definition \ref{independent_events} does not explicitly exclude the instance of $A$ and $B$ being mutually exclusive, we are compelled to conclude that two mutually exclusive events are independent if, and only if, the probability of at least one (or both) of them is zero.
+Confusion often arises when distinguishing between mutually exclusive (or disjoint) events and independent events. For two mutually exclusive events $A$ and $B$, the expression for the conditional probability $P(A \mid B)$ becomes problematic: if $B$ occurs, then $A$ cannot occur by definition, making $P(A \mid B)$ either undefined (if $P(B) = 0$) or equal to zero (if $P(B) > 0$). Similarly, computing the conditional probability of $A$ given $B$ when $P(B) = 0$ is not well-defined.
+
+Although Definition \ref{independent_events} does not explicitly prohibit $A$ and $B$ from being mutually exclusive, the two concepts are fundamentally incompatible unless one (or both) of the events has probability zero. In fact, two mutually exclusive events $A$ and $B$ are independent if and only if $P(A) = 0$, $P(B) = 0$, or both.
 \end{example}
 
-An intriguing scenario arises when events $A$ and $B$ are not independent, yet attain independence contingent on the occurrence of another event $C$.
+An interesting situation occurs when two events $A$ and $B$ are not independent in general, but become independent when conditioned on the occurrence of a third event $C$.
 
 \begin{definition}
-Consider $A$, $B$ and $C$ as events such that $P\left( B \cap C \right)>0$. $A$ and $B$ are considered \emph{conditionally independent}\index{Conditional independence} given $C$ if $P\left(A \mid B \cap C \right) = P\left( A \mid C \right)$.
+Let $A$, $B$, and $C$ be events such that $P\left( B \cap C \right) > 0$. We say that $A$ and $B$ are \emph{conditionally independent}\index{Conditional independence} given $C$ if $P\left(A \mid B \cap C \right) = P\left( A \mid C \right)$.
 \end{definition}
 
-\begin{example}
-Consider the act of rolling two dice; it is reasonable to assert that the outcomes of the two dice are independent from each other. That is, observing the outcome of one die provides no insight into the outcome of the other die. However, suppose the first die results in a four, and a third event is introduced - that the sum of the outcomes is an odd number - then this additional piece of information narrows the potential outcomes for the second die to only odd numbers. This illustrates the point that two events can be independent, yet fail to maintain conditional independence.
-\end{example}
+Next example illustrates that two events may be independent but fail to remain conditionally independent given a third event.
 
-The following theorem presents Bayes' rule, a fundamental principle underpinning a significant statistical learning technique known as Bayesian inference (see Section \ref{sec:bayesian_inference}). 
+\begin{example}
+Consider the experiment of rolling two fair dice. The outcomes of the two dice are independent, since knowing the result of one die does not provide any information about the result of the other. Now suppose we observe that the first die shows a four, and we are also given that the sum of the two dice is an odd number (event $C$). This additional condition restricts the possible outcomes of the second die: it must now show an odd number to make the total odd. As a result, the outcome of the second die is no longer independent of the first, once we condition on the sum being odd. \end{example}
+
+The following theorem presents Bayes' rule, a fundamental result that underpins an important statistical learning technique known as Bayesian inference (see Section \ref{sec:bayesian_inference})\footnote{As shown in the proof, Bayes' theorem follows directly from the definition of conditional probability. However, despite its practical utility, this derivation raises important philosophical questions regarding its foundational status. If conditional probability is taken as a definition rather than a derived consequence of more fundamental axioms, then Bayes' theorem rests on the same definitional foundation. As such, it functions effectively within this framework, but its theoretical justification depends on accepting conditional probability as a primitive notion rather than as something logically deduced.}.
 
 \begin{theorem}[Bayes' Theorem]\index{Bayes' theorem}\label{th:Bayes_theorem} Let $A$ and $B$ be two events such that $P\left( B \right) \neq 0$. Then we have that
 \[
 P \left( A \mid B \right) = \frac{P \left( B \mid A \right) P \left( A \right)}{P \left( B \right)}
 \]
-In this context, $P\left( A \right)$ is referred to as the \emph{prior probability}\index{Prior probability}, while $P\left( A \mid B \right)$ is deemed the \emph{posterior probability}\index{Posterior probability}.
+In this context, $P\left( A \right)$ is called the \emph{prior probability}\index{Prior probability}, while $P\left( A \mid B \right)$ is known as the \emph{posterior probability}\index{Posterior probability}.
 \end{theorem}
 \begin{proof}
-As per the definition of conditional probability, $P \left( A \mid B \right) = P \left( A \cap B \right) / P \left( B \right)$ (given $P \left( B \right) \neq 0$) and $P \left( B \mid A \right) = P \left( A \cap B \right) / P \left( A \right)$ (provided $P \left( A \right) \neq 0$). By solving for $P(A\cap B)$ and substituting into the previous expressions for $P(A\mid B)$, we arrive at the theorem.
+From the definition of conditional probability, we have:
+\[
+P \left( A \mid B \right) = \frac{P \left( A \cap B \right)}{P \left( B \right)} \quad \text{(provided } P \left( B \right) \neq 0\text{)},
+\]
+and
+\[
+P \left( B \mid A \right) = \frac{P \left( A \cap B \right)}{P \left( A \right)} \quad \text{(provided } P \left( A \right) \neq 0\text{)}.
+\]
+Solving the second equation for $P \left( A \cap B \right)$ and substituting into the first yields the desired result.
 \end{proof}
 
-As shown in the proof, Bayes' theorem is directly derived from the definition of conditional probability. However, despite its practical usefulness, this raises important philosophical concerns about its foundational basis. If conditional probability is accepted as a definition rather than something derived from a collection of axioms, Bayes' theorem inherits this uncertainty. It functions within the limits of this definition, underscoring the idea that it is a tool built on a potentially arbitrary foundation rather than one grounded in more fundamental principles.
-
-Bayesian inference facilitates the computation of how our degree of certainty about event $A$ (the prior probability $P\left( A \right)$) evolves when we acquire supplementary evidence via the occurrence of event $B$ (transforming into the posterior probability $P\left( A \mid B \right)$).
+Bayesian inference allows us to update our degree of belief in the occurrence of an event $A$, initially represented by the prior probability $P\left( A \right)$, in light of new evidence, represented by the occurrence of another event $B$. The result is the posterior probability $P\left( A \mid B \right)$, which reflects our revised belief after considering the new information.
 
 \begin{example}
-Consider $E$ to be a disease affecting one in every million people, $P(E) = 1 \times 10^{-6}$, and let $+$ represent a test devised to detect the disease, with a failure rate of one in every thousand applications, $P(+ \mid E) = 999/1000$. We aim to determine the probability of disease presence if the test is positive $P(E \mid +)$. Upon employing Bayes' theorem, we find that:
+Let $E$ represent a rare disease that affects one in every million people, so that $P(E) = 1 \times 10^{-6}$. Let $+$ denote a diagnostic test designed to detect the disease, with a failure rate of one in a thousand tests; that is, $P(+ \mid E) = 999/1000$. We wish to compute the probability that a person has the disease given a positive test result, i.e., $P(E \mid +)$. Applying Bayes' theorem, we get:
 \[
 P(E \mid +) = \frac{P(+ \mid E) P(E)}{P(+)} = \frac{P(+ \mid E) P(E)}{P(+ \mid E) P(E) + P(+ \mid E^c) P(E^c)} = 0.001
 \]
-This implies that despite the test only failing once per thousand applications, it remains highly improbable that we have the disease following a positive result. This paradoxical outcome can be attributed to the higher probability of test failure $10^{-3}$ compared to the likelihood of disease occurrence $10^{-6}$. Practically, this issue is circumvented by applying a second test to individuals who received a positive result, as the probability of disease presence following two positive results is $0.5$ (under the assumption that the successive test repetitions are independent).
+This result shows that, despite the test failing only once in a thousand applications, the probability of actually having the disease after a positive result remains extremely low. This seemingly paradoxical outcome arises because the probability of a false positive ($10^{-3}$) is much higher than the prior probability of having the disease ($10^{-6}$).
+
+In practical settings, this problem is often addressed by administering a second, independent test to individuals who test positive. Under the assumption of test independence, the probability of disease given two positive results increases substantially, to approximately $0.5$.
 \end{example}
 
-Bayes' theorem is most useful when the events involved are dependent and when new information about one event can update our understanding of the other event's probability.
+Bayes' theorem is particularly useful when the events involved are dependent, allowing new information about one event to revise our assessment of the probability of another.
 
 \begin{example}
-Suppose you're drawing a single card from a standard deck of 52 playing cards. Let Event $A$ be "drawing a red card" and Event $B$ be "drawing a queen". In this context, the use of Bayes' theorem to compute $P(A \mid B)$, the probability of drawing a red card given that a queen has been drawn, would not yield a meaningful result because the event $B$ provides no new information that would affect the probability of event $A$.
+Suppose you draw a single card from a standard 52-card deck. Let event $A$ be "drawing a red card," and let event $B$ be "drawing a queen." In this case, applying Bayes' theorem to compute $P(A \mid B)$, the probability of having drawn a red card given that a queen has been drawn, yields little insight. This is because knowing that a queen was drawn does not significantly alter the probability of the card being red: two of the four queens are red and two are black, mirroring the overall color distribution in the deck. Thus, event $B$ provides no relevant new information about event \$A\$.
 \end{example}
 
-Bayes' theorem can indeed be extended to accommodate multiple events. Consider a set of events $A_{1}, \ldots, A_{k}$ such that $P\left( A_{j} \right)>0$ for all $j$ in the range of 1 to $k$. Suppose these events constitute a partition of the sample space $\Omega$. Now, let $B$ denote an event with the property that $P\left(B\right)>0$. In such a context, it can be deduced for each $i$ in the range of 1 to $k$ that the conditional probability $P\left(A_{i}\mid B\right)$ is given by the formula
+Bayes' theorem can be generalized to accommodate multiple events. Let $A_{1}, \ldots, A_{k}$ be a finite collection of events with $P\left( A_{j} \right) > 0$ for all $j = 1, \ldots, k$, and assume that these events form a partition of the sample space $\Omega$. Let $B$ be an event such that $P\left(B\right) > 0$. Then, for each $i = 1, \ldots, k$, the conditional probability $P\left(A\_{i}\mid B\right)$ is given by:
 \[
 P\left(A_{i}\mid B\right)=\frac{P\left(B\mid A_{i}\right) P\left(A_{i}\right)}{\sum_{j=1}^{k} P\left(B \mid A_{j}\right) P\left(A_{j}\right)}
 \]
-This illustrates the capacity of Bayes' theorem to apply to a broader set of scenarios involving multiple events.
+This expression demonstrates the applicability of Bayes' theorem to a wider range of inference problems involving multiple events.
 
 %
 % Section: Random Variables

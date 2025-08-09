@@ -118,7 +118,7 @@ The relation between the weighted relevance of topics and the weighted degrees o
 \]
 In the unweighted case ($w_{tp} = 1$ for all edges), this formula reduces to the standard degree sum formula
 \[
-\sum_{t \in \mathcal{T}} \deg(t) \;=\; \sum_{p \in \mathcal{P}} \deg(p) \;=\; |E|.
+\sum_{t \in \mathcal{T}} \deg(t) \;=\; \sum_{p \in \mathcal{P}} \deg(p) \;=\; d(E).
 \]
 
 The next proposition shows that, in the weighted case, adding more topics to a research project can only increase its overall relevance. Of course, a research project dealing with "life, the universe, and everything" would be highly relevant, but also highly impractical. How to properly combine research topics will be described in Section \ref{sec:New_Research_Topics}.
@@ -149,376 +149,319 @@ which implies $R(S \cup \{t'\}) \geq R(S)$.
 This property shows that weighted relevance is monotone with respect to topic inclusion: if you enlarge the set of topics under consideration, the total weighted relevance can never decrease. In other words, adding topics can only maintain or increase the number (or severity) of connections to people in the relevance graph.
 
 %
-% Section: Relevance
-%
-
-\section{Other Metrics}
-
-
-Finally, we define the concept of interestingness of a topic as a source of interesting problems, that is, how likely is that the topic can be used in a new interesting research question, as a function of its nescience and relevance. We can visualize topics in a two-dimensional vector space, in which one dimension is nescience, and the other one is relevance. In this interpretation, a natural choice of interestingness function would be the euclidean distance from the origin.
-
-\begin{definition}\index{Interestingness of a topic as a problem}
-Given a topic $t \in \mathcal{T}$, we define the \emph{interestingness of the topic as a problem}, denoted by $IP(t)$, as:
-\[
-IP(t) = \sqrt{ \nu(t)^2 +  R(t)^2 }
-\]
-\end{definition}
-
-Intuitively, a topic is interesting as a problem worth investigating if it has a large relevance (it has high impact in people's life) and a large nescience (it is not very well understood). In this sense, we are borrowing ideas from Popper's falsificationism: the more risky is a conjecture, the higher the advance achieved in science given its confirmation.
-
-\begin{example}
-\label{ex:fixed_point}
-The fixed point theorem has some relevance, since people life's can be indirectly affected by its implications, but since it is a very well understood theorem (our nescience is very low), it is not a very interesting research problem by itself.
-
-World War I is a very relevant topic, because it had a huge impact on many people's life, and also it is not very well understood topic, since it takes hundreds of pages to explain its causes, and there is no general agreement among the specialists. So, according to our definition, it is a very interesting research problem.
-\end{example}
-
-In practice, it is convenient to work with the normalized version of the relevance metric, so that we can avoid the case that our questions are always related to a small subset of extremely interesting topics.
-\[
-IP(t) = \sqrt{ \nu(t)^2 +  \bar{R}(t)^2 }
-\]
-
-
-Given these two metrics, nescience and relevance, we can provide a quantitative measure of the interestingness of a topic as a source of interesting problems, that is, how likely is that the topic can be used as part of a new interesting research project. We define this quantity as a function of the relevance and nescience of the topic (for example, the normalized product of both quantities). Intuitively, a topic is interesting as a source of new problems if it has a large relevance (it has high impact in people's life) and a large nescience (it is not very well understood). In Figure \ref{fig:Interestingness-Questions} is graphically depicted the idea. For example, the Pythagoras' theorem has some relevance, since people life's can be indirectly affected by its implications, but since it is a very well understood theorem (our nescience is very low), it is not a very interesting research topic by itself. The World War I is very relevant, because it had a huge impact on many people's life, and also it is not very well understood topic as we have seen in Example \ref{ex:diffeq_world}. So, according to our definition, it has a huge potential as a source of new interesting research problems.
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{InterestQuestions}
-\caption{\label{fig:Interestingness-Questions}Interestingness of Topics}
-\end{figure}
-
-\begin{example}
-\label{ex:wikipedia-problems}
-We can use the collection of Wikipedia articles to identify topics that are interesting as a source of new problems. The starting point of our analysis is the classification contained in the scientific disciplines category of Wikipedia. This category is organized\footnote{Data from November 2014.} into the following main areas: "applied sciences", "behavioral sciences", "cognitive sciences", "formal sciences", "natural sciences", "physical sciences", and "social sciences". In order to evaluate the classification metrics proposed we have used the set of topics corresponding to all pages under any of the subcategories contained in the category "theory of computation" (a subcategory of the category "theoretical computer science", that belongs to the area "formal sciences"). Pages were cleaned up using the same procedure described in Example \ref{ex:diffeq_world}, and the relevance was estimated based on the number of unique visits to each page (please, refer to Chapter \ref{chap:philosophy-science} for more information about this process). Topics that fit our intuitive idea of problem, that is, not very well understood concepts with a high relevance, could include "arithmetical hierarchy" (0.72), "halting problem" (0.65), "floating point" (0.61), "quantum computer" (0.57), and "computable function" (0.55).
-\end{example}
-
-The Pythagoras' theorem is not a very interesting research topic by itself, however, it is a very important theorem, since it can be applied to solve many practical problems. A new metric is required to capture this concept of topic that is important because it can be used as a tool to solve other problems. We define the \emph{maturity} of a topic as the inverse of nescience. Intuitively, the more mature a topic is the higher its potential applicability as a tool to solve other open problems, since we know very well how the topic works and how it can be successfully applied. In general, highly immature topics should not be applied to solve open problems, since they could provide wrong answers.
-
-Besides maturity, we also introduce the metric of \emph{applicability} of a topic. Applicability is based on the concept of \emph{applicability graph}. An applicability graph is a directed graph between the research topics (see Figure \ref{fig:ApplicabilityGraph}). An arrow between two topics means that the first topic been successfully applied to explain or solve the second topic. For example, the topic “graph theory” has been applied to the topic “recommendation engines”, since graph theory has been used to solve the problem of which products we should advertise to potential customers on Internet. Given this graph, we define the applicability of a topic as the number of problems to which the topic has been successfully applied. The higher the applicability of a topic, the higher its potential as a tool that can be applied to solve new problems.
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{ApplicabilityGraph}
-\caption{\label{fig:ApplicabilityGraph}Applicability Graph}
-\end{figure}
-
-Finally, we define the concept of interestingness of a topic as a source of interesting tools, that is, how likely is that the topic can be used to solve a new problem, as a function of its maturity and applicability. Intuitively, a topic is interesting as a tool if it has been already applied to many other problems, and it is very well understood topic. For example, the Pythagoras' theorem, although not very relevant as a source of interesting problems, it is very relevant as a source of new applications to other open problems.
-
-\begin{example}
-We can use the collection of Wikipedia scientific articles to identify topics with high potential as tools. The procedure used in this example is similar to the one described in Example \ref{ex:wikipedia-problems}, except that the metric applicability has been estimated based in the collection of internal links within Wikipedia itself. The rationale is that if a page is referenced many times by other Wikipedia pages, it is highly likely that it contains useful information. Using this procedure, some examples of topics with high interest as tools in the area of theoretical computer science include "recursion" (0.42), "state space" (0.42), "abstract machine" (0.41), or "ternary numeral system" (0.48).
-\end{example}
-
-%
-% Section: Interesting questions
-%
-
-\section{Interesting Research Questions}
-\label{sec:intro_interesting_questions}
-
-Our primary assumption is that a research question is interesting if it meets the following three criteria\index{Criteria for Interesting Questions}:
-
-\bigskip
-
-\begin{description}
-\item[C1] The question should be new and original, meaning that it has not been previously considered.
-\item[C2] Upon its resolution, there should be a significant increase in our knowledge about one or more specific research topics.
-\item[C3] It should have practical applications that could have a substantial (hopefully positive) impact on people's lives.
-\end{description}
-
-\bigskip
-
-Some researchers may argue that the requirements presented may not be the most suitable. For instance, researchers from the so-called "hard sciences", such as pure mathematics and theoretical physics, might object that practical applications are not a crucial factor in pursuing an interesting open problem. In such situations, the metrics introduced can be redefined since they are simply mathematical abstractions, and the same methods can still be applied. The methodology described is universal and can be employed in various domains, not only in discovering new research questions. In fact, the metrics and methods outlined can be utilized in any field where there is a vast collection of interconnected describable objects, and the objective is to uncover new and previously unknown objects. The precise definition of concepts like relevance graph, applicability graph, or maturity will be contingent on the field in which the approach is being employed. Nevertheless, as in the case of Chapter \ref{chap:Nescience}, we prefer to present the methodology and new concepts in the specific context of scientific research because it aids in their comprehension.
-
-In the theory of nescience we distinguish two kinds of unknowns, the \emph{known unknown} and the \emph{unknown unknown}. By known unknown we mean all those already known problems for which we do not know their solutions, for example, nobody knows how to cure diabetes, but we know what diabetes is and we are aware that nobody knows how to cure it. By unknown unknown we mean the collection of unknown problems, that is, all those problems that have not been found yet, like for example the Eldermeyer's disease\footnote{We cannot say anything more about the Eldermeyer's disease, since Dra. Eldermeyer will born next year, and it will take her 34 years more to discover the disease named after her.}. The area composed by the unknown unknown problems is a highly interesting one, since it contains those research topics that will be addressed in the future. One of the main goals of this book is to help scientists discover the topics that lay in this unknown unknown area, since that would bring to the present the research problems of the future (see Section \ref{sec:intro_research_topics}). In this section we focus on how to solve the problems of the known unknown area.
-
-An \emph{interesting question} is a ordered pair of topics $t$ and $p$, where $t$ has a high interestingness as tool, and $p$ has high interestingness as problem. Intuitively, the questions would be something like “can we apply the tool described by topic $t$ to solve the problem described by topic $p$?”. The interestingness of the new questions will be measured by means of a function of the interestingness of $t$ and $p$ themselves. In practice what we have to do is to compute all the possible combinations of tools and questions and select those with higher combined interestingness (see Figure \ref{fig:InterestingQuestions}).
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{InterestingQuestions}
-\caption{\label{fig:InterestingQuestions}Interesting Questions}
-\end{figure}
-
-An interesting question is \emph{intradisciplinary} if it combines two topics that are studied in the framework of the same research area (e.g., computer science). An interesting question is \emph{interdisciplinary} if it combines two topics of different research areas (e.g., computer science and philosophy). In principle, the most innovative questions would be interdisciplinary questions, because the probability that somebody has thought about them is lower, since it requires specialists in both research areas working together to come up with that particular question.
-
-\begin{example}
-We could combine the topics with high interestingness as tools found in the area of "computer science" with those topics with high interestingness as problems found in the area of "biochemistry" in order to find new interesting interdisciplinary questions. Some examples of the kind of questions we can find with this approach include: “can we use regular expressions to identify DNA genes?” or “can we use a recursive algorithm to characterize proteins tertiary structure?”
-\end{example}
-
-Once we have identified an interesting research question, we could use the concept of \emph{conditional model} to see if the tool can help us to understand, or solve, the open problem. A conditional model of a topic $t$ given a perfect model of a second topic $s$ is also a string in the form $\langle TM,a \rangle$, but in this case we require that $TM \left(\langle m_s^\star, a \rangle \right) = t$. That is, the Turin machine $TM$ is able to print $t$ when it has as input both, the incompressible part $a$, and a perfect model $m_s^\star$ for the topic $s$. If the conditional complexity of the open problem given the tool is smaller than its original complexity, then the tool is helpful to solve the problem. The more the tool reduce the length of the conditional model with respect to the original model, the better.
-
-Please note that the methodology presented here is a generic one, in the sense that it can be applied to multiple domains, not only to the discovery of new interesting research questions. The metrics and methods described can be applied to any area where there is a large collection of interrelated describable objects and we are interested in discovering new, previously unconsidered, objects. The exact definition of concepts like relevance graph, applicability graph or maturity will depend on the area in which the methodology is being applied. In Part \ref{part:Applications} of this book, we will describe some examples of other applications, for example, to the identification of new software quality tests.
-
-%
 % Applicability
 %
 
 \section{Applicability}
 \label{sec:applicability}
 
-As mentioned in Example \ref{ex:fixed_point}, the fixed point theorem is not particularly compelling as a research problem on its own. However, it is an essential mathematical result since it has broad applications in proving many other theorems. In this section, we introduce the concept of \emph{applicability}, which is a novel measure enabling us to identify which topics are important since they can serve as as tools for understanding other topics. From a mathematical point of view, we say that a tool can be applied to a topic if the conditional nescience (see Section \ref{sec:conditional_nescience}) of the topic given the tool is smaller that the unconditionall nescience of the topic.
+In this section, we introduce a new metric, applicability, which measures the potential of a research topic to serve as a tool for understanding or solving problems in other topics. The intuition is that some topics act as powerful enablers: mastering them allows progress to be made in many other areas.
 
-Before to formally define the concept of applicability, first we have to introduce a new bipartite graph that describes which topics has been applied as tools to other topics.
+From a formal standpoint, we say that a topic $t_j$ can be applied to a topic $t_i$ if the conditional nescience of $t_i$ given $t_j$ is smaller than the unconditional nescience of $t_i$ (see Section \ref{sec:conditional_nescience}).
+
+Before defining applicability formally, we introduce the applicability graph, which encodes which topics have been successfully applied to others. This is a directed graph whose nodes are research topics, and where an arc from $t_j$ to $t_i$ indicates that $t_j$ has been successfully applied to explain or solve $t_i$.
 
 \begin{definition}\index{Applicability graph}
 \label{def:applicability-graph}
-We define the \emph{applicability graph}, denoted by $AG$, as the directed graph $AG = (\mathcal{T}, E)$, where $\mathcal{T}$ is the set of research topics, and $E\subseteq\left\{ (i,j):i,j\in \mathcal{T} \right\} $. An arc $(i, j)$ belong to $E$ if $N \left( t_i \mid t_j \right) < N \left( t_i \right)$. The weight of the arc $(i, j)$ is given by $w_{ij} = N \left( t_i \right) - N \left( t_i \mid t_j \right)$.
+We define the \emph{applicability graph}, denoted by $AG$, as the directed graph $AG = (\mathcal{T}, E)$, where $\mathcal{T}$ is the set of research topics, and $E \subseteq \{ (i,j) : i,j \in \mathcal{T} \}$ is the set of arcs. An arc $(i,j)$ belongs to $E$ if $N(t_i \mid t_j) < N(t_i)$, that is, knowing $t_j$ reduces the nescience of $t_i$. The weight of the arc $(i,j)$ is defined as $w_{ij} = N(t_i) - N(t_i \mid t_j)$, representing the reduction in nescience obtained by applying $t_j$ to $t_i$.
 \end{definition}
 
-The applicability graph helps us identify those topics that can be pontentially used as tools to understand other topics. The following defintion formally introduces this idea.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=1.2, every node/.style={circle, fill=black, inner sep=2pt}]
+
+% Nodes (topics)
+\node (t1) at (0,2) {};
+\node (t2) at (2,2.5) {};
+\node (t3) at (4,2) {};
+\node (t4) at (1,0) {};
+\node (t5) at (3,0) {};
+
+% Directed edges
+\draw[->] (t1) -- (t4);
+\draw[->] (t1) -- (t2);
+\draw[->] (t2) -- (t3);
+\draw[->] (t2) -- (t4);
+\draw[->] (t3) -- (t5);
+\draw[->] (t4) -- (t5);
+\draw[->] (t5) -- (t1);
+
+% Labels
+\node[draw=none, fill=none] at (4.8,2.5) {Topics};
+
+\end{tikzpicture}
+\caption{\label{fig:ApplicabilityGraph}Example of an applicability graph.}
+\end{figure}
+
+The applicability of a topic measures the total reduction in nescience it has produced when applied to other topics.
 
 \begin{definition}\index{Applicability}
 \label{def:applicability}
-Given the applicability graph $AG = (\mathcal{T}, E)$, the \emph{applicability} of a topic $t_i \in \mathcal{T}$, denoted by $A(t_i)$, is defined as the sum of the weights of the arcs in the outdegree of $t_i$, that is:
+Given the applicability graph $AG = (\mathcal{T}, E)$, the \emph{applicability} of a topic $t_i \in \mathcal{T}$, denoted $A(t_i)$, is defined as
 \[
-A(t_i) = \sum_{(i, j) \in E} w_{ij}
+A(t_i) = \sum_{(i,j) \in E} w_{ij},
 \]
-where $E$ is the set of arcs in the applicability graph, and $w_{ij}$ is the weight of the arc $(i, j)$.
+where the sum is over all arcs leaving $t_i$.
 \end{definition}
 
-A topic with higher applicability will have a greater overall impact on the understanding of other topics, and intuitively, the higher the applicability of a topic, the higher its potential as a tool that can be applied to solve open problems. If a tool has been successfully applied multiple times in the past to address open problems, it is more likely that it can be effectively used to solve other open problems as well.
+A topic with high applicability is a versatile tool, capable of contributing to the understanding of many other topics. Intuitively, if a tool has been successfully applied multiple times in the past, it is more likely to be useful for solving new problems in the future.
 
-Next proposition proves that the combination of two topics can only increase their applicability. That is, the more tools we have at our disposal, the more problems we could solve in principle.
+As with relevance, applicability is monotone with respect to topic inclusion: combining topics can only increase their total applicability.
 
 \begin{proposition}
-Given any two topics $t_1, t_2 \in \mathcal{T}$, we have that $A(t_1) + A(t_2) \geq A(t_1)$.
+\label{prop:nondecreasing_applicability}
+Let $S \subseteq \mathcal{T}$ be a finite set of topics and $t' \in \mathcal{T} \setminus S$ an additional topic. Then
+\[
+A(S \cup \{t'\}) \geq A(S),
+\]
+where
+\[
+A(S) = \sum_{\substack{t \in S \\ (t,j) \in E}} w_{tj}.
+\]
 \end{proposition}
 \begin{proof}
-Use the same argument than in Proposition \ref{prop:nondecreasing_relevance}.
+We can write
+\[
+A(S \cup \{t'\}) = A(S) + \sum_{(t',j) \in E} w_{t'j}.
+\]
+Since all weights $w_{ij}$ are non-negative,
+\[
+\sum_{(t',j) \in E} w_{t'j} \geq 0,
+\]
+which implies $A(S \cup \{t'\}) \geq A(S)$.
 \end{proof}
 
-In order to better compare the applicability of different topics and understand their relative importance in a standardized way, it is useful to introduce a normalized version of the applicability measure.
+This property ensures that adding more tools to a research effort can only maintain or increase its applicability.
 
-\begin{definition}\index{Normalized Aapplicability}
+To compare applicability values across topics on a standard scale, we define a normalized measure using min-max normalization.
+
+\begin{definition}\index{Normalized applicability}
 \label{def:normalized-applicability}
-Given the applicability graph $AG = (\mathcal{T}, E)$, the \emph{normalized applicability} of a topic $t_i \in \mathcal{T}$, denoted by $A_n(t_i)$, is defined as the ratio of the applicability of $t_i$ to the maximum possible applicability value, expressed as:
+Given the applicability graph $AG = (\mathcal{T}, E)$, we define the \emph{min–max normalized applicability} of a topic $t_i \in \mathcal{T}$, denoted $\tilde{A}(t_i)$, as
 \[
-\tilde{A}(t_i) = \frac{A(t_i)}{\max_{t_k \in \mathcal{T}} A(t_k)}
+\tilde{A}(t_i) =
+\frac{A(t_i) - \min_{t_k \in \mathcal{T}} A(t_k)}
+     {\max_{t_k \in \mathcal{T}} A(t_k) - \min_{t_k \in \mathcal{T}} A(t_k)}
 \]
-where $A(t_i)$ is the applicability of topic $t_i$ as defined in Definition \ref{def:applicability}, and $\max_{t_k \in \mathcal{T}} A(t_k)$ is the maximum applicability value among all topics in $\mathcal{T}$.
+where $A(t_i)$ is the applicability of $t_i$ as in Definition \ref{def:applicability}.
 \end{definition}
 
-Normalized applicability scales the original applicability value of a topic to a range between 0 and 1, allowing for easier comparison across different topics.
+This normalization ensures that $\tilde{A}(t_i) \in [0,1]$, with $0$ assigned to the least applicable topic and $1$ to the most applicable. In the degenerate case where all topics have the same applicability, all normalized values are set to 0. Note that min-max normalization can be sensitive to extreme values: if a single topic has exceptionally high applicability, the normalized scores of all other topics will be compressed toward zero.
 
-In practice, it is very difficult to compute the applicability graph, since for the majority of the topics, the quantity $N \left( t_i \mid t_j \right)$ has not been estimated. In order to solve this problem, we can use an approximation to the applicabilitiy graph, in which the arcs have no weight, and an edge $(i, j)$ represents that the topic $j$ has been applied to solve the problem $i$. For example, there would be a direct link between the topics "graph theory" and "recommendation engines", since graph theory has been successfully applied to the problem of how to recommend purchase items to customers over Internet.
+In practice, computing the exact applicability graph is difficult because, for most topics, $N(t_i \mid t_j)$ is not known. We can approximate it by using a \emph{simplified applicability graph}, where arcs are unweighted and represent known instances of one topic being applied to another.
 
 \begin{definition}\index{Simplified applicability graph}
 \label{def:simplified-applicability-graph}
-We define the \emph{simplifiled applicability graph}, denoted by $SAG$, as the directed graph $SAG = (\mathcal{T}, E)$, where $\mathcal{T}$ is the set of research topics, and $E\subseteq\left\{ (i,j):i,j\in \mathcal{T} \right\} $. An arc $(i, j)$ belong to $E$ if the topic $j$ has been used to understand topic $i$.
+We define the \emph{simplified applicability graph}, denoted $SAG$, as the directed graph $SAG = (\mathcal{T}, E)$,
+where $\mathcal{T}$ is the set of research topics, and $E \subseteq \{ (i,j) : i,j \in \mathcal{T} \}$ contains an arc $(i,j)$ if topic $j$ has been used to understand topic $i$.
 \end{definition}
 
-Using this simplified version of the applicability graph, the concept of applicability becomes:
+Using the simplified applicability graph, we can define an unweighted applicability measure.
 
 \begin{definition}\index{Simplified applicability}
 \label{def:simplified-applicability}
-We define the \emph{simplified applicability} of a topic $t\in \mathcal{T}$, denoted by $SA(t)$, as the outdegree of that node in the applicability graph, that is:
-\[
-SA(t) = outdeg(t)
-\]
+Given $SAG = (\mathcal{T}, E)$, the \emph{simplified applicability} of a topic $t \in \mathcal{T}$, denoted $SA(t)$, is the outdegree of $t$ in $SAG$, $SA(t) = \mathrm{outdeg}(t)$.
 \end{definition}
 
-And the corresponding normalized version becomes:
+Finally, we normalize simplified applicability to the range $[0,1]$:
 
 \begin{definition}\index{Normalized simplified applicability}
 \label{def:normalized-simplified-applicability}
-Given the simplified applicability graph $SAG = (\mathcal{T}, E)$, the \emph{simplified normalized applicability} of a topic $t_i \in \mathcal{T}$, denoted by $SA_n(t_i)$, is defined as the ratio of the simplified applicability of $t_i$ to the maximum possible simplified applicability value, expressed as:
+Given the simplified applicability graph $SAG = (\mathcal{T}, E)$, we define the \emph{min–max normalized simplified applicability} of a topic $t_i \in \mathcal{T}$, denoted $SA_n(t_i)$, as
 \[
-SA_n(t_i) = \frac{SA(t_i)}{\max_{t_k \in \mathcal{T}} SA(t_k)}
+SA_n(t_i) =
+\frac{SA(t_i) - \min_{t_k \in \mathcal{T}} SA(t_k)}
+     {\max_{t_k \in \mathcal{T}} SA(t_k) - \min_{t_k \in \mathcal{T}} SA(t_k)}
 \]
-where $SA(t_i)$ is the simplified applicability of topic $t_i$ as defined in Definition \ref{def:applicability}, and $\max_{t_k \in \mathcal{T}} SA(t_k)$ is the maximum applicability value among all topics in $\mathcal{T}$.
+where $SA(t_i)$ is the simplified applicability of $t_i$ as in Definition \ref{def:simplified-applicability}.
 \end{definition}
 
-When using topics as tools, we are primarily interested in those topics that are better understood. Generally, relying on a background knowledge that is poorly understood is not advisable, even if it significantly reduces the (conditional) nescience of our problem. In the following definition, we will introduce the concept of the maturity of a topic as one minus its nescience.
+This normalization ensures that $SA_n(t_i) \in [0,1]$, with $0$ assigned to the least applicable topic and $1$ to the most applicable. In the degenerate case where all topics have the same applicability, all normalized values are set to 0. As with the weighted case, min-max normalization may be sensitive to extreme values.
+
+%
+% Section: Maturity
+%
+
+\section{Maturity}
+\label{sec:intro_maturity}
+
+When selecting topics to use as tools, we are primarily interested in those that are well understood. Relying on background knowledge that is poorly understood is generally unwise, even if it appears to significantly reduce the conditional nescience of our main problem.
+
+We therefore introduce the concept of the maturity of a topic, which measures the degree to which a topic is understood. Maturity is defined as the inverse of the nescience of the topic: the lower the nescience, the higher the maturity.
 
 \begin{definition}\index{Maturity}
-Given a topic $t \in \mathcal{T}$, we define the \emph{maturity} of topic $t$, denoted as $M(t)$, as:
-\[
-M(t) = \nu(t)^{-1}
-\]
+\label{def:maturity}
+Let $t \in \mathcal{T}$ be a topic, and let $N(t)$ denote its nescience.
+The \emph{maturity} of $t$, denoted $M(t)$, is defined as $M(t) = \frac{1}{N(t)}$.
 \end{definition}
 
-Intuitively, the more mature a topic is, the greater its utility in solving other open problems. Highly immature topics should not be applied as tools to address open problems, as doing so would merely transfer our lack of understanding from one topic to another.
+A higher maturity value indicates that the topic is better understood, and thus more suitable to be used as a tool in solving other problems. Conversely, highly immature topics (low $M(t)$) should be avoided as tools, since applying them would risk transferring our lack of understanding from one domain to another.
 
 \begin{example}
-Linear regression is a highly mature topic, since its nescience is very small.
+Linear regression is a highly mature topic, since its nescience is very small, and so, its maturity is large.
 \end{example}
 
-Finally, we define the concept of interestingness of a topic as a source of interesting tools, that is, how likely is that the topic can be used to solve a new problem, as a function of its maturity and applicability. Similar to the definition of relevance introduced in the previous section, topics can be visualized within a two-dimensional vector space, where one dimension represents maturity and the other represents applicability. The interestingness of a topic will be determined by its Euclidean distance from the origin.
+To compare maturity values across topics on a standard scale, we define a min-max normalized version. This transformation assigns $0$ to the least mature topic, $1$ to the most mature, and scales all others proportionally.
+
+\begin{definition}\index{Normalized maturity}
+\label{def:normalized-maturity}
+Given the set of topics $\mathcal{T}$, the \emph{min-max normalized maturity} of a topic $t \in \mathcal{T}$, denoted $\tilde{M}(t)$, is
+\[
+\tilde{M}(t) =
+\frac{M(t) - \min_{t' \in \mathcal{T}} M(t')}
+     {\max_{t' \in \mathcal{T}} M(t') - \min_{t' \in \mathcal{T}} M(t')}
+\]
+where $M(t)$ is the maturity of $t$ as in Definition \ref{def:maturity}.
+\end{definition}
+
+Min-max normalization ensures $\tilde{M}(t) \in [0,1]$, facilitating direct comparison between topics. However, as with other metrics, extreme outliers in maturity can compress the normalized values of the remaining topics toward zero.
+
+%
+% Section: Interestingness
+%
+
+\section{Interestingness}
+\label{sec:interestingness-metrics}
+
+We measure the interest of a topic in two complementary ways: as a tool, based on its usefulness in solving other problems; and as a problem, by studying its intrinsic research value.
+
+The interestingness of a topic as a tool reflects how likely it is that the topic can be successfully applied to solve new problems. This likelihood depends on two key factors: maturity, or how well the topic is understood; and applicability, how widely it has been applied to other problems. We combine normalized measures of these two quantities into a single score:
 
 \begin{definition}\index{Interestingness of a topic as a tool}
-Given a topic $t \in \mathcal{T}$, we define the \emph{interestingness of the topic as a tool}, denoted by $IT(t)$, as:
+We define the \emph{interestingness as a tool} of $t$ as
 \[
-IT(t) = \sqrt{ M(t)^2 +  A(t)^2 }
+IT(t)=\frac{\sqrt{\,\tilde{M}(t)^2+\tilde{A}(t)^2\,}}{\sqrt{2}}
 \]
 \end{definition}
 
-Intuitively, a topic is considered interesting as a tool if it is thoroughly understood and has already been applied to numerous other problems.
+A topic will have a high $IT_n(t)$ value when it is both well understood ($\tilde{M}(t)$ close to $1$) and widely applicable ($\tilde{A}(t)$ close to $1$). In other words, the most interesting tools are those that combine deep understanding with broad utility in solving other problems.
 
 \begin{example}
-The Pythagorean theorem (in a right-angled triangle, the square of the length of the hypotenuse is equal to the sum of the squares of the other two sides) is undoubtedly one of the most widely used and applied theorems in various fields and practical situations, including but not limited to: engineering (calculating distances, angles, and forces in structures and mechanical systems), architecture (determining lengths and angles in building design and construction projects), land surveying (measuring distances and calculating areas of land parcels), physics (analyzing problems in mechanics, optics, and electromagnetism), computer graphics and game development (calculating distances and angles in 2D and 3D spaces) or trigonometry(serving as a foundation for the study of trigonometric functions and their applications). The widespread application of the Pythagorean theorem to so many fields is due to its simplicity and its ability to describe complex geometric relationships.
+The Pythagorean theorem\index{Pythagorean theorem} (in a right-angled triangle, the square of the length of the hypotenuse is equal to the sum of the squares of the other two sides) is undoubtedly one of the most widely used and applied theorems in various fields and practical situations, including but not limited to: engineering (calculating distances, angles, and forces in structures and mechanical systems), architecture (determining lengths and angles in building design and construction projects), land surveying (measuring distances and calculating areas of land parcels), physics (analyzing problems in mechanics, optics, and electromagnetism), computer graphics and game development (calculating distances and angles in 2D and 3D spaces) or trigonometry(serving as a foundation for the study of trigonometric functions and their applications).
 \end{example}
 
+Some topics may have little utility as tools but are nonetheless highly valuable as research problems in their own right. To capture this idea, we define the interestingness of a topic as a problem, which reflects how compelling it is to investigate the topic itself. This depends on two main factors: relevance, or the degree to which the topic impacts people's lives; and nescience, as a measure of the extent to which the topic is not yet well understood.
+
+\begin{definition}\index{Interestingness of a topic as a problem}
+The \emph{interestingness as a problem} of $t$ is
+\[
+IP(t)=\frac{\sqrt{\,\tilde{N}(t)^2+\bar{R}(t)^2\,}}{\sqrt{2}}
+\]
+\end{definition}
+
+Intuitively, a topic is interesting as a problem worth investigating if it has a large relevance (it has high impact in people's life) and a large nescience (it is not very well understood). In this sense, we are borrowing ideas from Popper's falsificationism: the more risky is a conjecture, the higher the advance achieved in science given its confirmation.
+
+\begin{example}
+World War I is a very relevant topic, because it had a huge impact on many people's life, and also it is not very well understood topic, since it takes hundreds of pages to explain its causes, and there is no general agreement among the specialists. So, according to our definition, it is a very interesting research problem.
+\end{example}
 
 %
 % Section: Interesting Questions
 %
 
 \section{Interesting Questions}
+\label{sec:interestingness-metrics}
 
-In the quest to uncover novel research questions, combining existing topics from various fields can yield fascinating results. By applying tools and methodologies from one topic to solve problems in another, researchers can explore innovative avenues and potentially make groundbreaking discoveries. In the following section, we delve into the methodology of combining topics to generate questions, along with the concept of interestingness and interdisciplinary research.
+In the theory of nescience we distinguish two kinds of unknowns, the known unknown and the unknown unknown. By known unknown we mean all those already known problems for which we do not know their solutions, for example, nobody knows how to cure diabetes, but we know what diabetes is and we are aware that nobody knows how to cure it. By unknown unknown we mean the collection of unknown problems, that is, all those problems that have not been found yet. In this section we focus on tools to takcle known unknown.
 
-In our methdology, a interesting question emerges from the combination of two pre-existing topics. Given a pair of a topics in $t_1, t_2 \in \mathcal{T}$, the question can be framed as "\emph{can we apply the tool described by topic $t_1$ to solve the problem described by topic $t_2$?}".
+In our methodology, an interesting question emerges from the combination of two pre-existing topics. An interesting question is an ordered pair of topics $t$ and $p$, where $t$ has high interestingness as a tool, and $p$ has high interestingness as a problem.
 
 \begin{definition}\index{Question}
-Given two topics $t_1, t_2 \in \mathcal{T}$, a \emph{question}, denoted by $Q_{t_1 \rightarrow t_2}$, is the ordered pair $\left(t_1, t_2\right)$.
+Given $t, p\in\mathcal{T}$, we call \emph{question}\index{Question} the ordered pair $Q_{t\to p}=(t,p)$.
 \end{definition}
 
-The most intriguing questions emerge when topic $t_1$ exhibits high interestingness as a tool, and topic $t_2$ demonstrates high interestingness as a problem. We define the interestingness of a question using the Euclidean distance, taking into account the interestingness of topics $t_1$ and $t_2$ as points in a two-dimensional space, with coordinates $(A_{t_1}, M_{t_1})$ and $(R_{t_2}, N_{t_2})$, respectively. The coordinates of the resulting vector represent the interestingness of a question with $t_1$ as a tool and $t_2$ as a problem.
+Given a pair of a topics in $t_1, t_2 \in \mathcal{T}$, the question can be framed as "can we apply the tool described by topic $t_1$ to solve the problem described by topic $t_2$?".
+
+The most interesting questions arise when topic $t_1$ exhibits high interestingness as a tool, and topic $t_2$ exhibits high interestingness as a problem. We define the interestingness of a question using the Euclidean distance, considering the interestingness of topics $t_1$ and $t_2$ as points in a two-dimensional space. The coordinates of these points are $(A_{t_1}, M_{t_1})$ for the tool and $(R_{t_2}, N_{t_2})$ for the problem. The distance between these points reflects how promising the combination of $t_1$ as a tool and $t_2$ as a problem is.
 
 \begin{definition}\index{Interestingness of a question}
-Let $t_1$ and $t_2 \in \mathcal{T}$ be two topics. The \emph{interestingness} of the question $Q_{t_1 \rightarrow t_2}$, denoted by $IQ_{t_1 \rightarrow t_2}$, is given by:
+We define the interestingness of $Q_{t\to p}$ as
 \[
-IQ_{t_1 \rightarrow t_2} = \sqrt{ (A_{t_1} + R_{t_2})^2 + (M_{t_1} + N_{t_2})^2 }
+IQ(t\to p)=\frac{\sqrt{\,IT(t)^2+IP(p)^2\,}}{\sqrt{2}}
 \]
 \end{definition}
 
-Employing the Euclidean distance in this way enables a geometric interpretation of the interestingness of a question based on the vector representation of topics in the interestingness space. The larger the magnitude of the vector representation, the higher the interestingness of the resulting question.
+Using the Euclidean distance in this way provides a clear geometric interpretation of a question's interestingness in the two-dimensional interestingness space. The greater the magnitude of the resulting vector, the more interesting the question is likely to be.
 
-\begin{tikzpicture}[
-    scale=1.5,
-%    axis/.style={thick, ->, -latex', >=Stealth},
-    axis/.style={thick},
-%   vector/.style={thick, ->, -latex', >=Stealth, color=blue},
-    vector/.style={thick},
-    point/.style={circle, inner sep=1pt, fill, color=black}
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=1.5, axis/.style={thick}, vector/.style={thick},
+                    point/.style={circle, inner sep=1pt, fill, color=black}
 ]
 
 % Coordinate axes
-\draw[axis] (-0.5, 0) -- (3, 0) node[right] {Interestingness as a Tool (IT)};
-\draw[axis] (0, -0.5) -- (0, 3) node[above] {Interestingness as a Problem (IP)};
+\draw[axis] (-0.5, 0) -- (3, 0) node[right] {IT};
+\draw[axis] (0, -0.5) -- (0, 3) node[above] {IP};
 
 % Points for t1 and t2
-\coordinate (t1) at (1, 1);
-\coordinate (t2) at (2, 2);
+\coordinate (t1) at (1, 2);
+\coordinate (t2) at (2, 1);
+\coordinate (iq) at (3, 3);
 
 % Vectors for t1, t2, and the sum
 \draw[vector] (0, 0) -- node[pos=0.5, above] {$t_1$} (t1);
 \draw[vector] (0, 0) -- node[pos=0.5, below] {$t_2$} (t2);
-\draw[vector, color=red] (t1) -- node[pos=0.5, above] {Interestingness of Question} (t2);
+\draw[vector] (0, 0) -- node[pos=0.5, above] {Question} (iq);
 
 % Points and labels for t1 and t2
 \node[point, label={left:$A_{t_1}, M_{t_1}$}] at (t1) {};
 \node[point, label={right:$R_{t_2}, N_{t_2}$}] at (t2) {};
 
 \end{tikzpicture}
+\caption{\label{fig:InterestingQuestion}Example of an interesting quetion.}
+\end{figure}
 
 In practice, we must calculate all possible combinations of topics with high interestingness as tools and those with high interestingness as problems. We then select the combinations with the highest interestingness as questions. Naturally, most questions generated using this approach will be meaningless, much like those arising during brainstorming sessions when researchers attempt to identify new tools for tackling difficult problems.
 
 This methodology can be applied in other scenarios as well. For instance, a researcher familiar with problem $p$ might be interested in finding applicable tools to solve it. Similarly, a researcher specializing in tool $t$ may be interested in discovering open problems where his expertise can be applied.
 
-The above procedure can be easily generalized to encompass multiple tools and possibly multiple problems. This leads to the application of two tools to a given problem ($ t_1 + t_2 \rightarrow p$), the application of a single tool to the combination of two problems ($t \rightarrow p_1 + p_2$), and so on. The exact meaning of these tool and problem combinations depends on the topics themselves and is left to the researcher's creative interpretation.
+The above procedure can be easily generalized to encompass multiple tools and possibly multiple problems. This leads to the application of two tools to a given problem ($ t_1 + t_2 \rightarrow p$), the application of a single tool to the combination of two problems ($t \rightarrow p_1 + p_2$), and so on. The exact meaning of these tool and problem combinations depends on the topics themselves.
 
-At times, it is beneficial to limit our search to specific areas of knowledge to identify interesting questions.
+An interesting question is intradisciplinary if it combines two topics that are studied in the framework of the same research area (e.g., computer science). An interesting question is interdisciplinary if it combines two topics of different research areas (e.g., computer science and philosophy). In principle, the most innovative questions would be interdisciplinary questions, because the probability that somebody has thought about them is lower, since it requires specialists in both research areas working together to come up with that particular question.
 
-\begin{definition}\index{Intradisciplinary question} \index{Interdisciplinary question}
-Let $\mathcal{A} \subset \mathcal{T}$ be a research area, and $t_1, t_2 \in \mathcal{T}$ be two topics. If both topics belongs to the same area, meaning $t_1, t_2 \in \mathcal{A}$, we say that the question $Q_{t_1 \rightarrow t_2}$ is \emph{intradisciplinary}, otherwise, we say that the question is \emph{interdisciplinary}.
+\begin{definition}\index{Intradisciplinary question}\index{Interdisciplinary question}
+Let $\mathcal{A}\subseteq\mathcal{T}$ be a research area. The question $Q_{t\to p}$ is \emph{intradisciplinary}\index{Intradisciplinary question} if $t,p\in\mathcal{A}$; otherwise it is \emph{interdisciplinary}\index{Interdisciplinary question}.
 \end{definition}
 
-The most innovative questions tend to be interdisciplinary, as they have a lower likelihood of having been considered previously. This is because they require collaboration between specialists from different research areas. Interdisciplinary questions address our requirement \textbf{C1} for interesting questions, which dictates that the question must be new and original.
+\begin{example}
+We could combine the topics with high interestingness as tools found in the area of "computer science" with those topics with high interestingness as problems found in the area of "biochemistry" in order to find new interesting interdisciplinary questions. Some examples of the kind of questions we can find with this approach include: "can we use regular expressions to identify DNA genes?" or "can we use a recursive algorithm to characterize proteins tertiary structure?"
+\end{example}
+
+The most innovative questions tend to be interdisciplinary, as they have a lower likelihood of having been considered previously. This is because they require collaboration between specialists from different research areas. 
 
 %
 % Section: New Research Topics
 %
+\section{New Topics}
+\label{sec:new-topics}
 
-\section{New Research Topics}
-\label{sec:New_Research_Topics}
-
-{\color{red} TODO: Review this section}
-
-In the previous section our focus was in how to find new interesting research questions. In this section we will go one step beyond, and we will show how to identify new, previously unknown, research topics.
-
-\begin{definition}\index{Unknown frontier}
-In the two-dimensional space defined by relevance and nescience, the \textit{unknown frontier}, denoted by $\mathbb{F}$, is defined as the following arc:
-\[
-\mathbb{F} = \left\{(x,y) \mid x^{2}+y^{2}=max(\{N^2_{t} + R^2_{t}, t \in T'\}),x>0,y>0\right\} 
-\]
-\end{definition}
-
-If we plot all the known research topics according to their relevance and nescience, the unknown frontier will cover them. Intuitively the \emph{unknown frontier} marks the frontier between what we do not know and we are aware that we do not know (we do not fully understand those topics), and what we do not known and we are not yet aware that we do not known those topics. This intuitive property is in general terms, since it may happen that some unknown topics lie under the unknown frontier as well.
-
-\begin{definition}\index{New topics area}
-Lets $T'$ the set of known research topics. The \emph{new topics area}, denoted by $\mathbb{S}$, is defined by:
-\[
-\mathbb{S} = \left\{(x,y) \mid x^{2}+y^{2}>max(\{N^2_{t} + R^2_{t}, t \in T'\}),x>0,y>0\right\} 
-\]
-\end{definition}
-
-The new topics area contains all those unknown topics that we are not aware we do not know them (unknown unknown). The big issue is how to reach this new topics area if we do not know anything about the topics included in that area.
-
-\begin{proposition}
-\label{prop:new-topics-area}
-Let $r \in T$ be a topic, if  $N^2_{r} + R^2_{r} > max(\{N^2_{t} + R^2_{t}, t \in T'\}$ then $t \in T \setminus T'$.
-\end{proposition}
-\begin{proof}
-Let $N^2_{r} + R^2_{r} > max(\{N^2_{t} + R^2_{t}, t \in T'\}$ and suppose that $r \in T'$, then have that $max(\{N^2_{t} + R^2_{t}, t \in T'\}) \geq N^2_{r} + R^2_{r}$ that it is a contradiction, and so $t \in T \setminus T'$.
-\end{proof}
-
-Proposition \ref{prop:new-topics-area} together with the fact that the combined nescience of two topics is higher than the nescience of any of them isolated (Proposition {\color{red} XXX}), and that their combined relevance is higher that the relevance of any of them (Proposition \ref{prop:nondecreasing_relevance}), a possible approach to identify new topics could be by means of combining already existing interesting problems. In Figure \ref{fig:New-Topics} is depicted graphically the idea.
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.4]{NewTopics}
-\caption{\label{fig:New-Topics}The discovery of new research topics}
-\end{figure}
+The area composed by the unknown unknown problems is a highly interesting one, since it contains those research topics that will be addressed in the future. One of the main goals of this book is to help scientists discover the topics that lay in this unknown unknown area, since that would bring to the present the research problems of the future. In this section we focus on how to indentify the topics hidden in the unknown unknown area.
 
 \begin{definition}\index{New topic}
-Given two topics $t_{1}, t_{2} \in T'$, a \emph{new topic}, denoted by $S_{\left\{ t_{1},t_{2}\right\}}$, is the unordered pair $\left\{ t_{1},t_{2}\right\}$.
+Given $t_1,t_2\in T'$, a (candidate) \emph{new topic} from their combination is the unordered pair
+\[
+S_{\{t_1,t_2\}}=\{t_1,t_2\}.
+\]
+Associate $v(t)=(\tilde{N}(t),\bar{R}(t))$ and define the combination vector $v^\oplus(t_1,t_2)=v(t_1)+v(t_2)$.
 \end{definition}
 
 The exact meaning of the new topic that results as the combination of topics $t_{1}$ and $t_{2}$ is left to the creative interpretation of the researcher.
 
 \begin{definition}\index{Interestingness of a new topic}
-The \emph{interestingness} of the new topic, denoted by $IS_{\left\{ t_{1},t_{2}\right\} }$, is given by:
+We define the interestingness of $S_{\{t_1,t_2\}}$ as
 \[
-IS_{\left\{ t_{1},t_{2}\right\} } = R_{t_{1}}R_{t_{2}}+N_{t_{1}}N_{t_{2}}
+IS(\{t_1,t_2\})=\frac{\sqrt{\,IT(t_1)^2+IT(t_2)^2\,}}{\sqrt{2}}
 \]
+
 \end{definition}
 
 In practice, what we have to do is to compute all possible combination of those topics with very large interestingness as problems $IP_{t}$ with themselves, and select the combinations with higher $IS$. Of course, some of the combinations generated would be totally meaningless. Advanced techniques from the area of natural language processing or machine learning could be used to try filter out those nonsense combinations.
 
-\begin{definition}\index{Intradisciplinary new topic} \index{Interdisciplinary new topic}
-Let $A \subset T$ a research area, and $t_{1}, t_{2} \in T$ two topics. If both topics belongs to the same area, that is $t_{1}, t_{2} \in A$, we say that the new topic $S_{\left\{ t_{1},t_{2}\right\} }$ is \emph{intradisciplinary}, otherwise, we say that the topic is \emph{interdisciplinary}.
+\begin{definition}\index{Intradisciplinary new topic}\index{Interdisciplinary new topic}
+Let $\mathcal{A}\subseteq\mathcal{T}$. The new topic $S_{\{t_1,t_2\}}$ is \emph{intradisciplinary} if $t_1,t_2\in\mathcal{A}$; otherwise it is \emph{interdisciplinary}.
 \end{definition}
 
 Again, the most innovative new topics would be by the combination of interdisciplinary topics, because the probability that somebody has already though about them is lower.
-
-%
-% Section: Classification of Research Areas
-%
-
-\section{Classification of Research Areas}
-
-In the same way we studied the nescience of research areas (see Section \ref{sec:nescience_areas}), we could also study the interestingness of research areas.
-
-\begin{definition}\index{Average interestingness of an area}
-Given a research area $A\subset T$, we define the \emph{average interestingness
-of the area as a source of interesting tools} by
-\[
-IT_{A}=\frac{1}{n}\sum_{t\in A}IT_{t}
-\]
-and the \emph{average interestingness of the area as a source of interesting
-problems} by
-\[
-IP_{A}=\frac{1}{n}\sum_{t\in A}IP_{t}
-\]
-where $n$ is the cardinality of $A$.
-\end{definition}
-
-In this way we could compute the interestingness of mathematics, physics, biology, social sciences, and other disciplines as a source of interesting tools and problems. Other alternative measures of centrality and dispersion could be used for the characterization of research areas as well.
-
-As I will show in Chapter \ref{chap:The-Scientific-Method}, the interestingness of mathematics as a source of tools is higher than the interest of social sciences, since mathematics is composed of topics with a high applicability that are very well understood, and that is not the case, in general, for social sciences. On the other hand, the interestingness of social sciences as a source of problems is higher than the interest of mathematics, since the topics studied by the social sciences are more relevant to humankind \footnote{Please mind that I am not saying that the topics addressed by mathematics are not relevant to humankind, what I am saying is that, in relative terms, the problems addressed by social sciences have a higher relevance.} and, in general, not very well understood.
-
-\begin{example}\index{Areas in decay}
-We could use the interestingness of an area to identify research areas in decay. A knowledge area is in decay (from the research point of view) if it has no enough interesting research problems. For example, although the aerodynamics of zeppelins is not fully understood (still some nescience), it is not longer useful (low relevance), since people does not use zeppelins to travel anymore, and so, the average interestingness is very low. Another example of area in decay is classical geometry: although it is relevant, our understanding of this subject is nearly perfect, since there are almost no unsolved problems, and so, its average nescience is very low. However, on the contrary to what happens in case of the aerodynamics of zeppelins, classical geometry is still very interesting as a source of tools.
-\end{example}
-
-It is worth to mention that we could add other metrics to provide a finer, or even alternative, characterization of the unknown unknown area. For example, we could add to nescience and relevance a third dimension with the probability that a topic description is true. However, these extended or alternative characterizations will be not considered in this book. Fortunately, the idea of how to reach the unknown unknown area is the same, regardless of the number and the metrics used (as long as these metrics satisfy some minimal mathematical properties, described in Chapters \ref{chap:Nescience} and \ref{chap:Interesting-Research-Questions}).
 
 %
 % References
@@ -526,26 +469,14 @@ It is worth to mention that we could add other metrics to provide a finer, or ev
 
 \section*{References}
 
-Popper and falsificationism
+The following works provide theoretical and philosophical foundations for the concepts of interestingness, maturity, and the combination of topics as tools and problems.
 
-{\color{red} Review the following references}
+\cite{chalmers2013thing} An accessible introduction to the philosophy of science, addressing how scientific questions are formulated, evaluated, and justified.
 
-\begin{itemize}
+\cite{pearl2019book} Introduces the principles of causal reasoning, crucial for determining whether applying one topic as a tool can effectively address another as a problem.
 
-\item Freitas, A. A. (1999). On Objective Measures of Rule Surprisingness. In Proceedings of the Second European Symposium on Principles of Data Mining and Knowledge Discovery (PKDD '98), pp. 1-9.
+\cite{popper2014conjectures} Discusses falsifiability, novelty, and the importance of bold conjectures—foundational ideas for the “new and original” criterion.
 
-\item Gureckis, T. M., \& Goldstone, R. L. (2009). How You Named Your Child: Understanding The Relationship Between Individual Decision Making and Collective Outcomes. Topics in Cognitive Science, 1(4), 651-674.
+\cite{shmueli2010explain} Clarifies the distinction between explanatory and predictive goals, helping to differentiate between topics valuable as problems versus tools.
 
-\item Klein, J. T. (1990). Interdisciplinarity: History, Theory, and Practice. Wayne State University Press.
-
-\item Kuhn, T. S. (1962). The Structure of Scientific Revolutions. University of Chicago Press.
-
-\item Newell, A., \& Simon, H. A. (1972). Human Problem Solving. Prentice-Hall.
-
-\item Page, S. E. (2007). The Difference: How the Power of Diversity Creates Better Groups, Firms, Schools, and Societies. Princeton University Press.
-
-\item Rescher, N. (1986). The Riddle of Existence: An Essay in Idealistic Metaphysics. University Press of America.
-
-\item Schelling, T. C. (1978). Micromotives and Macrobehavior. W. W. Norton \& Company.
-
-\end{itemize}
+\cite{van1980scientific} Explores the aims of science, model construction, and empirical adequacy, offering a philosophical context for defining “interesting” research.

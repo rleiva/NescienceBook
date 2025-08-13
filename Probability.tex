@@ -369,160 +369,174 @@ This expression demonstrates the applicability of Bayes' theorem to a wider rang
 \section{Random Variables}
 \label{sec:probability_random_variables}
 
-A random variable is a function that assigns a real number to each possible outcome of an experiment, providing a quantitative representation of the results. Unlike the framework defined by Kolmogorov axioms, where probabilities are assigned to events, random variables simplify the process by directly associating numerical values with outcomes. This alleviates the limitations of assigning probabilities to events, offering a more intuitive and manageable approach, and facilitating the discovery of their analytical properties. Such is the efficacy of random variables that a majority of statisticians primarily consider their investigations within the framework of random variables as opposed to probability spaces.
+A random variable\footnote{The term "random variable" can be somewhat misleading. First, a random variable is not a variable in the usual algebraic sense, but rather a function. Second, it is not the random variable itself that is random; the randomness lies in the experiment it represents. Despite this potential for confusion, we follow the standard terminology.} is a function that assigns a real number to each possible outcome of an experiment, thus providing a quantitative representation of the results. Although the Kolmogorov framework assigns probabilities to events, random variables offer a more direct approach by associating numerical values with outcomes. This not only simplifies the representation of probabilistic phenomena but also facilitates the analysis of their properties. Owing to their effectiveness, most statisticians conduct their investigations primarily within the framework of random variables rather than working directly with probability spaces.
 
 \begin{definition}
-Let $\left( \Omega, \mathcal{A} , P \right)$ be a discrete probability space. A \emph{random variable}\index{Random variable} is a function $X : \Omega \rightarrow \mathbb{R}$ mapping from the set of outcomes $\Omega$ to the real numbers $\mathbb{R}$. A random variable is discrete \index{Discrete random variable} if its range $\{ x_1, x_2, \ldots, x_i, \ldots \}$ is finite or countably infinite.
+Let $\left( \Omega, \mathcal{A} , P \right)$ be a discrete probability space. A \emph{random variable}\index{Random variable} is a function $X : \Omega \rightarrow \mathbb{R}$ mapping from the set of the sample space $\Omega$ to the real numbers $\mathbb{R}$. A random variable is discrete \index{Discrete random variable} if its range $\{ x_1, x_2, \ldots, x_i, \ldots \}$ is finite or countably infinite.
 \end{definition}
 
-Our primary focus here is on discrete random variables in discrete probability spaces. While it's possible to define a discrete random variable on a non-discrete probability space by giving it a discrete range, this particular case is not covered in this book.
+Our focus here is on discrete random variables defined on discrete probability spaces. Although it is possible to define a discrete random variable on a non-discrete probability space by restricting it to a discrete range, this case is not considered in this book.
 
-The terminology "random variable" might potentially lead to some confusion. Firstly, these are not variables in the conventional algebraic sense, but rather, they are functions. Secondly, they are not inherently random; it is the experiment that they represent which possesses randomness. Despite these points of potential confusion, we adhere to the established terminology.
+Random variables are particularly useful when they represent specific characteristics of the experiment. For example, if the sample space consists of a school's student body, a random variable could assign to each student their respective height. Random variables also allow us to transform the original outcomes of the sample space into new events. For instance, if two dice are rolled, a random variable could represent the sum of the two outcomes.
 
-Random variables are more useful when they represent characteristics of the experiment. For instance, if the sample space consists of a school's student body, a random variable could associate each student with their respective height. Random variables also enable us to redistribute outcomes of the sample space into new events. For example, if two dice are rolled, a random variable could represent the sum of the dice's outcomes.
-
-It is crucial to remember that we possess the liberty to assign a random variable to any sample space, even when the assignment might not seem intuitively meaningful. As an illustration, one could assign a numerical value to each possible color in a deck of cards, draw two cards randomly, and sum the assigned numbers of these two cards. Although such a setup may not yield a significant interpretation, it is nonetheless possible to calculate probabilities based on this setup.
+It is important to note that we are free to define a random variable on any sample space, even if the assignment does not appear intuitively meaningful. For example, one might assign a numerical value to each color in a deck of cards, draw two cards at random, and take the sum of the assigned numbers. While such a construction may have little practical interpretation, it nonetheless defines a valid random variable, and probabilities can be computed accordingly.
 
 \begin{definition}
-Let $X : \Omega \rightarrow \mathbb{R}$ be a discrete random variable, and let $C \subset \mathbb{R}$ be a subset such that the set $\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\}$ constitutes an event. The probability of $X$ belonging to $C$, expressed as $P\left(X \in C \right)$, is given by $P\left( X \in C \right)=P \left( \left\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\right\} \right)$.
+Let $X : \Omega \rightarrow \mathbb{R}$ be a discrete random variable, and let $C \subset \mathbb{R}$ be a set such that $\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\}$ is an event. The probability of $X$ taking a value in $C$, denoted $P(X \in C)$, is defined by $P\left( X \in C \right)=P \left( \left\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\right\} \right)$.
 \end{definition}
 
-The probability of a random variable $X$ essentially configures a probability space over the line of real numbers, specifically over the range of $X$. 
+The probability associated with a random variable $X$ effectively defines a probability space on the real line, specifically over the range of $X$.
 
 \begin{example}
 \label{ex:probability_distribution_real_line}
-Let $\Omega = \{1, 2, 3, 4, 5, 6\}$ be the sample space of tossing a die, and $P$ a probability that assigns $1/6$ to each single outcome in $\Omega$. Let $X: \Omega \rightarrow \mathbb{R}$ be a discrete random variable defined as:
-    \[
-    X(\omega) = 
-    \begin{cases} 
-      0 & \text{if } \omega \text{ is even (2, 4, 6)}, \\
-      1 & \text{if } \omega \text{ is odd (1, 3, 5)}.
-    \end{cases}
-    \]
-This discrete random variable maps the outcomes of the die toss to either 0 (if the outcome is even) or 1 (if the outcome is odd). For $C = \{0\}$, the probability $P(X \in C) = P(X = 0) = P(\{2, 4, 6\}) = 1/2$. For $C = \{1\}$ the probability $P(X \in C) = P(X = 1) = P(\{1, 3, 5\}) = 1/2$. Through this transformation, the original discrete probability space has been mapped to the real numbers using the discrete random variable $X$, establishing a new probability over $X$'s range.
+Let $\Omega = \{1, 2, 3, 4, 5, 6\}$ be the sample space for a single toss of a fair die, and $P$ a probability that assigns $1/6$ to each single outcome in $\Omega$. Let $X: \Omega \rightarrow \mathbb{R}$ be a discrete random variable defined as:
+\[
+X(\omega) = 
+\begin{cases} 
+    0 & \text{if } \omega \text{ is even (2, 4, 6)}, \\
+    1 & \text{if } \omega \text{ is odd (1, 3, 5)}.
+\end{cases}
+\]
+This random variable maps each outcome of the die toss to either 0 (if the result is even) or 1 (if the result is odd). For $C = \{0\}$, the probability $P(X \in C) = P(X = 0) = P(\{2, 4, 6\}) = 1/2$. For $C = \{1\}$ the probability $P(X \in C) = P(X = 1) = P(\{1, 3, 5\}) = 1/2$. Through this transformation, the original discrete probability space has been mapped to the real numbers using the discrete random variable $X$, establishing a new probability over $X$'s range.
 \end{example}
 
-Unless we say the contrary, we will assume that $\{ \omega \in \Omega \,:\, X \left( \omega \right) = x_i\}$ is an event for all the points that compose the range of $X$.
+Unless stated otherwise, we will assume that $\{\omega \in \Omega ,:, X(\omega) = x_i\}$ is an event for every point $x_i$ in the range of $X$. The following example shows a case were this assumption does not hold.
 
 \begin{example}
-$\left( \Omega, \mathcal{A} , P \right)$ be a discrete probability space, where $\Omega = \{1, 2\}$, $\mathcal{A} = \{\varnothing, \Omega\}$, and $P(\varnothing)=0$ and $P(\Omega)=1$. And let $X : \Omega \rightarrow \mathbb{R}$ be a discrete random variable defined as $X(1) = 1$ and $X(2) = 2$. We are interested in the probability $P(X=1)$, but since $\{ \omega \in \Omega \,:\, X \left( \omega \right) = 1 \} = \{1\}$ is not an event, such probability cannot be computed.
+Let $\left( \Omega, \mathcal{A} , P \right)$ be a discrete probability space, where $\Omega = \{1, 2\}$, $\mathcal{A} = \{\varnothing, \Omega\}$, $P(\varnothing)=0$ and $P(\Omega)=1$. Let $X : \Omega \rightarrow \mathbb{R}$ be a discrete random variable defined as $X(1) = 1$ and $X(2) = 2$. We are interested in the probability $P(X=1)$, however since $\{ \omega \in \Omega \,:\, X \left( \omega \right) = 1 \} = \{1\}$ is not an event (because $\{1\} \notin \mathcal{A}$), such probability cannot be determined.
 \end{example}
 
-Definition \ref{def:probability_function} introduced the concept of probability mass function for probability spaces based on the probabilities of the events. Next definition extends the concept of probability mass function to random variables.
+Definition \ref{def:probability_function} introduced the concept of probability mass function for probability spaces, based on the probabilities of the events. The following definition extends this concept to random variables.
 
 \begin{definition}
-Let $X$ be a discrete random variable over a discrete probability space, and let $\{ x_1, x_2, \ldots \}$ be the range of $X$. The \emph{probability mass function}\index{Probability mass function} of the discrete random variable $X$, abbreviated as p.f., is defined as the function $f : range \left( X \right) \rightarrow [0, 1]$ such that $f \left( x_i \right) = P \left( X = x_i \right)$.
+Let $X$ be a discrete random variable over a discrete probability space, and let $\{ x_1, x_2, \ldots \}$ be the range of $X$. The \emph{probability mass function}\index{Probability mass function} of the discrete random variable $X$, abbreviated as p.m.f., is the function $f : \mathrm{range}(X) \rightarrow [0, 1]$ defined by $f \left( x_i \right) = P \left( X = x_i \right)$.
 \end{definition}
 
-The set of points for which the probability mass function is greater than zero, that is $\left\{ x \, : \, f \left( x \right) > 0 \right\}$, is called the \emph{support} of the distribution of $X$.
+The set of values for which the probability mass function is positive, $\{x \,:\, f(x) > 0\}$, is called the \emph{support}\index{Support of a distribution} of the distribution of $X$.
 
-It is possible for two random variables to have identical probability mass functions but to differ in significant ways.
+It is possible for two random variables to share the same probability mass function while differing in other significant respects.
 
 \begin{example}
-Let $\Omega = \{H, T\}$ be the sample space of tossing a coin, and $P$ a probability that assigns $1/2$ to each outcome in $\Omega$. Let $X: \Omega \rightarrow \mathbb{R}$ be a discrete random variable defined as: $X = 1$ if the coin shows Head and $X = 0$ if coin shows Tail. The distribution of $X$ is $P(X = 1) = P(Y = 1) = 0.5$. The discrete random variables of this example and Example \ref{ex:probability_distribution_real_line} have same probability distribution even if they are different discrete random variables.
+Let $\Omega = \{H, T\}$ be the sample space for a single toss of a fair coin, and let $P$ be a probability that assigns $1/2$ to each outcome in $\Omega$. Define a discrete random variable $X: \Omega \rightarrow \mathbb{R}$ by setting $X = 1$ if the coin shows Head and $X = 0$ if coin shows Tail. The distribution of $X$ is given by $P(X = 0) = P(X = 1) = 0.5$. This distribution is identical to that of the random variable in Example \ref{ex:probability_distribution_real_line}, even though the two random variables are defined on different sample spaces and represent different experiments.
 \end{example}
 
-Given the probability mass function of a random variable, we can derive the probabilty of any subset of the real line.
+Given the probability mass function of a random variable, we can determine the probability of any subset of the real line.
 
 \begin{proposition}
-Let $X$ be a discrete random variable with probability mass function $f$. The probability of each subset $C$ of the real line can be determined from the relation $P\left(X\in C\right)=\sum_{x_{i}\in C}f\left(x_{i}\right)$
+Let $X$ be a discrete random variable with probability mass function $f$. For any subset $C$ of the real line, the probability $P(X \in C)$ is given by $\sum_{x_i \in C} f(x_i)$.
 \end{proposition}
 \begin{proof}
-Considering that each outcome in the sample space is associated with exactly one value in the range $\{ x_1, x_2, \ldots, x_i, \ldots \}$ of $X$, we have that:
+Since each outcome in the sample space corresponds to exactly one value in the range ${x_1, x_2, \ldots}$ of $X$, we have
 \[
-P\left(X\in C\right) = P \left( \left\{ \omega \in \Omega \,:\, X \left( \omega \right) \in C\right\} \right) = \sum_{x_{i}\in C} P\left( X = x_i \right) = \sum_{x_{i}\in C}f\left(x_{i}\right)
+P(X \in C) = P\big( \{\omega \in \Omega : X(\omega) \in C\} \big)
+= \sum_{x_i \in C} P(X = x_i)
+= \sum_{x_i \in C} f(x_i).
 \]
 \end{proof}
 
-Next proposition outlines a fundamental property, that the total sum of probabilities across all possible outcomes of a random variable is 1.
+This result shows that the probability mass function completely determines the probability distribution of a discrete random variable, since the probability of any event involving $X$ can be computed from it.
+
+The following proposition states a fundamental property: the total probability over all possible values of a random variable is equal to 1.
 
 \begin{proposition}
 Let $X$ be a discrete random variable with probability mass function $f$. If $\{ x_1, x_2, \ldots, \}$ is the range of $X$, then $\sum_{i=1}^{\infty}f\left(x_{i}\right)=1$.
 \end{proposition}
+
 \begin{proof}
-Considering that $X$ is a total function, that each outcome in the sample space is associated with exactly one value in the range $\{ x_1, x_2, \ldots \}$, and given the axiomatic definition of probability we have that:
-\begin{equation*}
-\begin{split}
-\sum_{i=1}^{\infty} f(x_i) & = f(x_1) + f(x_2) + \ldots = P\left( X = x_1 \right) + P\left( X = x_2 \right) + \ldots = \\
-&  = P \left( \left\{ \omega \in \Omega \,:\, X \left( \omega \right) = x_1 \right\} \right) + P \left( \left\{ \omega \in \Omega \,:\, X \left( \omega \right) = x_2 \right\} \right) + \ldots = 1 
-\end{split}
-\end{equation*}
+Since $X$ is a total function, each outcome in the sample space is associated with exactly one value in the range $\{x_1, x_2, \ldots\}$. By the axioms of probability,
+\[
+\sum_{i=1}^{\infty} f(x_i)
+= \sum_{i=1}^{\infty} P(X = x_i)
+= \sum_{i=1}^{\infty} P\big(\{\omega \in \Omega : X(\omega) = x_i\}\big)
+= P(\Omega)
+= 1.
+\]
 \end{proof}
 
-{\color{red}
+The values $\{x_1, x_2, \ldots\}$ represent all the possible outcomes of $X$. Since these outcomes are mutually exclusive and collectively exhaustive, their probabilities must sum to the total probability of the entire sample space, which is $1$.
+
+A fundamental characterization of discrete distributions is that they are completely determined by a nonnegative function on the real line whose total mass is 1. The next proposition states this precisely.
+
 \begin{proposition}
 A function $f(x)$ is a probability mass function of a random variable $X$ if, and only if, i) $f(x) \geq 0$ for all $x$, ii) $\sum_{i=1}^{\infty} f(x_i) = 1$.
 \end{proposition}
 \begin{proof}
-TODO
-\end{proof}
-}
+Suppose $f$ is the probability mass function of a discrete random variable $X$ with range $\{x_1,x_2,\ldots\}$. Then $f(x_i)=P(X=x_i)\ge 0$ for all $i$, and
+\[
+\sum_{i=1}^{\infty} f(x_i)=\sum_{i=1}^{\infty} P(X=x_i)=P(\Omega)=1,
+\]
+so (i)-(ii) hold.
 
-The cumulative distribution function represents the probability that a random variable takes on a value less than or equal to a specific point.
+Conversely, assume $f(x)\ge 0$ for all $x$ and $\sum_{i=1}^{\infty} f(x_i)=1$ for some countable set $\{x_1, x_2, \ldots\}$ (the points where $f$ may be positive). Define a discrete sample space $\Omega=\{x_1, x_2, \ldots\}$, set $P({x_i})=f(x_i)$, and define $X:\Omega\to\mathbb{R}$ by $X(\omega)=\omega$. Then for each $i$,
+\[
+P(X=x_i)=P(\{\omega\in\Omega:X(\omega)=x_i\})=P(\{x_i\})=f(x_i),
+\]
+so $f$ is the probability mass function of $X$.
+\end{proof}
+
+The proposition shows that a discrete distribution is fully specified by any function that is everywhere nonnegative and sums to $1$ over its (countable) support; values of $f$ outside the support are irrelevant.
+
+The cumulative distribution function expresses the probability that a random variable takes a value less than or equal to a given point.
 
 \begin{definition}
-The \emph{cumulative distribution function} (abbreviated c.d.f.) $F$ of a discrete random variable $X$ is the function $F(x)=Pr(X\leq x)$ for all $-\infty < x < \infty$
+The \emph{cumulative distribution function}\index{Cumulative distribution function} (c.d.f.) $F$ of a discrete random variable $X$ is defined by $F(x)=P(X\leq x)$ for all $-\infty < x < \infty$
 \end{definition}
 
-If $X$ follows a distribution characterized by the probability mass function $f(x)$, its cumulative distribution function $F(x)$ will exhibit the following behavior: at each distinct value $x_i$ of $X$, $F(x)$ will display a jump equal to $f(x_i)$; between these distinct values, $F(x)$ remains unchanged.
+If $X$ has a distribution characterized by the probability mass function $f(x)$, its cumulative distribution function $F(x)$ behaves as follows: at each distinct value $x_i$ in the range of $X$, $F(x)$ increases by $f(x_i)$; between these values, $F(x)$ remains constant.
 
-The cumulative distribution function allows us to see how probabilities accumulate over the range of a random variable, offering insights into the overall distribution of the data.
+The cumulative distribution function shows how probabilities accumulate over the range of a random variable, providing insight into the overall distribution of the data. It can be viewed as the running total of the probabilities given by the probability mass function.
 
 \begin{example}
-Let's $X$ be a discrete random variable that represents the grades of students in a class. Each grade is between 0 and 10. The probability that a student receives a grade of $x$ is given by the probability mass function $p(x)$. The cumulative distribution function represents the probability that a randomly selected student scores $x$ or less. For example, a value of $F(7) =
-0.6$ would mean that there's a 60\% chance a student picked at random scored 7 or below.
+Let $X$ be a discrete random variable representing the grades of students in a class, where each grade is between 0 and 10. The probability that a student receives a grade of $x$ is given by the probability mass function $p(x)$. The cumulative distribution function $F(x)$ gives the probability that a randomly selected student scores $x$ or less. For example, if $F(7) = 0.6$, this means there is a 60\% chance that a randomly chosen student scored 7 or below.
 \end{example}
 
-The cumulative distribution function of a random variable is non-decreasing. 
+The cumulative distribution function of a random variable is always non-decreasing.
 
 \begin{proposition}
-Let $F(X)$ be the cumulative distribution function of a discrete random variable $X$. Then, if $x_{1}<x_{2}$ we have that $F\left(x_{1}\right)\leq F\left(x_{2}\right)$.
+Let $F$ be the cumulative distribution function of a discrete random variable $X$. If $x_{1} < x_{2}$, then $F(x_{1}) \leq F(x_{2})$.
 \end{proposition}
 \begin{proof}
-Given two values $x_1$ and $x_2$ where $x_1 < x_2$, the set of outcomes where $X \leq x_1$ is a subset of the outcomes where $X \leq x_2$.  Therefore, the probability of $X$ taking a value less than or equal to $x_1$ will be less than or equal to the probability of $X$ taking a value less than or equal to $x_2$. Then $F(x_1) \leq F(x_2)$.
+For $x_1 < x_2$, the event ${X \leq x_1}$ is a subset of the event ${X \leq x_2}$. By the monotonicity property of probability, $P(X \leq x_1) \leq P(X \leq x_2)$. Since $F(x) = P(X \leq x)$, it follows that $F(x_1) \leq F(x_2)$.
 \end{proof}
 
-Next proposition delineates the asymptotic properties of the cumulative distribution function of a random variable, showcasing its bounds as we approach negative and positive infinity.
+The following proposition states the asymptotic properties of the cumulative distribution function of a random variable, showing its limits as $x$ approaches negative and positive infinity.
 
 \begin{proposition}
-Let $F(X)$ be the cumulative distribution function of a discrete random variable $X$. Then, we have that $\lim_{x\rightarrow-\infty}F\left(x\right)=0$ and that $\lim_{x\rightarrow\infty}F\left(x\right)=1$.
+Let $F$ be the cumulative distribution function of a discrete random variable $X$. Then $\lim_{x\rightarrow-\infty}F\left(x\right)=0$ and $\lim_{x\rightarrow\infty}F\left(x\right)=1$.
 \end{proposition}
 \begin{proof}
-As $x$ tends to negative infinity, the probability that the discrete random variable $X$ takes on a value less than or equal to this increasingly smaller $x$ tends to zero. This is because there are fewer and fewer values (or none, depending on the specifics of the distribution) that $X$ can assume which are less than this increasingly negative $x$. Therefore:
+As $x \to -\infty$, the event ${X \leq x}$ eventually becomes empty, because there are no values in the range of $X$ smaller than sufficiently negative $x$. The probability of this event is therefore $0$, so
 \[
-\lim_{x \rightarrow -\infty} F(x) = \lim_{x \rightarrow -\infty} P(X \leq x) = 0 
+\lim_{x \rightarrow -\infty} F(x) 
+= \lim_{x \rightarrow -\infty} P(X \leq x) 
+= 0.
 \]
-As $x$ tends to positive infinity, the probability that the discrete random variable $X$ takes on a value less than or equal to this increasingly larger $x$ approaches 1. This is because, given the unbounded increase of $x$, it encapsulates all possible values that $X$ can take on. Therefore:
+As $x \to \infty$, the event ${X \leq x}$ eventually contains the entire sample space $\Omega$, since all possible values of $X$ are less than or equal to sufficiently large $x$. The probability of this event is therefore $1$, so
 \[
-\lim_{x \rightarrow \infty} F(x) = \lim_{x \rightarrow \infty} P(X \leq x) = 1
-\]
-\end{proof}
-
-The probability of $X$ exceeding $x$ is given by the complement of the cumulative distribution function at that point.
-
-\begin{proposition}
-Let $F(X)$ be the cumulative distribution function of a discrete random variable $X$. Then, for every $x \in X$ we have that $P\left(X>x\right)=1-F\left(x\right)$.
-\end{proposition}
-\begin{proof}
-The probability that $X$ takes on a value greater than $x$ plus the probability that $X$ takes on a value less than or equal to $x$ should sum up to 1. Given this, the probability that $X$ takes a value greater than $x$ is:
-\[
-P(X > x) = 1 - P(X \leq x)
-\]
-Using the definition of the cumulative distribution function, we get:
-\[
-P(X > x) = 1 - F(x) 
+\lim_{x \rightarrow \infty} F(x) 
+= \lim_{x \rightarrow \infty} P(X \leq x) 
+= 1.
 \]
 \end{proof}
 
-The following proposition establishes a relationship between the probabilities of a random variable \( X \) falling between two specific values and the corresponding differences in its cumulative distribution function values at those points.
+The probability that $X$ exceeds $x$ is the complement of the cumulative distribution function at that point.
 
 \begin{proposition}
-Let $F(X)$ be the cumulative distribution function of a discrete random variable $X$. Then, for all values $x_1, x_2 \in X$ such that $x_1 < x_2$ we have that $P\left(x_1 < X \leq x_2 \right) = F\left(x_2\right) - F\left(x_1\right)$
+Let $F$ be the cumulative distribution function of a discrete random variable $X$. Then, for every $x \in \mathbb{R}$, $P(X > x) = 1 - F(x)$.
 \end{proposition}
- \begin{proof}
-The probability that $X$ is less than or equal to $x_2$ is $F(x_2)$. From this, if we subtract the probability that $X$ is less than or equal to $x_1$, which is $F(x_1)$, we'll get the probability that $X$ falls strictly between $x_1$ and $x_2$:
+\begin{proof}
+The events ${X > x}$ and ${X \leq x}$ are complementary, so their probabilities sum to 1 $P(X > x) + P(X \leq x) = 1$. Therefore, $P(X > x) = 1 - P(X \leq x)$. By the definition of the cumulative distribution function, $P(X \leq x) = F(x)$, and thus $P(X > x) = 1 - F(x)$.
+\end{proof}
+
+The following proposition relates the probability of a random variable $X$ taking a value between two points to the difference in its cumulative distribution function at those points.
+
+\begin{proposition}
+Let $F$ be the cumulative distribution function of a discrete random variable $X$. Then, for all $x_1, x_2 \in \mathbb{R}$ with $x_1 < x_2$, $P(x_1 < X \leq x_2) = F(x_2) - F(x_1)$.
+\end{proposition}
+\begin{proof}
+The probability that $X \leq x_2$ is $F(x_2)$. Subtracting from this the probability that $X \leq x_1$, which is $F(x_1)$, leaves exactly the probability that $X$ falls strictly between $x_1$ and $x_2$:
 \[
-P(x_1 < X \leq x_2) = F(x_2) - F(x_1)
+P(x_1 < X \leq x_2) = F(x_2) - F(x_1).
 \]
 \end{proof}
 
@@ -530,88 +544,137 @@ P(x_1 < X \leq x_2) = F(x_2) - F(x_1)
 
 \subsection{Multivariate Distributions}
 
-A multivariate probability distribution extends the concept of a probability distribution across multiple random variables, each with its own set of possible outcomes. Unlike univariate distributions that describe phenomena with a single random variable, multivariate distributions capture the relationships and dependencies between two or more variables. This allows for the exploration of complex phenomena where the outcome of interest is influenced by multiple factors simultaneously, providing insights into how these variables interact and impact the probability of various outcomes.
+A multivariate probability distribution extends the concept of a probability distribution to multiple random variables, each with its own set of possible outcomes. While univariate distributions describe phenomena involving a single random variable, multivariate distributions capture the relationships and dependencies between two or more variables. This allows for the analysis of complex phenomena in which the outcome of interest is influenced by several factors simultaneously, providing insight into how these variables interact and affect the probabilities of different outcomes.
 
 \begin{definition}
-Let $X_1, X_2, \ldots, X_n$ be $n$ discrete random variables, where $X_i : \Omega_i \rightarrow \mathbb{R}$ for $i=1, \ldots, n$. The \emph{joint probability distribution}\index{Joint probability distribution} of $X_1, X_2, \ldots, X_n$ is defined as the collection of all probabilities of the form $P\left( \left( X_1, X_2, \ldots, X_n \right) \in C \right)$ for all sets $C \subset \mathbb{R}^n$ of real numbers such that $\left\{ \left( \omega_1, \omega_2, \ldots, \omega_n \right) \in \Omega_1 \times \ldots \times \Omega_n : \left( X_1 \left( \omega_1 \right), X_2 \left( \omega_2 \right), \ldots, X_n \left( \omega_n \right) \right) \in C \right\}$ is an event.
+Let $X_1, X_2, \ldots, X_n$ be $n$ discrete random variables on a common discrete probability space $(\Omega,\mathcal{A},P)$, where $X_i : \Omega \rightarrow \mathbb{R}$ for $i = 1, \ldots, n$. The \emph{joint probability distribution}\index{Joint probability distribution} of $X_1, \ldots, X_n$ assigns probabilities to events involving all variables simultaneously. Formally, for any set $C \subset \mathbb{R}^n$, the joint probability is
+\[
+P\big( (X_1, X_2, \ldots, X_n) \in C \big),
+\]
+where
+\[
+\{\omega \in \Omega \;:\; (X_1(\omega), X_2(\omega), \ldots, X_n(\omega)) \in C \}
+\]
+is an event in the sample space.
 \end{definition}
 
-The joint probability distribution of the random variables $X_1, X_2, \ldots, X_n$ defines a probability space in $\mathbb{R}^n$. If the random variables $X_1, X_2, \ldots, X_n$ each have a discrete distribution, then the joint distribution is also a discrete distribution.
+The joint probability distribution of the random variables $X_1, X_2, \ldots, X_n$ defines a probability distribution on $\mathbb{R}^n$. If the random variables $X_1, X_2, \ldots, X_n$ each have a discrete distribution, then the joint distribution is also a discrete distribution.
 
 \begin{definition}
-Let $X_1, X_2, \ldots, X_n$ be $n$ discrete random variables over discrete probability spaces. The \emph{joint probability mass function}\index{Joint probability mass function} of the discrete random variables $X_1, X_2, \ldots, X_n$ is defined as the function $f : \text{range} \left( X_1 \right) \times \ldots \times \text{range} \left( X_n \right) \rightarrow [0, 1]$ such that $f \left( x_1, \ldots, x_n \right) = P \left( X_1 = x_1, \ldots, X_n = x_n \right)$.
+Let $X_1, \ldots, X_n$ be $n$ discrete random variables over a common discrete probability space. The \emph{joint probability mass function}\index{Joint probability mass function} of $X_1, \ldots, X_n$ is the function
+\[
+f : \mathrm{range}(X_1) \times \ldots \times \mathrm{range}(X_n) \rightarrow [0, 1]
+\]
+defined by
+\[
+f \left( x_1, \ldots, x_n \right) = P \left( X_1 = x_1, \ldots, X_n = x_n \right).
+\]
 \end{definition}
 
 \begin{example}
-A classic example of a bivariate discrete joint distribution involves rolling two six-sided dice. Let's define two discrete random variables: $X_1$ is the outcome of the first die, and $X_2$ is the outcome of the second die. Both $X_1$ and $X_2$ have a discrete uniform distribution over the set $\{1, 2, 3, 4, 5, 6\}$. The joint distribution of $X_1$ and $X_2$ describes the probability of each possible pair of outcomes when the two dice are rolled. The joint probability mass function $f(x_1, x_2)$ for $X_1$ and $X_2$ can be expressed as:
+A classic example of a bivariate discrete joint distribution involves rolling two six-sided dice. Define two discrete random variables: $X_1$ is the outcome of the first die, and $X_2$ is the outcome of the second die. Both $X_1$ and $X_2$ follow a discrete uniform distribution over ${1, 2, 3, 4, 5, 6}$. The joint distribution of $X_1$ and $X_2$ describes the probability of each possible pair of outcomes when the dice are rolled. The joint probability mass function $f(x_1, x_2)$ is:
 \[
-f(x_1, x_2) = P(X_1 = x_1, X_2 = x_2) = \frac{1}{36}, \quad \text{for} \ x_1, x_2 \in \{1, 2, 3, 4, 5, 6\}
+f(x_1, x_2) = P(X_1 = x_1, X_2 = x_2) = \frac{1}{36}, \quad x_1, x_2 \in \{1, 2, 3, 4, 5, 6\}.
 \]
-The joint distribution allows us to analyze the relationship between $X_1$ and $X_2$. For instance, we can compute the probability that the sum of the two dice is equal to a certain number, or that one die shows a higher number than the other.
+The joint distribution allows us to answer questions such as the probability that the sum of the two dice equals a certain value, or that one die shows a higher number than the other.
 \end{example}
 
-Before exploring the properties of multivariate random variables, we will introduce the concept of random vector. This concept simplifies notation and enhances clarity by grouping multiple random variables into a single entity.
+Before exploring the properties of multivariate random variables, we introduce the concept of a random vector. This simplifies notation and improves clarity by grouping multiple random variables into a single object.
 
 \begin{definition}
-A \emph{discrete random vector}\index{Discrete random vector} $\mathbf{X}$ is an ordered collection of $n$ discrete random variables $X_1, X_2, \ldots, X_n$, where $X_i : \Omega_i \rightarrow \mathbb{R}$ for all $i=1, \ldots, n$.
+A \emph{discrete random vector}\index{Discrete random vector} $\mathbf{X}$ is an ordered collection of $n$ discrete random variables $X_1, X_2, \ldots, X_n$, where $X_i : \Omega \rightarrow \mathbb{R}$ for all $i=1, \ldots, n$. Equivalently, $\mathbf{X} = (X_1, \ldots, X_n):\Omega \to \mathbb{R}^n$.
 \end{definition}
 
-Given the joint probability mass function of a vector of random variables, we can derive the probability of any subset within the multidimensional real space.
+Given the joint probability mass function of a random vector, we can determine the probability of any subset of the $n$-dimensional real space.
 
 \begin{proposition}
-Let $\mathbf{X}=\left(X_{1}, \ldots, X_{n}\right)$ be a discrete random vector with a joint probability mass function $f$. The probability of each subset $C$ of the $n$-dimensional real space can be determined from the relation $P\left(\mathbf{X} \in C\right)=\sum_{\mathbf{x} \in C}f\left(\mathbf{x}\right)$, where $\mathbf{x} = (x_{1}, \ldots, x_{n})$.
+Let $\mathbf{X} = (X_{1}, \ldots, X_{n})$ be a discrete random vector with joint probability mass function $f$. For any subset $C$ of $\mathbb{R}^n$,
+\[
+P(\mathbf{X} \in C) = \sum_{\mathbf{x} \in C} f(\mathbf{x}),
+\]
+where $\mathbf{x} = (x_{1}, \ldots, x_{n})$.
 \end{proposition}
 \begin{proof}
-Considering that each outcome in the sample space is associated with exactly one value in the range of $\mathbf{X}$, we have that:
+Since each outcome in the sample space corresponds to exactly one value in the range of $\mathbf{X}$, we have:
 \[
-P\left(\mathbf{X} \in C\right) = P \left( \left\{ \omega \in \Omega \,:\, \mathbf{X}(\omega) \in C\right\} \right) = \sum_{\mathbf{x}\in C} P\left( \mathbf{X} = \mathbf{x} \right) = \sum_{\mathbf{x}\in C}f\left(\mathbf{x}\right)
+P(\mathbf{X} \in C) = P \left( \left\{ \omega \in \Omega : \mathbf{X}(\omega) \in C \right\} \right) = \sum_{\mathbf{x} \in C} P(\mathbf{X} = \mathbf{x}) = \sum_{\mathbf{x} \in C} f(\mathbf{x}).
 \]
 \end{proof}
 
-The next proposition outlines a fundamental property, that the total sum of probabilities across all possible outcomes of a vector of random variables is 1.
+The following proposition states a fundamental property, that the total probability over all possible outcomes of a discrete random vector is $1$.
 
 \begin{proposition}
-Let $\mathbf{X}=\left(X_{1}, \ldots, X_{n}\right)$ be a discrete random vector with a joint probability mass function $f$. If the range of $\mathbf{X}$ is represented as a set of vectors $\mathbf{x} = (x_{1}, \ldots, x_{n})$, then $\sum_{\mathbf{x}}f\left(\mathbf{x}\right)=1$.
+Let $\mathbf{X}=\left(X_{1}, \ldots, X_{n}\right)$ be a discrete random vector with a joint probability mass function $f$. If the range of $\mathbf{X}$ is $\mathbf{x} = (x_{1}, \ldots, x_{n})$, then $\sum_{\mathbf{x}}f\left(\mathbf{x}\right)=1$.
 \end{proposition}
 \begin{proof}
-Considering that $\mathbf{X}$ is a total function, that each outcome in the sample space is associated with exactly one value in the range of $\mathbf{X}$, and given the axiomatic definition of probability we have that:
+Since $\mathbf{X}$ is a total function and each outcome in the sample space corresponds to exactly one value in the range of $\mathbf{X}$, the axioms of probability imply:
 \[
-\sum_{\mathbf{x}} f(\mathbf{x}) = \sum_{\mathbf{x}} P\left( \mathbf{X} = \mathbf{x} \right) = P \left( \left\{ \omega \in \Omega_1 \,:\, \mathbf{X}_1(\omega) = \mathbf{x_1} \right\} \right) + P \left( \left\{ \omega \in \Omega_2 \,:\, \mathbf{X}_2(\omega) = \mathbf{x_2} \right\} \right) + \ldots = 1 
+\sum_{\mathbf{x}} f(\mathbf{x}) = \sum_{\mathbf{x}} P(\mathbf{X} = \mathbf{x}) = P(\Omega) = 1.
 \]
 \end{proof}
 
-A particular interesting case of multivariate distribution is given by the sum of $n$ random variables. This is a little bit confusing scenario, since we are not adding $n$ probability distributions, as the notation $X_1 + \ldots + X_n$ might suggest. Instead, we are defining a new random variable over the cartesian product of the original sample spaces.
+A particularly important multivariate construction is the distribution of the sum of $n$ random variables. The notation $X_1 + \cdots + X_n$ refers to the sum of the random variables (applied pointwise on outcomes), not a sum of $n$ probability distributions. There are two standard ways to formalize this, depending on how the random variables are defined.
+
+The first one refers to a sum on a commom sample space.
 
 \begin{definition}
-Let $X_1, X_2, \ldots, X_n$ be $n$ discrete random variables, where $X_i : \Omega_i \rightarrow \mathbb{R}$ for all $i=1, \ldots, n$. The sum distribution of $X_1, X_2, \ldots, X_n$, denoted by $X_1 + \ldots + X_n$, is defined as the discrete random variable $X + \ldots + X_n : \Omega_1 \times \ldots \times \Omega_n \rightarrow \mathbb{R}$ that assigns to each $\left( \omega_1, \omega_2, \ldots, \omega_n \right) \in \Omega_1 \times \ldots \Omega_n$ the number $X_1 \left( \omega_1 \right) + X_2 \left( \omega_2 \right) + \ldots + X_n \left( \omega_n \right)$.
+Let $X_1, X_2, \ldots, X_n$ be discrete random variables on a common probability space $(\Omega,\mathcal{A},P)$, with $X\_i:\Omega \to \mathbb{R}$. The sum is the discrete random variable
+\[
+S = X_1 + \cdots + X_n : \Omega \to \mathbb{R}, 
+\qquad
+S(\omega)=X_1(\omega)+\cdots+X_n(\omega).
+\]
+The \emph{distribution of the sum}\index{Distribution of the sum} is the distribution of $S$.
 \end{definition}
 
-The concept of sum of $n$ randon variables will be applied in the law of large numbers (see Theorem \ref{th:law_large_numbers}), one of the most important theorems in probability theory.
+The second one refers to a sum on  product space (independent relations).
+
+\begin{definition}
+Let $X:\Omega \to \mathbb{R}$ model a single trial. To model $n$ repetitions, consider the product sample space $\Omega^n$ (each $n$-tuple of outcomes is a sample point, and in the i.i.d. case all $n$-tuples are equally likely when $\Omega$ is finite). Define
+\[
+X_i(\omega_1,\ldots,\omega_n)=X(\omega_i), \quad i=1,\ldots,n,
+\]
+and the sum
+\[
+S(\omega_1,\ldots,\omega_n)=X(\omega_1)+\cdots+X(\omega_n), \qquad S:\Omega^n\to\mathbb{R}.
+\]
+Again, the \emph{distribution of the sum}\index{Distribution of the sum} is the distribution of $S$.
+\end{definition}
+
+In both setups, the distribution of $S$ depends on the joint distribution of $(X_1, \ldots, X_n)$. Independence is not assumed unless explicitly stated.
 
 \begin{example}
-Let $X: \Omega \rightarrow \mathbb{R}$ be the discrete random variable representing the outcome of rolling a six-sided dice. The sum distribution corresponding to rolling three times a dice, denoted by $S = X + X + X$, is defined as the discrete random variable $S: \Omega \times \Omega \times \Omega \rightarrow \mathbb{R}$ that assigns to each $\left( \omega_1, \omega_2, \omega_3 \right) \in \Omega \times \Omega \times \Omega$ the number $X \left( \omega_1 \right) + X \left( \omega_2 \right) + X \left( \omega_3 \right)$.
+Let $X:\Omega \to \mathbb{R}$ be the outcome of rolling a six-sided die (values ${1, \ldots, 6}$, each with probability $1/6$). For three rolls, use the product space $\Omega^3$ with each triple equally likely. Define
+\[
+X_1(\omega_1,\omega_2,\omega_3)=X(\omega_1),\,
+X_2(\omega_1,\omega_2,\omega_3)=X(\omega_2),\,
+X_3(\omega_1,\omega_2,\omega_3)=X(\omega_3),
+\]
+and
+\[
+S(\omega_1,\omega_2,\omega_3)=X(\omega_1)+X(\omega_2)+X(\omega_3).
+\]
+Then $S:\Omega^3 \to \mathbb{R}$ is the sum of three (independent) die rolls.
 \end{example}
 
 % Marginal Distribution
 
 \subsection{Marginal Probability Mass Function}
 
-%% Popular Science
-
-Given a multivariate discrete probability mass function, the marginal probability mass function of a subset of variables is derived by summing the joint probability mass function over all possible values of the remaining variables. This process essentially "marginalizes" out the variables not of interest, allowing focus on the probability mass function of a single variable or a subset of variables within the multivariate context.
+Given a multivariate discrete probability mass function, the marginal probability mass function of a subset of variables is derived by summing the joint probability mass function over all possible values of the remaining variables. This process "marginalizes" out the variables not of interest, allowing us focus on the probability mass function of a single variable or a subset of variables within the multivariate context.
 
 \begin{definition}
-Let $\mathbf{X} = (X_{1}, X_{2}, \ldots, X_{n})$ be an $n$-dimensional random vector with joint probability mass function $f_{\mathbf{X}}(x_{1}, x_{2}, \ldots, x_{n})$, partition $\mathbf{X}$ into two subvectors: $\mathbf{Y} = (Y_{1}, Y_{2}, \ldots, Y_{k})$, a $k$-dimensional random vector consisting of $k$ discrete random variables selected from $\mathbf{X}$, and $\mathbf{Z} = (Z_{1}, Z_{2}, \ldots, Z_{n-k})$, the remaining $(n - k)$ discrete random variables of $\mathbf{X}$. The \emph{marginal probability mass function}\index{Marginal probability mass function} $f_{\mathbf{Y}}$ of the random vector $\mathbf{Y}$ is obtained by summing $f_{\mathbf{X}}$ over all possible values of the variables in $\mathbf{Z}$. That is, for any specific values $(y_{1}, y_{2}, \ldots, y_{k})$ of $\mathbf{Y}$,
+Let $\mathbf{X} = (X_{1}, X_{2}, \ldots, X_{n})$ be an $n$-dimensional discrete random vector with joint probability mass function $f_{\mathbf{X}}(x_{1}, x_{2}, \ldots, x_{n})$, partition $\mathbf{X}$ into two subvectors: $\mathbf{Y} = (Y_{1}, Y_{2}, \ldots, Y_{k})$, a $k$-dimensional random vector consisting of $k$ discrete random variables selected from $\mathbf{X}$, and $\mathbf{Z} = (Z_{1}, Z_{2}, \ldots, Z_{n-k})$, the remaining $(n - k)$ discrete random variables of $\mathbf{X}$. The \emph{marginal probability mass function}\index{Marginal probability mass function} $f_{\mathbf{Y}}$ of $\mathbf{Y}$ is obtained by summing $f_{\mathbf{X}}$ over all possible values of the variables in $\mathbf{Z}$. That is, for any specific values $(y_{1}, y_{2}, \ldots, y_{k})$ of $\mathbf{Y}$,
 \[
 f_{\mathbf{Y}}(y_{1}, y_{2}, \ldots, y_{k}) = \sum_{z_{1}} \sum_{z_{2}} \ldots \sum_{z_{n-k}} f_{\mathbf{X}}(x_{1}, x_{2}, \ldots, x_{n}),
 \]
 where in each term of the sum, $x_{i} = y_{i}$ for $i$ corresponding to variables in $\mathbf{Y}$, and $x_{j} = z_{j}$ for $j$ corresponding to variables in $\mathbf{Z}$.
 \end{definition}
 
-This definition underscores the process of marginalization in a discrete setting, which is key to understanding and analyzing the behavior of specific variables within a larger multivariate framework.
+This definition captures the marginalization process in the discrete setting, which is key to understanding and analyzing the behavior of specific variables within a larger multivariate framework.
 
 \begin{example}
-Consider two discrete random variables $X$ and $Y$, each taking values in $\{0, 1\}$. Suppose their joint probability mass function is given by:
+Consider two discrete random variables $X$ and $Y$, each taking values in ${0, 1}$, with joint probability mass function:
 \[
 \begin{array}{c|cc}
 \hline
@@ -622,7 +685,7 @@ X \backslash Y & 0 & 1 \\
 \hline
 \end{array}
 \]
-To find the marginal probability mass function of $X$, we sum over all possible values of $Y$:
+To find the marginal probability mass function of $X$, sum over all possible values of $Y$:
 \[
 \begin{aligned}
 f_{X}(0) &= f_{X,Y}(0,0) + f_{X,Y}(0,1) = 0.1 + 0.3 = 0.4, \\
@@ -631,25 +694,26 @@ f_{X}(1) &= f_{X,Y}(1,0) + f_{X,Y}(1,1) = 0.2 + 0.4 = 0.6.
 \]
 \end{example}
 
-While the marginal probability mass functions of the discrete random variables $X_{1}, \ldots, X_{n}$ can be obtained from their joint probability mass function by summing over the range of the other variables, the reverse process is not straightforward. Specifically, reconstructing the joint probability mass function of $X_{1}, \ldots, X_{n}$ from their marginal probability mass functions alone is not feasible without extra information about the dependence between $X_{1}, \ldots, X_{n}$. This limitation arises because marginal probability mass functions encapsulate only the individual behavior of each variable, omitting details about how the variables interact or are related.
+While the marginal probability mass functions of $X_{1}, \ldots, X_{n}$ can be obtained from their joint probability mass function by summing over the range of the other variables, the reverse process is not possible without additional information about the dependence structure among the variables. Marginal probability mass functions describe only the individual behavior of each variable and do not capture interactions between them.
 
 \begin{example}
-Let $X$ and $Y$ be discrete random variables, each taking values in $\{0, 1\}$, with marginal probability mass functions:
+Let $X$ and $Y$ be discrete random variables, each taking values in ${0, 1}$, with marginal probability mass functions:
 \[
 \begin{aligned}
 f_{X}(0) &= 0.5, & f_{X}(1) &= 0.5, \\
 f_{Y}(0) &= 0.5, & f_{Y}(1) &= 0.5.
 \end{aligned}
 \]
-Without additional information about the dependence structure between $X$ and $Y$, the joint probability mass function cannot be reconstructed from the marginals alone.
+Without additional information about the relationship between $X$ and $Y$, the joint probability mass function cannot be reconstructed from the marginals alone.
 \end{example}
 
-A random vector $\mathbf{X}$ is considered independent if the occurrence of an event associated with any of the random variables of $\mathbf{X}$ does not influence the probability of an event associated with any other variable in $\mathbf{X}$. Independence among these variables indicates that there is no association or correlation among them, implying that knowing the outcome of one provides no information about the outcomes of the others.
+A random vector $\mathbf{X}$ is said to have independent components if knowing the outcome of one component provides no information about the others. In this case, events defined by different components occur independently, and the joint probability mass function factorizes into the product of the marginals.
 
 \begin{definition}\label{def:independent_random_variables}
-An $n$-dimensional random vector $\mathbf{X} = (X_{1}, X_{2}, \ldots, X_{n})$ is said to consist of \emph{independent random variables}\index{Independent random variables} if for every choice of subsets $A_{1}, A_{2}, \ldots, A_{n}$ of $\mathbb{R}$ such that $\{ X_{i} \in A_{i} \}$ is an event for $i = 1, 2, \ldots, n$, the joint probability of these events can be expressed as the product of their individual probabilities:
+Let $\mathbf{X} = (X_{1}, X_{2}, \ldots, X_{n})$ be an $n$-dimensional discrete random vector with joint probability mass function $f_{\mathbf{X}}$ and marginal probability mass functions $f_{X_{1}}, f_{X_{2}}, \ldots, f_{X_{n}}$.
+The components $X_{1}, \ldots, X_{n}$ are \emph{independent}\index{Independent random variables} if, for all $(x_{1}, \ldots, x_{n})$ in the support of $\mathbf{X}$,
 \[
-P\left( X_{1} \in A_{1}, X_{2} \in A_{2}, \ldots, X_{n} \in A_{n} \right) = P\left( X_{1} \in A_{1} \right) P\left( X_{2} \in A_{2} \right) \ldots P\left( X_{n} \in A_{n} \right).
+f_{\mathbf{X}}(x_{1}, \ldots, x_{n}) = \prod_{i=1}^{n} f_{X_{i}}(x_{i}).
 \]
 \end{definition}
 
@@ -674,36 +738,36 @@ Conversely, assume that for all $x_{1}, x_{2}, \ldots, x_{n}$,
 \[
 f_{\mathbf{X}}(x_{1}, x_{2}, \ldots, x_{n}) = f_{X_{1}}(x_{1}) f_{X_{2}}(x_{2}) \ldots f_{X_{n}}(x_{n}).
 \]
-Then, for any subsets $A_{1}, A_{2}, \ldots, A_{n}$ of $\mathbb{R}$, we have:
+Then, for any subsets $A_{1}, \ldots, A_{n}$ of $\mathbb{R}$, we have:
 \[
 \begin{aligned}
-P\left( X_{1} \in A_{1}, X_{2} \in A_{2}, \ldots, X_{n} \in A_{n} \right) &= \sum_{(x_{1}, x_{2}, \ldots, x_{n}) \in A_{1} \times A_{2} \times \ldots \times A_{n}} f_{\mathbf{X}}(x_{1}, x_{2}, \ldots, x_{n}) \\
-&= \sum_{x_{1} \in A_{1}} \sum_{x_{2} \in A_{2}} \ldots \sum_{x_{n} \in A_{n}} f_{X_{1}}(x_{1}) f_{X_{2}}(x_{2}) \ldots f_{X_{n}}(x_{n}) \\
-&= \left( \sum_{x_{1} \in A_{1}} f_{X_{1}}(x_{1}) \right) \left( \sum_{x_{2} \in A_{2}} f_{X_{2}}(x_{2}) \right) \ldots \left( \sum_{x_{n} \in A_{n}} f_{X_{n}}(x_{n}) \right) \\
-&= P(X_{1} \in A_{1}) P(X_{2} \in A_{2}) \ldots P(X_{n} \in A_{n}).
+P\left( X_{1} \in A_{1}, \ldots, X_{n} \in A_{n} \right) &= \sum_{(x_{1}, \ldots, x_{n}) \in A_{1} \times \ldots \times A_{n}} f_{\mathbf{X}}(x_{1}, \ldots, x_{n}) \\
+&= \sum_{x_{1} \in A_{1}} \ldots \sum_{x_{n} \in A_{n}} f_{X_{1}}(x_{1}) \ldots f_{X_{n}}(x_{n}) \\
+&= \left( \sum_{x_{1} \in A_{1}} f_{X_{1}}(x_{1}) \right) \ldots \left( \sum_{x_{n} \in A_{n}} f_{X_{n}}(x_{n}) \right) \\
+&= P(X_{1} \in A_{1}) \ldots P(X_{n} \in A_{n}).
 \end{aligned}
 \]
-This equality holds for all subsets $A_{1}, A_{2}, \ldots, A_{n}$, which implies that $X_{1}, X_{2}, \ldots, X_{n}$ are independent.
+This equality holds for all subsets $A_{1}, \ldots, A_{n}$, which implies that $X_{1}, \ldots, X_{n}$ are independent.
 \end{proof}
 
 % Conditional Distributions
 
 \subsection{Conditional Probability Mass Function}
 
-The concept of conditional probability mass function offers a way to understand the probability of an event given that another event has occurred. In the particular case of discrete random variables, the conditional probability mass function of $Y$ given $X=x$ describes the probability mass function of $Y$ under the condition that $X$ takes a specific value $x$. This concept is pivotal for dissecting the interdependencies between discrete random variables, allowing us to refine our probability assessments based on new information.
+The concept of the conditional probability mass function provides a way to quantify the probability of an event given that another event has occurred. In the case of discrete random variables, the conditional probability mass function of $Y$ given $X = x$ describes the probability mass function of $Y$ under the condition that $X$ takes a specific value $x$. This concept is essential for analyzing dependencies between discrete random variables, allowing us to refine probability assessments based on new information.
 
 \begin{definition}
 \label{def:conditional_probability_function}
-Let \( \mathbf{X} = (X_{1}, X_{2}, \ldots, X_{n}) \) be an \( n \)-dimensional random vector with joint probability mass function \( f_{\mathbf{X}}(x_{1}, x_{2}, \ldots, x_{n}) \). Partition \( \mathbf{X} \) into two subvectors: \( \mathbf{Y} = (Y_{1}, Y_{2}, \ldots, Y_{k}) \), a \( k \)-dimensional random vector consisting of \( k \) discrete random variables selected from \( \mathbf{X} \), and \( \mathbf{Z} = (Z_{1}, Z_{2}, \ldots, Z_{n-k}) \), the remaining \( n - k \) discrete random variables of \( \mathbf{X} \). Let \( f_{\mathbf{Z}} \) represent the marginal probability mass function of \( \mathbf{Z} \) across its \( n - k \) dimensions. Provided that for any vector \( \mathbf{z} \in \mathbb{R}^{n - k} \) the condition \( f_{\mathbf{Z}}(\mathbf{z}) > 0 \) holds, the \emph{conditional probability mass function}\index{Conditional probability mass function} \( f_{\mathbf{Y}|\mathbf{Z}} \) for \( \mathbf{Y} \) given \( \mathbf{Z} = \mathbf{z} \) is defined as:
+Let $\mathbf{X} = (X_{1}, X_{2}, \ldots, X_{n})$ be an $n$-dimensional random vector with joint probability mass function $f_{\mathbf{X}}(x_{1}, x_{2}, \ldots, x_{n})$. Partition $\mathbf{X}$ into two subvectors: $\mathbf{Y} = (Y_{1}, Y_{2}, \ldots, Y_{k})$, a $k$-dimensional random vector consisting of $k$ discrete random variables selected from $\mathbf{X}$, and $\mathbf{Z} = (Z_{1}, Z_{2}, \ldots, Z_{n-k})$, the remaining $n - k$ discrete random variables of $\mathbf{X}$. Let $f_{\mathbf{Z}}$ be the marginal probability mass function of $\mathbf{Z}$ across its $n - k$ dimensions. Provided that $f_{\mathbf{Z}}(\mathbf{z}) > 0$ for any vector $\mathbf{z} \in \mathbb{R}^{n-k}$, the \emph{conditional probability mass function}\index{Conditional probability mass function} $f_{\mathbf{Y}|\mathbf{Z}}$ of $\mathbf{Y}$ given $\mathbf{Z} = \mathbf{z}$ is defined as:
 \[
-f_{\mathbf{Y}|\mathbf{Z}} ( \mathbf{y} \mid \mathbf{z} ) = \frac{f_{\mathbf{X}} ( \mathbf{y}, \mathbf{z} )}{f_{\mathbf{Z}} ( \mathbf{z} )}
+f_{\mathbf{Y}|\mathbf{Z}} ( \mathbf{y} \mid \mathbf{z} ) = \frac{f_{\mathbf{X}} ( \mathbf{y}, \mathbf{z} )}{f_{\mathbf{Z}} ( \mathbf{z} )}.
 \]
 \end{definition}
 
-Next example demonstrates how to compute the conditional probability mass function of \( Y \) given \( X \).
+The following example illustrates how to compute the conditional probability mass function of $Y$ given $X$.
 
 \begin{example}
-Consider two discrete random variables \( X \) and \( Y \), each taking values in \( \{0, 1\} \), with the following joint probability mass function:
+Consider two discrete random variables $X$ and $Y$, each taking values in $\{0, 1\}$, with the joint probability mass function:
 \[
 \begin{array}{c|cc}
 \hline
@@ -714,21 +778,14 @@ X \backslash Y & 0 & 1 \\
 \hline
 \end{array}
 \]
-We can compute the marginal probability mass function of \( X \):
-\[
-\begin{aligned}
-f_{X}(0) &= f_{X,Y}(0,0) + f_{X,Y}(0,1) = 0.3 + 0.2 = 0.5, \\
-f_{X}(1) &= f_{X,Y}(1,0) + f_{X,Y}(1,1) = 0.1 + 0.4 = 0.5.
-\end{aligned}
-\]
-Suppose we want to find the conditional probability mass function of \( Y \) given \( X = 0 \), denoted \( f_{Y|X}(y \mid x) \). For \( x = 0 \) we have:
+The conditional probability mass function of $Y$ given $X = 0$ is:
 \[
 \begin{aligned}
 f_{Y|X}(0 \mid 0) &= \frac{f_{X,Y}(0,0)}{f_{X}(0)} = \frac{0.3}{0.5} = 0.6, \\
 f_{Y|X}(1 \mid 0) &= \frac{f_{X,Y}(0,1)}{f_{X}(0)} = \frac{0.2}{0.5} = 0.4.
 \end{aligned}
 \]
-For \( x = 1 \) we have:
+Similarly, for $X = 1$:
 \[
 \begin{aligned}
 f_{Y|X}(0 \mid 1) &= \frac{f_{X,Y}(1,0)}{f_{X}(1)} = \frac{0.1}{0.5} = 0.2, \\
@@ -737,69 +794,62 @@ f_{Y|X}(1 \mid 1) &= \frac{f_{X,Y}(1,1)}{f_{X}(1)} = \frac{0.4}{0.5} = 0.8.
 \]
 \end{example}
 
-Next proposition generalizes the multiplication rule (see Equation \ref{eq:multiplication_rule}) by combining marginal and conditional probability mass functions to derive the joint probability mass function for any configuration of discrete random variables within a random vector, accounting for the complex dependencies and interactions among multiple variables.
+The next proposition generalizes the multiplication rule (see Equation \ref{eq:multiplication_rule}) by combining marginal and conditional probability mass functions to recover the joint probability mass function for any configuration of discrete random variables within a random vector.
 
 \begin{proposition}
-Let \( \mathbf{X} \), \( \mathbf{Y} \), \( \mathbf{Z} \), \( f_{\mathbf{X}}(\mathbf{x}) \), \( f_{\mathbf{Z}}(\mathbf{z}) \), and \( f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z}) \) be defined as in Definition \ref{def:conditional_probability_function}. Then, for each \( \mathbf{z} \) such that \( f_{\mathbf{Z}}(\mathbf{z}) > 0 \) and each possible value of \( \mathbf{y} \), the joint probability mass function is given by:
+Let $\mathbf{X}$, $\mathbf{Y}$, $\mathbf{Z}$, $f_{\mathbf{X}}(\mathbf{x})$, $f_{\mathbf{Z}}(\mathbf{z})$, and $f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z})$ be as in Definition \ref{def:conditional_probability_function}. Then, for each $\mathbf{z}$ such that $f_{\mathbf{Z}}(\mathbf{z}) > 0$ and each possible value of $\mathbf{y}$, the joint probability mass function is:
 \[
-f_{\mathbf{X}}(\mathbf{x}) = f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z}) f_{\mathbf{Z}}(\mathbf{z})
+f_{\mathbf{X}}(\mathbf{x}) = f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z}) f_{\mathbf{Z}}(\mathbf{z}),
 \]
-where \( \mathbf{x} = (\mathbf{y}, \mathbf{z}) \) represents a specific instantiation of the random vector \( \mathbf{X} \).
+where $\mathbf{x} = (\mathbf{y}, \mathbf{z})$.
 \end{proposition}
 \begin{proof}
 By the definition of the conditional probability mass function:
 \[
 f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z}) = \frac{f_{\mathbf{X}}(\mathbf{y}, \mathbf{z})}{f_{\mathbf{Z}}(\mathbf{z})}, \quad \text{for } f_{\mathbf{Z}}(\mathbf{z}) > 0.
 \]
-Rearranging this equation gives:
+Rearranging yields:
 \[
-f_{\mathbf{X}}(\mathbf{y}, \mathbf{z}) = f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z}) f_{\mathbf{Z}}(\mathbf{z}).
+f_{\mathbf{X}}(\mathbf{y}, \mathbf{z}) = f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z}) f_{\mathbf{Z}}(\mathbf{z}),
 \]
-Since \( \mathbf{x} = (\mathbf{y}, \mathbf{z}) \), we have:
-\[
-f_{\mathbf{X}}(\mathbf{x}) = f_{\mathbf{Y}|\mathbf{Z}}(\mathbf{y} \mid \mathbf{z}) f_{\mathbf{Z}}(\mathbf{z}).
-\]
+and since $\mathbf{x} = (\mathbf{y}, \mathbf{z})$, the result follows.
 \end{proof}
 
-Similarly, the conditional probability mass function of \( \mathbf{Z} \) given \( \mathbf{Y} = \mathbf{y} \), denoted as \( f_{\mathbf{Z}|\mathbf{Y}}(\mathbf{z} \mid \mathbf{y}) \), can be combined with the marginal probability mass function of \( \mathbf{Y} \), \( f_{\mathbf{Y}}(\mathbf{y}) \), to yield the same joint probability mass function of \( \mathbf{X} \):
+Similarly, the conditional probability mass function of $\mathbf{Z}$ given $\mathbf{Y} = \mathbf{y}$, denoted $f_{\mathbf{Z}|\mathbf{Y}}(\mathbf{z} \mid \mathbf{y})$, satisfies:
 \[
 f_{\mathbf{X}}(\mathbf{x}) = f_{\mathbf{Z}|\mathbf{Y}}(\mathbf{z} \mid \mathbf{y}) f_{\mathbf{Y}}(\mathbf{y}).
 \]
 
-Bayes' theorem (see Theorem \ref{th:Bayes_theorem}) provides a way to update our probability estimates for a hypothesis given new evidence. For random vectors, the theorem can be generalized to accommodate the multi-dimensional nature of the variables involved. 
+Bayes' theorem (see Theorem \ref{th:Bayes_theorem}) provides a way to update probability estimates for a hypothesis given new evidence. For random vectors, the theorem extends naturally to the multidimensional case.
 
 \begin{theorem}[Bayes' Theorem for Random Vectors]\index{Bayes' theorem}
-Let \( \mathbf{X} = (X_1, X_2, \ldots, X_n) \) and \( \mathbf{Y} = (Y_1, Y_2, \ldots, Y_m) \) be two random vectors representing different sets of discrete random variables. Suppose we are interested in the conditional probability distribution of \( \mathbf{X} \) given observed values of \( \mathbf{Y} \), denoted as \( \mathbf{y} = (y_1, y_2, \ldots, y_m) \). The generalized Bayes' theorem for random vectors can be stated as:
+Let $\mathbf{X} = (X_1, X_2, \ldots, X_n)$ and $\mathbf{Y} = (Y_1, Y_2, \ldots, Y_m)$ be two random vectors representing distinct sets of discrete random variables. The generalized Bayes' theorem states:
 \[
-P(\mathbf{X} = \mathbf{x} \mid \mathbf{Y} = \mathbf{y}) = \frac{P(\mathbf{Y} = \mathbf{y} \mid \mathbf{X} = \mathbf{x}) P(\mathbf{X} = \mathbf{x})}{P(\mathbf{Y} = \mathbf{y})}
+P(\mathbf{X} = \mathbf{x} \mid \mathbf{Y} = \mathbf{y}) = \frac{P(\mathbf{Y} = \mathbf{y} \mid \mathbf{X} = \mathbf{x}) \, P(\mathbf{X} = \mathbf{x})}{P(\mathbf{Y} = \mathbf{y})},
 \]
-where \( P(\mathbf{Y} = \mathbf{y}) \) is the marginal probability of \( \mathbf{Y} \), which can also be expressed using the law of total probability as:
+where $P(\mathbf{Y} = \mathbf{y})$ is the marginal probability of $\mathbf{Y}$, given by:
 \[
-P(\mathbf{Y} = \mathbf{y}) = \sum_{\mathbf{x}} P(\mathbf{Y} = \mathbf{y} \mid \mathbf{X} = \mathbf{x}) P(\mathbf{X} = \mathbf{x})
+P(\mathbf{Y} = \mathbf{y}) = \sum_{\mathbf{x}} P(\mathbf{Y} = \mathbf{y} \mid \mathbf{X} = \mathbf{x}) \, P(\mathbf{X} = \mathbf{x}).
 \]
-for discrete random vectors.
 \end{theorem}
 \begin{proof}
-By the definition of conditional probability:
+From the definition of conditional probability:
 \[
 P(\mathbf{X} = \mathbf{x} \mid \mathbf{Y} = \mathbf{y}) = \frac{P(\mathbf{X} = \mathbf{x}, \mathbf{Y} = \mathbf{y})}{P(\mathbf{Y} = \mathbf{y})}.
 \]
-Also, we can express the joint probability as:
+Since
 \[
-P(\mathbf{X} = \mathbf{x}, \mathbf{Y} = \mathbf{y}) = P(\mathbf{Y} = \mathbf{y} \mid \mathbf{X} = \mathbf{x}) P(\mathbf{X} = \mathbf{x}).
+P(\mathbf{X} = \mathbf{x}, \mathbf{Y} = \mathbf{y}) = P(\mathbf{Y} = \mathbf{y} \mid \mathbf{X} = \mathbf{x}) \, P(\mathbf{X} = \mathbf{x}),
 \]
-Substituting back into the first equation:
-\[
-P(\mathbf{X} = \mathbf{x} \mid \mathbf{Y} = \mathbf{y}) = \frac{P(\mathbf{Y} = \mathbf{y} \mid \mathbf{X} = \mathbf{x}) P(\mathbf{X} = \mathbf{x})}{P(\mathbf{Y} = \mathbf{y})}.
-\]
+substitution gives the stated result.
 \end{proof}
 
-This generalized form of Bayes' theorem allows us to update our belief about the probability distribution of a set of discrete random variables \( \mathbf{X} \) based on new information encapsulated in another set of discrete random variables \( \mathbf{Y} \). It emphasizes the interplay between the prior information we have about \( \mathbf{X} \), the likelihood of observing \( \mathbf{Y} = \mathbf{y} \) given \( \mathbf{X} = \mathbf{x} \), and the evidence provided by the actual observation of \( \mathbf{Y} = \mathbf{y} \).
+This generalized Bayes' theorem updates beliefs about $\mathbf{X}$ based on new evidence from $\mathbf{Y}$. It links the prior information we have about \( \mathbf{X} \), the likelihood of observing \( \mathbf{Y} = \mathbf{y} \) given \( \mathbf{X} = \mathbf{x} \), and the evidence provided by the actual observation of \( \mathbf{Y} = \mathbf{y} \).
 
-Building on the familiar concept of independence between discrete random variables (see Defintion \ref{def:independent_random_variables}), an important extension is the idea of conditional independence. This concept comes into play when the independence of a set of discrete random variables is considered in the context of being conditioned on another set of variables.
+Finally, building on the concept of independence between discrete random variables (see Definition \ref{def:independent_random_variables}), we define conditional independence. This concept comes into play when the independence of a set of discrete random variables is considered in the context of being conditioned on another set of variables.
 
 \begin{definition}
-Let \( \mathbf{Z} \) be a random vector with joint probability mass function \( f_{\mathbf{Z}}(\mathbf{z}) \). The variables of the random vector \( \mathbf{X} = (X_{1}, \ldots, X_{n}) \) are \emph{conditionally independent}\index{Conditional independence of random variables} given \( \mathbf{Z} \) if, for all \( \mathbf{z} \) such that \( f_{\mathbf{Z}}(\mathbf{z}) > 0 \), we have:
+Let \( \mathbf{Z} \) be a random vector with joint probability mass function \( f_{\mathbf{Z}}(\mathbf{z}) \). The variables of the random vector \( \mathbf{X} = (X_{1}, \ldots, X_{n}) \) are \emph{conditionally independent}\index{Conditional independence of random variables} given \( \mathbf{Z} \) if, for all \( \mathbf{z} \) such that \( f_{\mathbf{Z}}(\mathbf{z}) > 0 \):
 \[
 f_{\mathbf{X} \mid \mathbf{Z}} (\mathbf{x} \mid \mathbf{z}) = \prod_{i=1}^{n} f_{X_i \mid \mathbf{Z}}(x_{i} \mid \mathbf{z}),
 \]
@@ -904,7 +954,7 @@ The median of a discrete random variable is a measure of central tendency that r
 \begin{definition}
 Let $X$ be a discrete random variable. The \emph{median}\index{Median} of $X$, denoted by $m$, is the value that satisfies:
 \[
-Pr\left(X\leq m\right)\geq \frac{1}{2} \quad \text{and} \quad Pr\left(X\geq m\right)\geq \frac{1}{2}
+P\left(X\leq m\right)\geq \frac{1}{2} \quad \text{and} \quad P\left(X\geq m\right)\geq \frac{1}{2}
 \]
 \end{definition}
 
@@ -915,7 +965,7 @@ The "median" is often more intuitive than "expected value" because it is always 
 The median is a robust measure of central tendency, especially useful when the data has outliers or is skewed.
 
 \begin{example}
-Consider the company from Example \ref{ex:expected_salary}. The median of the salaries is calculated as the value $m$ for which $Pr\left(X\leq m\right)\geq \frac{1}{2}$. In this case, $m=300$. Now, suppose that one of the base employees is promoted to the executive level with the same salary of \$6000. The recalculated median would still be $m=300$. This example shows that the median is a more robust measure than the expected value in the presence of outliers.
+Consider the company from Example \ref{ex:expected_salary}. The median of the salaries is calculated as the value $m$ for which $P\left(X\leq m\right)\geq \frac{1}{2}$. In this case, $m=300$. Now, suppose that one of the base employees is promoted to the executive level with the same salary of \$6000. The recalculated median would still be $m=300$. This example shows that the median is a more robust measure than the expected value in the presence of outliers.
 \end{example}
 
 %

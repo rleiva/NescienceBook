@@ -744,6 +744,75 @@ If $C$ is a Huffman code then $C$ is compact.
 
 {\color{red} Mention arithmetic coding}
 
+%
+% Discretization of Continuous Variables
+%
+
+\section{Discretization of Continuous Variables}
+\label{sec:discretization_continuous_variables}
+
+When summarizing large masses of raw data, it is often useful to distribute the data into classes, or categories, and to determine the number of individuals belonging to each class, called absolute frequency. The following definition formally introduces this concept.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{absolute frequency}\index{Absolute frequency}, also known simply as \emph{frequency}, denoted by $n_i$ for $1 \leq i \leq k$, quantifies the number of individuals in $\mathcal{S}$ for which $X$ assigns the value corresponding to the $i$-th category of $\mathcal{D}$.
+\end{definition}
+
+The sum of the frequencies must be equal to population size, that is, $\sum_{i=1}^k n_i = n$.
+
+If the variable $X$ is continuous, the elements of $\mathcal{D}$ are referred to as \emph{class intervals}\index{Class interval}. The endpoints of these intervals are known as \emph{class limits}\index{Class limits}; the smaller number is termed the \emph{lower class limit}\index{Lower class limit}, and the larger number, the \emph{upper class limit}\index{Upper class limit}. A \emph{class interval}\index{Class interval} that lacks either an upper or a lower class limit is known as an \emph{open class interval}\index{Open class interval}. The \emph{width}\index{Class interval width} of a class interval is defined as the difference between the upper and lower class boundaries, denoted by $a_i = e_i - e_{i-1}$. The \emph{class mark}\index{Class mark}, or the midpoint of a class interval, is calculated as $a_i = \frac{e_i + e_{i-1}}{2}$. It is assumed that all observations within a specific class interval are equivalent concerning their categorical assignment. Refer to Section \ref{sec:discretization_algorithms} for more information about how to discretize a continous variable into discrete intervals.
+
+\begin{example}
+In a study measuring adult heights within a community, researchers record heights ranging from 150 cm to 200 cm and organize them into 10 cm class intervals: 150-159 cm, 160-169 cm, 170-179 cm, 180-189 cm, and 190-199 cm. Each interval's lower and upper class limits are respectively the start and end points, such as 150 cm and 159 cm for the first interval. If the last interval had no specified upper limit, it would be considered an open class interval. The class width, typically 10 cm, is the operational span between boundaries, and the class mark, calculated as the midpoint of each interval (e.g., 154.5 cm for the first interval), provides a central value for summarizing data within that range.
+\end{example}
+
+A tabular arrangement of data by classes together with the corresponding class frequencies is called a frequency distribution, or frequency table.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let $X: \mathcal{S} \rightarrow \mathcal{D}$ be a variable that maps individuals in $\mathcal{S}$ to $k$ distinct values of the set $\mathcal{D}$. A \emph{frequency distribution}\index{Frequency distribution} is represented the set of pairs $\{(d_i, n_i) : 1 \leq i \leq k\}$, where $d_i$ denotes the $i$-th interval and $n_i$ represents the number of individuals from $\mathcal{S}$ whose value under $X$ falls within the interval $d_i$.
+\end{definition}
+
+Frequency distributions are useful for statistical analysis and helps in visualizing data by grouping values, which simplifies the understanding of distribution and central tendencies within the data.
+
+The relative frequency of a class is the frequency of the class divided by the total frequency of all classes
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{relative frequency}\index{Relative frequency}, denoted by $f_i$, is the ratio $f_i = \frac{n_i}{n}$ for $1 \leq i \leq k$.
+\end{definition}
+
+The sum of the relative frequencies is equal to one, that is, $\sum_{i=1}^k f_i = 1$.
+
+The total frequency of all values less than the upper class boundary of a given class interval is called the cumulative frequency up to and including that class interval.
+
+\begin{definition}
+Let $\mathcal{S}$ be a population consisting of $n$ individuals, and let a variable $X: \mathcal{S} \rightarrow \mathcal{D}$ represent the mapping of individuals in $\mathcal{S}$ to values in the set $\mathcal{D}$, where $k$ is the cardinality of $\mathcal{D}$. The \emph{cumulative frequency}\index{Cumulative frequency}, denoted by $N_i$ for $1 \leq i \leq k$, represents the total number of individuals in $\mathcal{S}$ for which $X$ assigns a value less than or equal to the upper limit of the $i$-th category of $\mathcal{D}$. This is mathematically expressed as $N_i = \sum_{j=1}^i n_j$, where $n_j$ is the absolute frequency of the $j$-th category.
+\end{definition}
+
+By accumulating the frequencies up to each category or interval, cumulative frequencies provides a running total that shows how many data points fall below a certain value.
+
+\subsubsection*{Discretization Algorithms}
+
+{\color{red} TODO: Rewrite this section.}
+
+Let $\mathcal{X}$ a continuous random variable that follows a probability density function $P_\mathcal{X}$, and assume we have collected $n$ independent and identically distributed samples $\bold{x} = \{x_1, \ldots, x_n\}$ from $\mathcal{X}$. We are interested in computing the length of a compressed version of $\bold{x}$ using an optimal compressor. Unfortunately, and except for some degenerate distributions, there is no lossless compression algorithm that produces a string with fewer bits than encoding directly the elements $\bold{x}$. Compression algorithms for continuous data only work in case that the elements of $\bold{x}$ are not independent, as it is the case with images or sound. But, if this is not the case, the only option available to compress $\bold{x}$ is to use a lossy compression algorithm, where some information is lost.
+
+We are looking for an algorithm to produce a finite non-overlapping partition of $m$ discrete intervals $D=\{ [d_o, d_1], (d_1, d_2], \ldots, (d_{m-1}, d_m] \}$, where $d_o = \min{\bold{x}_j}$, and $d_m = \max{\bold{x}_j}$, and $d_i < d_{i+1}$ for $i = 0, 1, \ldots, m-1$, assign a unique label to each interval, and encode the elements of $\bold{x}$ using this labeling schema. As compression algorithm we will use an optimal length code given the relative frequencies of the labels in the encoded vector. In this sense, our goal is to have a collection of intervals with sufficiently number of samples (so they are statistically significant) and that the distribution of frequencies resembles the original probability distribution $P_\mathcal{X}$.
+
+A discretization algorithm is a mapping between a (possibly huge) number of numeric values and a reduced set of discrete values, and so, it is a process in which some information is potentially lost. The choice of discretization algorithm is something that could have a high impact in the practical computation of the nescience. We are interested in a discretization algorithm that produces a large number of intervals (low bias), with a large number of number of observations per interval (low variance). Common techniques include \emph{equal width discretization}, \emph{equal frequency discretization} and \emph{fixed frequency discretization}. However, these techniques require the optimization of an hyperparameter, and so, they are not suitable for our purposes.
+
+In a \emph{proportional discretization approach} the number of intervals $m$ and the number of observations per interval $s$ are equally proportional to the number of observations $n$. The algorithm starts by sorting the values of $\bold{x}_j$ in ascending order and then discretizing them into $m$ intervals of approximately $s$ (possibly identical) values each. In this way, as the number of training observations increases, both interval frequency and number of intervals increases, taking advantage of the larger number of observations. In the same way, when the number of observations decreases, we reduce both.
+
+
+{\color{red} Our approach begins by selecting the number of bins according to \emph{Rice's rule}, which is asymptotically motivated in the context of histogram density estimation and offers a good balance between resolution and robustness. This rule avoids the excessive granularity of the square-root heuristic (which can result in too few samples per bin when building joint encodings), while remaining less conservative than Sturges' logarithmic rule.}
+
+{\color{red} Trimmed core range and minimum occupancy threshold}
+
+{\color{red} Instead of relying on the naive plug-in estimator $p_i = c_i/n$, we adopt the Krichevsky-Trofimov (or Jeffreys) smoothing. This Bayesian correction eliminates zero-probability events, stabilizes the estimation of code length, and achieves minimax-optimal redundancy in universal coding.}
+
+{\color{red} Mixed-radix encoding}
+
+%
+% References
+%
 
 \section*{References}
 
@@ -764,6 +833,50 @@ The proof of proposition \ref{prop:maximum_entropy} has been adapted from \cite{
 The proof of proposition 4.3.1 has been adapted from Abramson.
 
 In the area of \emph{digital signal processing} \cite{gersho2012vector} it is common to apply a pre-processing step called \emph{quantization}, in which a large number of samples from a continuous signal are mapped into a finite number of representative values. It can be a \emph{scalar quantization} when the signal is one dimensional, or \emph{vector quantization} in case of a multidemensional signal. The optimization goal is to identify a (pre-defined) number of quantizied values such that the mean squared error between the selected values and the original signal is minimized. The problem is solved using the Lloyd-max algorithm \cite{lloyd1982least} (closely relted to the kmeans clustering algorithm \cite{} used in machine learning) in which the search space is paritioned in a collection of convex regions and their centroids used as quant, and then, are continously adapted until some stopping criteria is reached. Although it can be shown that the algorithm converges to the optimal solution that minimizes the mean squared error, the selected intervals cannot be used as estimation of the original probability distribution.
+
+An excellent survey of the available discretization methods can be found in~\cite{garcia2013survey}; in the paper the authors also propose a taxonomy to classify existing methods based in their properties and they conduct an extensive comparative experimental study. The proportional discretization method used to compute miscoding is introduced in~\cite{yang2009discretization}, where there is also a theoretical justification of why this method reduces the bias and the variance of the discretized variable.
+
+\begin{verbatim}
+
+% Rice's rule
+
+A common rule of thumb for determining the number of bins in a histogram is Rice’s rule, which suggests using approximately 2n^1/3 bins, where n is the sample size. This heuristic strikes a balance between over-smoothing and over-fitting and has been widely adopted in introductory statistics texts as a practical default choice for discretization \cite{freedman1978statistics}.
+
+Freedman, D., Pisani, R., & Purves, R. (1978). Statistics (2nd ed.). New York, NY: W. W. Norton. (Section 6.3: binning rules including “twice the cube root of n”).
+
+@book{freedman1978statistics,
+  title={Statistics},
+  author={Freedman, David and Pisani, Robert and Purves, Roger},
+  year={1978},
+  publisher={W. W. Norton \& Company}
+}
+
+% Jeffreys smoothing
+
+@article{krichevsky1981performance,
+  title={The performance of universal encoding},
+  author={Krichevsky, R. E. and Trofimov, V. K.},
+  journal={IEEE Transactions on Information Theory},
+  volume={27},
+  number={2},
+  pages={199--207},
+  year={1981},
+  publisher={IEEE}
+}
+
+To avoid degenerate estimates when computing code lengths from finite samples, we apply a Bayesian smoothing procedure known as the **Krichevsky-Trofimov (KT) estimator**, also called **Jeffreys prior smoothing**. This method assigns a prior weight of $1/2$ to each possible outcome, resulting in probability estimates of the form $(n_i+1/2)/(N + k/2)$, where $n_i$ is the count of symbol $i$, $N$ the sample size, and $k$ the alphabet size. This estimator was introduced in the information theory literature by Krichevsky and Trofimov\~\cite{krichevsky1981performance}, and it is known to yield nearly optimal universal coding performance.
+
+% Trimmed core range
+
+@book{huber1981robust,
+  title={Robust Statistics},
+  author={Huber, Peter J.},
+  year={1981},
+  publisher={John Wiley \& Sons}
+}
+When discretizing continuous variables, extreme outliers can distort the binning process, leading to empty or uninformative intervals. To address this, we use a **trimmed core range**, where a small fraction (e.g., 0.5\%) of the data at each tail is excluded when defining the binning range. This approach comes from the broader field of **robust statistics**, which develops methods that are less sensitive to outliers. The idea of trimming as a robustness technique was systematically developed in Huber's classic monograph\~\cite{huber1981robust}.
+
+\end{verbatim}
 
 
 

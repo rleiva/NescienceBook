@@ -863,7 +863,13 @@ where \( f_{\mathbf{X} \mid \mathbf{Z}}(\mathbf{x} \mid \mathbf{z}) \) is the co
 \section{Characterizing Distributions}
 \label{sec:probability_expectation}
 
-A \emph{measure of central tendency} is a number derived from a probability distribution, intended as a summary of that distribution. The most common measures of central tendency in use are the expected value and the median. Each of these measures provides a different approach to characterize distributions. It is also common to use \emph{metrics of dispersion} to describe the variability of a distribution around the measures of centrality. We will review two metrics of dispersion, the variance and the standard deviation. The metrics of disperson can also be used in case of bivariate distributions, under the names of covariance and correlation, to measure the \emph{statistical relationship} between two discrete random variables. All these measures allow us to summarize and compare distributions.
+A \emph{measure of central tendency} is a number derived from a probability distribution that summarizes its typical or central value. The two most commonly used measures are the \emph{expected value} and the \emph{median}, each offering a different perspective for characterizing a distribution.
+
+In addition to central tendency, it is often useful to describe how much the distribution varies around its center. For this purpose, \emph{measures of dispersion} are employed, the most common being the \emph{variance} and the \emph{standard deviation}. These quantify the spread of a distribution around its central measure.
+
+In the case of bivariate distributions, analogous measures of dispersion are the \emph{covariance} and the \emph{correlation}, which capture the strength and direction of the statistical relationship between two discrete random variables.
+
+Together, these measures—central tendency and dispersion—allow us to summarize, compare, and analyze probability distributions in a concise and meaningful way.
 
 %
 % Subsection: Measures of Central Tendency
@@ -871,101 +877,103 @@ A \emph{measure of central tendency} is a number derived from a probability dist
 
 \subsection{Measures of Central Tendency}
 
-The most common measures of central tendency in use to characterize probability distributions are the expected value and the median.
+The most common measures of central tendency used to characterize probability distributions are the expected value and the median.
 
 % Expected Value
 
 \subsubsection*{Expeced Value}
 
-The expected value of a discrete random variable is computed as the weighted average of all possible values of the variable, where weights are given by the probabilities of the outcomes.
+The expected value of a discrete random variable is computed as the weighted average of all its possible values, where the weights are the probabilities of the corresponding outcomes\footnote{The term “expected value” can be misleading, because it does not necessarily coincide with one of the possible values of the random variable. For example, the expected value of a fair six-sided die is $3.5$, which is not itself an attainable outcome. This counterintuitive aspect has often caused confusion in applications of probability.}.
 
 \begin{definition}\label{probability:expectation}
-Let $X$ be a discrete random variable whose probability mass function is $f$. The \emph{expected value}\index{Expected value} of $X$, denoted by $E\left(X\right)$, is defined as:
+Let $X$ be a discrete random variable with probability mass function $f$. The \emph{expected value}\index{Expected value} of $X$, denoted by $E(X)$, is defined as:
 \[
-E\left(X\right)=\sum_{x}xf\left(x\right)
+E(X) = \sum_{x} x f(x).
 \]
 \end{definition}
 
-The definition of expected value considers only the distribution of the discrete random variable, not the original outcomes. Thus, two different discrete random variables with the same distribution will have equal expected values, even if the underlying discrete probability spaces are different.
+This definition depends only on the distribution of $X$, not on the original sample space. Consequently, two different random variables with the same distribution will have the same expected value, even if their underlying probability spaces are different.
 
-The term "expected value" can be somewhat misleading because, for many discrete distributions, the expected value is not necessarily one of the possible values. For instance, when rolling a six-sided die, the expected value is \(3.5\), which is not an actual outcome of the roll. This counterintuitive aspect of the concept of expected value has led to considerable confusion in scientific research.
-
-A drawback of the expected value is that it can be greatly affected by a small change in the probability assigned to a large value of $X$.
+A drawback of the expected value is that it can be heavily influenced by small changes in the probability assigned to large values of $X$.
 
 \begin{example}\label{ex:expected_salary}
-Consider a company with a population of 100 employees, and we define a discrete random variable based on their salaries. Let's $X = \{300, 6000\}$ with probabilities of $99/100$ and $1/100$ respectively. The expected salary is calculated as:
-\[ 
-E\left(X\right) = (300 \times 99/100) + (6000 \times 1/100) = 357
-\]
-Now, suppose that one of the base employees is promoted to the executive level with the same salary of \$6000. The recalculated expected salary would be:
+Consider a company with 100 employees, and define a discrete random variable $X$ based on their salaries. Suppose $X$ takes the value $300$ with probability $99/100$ and $6000$ with probability $1/100$. The expected salary is:
 \[
-E\left(X\right) = (300 \times 98/10) + (6000 \times 2/100) = 414
+E(X) = (300 \times 99/100) + (6000 \times 1/100) = 357.
 \]
-This example shows how just changing the salary of one single person can increase the expected salary of the company by more than $13\%$.
+Now suppose that one additional employee earns $6000$ instead of $300$. The expected salary becomes:
+\[
+E(X) = (300 \times 98/100) + (6000 \times 2/100) = 414.
+\]
+Thus, changing the salary of a single employee increases the expected salary of the company by more than 13\%.
 \end{example}
 
-The expected value of the linear combination of $n$ discrete random variables is the linear combination of their respective expected values.
+The expected value operator is linear: the expected value of a linear combination of discrete random variables equals the same linear combination of their expectations.
 
 \begin{proposition}
-Let $X_{1}, \ldots, X_{n}$ be $n$ independent discrete random variables with expectations $E\left(X_{i}\right)$, and let $a_1, \ldots, a_n$ and $b$ constants, then
+Let $X_{1}, \ldots, X_{n}$ be discrete random variables with expectations $E(X_{i})$. For constants $a_{1}, \ldots, a_{n}$ and $b$,
 \[
-E\left(a_{1}X_{1}+\ldots+a_{n}X_{n}+b\right)=a_{1}E\left(X_{1}\right)+\ldots+a_{n}E\left(X_{n}\right)+b
+E(a_{1}X_{1} + \ldots + a_{n}X_{n} + b) = a_{1}E(X_{1}) + \ldots + a_{n}E(X_{n}) + b.
 \]
 \end{proposition}
 \begin{proof}
-We have that
-\begin{multline}
-E \left(a_1 X_1 + \ldots + a_n X_n +b \right) = 
-\sum_{x_1} \ldots \sum_{x_n} \left(a_ 1 x_1 + \ldots + a_n x_n + b  \right) f\left(x_1, \ldots, x_n \right) = \\
-\sum_{x_1} \ldots \sum_{x_n} a_1 x_1 f\left(x_1, \ldots, x_n \right) + \ldots + \sum_{x_1} \ldots \sum_{x_n} a_n x_n f\left(x_1, \ldots, x_n \right) + \sum_{x_1} \ldots \sum_{x_n} b f\left(x_1, \ldots, x_n \right) = \\
-\sum_{x_1} a_1 x_1 f\left(x_1\right) + \ldots + \sum_{x_n} a_n x_n f\left( x_n \right) + b = 
-a_1 \sum_{x_1} x_1 f\left(x_1\right) + \ldots + a_n \sum_{x_n} x_n f\left( x_n \right) + b = \\
-a_1 E\left(X_1\right) + \ldots + a_n E\left(X_n\right) + b
-\end{multline}
+By definition,
+\begin{equation*}
+\begin{split}    
+E(a_{1}X_{1} + \ldots + a_{n}X_{n} + b) =
+\sum_{x_{1},\ldots,x_{n}} (a_{1}x_{1} + \ldots + a_{n}x_{n} + b) f(x_{1}, \ldots, x_{n}) = \\
+a_{1} \sum_{x_{1}} x_{1} f(x_{1}) + \ldots + a_{n} \sum_{x_{n}} x_{n} f(x_{n}) + b
+\ = a_{1}E(X_{1}) + \ldots + a_{n}E(X_{n}) + b.
+\end{split}
+\end{equation*}
 \end{proof}
 
-The expected value of the product of $n$ independent discrete random variables is equal to the product of the individual expected values.
+Note that independence is not required for linearity of expectation. Linearity holds for all discrete random variables as long as the expectations exist.
+
+The expected value of the product of independent random variables equals the product of their expected values.
 
 \begin{proposition}
-Let $X_{1}, \ldots, X_{n}$ be $n$ independent discrete random variables with expectations $E\left(X_{i}\right)$, then:
+Let $X_{1}, \ldots, X_{n}$ be independent discrete random variables with expectations $E(X_{i})$. Then:
 \[
-E\left(\prod_{i=1}^{n}X_{i}\right)=\prod_{i=1}^{n}E\left(X_{i}\right)
+E\left(\prod_{i=1}^{n} X_{i}\right) = \prod_{i=1}^{n} E(X_{i}).
 \]
 \end{proposition}
 \begin{proof}
-We have that
-\begin{multline}
-E \left(X_1  \cdot \ldots \cdot X_n  \right) = 
-\sum_{x_1} \ldots \sum_{x_n} \left(x_1 \cdot \ldots \cdot x_n  \right) f\left(x_1, \ldots, x_n \right) = \\
-\sum_{x_1} \ldots \sum_{x_n} x_1 f\left(x_1, \ldots, x_n \right) \cdot \ldots \cdot \sum_{x_1} \ldots \sum_{x_n} x_n f\left(x_1, \ldots, x_n \right) = \\
-\sum_{x_1} x_1 f\left(x_1\right) \cdot \ldots \cdot \sum_{x_n} x_n f\left( x_n \right) = 
-E \left( X_1 \right) \cdot \ldots \cdot E \left( X_n \right)
-\end{multline}
+By independence of $X_{1}, \ldots, X_{n}$, their joint probability mass function factorizes:
+\[
+f(x_{1}, \ldots, x_{n}) = f_{X_{1}}(x_{1}) \cdots f_{X_{n}}(x_{n}).
+\]
+Thus,
+\begin{equation*}
+\begin{split}
+E(X_{1} \cdots X_{n}) = \sum_{x_{1}, \ldots, x_{n}} (x_{1} \cdots x_{n}) f(x_{1}, \ldots, x_{n}) \\
+= \prod_{i=1}^{n} \left(\sum_{x_{i}} x_{i} f_{X_{i}}(x_{i})\right)
+= \prod_{i=1}^{n} E(X_{i}).
+\end{split}
+\end{equation*}
 \end{proof}
 
-The expected value of the product of non-independent discrete random variables is not necesarily equal to the product of their individual expected values.
+If the random variables are not independent, the equality above does not necessarily hold.
 
 % The Median
 
 \subsubsection*{The Median}
 
-The median of a discrete random variable is a measure of central tendency that represents the point that separates the higher half from the lower half of a probability distribution.
+The median of a discrete random variable is a measure of central tendency that identifies a point dividing the probability distribution so that at least half of the probability mass lies on each side.
 
 \begin{definition}
-Let $X$ be a discrete random variable. The \emph{median}\index{Median} of $X$, denoted by $m$, is the value that satisfies:
+Let $X$ be a discrete random variable. A \emph{median}\index{Median} of $X$, denoted by $m$, is any value satisfying:
 \[
-P\left(X\leq m\right)\geq \frac{1}{2} \quad \text{and} \quad P\left(X\geq m\right)\geq \frac{1}{2}
+P(X \leq m) \geq \tfrac{1}{2} \quad \text{and} \quad P(X \geq m) \geq \tfrac{1}{2}.
 \]
 \end{definition}
 
-The definition of the median considers the distribution of the discrete random variable, ensuring that at least half of the probability mass lies on either side of the median.
+This definition guarantees that at least half of the probability mass lies at or below $m$, and at least half lies at or above $m$. In general, the median of a discrete distribution need not be unique; any value satisfying the inequalities is considered a valid median. In applications, it is common to select the smallest such $m$.
 
-The "median" is often more intuitive than "expected value" because it is always one of the possible values, although in the case of an even number of outcomes it is customary to use the average of the two middle values.
-
-The median is a robust measure of central tendency, especially useful when the data has outliers or is skewed.
+The median is often more intuitive than the expected value, since it always corresponds to an actual value of the random variable. It is also a robust measure of central tendency, particularly when the distribution is skewed or contains outliers.
 
 \begin{example}
-Consider the company from Example \ref{ex:expected_salary}. The median of the salaries is calculated as the value $m$ for which $P\left(X\leq m\right)\geq \frac{1}{2}$. In this case, $m=300$. Now, suppose that one of the base employees is promoted to the executive level with the same salary of \$6000. The recalculated median would still be $m=300$. This example shows that the median is a more robust measure than the expected value in the presence of outliers.
+Consider the company from Example \ref{ex:expected_salary}. The median of the salaries is the value $m$ for which $P(X \leq m) \geq \tfrac{1}{2}$. In this case, $m=300$. Now suppose that one of the base employees is promoted to the executive level with a salary of $6000$. The recalculated median remains $m=300$. This illustrates that the median is more robust than the expected value in the presence of outliers.
 \end{example}
 
 %
@@ -980,7 +988,7 @@ The most common measures of dispersion in use to characterize probability distri
 
 \subsubsection*{The Variance}
 
-The variance of a discrete random variable is a measure of the spread or dispersion of the possible values of the variable around the expected value.
+The variance of a discrete random variable is a measure of the spread or dispersion of its possible values around the expected value.
 
 \begin{definition}
 Let $X$ be a discrete random variable with expected value $E(X)$ and probability mass function $f$. The \emph{variance}\index{Variance} of $X$, denoted by $Var(X)$, is defined as:
@@ -989,80 +997,74 @@ Var(X) = E[(X - E(X))^2] = \sum_{x} (x - E(X))^2 f(x)
 \]
 \end{definition}
 
-Variance considers the distribution of the discrete random variable and provides a measure of how much the values differ from the expected value. For instance, if all possible values of a discrete random variable are the same, the variance is zero.
+Variance depends only on the distribution of the random variable and quantifies how much the values typically differ from the expected value. For example, if all possible values of a random variable are identical, the variance is zero.
 
-As it was the case of the expected value, a drawback of the variance is that it can be influenced significantly by outliers because it involves squaring the deviations from the mean.
-
-\begin{example}
-Consider the company from Example \ref{ex:expected_salary}, with an expected salary of $E(X) = 357$: We calculate the variance as:
+\begin{example}\label{ex:daily_commuting_time}
+Suppose the daily commuting time (in minutes) of an employee is modeled by a random variable $X$ that takes values ${20, 30, 40, 50}$ with probabilities
 \[
-Var(X) = (300 - 357)^2 \times 99/100 + (6000 - 357)^2 \times 1/100 = 3218250
+P(X=20)=0.1,\; P(X=30)=0.4,\; P(X=40)=0.4,\; P(X=50)=0.1.
 \]
+The expected value is
+\[
+E(X) = 20(0.1) + 30(0.4) + 40(0.4) + 50(0.1) = 35.
+\]
+The variance is
+\begin{equation*}
+\begin{split}
+Var(X) = (20-35)^2(0.1) + (30-35)^2(0.4) + \\ 
+         (40-35)^2(0.4) + (50-35)^2(0.1) = 50.
+\end{split}
+\end{equation*}
+Thus, the variance of commuting times is $50$ (measured in squared minutes).
 \end{example}
 
-Next proposition states that for a linear combination of independent discrete random variables, the variance of the combination is the weighted sum of the variances of the individual variables, where the weights are the squares of the coefficients in the linear combination.
+The following proposition shows how the variance behaves under linear combinations of independent random variables.
 
 \begin{proposition}
-Let \(X_{1}, \ldots, X_{n}\) be $n$ independent discrete random variables with finite expected values, and \(a_{1},\ldots,a_{n}\) and \(b\) be arbitrary constants, then:
+Let $X_{1}, \ldots, X_{n}$ be independent discrete random variables with finite expected values, and let $a_{1}, \ldots, a_{n}$ and $b$ be constants. Then:
 \[
-Var\left(a_{1}X_{1}+\ldots+a_{n}X_{n}+b\right)=a_{1}^{2}Var\left(X_{1}\right)+\ldots+a_{n}^{2}Var\left(X_{n}\right)
+Var\left(a_{1}X_{1}+\ldots+a_{n}X_{n}+b\right) = a_{1}^{2}Var(X_{1}) + \ldots + a_{n}^{2}Var(X_{n}).
 \]
 \end{proposition}
 \begin{proof}
-Let \(Y = a_{1}X_{1} + \ldots + a_{n}X_{n} + b\). The variance of \(Y\) is given by:
+Let $Y = a_{1}X_{1} + \ldots + a_{n}X_{n} + b$. Since adding a constant does not affect variance,
 \[
-Var(Y) = Var(a_{1}X_{1} + \ldots + a_{n}X_{n} + b)
+Var(Y) = Var(a_{1}X_{1} + \ldots + a_{n}X_{n}).
 \]
-Since variance is unaffected by the addition of a constant, we can ignore \(b\):
+For independent random variables, variance is additive:
 \[
-Var(Y) = Var(a_{1}X_{1} + \ldots + a_{n}X_{n})
+Var(a_{1}X_{1} + \ldots + a_{n}X_{n}) = Var(a_{1}X_{1}) + \ldots + Var(a_{n}X_{n}).
 \]
-Now, using the linearity of variance for independent discrete random variables, we have:
+Finally, for any constant $a_i$, $Var(a_i X_i) = a_i^2 Var(X_i)$, so
 \[
-Var(a_{1}X_{1} + \ldots + a_{n}X_{n}) = Var(a_{1}X_{1}) + \ldots + Var(a_{n}X_{n})
-\]
-Next, we use the property that for any discrete random variable \(X_i\) and constant \(a_i\), \(Var(a_i X_i) = a_i^2 Var(X_i)\):
-\[
-Var(a_{1}X_{1}) + \ldots + Var(a_{n}X_{n}) = a_{1}^2 Var(X_{1}) + \ldots + a_{n}^2 Var(X_{n})
-\]
-Therefore, we have:
-\[
-Var(a_{1}X_{1} + \ldots + a_{n}X_{n} + b) = a_{1}^{2}Var(X_{1}) + \ldots + a_{n}^{2}Var(X_{n})
+Var(a_{1}X_{1} + \ldots + a_{n}X_{n} + b) = a_{1}^{2}Var(X_{1}) + \ldots + a_{n}^{2}Var(X_{n}).
 \]
 \end{proof}
 
-A key relationship in probability theory is the formula that expresses variance in terms of expected values. This relationship not only simplifies calculations but also provides deeper insight into the nature of variance as a measure of risk and variability.
+A particularly useful identity expresses variance in terms of expected values. This formulation often simplifies calculations and highlights the connection between variance and variability.
 
 \begin{proposition}
-Let $X$ be a discrete random variable with expected value $E(X)$. Then, the variance of $X$ is given by:
+Let $X$ be a discrete random variable with expected value $E(X)$. Then:
 \[
-Var(X) = E(X^2) - [E(X)]^2
+Var(X) = E(X^2) - [E(X)]^2.
 \]
 \end{proposition}
 \begin{proof}
-To prove this proposition, we start from the definition of variance:
+By definition,
 \[
-Var(X) = E[(X - E(X))^2]
+Var(X) = E[(X - E(X))^2].
 \]
-Expanding the square inside the expectation yields:
+Expanding the square gives:
 \[
-Var(X) = E[X^2 - 2X \cdot E(X) + (E(X))^2]
+Var(X) = E[X^2 - 2X E(X) + (E(X))^2].
 \]
-Applying the linearity of expectation, this becomes:
+By linearity of expectation,
 \[
-Var(X) = E(X^2) - 2E(X)E(X) + E((E(X))^2)
+Var(X) = E(X^2) - 2E(X)E(X) + E((E(X))^2).
 \]
-Since \(E(X)\) is a constant, the expectation of a constant is the constant itself, so:
+Since $E(X)$ is a constant, $E((E(X))^2) = (E(X))^2$, hence
 \[
-E((E(X))^2) = (E(X))^2
-\]
-Thus, the expression simplifies to:
-\[
-Var(X) = E(X^2) - 2(E(X))^2 + (E(X))^2
-\]
-Simplifying further, we cancel out terms:
-\[
-Var(X) = E(X^2) - (E(X))^2
+Var(X) = E(X^2) - (E(X))^2.
 \]
 \end{proof}
 
@@ -1070,30 +1072,45 @@ Var(X) = E(X^2) - (E(X))^2
 
 \subsubsection*{Standard Deviation}
 
-The standard deviation is also a statistical measure that quantifies the dispersion or variability in a set of data values. However, unlike variance, which squares the differences from the mean, resulting in units that are the square of the original data units, the standard deviation is the square root of the variance. This adjustment is crucial because it brings the units back to the original units of the data, making the measure more intuitive and directly interpretable.
+The standard deviation is a measure of the dispersion of a distribution, closely related to the variance. Unlike variance, which squares the deviations from the mean and therefore uses squared units, the standard deviation is defined as the square root of the variance. This restores the measure to the same units as the original variable, making it easier to interpret.
 
 \begin{definition}
-Let $X$ be a discrete random variable with expected value $E(X)$,  variance $Var(X)$ and probability mass function $f$. The \emph{standard deviation}\index{Standar deviation} of $X$, denoted by $\sigma$, is defined as:
+Let $X$ be a discrete random variable with expected value $E(X)$ and finite variance $Var(X)$, and let $f$ be its probability mass function. The \emph{standard deviation}\index{Standard deviation} of $X$, denoted by $\sigma$, is defined as:
 \[
-\sigma = \sqrt{Var(X)} = \sqrt{\sum_{x} (x - E(X))^2 f(x)}
+\sigma = \sqrt{Var(X)} = \sqrt{\sum_{x} (x - E(X))^2 f(x)}.
 \]
 \end{definition}
 
-The standard deviation provides a numerical summary of how scattered the values of $X$ are around the mean. A smaller standard deviation indicates that the values tend to be closer to the mean (less spread out), whereas a larger standard deviation indicates that the values are more spread out from the mean.
+The standard deviation summarizes how far the values of \$X\$ typically lie from the mean. A smaller standard deviation indicates that the values are concentrated near the mean, while a larger standard deviation indicates greater spread.
+
+The following proposition describes how the standard deviation transforms under linear changes of a random variable.
 
 \begin{proposition}
-Let $X$ be a discrete random variable with standard deviation $\sigma_X$, and $a$ and $b$ be arbitrary constants, then the standard deviation $\sigma_Y$ of the discrete random variable $Y = aX + b$ is $|a|$ times the standard deviation of $X$, i.e., $\sigma_Y = |a| \sigma_X$.
+Let $X$ be a discrete random variable with standard deviation $\sigma_X$, and let $a$ and $b$ be constants. Then the standard deviation $\sigma_Y$ of the random variable $Y = aX + b$ is
+\[
+\sigma_Y = |a| \, \sigma_X.
+\]
 \end{proposition}
 \begin{proof}
-The variance of $Y$ can be calculated as:
+The variance of $Y$ is
 \[
-\sigma_Y^2 = \sum_{x} (a x + b - (a E(X) + b))^2 f(x) = a^2 \sum_{x} (x - E(X))^2 f(x) = a^2 \sigma_X^2
+Var(Y) = \sum_{x} (a x + b - (a E(X) + b))^2 f(x) = a^2 \sum_{x} (x - E(X))^2 f(x) = a^2 \sigma_X^2.
 \]
-Taking the square root of both sides, we get:
+Taking square roots gives
 \[
-\sigma_Y = \sqrt{a^2 \sigma_X^2} = |a| \sigma_X.
+\sigma_Y = |a| \, \sigma_X.
 \]
 \end{proof}
+
+In practice, variance is often more convenient for theoretical derivations because of its algebraic properties, while standard deviation is usually preferred for interpretation, since it is expressed in the same units as the original data.
+
+\begin{example}
+Continuing from Example \ref{ex:daily_commuting_time} the standard deviation is
+\[
+\sigma = \sqrt{Var(X)} = \sqrt{50} \approx 7.07.
+\]
+Unlike variance, which is expressed in squared minutes, the standard deviation is measured in minutes, the same units as the commuting times themselves. This means that the typical commuting time deviates from the average of $35$ minutes by about $7$ minutes.
+\end{example}
 
 %
 % Measures of Statistical Relationship
@@ -1101,130 +1118,115 @@ Taking the square root of both sides, we get:
 
 \subsection{Measures of Statistical Relationship}
 
-Covariance and correlation are measures of the relationship between two variables. Covariance indicates the direction of the linear relationship, showing whether the variables tend to increase or decrease together, but it doesn't standardize the scale of the data. Correlation, on the other hand, standardizes this relationship, giving a value between -1 and 1, where -1 means a perfect negative linear relationship, 1 means a perfect positive linear relationship, and 0 indicates no linear relationship.
+Covariance and correlation are measures that describe the relationship between two variables. Covariance quantifies the direction of their linear association, indicating whether the variables tend to increase or decrease together. However, covariance is expressed in the product of the units of the two variables, making its magnitude difficult to interpret. Correlation, in contrast, standardizes this measure to a dimensionless quantity between $-1$ and $1$: a value of $-1$ indicates a perfect negative linear relationship, $1$ a perfect positive linear relationship, and $0$ the absence of a linear relationship.
 
 % Covariance
 
 \subsubsection*{Covariance}
 
-Covariance is a measure used to determine the degree to which two discrete random variables \(X\) and \(Y\) vary together. It gives an indication of the direction of the linear relationship between the variables.
+Covariance is a measure of the joint variability of two discrete random variables $X$ and $Y$. It indicates the direction of their linear relationship: whether they tend to increase together, decrease together, or vary independently.
 
 \begin{definition}
-Let $X$ and $Y$ be two discrete random variables with finite expected values $E(X)$ and $E(Y)$ respectively. The \emph{covariance}\index{Covariance} of $X$ and $Y$, denoted by $Cov\left(X, Y\right)$ is defined as
+Let $X$ and $Y$ be two discrete random variables with finite expected values $E(X)$ and $E(Y)$. The \emph{covariance}\index{Covariance} of $X$ and $Y$, denoted by $\operatorname{Cov}(X, Y)$, is defined as
 \[
-Cov\left(X, Y\right) = E\left[\left(X- E(X) \right) \left(Y - E(Y) \right) \right]
+\operatorname{Cov}(X, Y) = E\!\left[(X - E(X))(Y - E(Y))\right].
 \]
 \end{definition}
 
-The sign of the covariance reveals the direction of the relationship between two variables. A positive covariance means that as \(X\) increases, \(Y\) also tends to increase, while a negative covariance indicates that as \(X\) increases, \(Y\) tends to decrease. A covariance of zero suggests no linear relationship between the variables, but it’s important to note that this does not rule out the possibility of a non-linear relationship. Variables may still be related in complex, non-linear ways that covariance cannot capture.
+The sign of the covariance reveals the direction of the relationship: a positive value means that as $X$ increases, $Y$ tends to increase; a negative value means that as $X$ increases, $Y$ tends to decrease. A covariance of zero indicates no linear relationship, though nonlinear dependencies may still exist and are not captured by covariance.
 
-Next proposition presents a fundamental way to calculate covariance, showing how it measures the degree to which two variables vary together in relation to their individual expected values.
+The following result provides a useful formula for computing covariance.
 
 \begin{proposition}
-Let $X$ and $Y$ be two discrete random variables with finite expected values $E(X)$ and $E(Y)$ respectively. We have that
+For any two discrete random variables $X$ and $Y$ with finite expectations,
 \[
-Cov\left(X,Y\right)=E\left(XY\right)-E\left(X\right)E\left(Y\right)
+\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y).
 \]
 \end{proposition}
 \begin{proof}
-The covariance of \(X\) and \(Y\) is defined as the expected value of the product of their deviations from their respective means. Expanding the product within the expectation gives:
+By definition,
 \[
-\operatorname{Cov}(X, Y) = \mathrm{E}[(X - \mathrm{E}(X))(Y - \mathrm{E}(Y))] = \mathrm{E}[XY - X\mathrm{E}(Y) - Y\mathrm{E}(X) + \mathrm{E}(X)\mathrm{E}(Y)]
+\operatorname{Cov}(X,Y) = E\left[(X - E(X))(Y - E(Y))\right].
 \]
-Using the linearity of expectation, this expression can be simplified as:
+Expanding the product inside the expectation,
 \[
-\mathrm{E}[XY - X\mathrm{E}(Y) - Y\mathrm{E}(X) + \mathrm{E}(X)\mathrm{E}(Y)] = \mathrm{E}(XY) - \mathrm{E}(X\mathrm{E}(Y)) - \mathrm{E}(Y\mathrm{E}(X)) + \mathrm{E}(\mathrm{E}(X)\mathrm{E}(Y))
+E[XY - X E(Y) - Y E(X) + E(X)E(Y)].
 \]
-And since \(\mathrm{E}(Y)\) and \(\mathrm{E}(X)\) are constants:
+Using linearity of expectation and the fact that $E(X)$ and $E(Y)$ are constants,
 \[
-\mathrm{E}(X\mathrm{E}(Y)) = \mathrm{E}(X)\mathrm{E}(Y) \quad \text{and} \quad \mathrm{E}(Y\mathrm{E}(X)) = \mathrm{E}(Y)\mathrm{E}(X)
-\]
-Hence, the expression further simplifies to:
-\[
-\mathrm{E}(XY) - \mathrm{E}(X)\mathrm{E}(Y) - \mathrm{E}(Y)\mathrm{E}(X) + \mathrm{E}(X)\mathrm{E}(Y) = \mathrm{E}(XY) - \mathrm{E}(X)\mathrm{E}(Y)
-\]
-Thus, the covariance of \(X\) and \(Y\) is proved to be:
-\[
-\operatorname{Cov}(X, Y) = \mathrm{E}(XY) - \mathrm{E}(X)\mathrm{E}(Y)
+E(XY) - E(X)E(Y) - E(X)E(Y) + E(X)E(Y) = E(XY) - E(X)E(Y).
 \]
 \end{proof}
 
-Next proposition states an important result that highlights the relationship between independence and covariance for discrete random variables.
+The following proposition shows the connection between independence and covariance.
 
 \begin{proposition}
-If X and Y are independent discrete random variables with $0<Var(X)<\infty$ and $0<Var(Y)<\infty$ then $Cov\left(X,Y\right)=0$
+If $X$ and $Y$ are independent discrete random variables, then
+\[
+\operatorname{Cov}(X,Y) = 0.
+\]
 \end{proposition}
 \begin{proof}
-Let \( X \) and \( Y \) be independent discrete random variables. By the definition of covariance, we have:
+From the identity above,
 \[
-\text{Cov}(X, Y) = E\left[ (X - E[X])(Y - E[Y]) \right].
+\operatorname{Cov}(X,Y) = E(XY) - E(X)E(Y).
 \]
-Expanding this, we get:
+If $X$ and $Y$ are independent, then $E(XY) = E(X)E(Y)$. Substituting,
 \[
-\text{Cov}(X, Y) = E[XY] - E[X]E[Y].
+\operatorname{Cov}(X,Y) = E(X)E(Y) - E(X)E(Y) = 0.
 \]
-Since \( X \) and \( Y \) are independent, the expectation of the product of independent random variables is the product of their expectations:
-\[
-E[XY] = E[X]E[Y].
-\]
-Substituting this into the expression for covariance, we get:
-\[
-\text{Cov}(X, Y) = E[X]E[Y] - E[X]E[Y] = 0.
-\]
-Thus, \( \text{Cov}(X, Y) = 0 \).
 \end{proof}
 
-The converse is not true as a general rule. Two dependent discrete random variables can be uncorrelated.
+The converse does not hold in general: a covariance of zero does not imply independence. Two random variables may be dependent yet uncorrelated.
 
 % Correlation
 
 \subsubsection*{Correlation}
 
-The magnitude of the covariance is not standardized, meaning that it can be difficult to interpret the strength of the relationship without context. This is why correlation, which normalizes covariance, is often preferred to measure the strength of the linear relationship between two variables.
+The magnitude of covariance depends on the scale of the variables, making it difficult to compare across different contexts. To address this, correlation standardizes covariance by dividing by the product of the standard deviations of the variables. This yields a dimensionless measure of the strength and direction of their linear relationship.
 
 \begin{definition}
-Let $X$ and $Y$ be two discrete random variables with finite variances $Var(X)$ and $Var(Y)$ respectively. Then the \emph{correlation}\index{Correlation} of $X$ and $Y$, denoted by $Cor\left(X,Y\right)$, is defined as
+Let $X$ and $Y$ be two discrete random variables with finite, nonzero variances $\operatorname{Var}(X)$ and $\operatorname{Var}(Y)$. The \emph{correlation}\index{Correlation} of $X$ and $Y$, denoted by $\operatorname{Cor}(X,Y)$ is defined as
 \[
-Cor\left(X,Y\right)=\frac{Cov\left(X,Y\right)}{Var(X) Var(Y)}
+\operatorname{Cor}(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sqrt{\operatorname{Var}(X)} \, \sqrt{\operatorname{Var}(Y)}}.
 \]
 \end{definition}
 
-Correlation is a statistical measure that quantifies the strength and direction of a linear relationship between two discrete random variables. Unlike covariance, correlation is dimensionless and standardized, providing a value between -1 and 1.
+Correlation takes values in the interval $[-1,1]$. 
 
 \begin{proposition}
-The correlation coefficient \(\rho_{X,Y}\) lies in the range \([-1, 1]\).
+For any pair of random variables $X$ and $Y$ with finite nonzero variances,
+\[
+-1 \leq \operatorname{Cor}(X,Y) \leq 1.
+\]
 \end{proposition}
 \begin{proof}
-Correlation normalizes covariance by the product of the standard deviations of \(X\) and \(Y\), thus it is dimensionless:
+Let $U = X - E(X)$ and $V = Y - E(Y)$. Then
 \[
-\rho_{X,Y} = \frac{\operatorname{Cov}(X, Y)}{\sigma_X \sigma_Y}
+\operatorname{Cov}(X,Y) = E[UV].
 \]
-where \(\sigma_X = \sqrt{\operatorname{Var}(X)}\) and \(\sigma_Y = \sqrt{\operatorname{Var}(Y)}\). By the Cauchy-Schwarz inequality, we have:
+By the Cauchy--Schwarz inequality,
 \[
-(\mathrm{E}[XY])^2 \leq \mathrm{E}[X^2] \mathrm{E}[Y^2]
+|E[UV]|^2 \leq E[U^2] \, E[V^2].
 \]
-Substituting for expectations from the definitions of variance and covariance, and rearranging terms, the absolute value of the covariance does not exceed the product of the standard deviations of \(X\) and \(Y\):
+Noting that $E[U^2] = \operatorname{Var}(X)$ and $E[V^2] = \operatorname{Var}(Y)$, we obtain
 \[
-|\operatorname{Cov}(X, Y)| \leq \sigma_X \sigma_Y
+|\operatorname{Cov}(X,Y)| \leq \sqrt{\operatorname{Var}(X)} \, \sqrt{\operatorname{Var}(Y)}.
 \]
-This implies:
+Dividing both sides by the product of the standard deviations gives
 \[
--1 \leq \frac{\operatorname{Cov}(X, Y)}{\sigma_X \sigma_Y} \leq 1
-\]
-Thus:
-\[
--1 \leq \rho_{X,Y} \leq 1
+-1 \leq \operatorname{Cor}(X,Y) \leq 1.
 \]
 \end{proof}
 
-Correlation is a vital tool in statistics for assessing how strong a linear relationship exists between two variables. A correlation close to \(-1\) or \(+1\) indicates a strong linear relationship, whereas a correlation close to \(0\) suggests a weak linear relationship. This metric is particularly useful in fields such as finance, economics, and the natural sciences where understanding the relationship between variables is crucial for modeling and prediction.
+A value of $\operatorname{Cor}(X,Y) = 1$ indicates a perfect positive linear relationship, $\operatorname{Cor}(X,Y) = -1$ indicates a perfect negative linear relationship, and $\operatorname{Cor}(X,Y) = 0$ indicates no linear relationship.
 
 \begin{example}
-Let's take a practical example of two random variables: "hours of exercise per week" (\(X\)) and "weight loss in kilograms over a month" (\(Y\)). Suppose we gather the following data from 5 individuals:
+Consider two variables: weekly hours of exercise ($X$) and monthly weight loss in kilograms ($Y$). Suppose the following data are observed:
 \[
 \begin{array}{|c|c|c|}
 \hline
-\text{Person} & \text{Hours of Exercise (X)} & \text{Weight Loss (Y)} \\
+\text{Person} & X & Y \\
 \hline
 1 & 5 & 1 \\
 2 & 10 & 2 \\
@@ -1234,43 +1236,29 @@ Let's take a practical example of two random variables: "hours of exercise per w
 \hline
 \end{array}
 \]
-Now, let's calculate the correlation between the hours of exercise and the weight loss to see how strongly these two variables are related. Using the formula for the Pearson correlation coefficient:
-\[
-r = \frac{\text{cov}(X, Y)}{\sigma_X \sigma_Y}
-\]
-we calculate \( r \approx 0.98 \), indicating a very strong positive correlation. This means that as the hours of exercise increase, weight loss tends to increase as well.
+Computing the correlation coefficient yields $\approx 0.98$, indicating a very strong positive linear relationship. This means that individuals who exercise more hours per week tend to lose more weight. However, it is important to note that correlation measures association, not causation.
 \end{example}
 
-The next proposition establishes that if two discrete random variables are independent and have finite variances, their correlation must be zero.
+The following proposition establishes that if two discrete random variables are independent and have finite variances, their correlation must be zero.
 
 \begin{proposition}
-Let $X$ and $Y$ be two independent discrete random variables with finite variances $Var(X)$ and $Var(Y)$, then we have that $Cor\left(X,Y\right)=0$
+If $X$ and $Y$ are independent discrete random variables with finite, nonzero variances, then
+\[
+\operatorname{Cor}(X,Y) = 0.
+\]
 \end{proposition}
 \begin{proof}
-Let \( X \) and \( Y \) be two independent discrete random variables with finite variances. The correlation between \( X \) and \( Y \) is given by:
+From the definition,
 \[
-\text{Cor}(X, Y) = \frac{\text{Cov}(X, Y)}{\sqrt{\text{Var}(X)} \sqrt{\text{Var}(Y)}}.
+\operatorname{Cor}(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sqrt{\operatorname{Var}(X)} \, \sqrt{\operatorname{Var}(Y)}}.
 \]
-By the definition of covariance, we have:
-\[
-\text{Cov}(X, Y) = E[XY] - E[X]E[Y].
-\]
-Since \( X \) and \( Y \) are independent, we know that:
-\[
-E[XY] = E[X] E[Y].
-\]
-Substituting this into the expression for covariance, we get:
-\[
-\text{Cov}(X, Y) = E[X] E[Y] - E[X] E[Y] = 0.
-\]
-Thus, the covariance is zero. Therefore, the correlation becomes:
-\[
-\text{Cor}(X, Y) = \frac{0}{\sqrt{\text{Var}(X)} \sqrt{\text{Var}(Y)}} = 0.
-\]
+If $X$ and $Y$ are independent, then $E(XY) = E(X)E(Y)$, so $\operatorname{Cov}(X,Y) = 0$. Substituting into the formula above gives $\operatorname{Cor}(X,Y) = 0$.
 \end{proof}
 
+Note, however, that the converse is not true: correlation equal to zero does not imply independence, since variables can be dependent in nonlinear ways.
+
 %
-% Section: Distribution
+% Section: Distributions
 %
 
 \section{Common Distributions}

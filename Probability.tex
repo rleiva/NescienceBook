@@ -1470,127 +1470,120 @@ The discrete normal distribution serves as a bridge between discrete and continu
 \section{Large Random Samples}
 \label{sec:probability_random_samples}
 
-A random sample is a collection of independent and identically distributed random variables. Random samples are fundamental in probability theory, providing a basis for making inferences about an unknown probability distribution. Two key results that arise from random samples are the law of large numbers, which ensures that the sample mean converges to the expected value of the distribution as the sample size increases, and the central limit theorem, which states that the distribution of the sample mean approaches a normal distribution as the sample size becomes large, regardless of the original population's distribution.
+A random sample is a collection of independent and identically distributed random variables. Random samples are fundamental in probability theory, providing the foundation for making inferences about an unknown probability distribution. Two key results that arise from random samples are the law of large numbers, which ensures that the sample mean converges to the expected value of the distribution as the sample size increases, and the central limit theorem, which states that the distribution of the sample mean approaches a normal distribution as the sample size grows, regardless of the original population's distribution.
 
-{\color{red} [...] statistical methods do not directly describe reality but provide a conceptual framework (i.e., a model) for understanding how data is generated and how we can make inferences about the population from which the data comes. [...] Random sampling assumes that every member of the population has an equal probability of being selected, and selections are independent of one another. This means the sample is a simplified, idealized representation of how real-world data might be generated. [...] The model assumes perfect randomness, which rarely occurs in practice. True random sampling is often an unattainable ideal, but it provides a baseline against which deviations can be measured. [...] Random sampling allows for the development of probability distributions that describe the expected behavior of sample statistics (e.g., sample mean, variance). This makes it possible to quantify uncertainty and draw conclusions about the population. [...] The random sampling model is a representation of how data might be collected, but it is not the same as reality [...] models are tools that work well in specific contexts, but their assumptions often do not hold universally. The practical use of random sampling depends on how well the model fits the real-world context. }
+Random sampling assumes that every member of the population has an equal probability of being selected and that selections are independent of one another. In this sense, the sample is an idealized representation of how real-world data might be generated. Perfect random sampling is rarely achievable in practice, but it provides a baseline against which deviations can be evaluated. This framework allows us to construct probability distributions describing the expected behavior of sample statistics (e.g., sample mean, variance), making it possible to quantify uncertainty and to draw principled conclusions about the population.
+
+The random sampling model is therefore a powerful representation of how data might be collected, though it is not identical to reality. Like all models, it works well in specific contexts, but its assumptions do not universally hold. The practical usefulness of random sampling depends on how closely the model aligns with the real-world situation under study.
 
 % Random Samples
 
-\subsection{Random Samples}
+\subsection{Random Sample}
 
-The concept of a random sample is pivotal in the field of statistical learning, as assuming a set of discrete random variables constitutes a random sample greatly simplifies the mathematical underpinnings of inferential methods. Nevertheless, the criteria for a collection of variables to be considered a random sample are not always met in real-world scenarios.
+The concept of a random sample is pivotal in the field of statistical learning, since assuming that a set of discrete random variables forms a random sample greatly simplifies the mathematical foundations of inference. However, the criteria required for a collection of variables to be considered a random sample are not always satisfied in real-world scenarios.
 
 \begin{definition}
-Let \( f \) be a probability mass function, and let \( X_1, X_2, \ldots, X_n \) be a collection of discrete random variables. The variables \( X_1, X_2, \ldots, X_n \) form a \emph{random sample}\index{Random sample} from the distribution \( f \) if each discrete random variable \( X_i \) follows the probability mass function \( f \), and the variables \( X_1, X_2, \ldots, X_n \) are independent of each other. These discrete random variables are also referred to as \emph{independent and identically distributed (i.i.d.)}\index{Independent and identically distributed}. The number \( n \) of discrete random variables is referred to as the \emph{sample size}\index{Sample size}.
+Let $f$ be a probability mass function, and let $X_1, X_2, \ldots, X_n$ be a collection of discrete random variables. The variables $X_1, X_2, \ldots, X_n$ form a \emph{random sample}\index{Random sample} from the distribution $f$ if each $X_i$ follows the probability mass function $f$ and the variables $X_1, X_2, \ldots, X_n$ are mutually independent. Such variables are called \emph{independent and identically distributed (i.i.d.)}\index{Independent and identically distributed}. The number $n$ of variables is called the \emph{sample size}\index{Sample size}.
 \end{definition}
 
-The joint probability mass function \( g \) of a random sample \( X_1, X_2, \ldots, X_n \) is given by:
+The joint probability mass function $g$ of a random sample $X_1, X_2, \ldots, X_n$ is
 \[
-g\left( x_1, x_2, \ldots, x_n \right) = f\left( x_1 \right) f\left( x_2 \right) \cdots f\left( x_n \right)
+g(x_1, x_2, \ldots, x_n) = f(x_1) f(x_2) \ldots f(x_n).
 \]
 
 \begin{example}
-A factory produces light bulbs, and the quality control department is interested in determining the proportion of defective bulbs. The number of defective bulbs in a batch of 100 bulbs is modeled using a binomial distribution, where each bulb has a probability \( p \) of being defective. The department randomly selects 5 batches, each containing 100 bulbs. Let the discrete random variables \( X_1, X_2, X_3, X_4, X_5 \) represent the number of defective bulbs in each of these 5 batches. Each \( X_i \) follows the binomial distribution \( \text{Binomial}(100, p) \). The discrete random variables \( X_1, X_2, X_3, X_4, X_5 \) are independent and identically distributed, and thus, they form a random sample.
+A factory produces light bulbs, and the quality control department is interested in estimating the proportion of defective bulbs. The number of defectives in a batch of $100$ bulbs is modeled by a binomial distribution with parameter $p$, the probability of a bulb being defective. Suppose the department randomly selects $5$ batches, each of $100$ bulbs. Let $X_1, \ldots, X_5$ denote the number of defectives in each batch. Each $X_i \sim \operatorname{Binomial}(100,p)$, and assuming the batches are independent, the variables $X_1, \ldots, X_5$ form a random sample.
 \end{example}
 
-In the area of statistical inference, it is also highly convenient to compute the sample mean, as the average of \( n \) discrete random variables.
+In statistical inference, it is convenient to compute the sample mean, as the average of $n$ random variables.
 
 \begin{definition}
-Let \( X_1, X_2, \ldots, X_n \) be \( n \) discrete random variables. The \emph{sample mean}\index{Sample mean} of \( X_1, X_2, \ldots, X_n \), denoted by \( \bar{X}_n \), is defined as:
+Let $X_1, X_2, \ldots, X_n$ be $n$ discrete random variables. The \emph{sample mean}\index{Sample mean}, denoted by $\bar{X}_n$, is:
 \[
 \bar{X}_n = \frac{1}{n} \sum_{i=1}^n X_i
 \]
 \end{definition}
 
-Do not confuse \( \frac{1}{n} \left( X_1 + X_2 + \ldots + X_n \right) \), which is a discrete random variable\footnote{Recall that with \( X_1 + \ldots + X_n \) we are defining a new discrete random variable over the Cartesian product of the original sample spaces, not adding \( n \) probability distributions.}, with the expected value \( E\left( X_1 + X_2 + \ldots + X_n \right) \), which is a real number.
+Do not confuse the random variable $\bar{X}_n = \tfrac{1}{n}(X_1 + \cdots + X_n)$ with the population mean $E(X_i)$, which is a fixed real number. Recall that $X_1 + \cdots + X_n$ defines a new random variable on the Cartesian product of the original sample spaces, not a sum of probability distributions.
 
-As we will show in the next proposition, the concept of sample mean is particularly relevant for the case of \( X_1, X_2, \ldots, X_n \) being a random sample.
+The following proposition shows that the sample mean provides an unbiased estimate of the population mean, and that its variance decreases as the sample size increases.
 
 \begin{proposition}\label{prop:sample_mean}
-Let \( X_1, \ldots, X_n \) be a random sample with finite mean \( E\left( X_i \right) = \mu \) and finite variance \( \operatorname{Var}\left( X_i \right) = \sigma^2 \), and let \( \bar{X}_n = \frac{1}{n} \left( X_1 + \ldots + X_n \right) \) be the sample mean. Then we have that \( E\left( \bar{X}_n \right) = \mu \) and \( \operatorname{Var}\left( \bar{X}_n \right) = \sigma^2 / n \).
+Let \( X_1, \ldots, X_n \) be a random sample with finite mean \( E(X_i) = \mu \) and variance \( \operatorname{Var}(X_i) = \sigma^2 \). Then
+\[
+E(\bar{X}_n) = \mu, \qquad \operatorname{Var}(\bar{X}_n) = \frac{\sigma^2}{n}.
+\]
 \end{proposition}
 \begin{proof}
-Using the linearity of expectation, we have:
+By linearity of expectation,
 \[
-E\left( \bar{X}_n \right) = E\left( \frac{1}{n} \sum_{i=1}^{n} X_i \right) = \frac{1}{n} \sum_{i=1}^{n} E\left( X_i \right) = \frac{1}{n} \cdot n \cdot \mu = \mu
+E(\bar{X}_n) = E\!\left( \frac{1}{n} \sum_{i=1}^{n} X_i \right) = \frac{1}{n} \sum_{i=1}^{n} E(X_i) = \mu.
 \]
-Using the properties of variance and the fact that the \( X_i \) are independent, we have:
+For the variance,
 \[
-\operatorname{Var}\left( \bar{X}_n \right) = \operatorname{Var}\left( \frac{1}{n} \sum_{i=1}^{n} X_i \right)
+\operatorname{Var}(\bar{X}_n) = \operatorname{Var}\!\left( \frac{1}{n} \sum_{i=1}^{n} X_i \right) = \frac{1}{n^2} \operatorname{Var}\!\left( \sum_{i=1}^{n} X_i \right).
 \]
-Since variance is homogeneous of degree 2, we can factor out the constant \( \frac{1}{n} \):
+Since the \( X_i \) are independent,
 \[
-\operatorname{Var}\left( \bar{X}_n \right) = \left( \frac{1}{n} \right)^2 \operatorname{Var}\left( \sum_{i=1}^{n} X_i \right)
+\operatorname{Var}\!\left( \sum_{i=1}^{n} X_i \right) = \sum_{i=1}^{n} \operatorname{Var}(X_i) = n\sigma^2,
 \]
-For independent discrete random variables, the variance of the sum is the sum of the variances:
+so
 \[
-\operatorname{Var}\left( \sum_{i=1}^{n} X_i \right) = \sum_{i=1}^{n} \operatorname{Var}\left( X_i \right) = n \cdot \sigma^2
-\]
-Thus:
-\[
-\operatorname{Var}\left( \bar{X}_n \right) = \left( \frac{1}{n} \right)^2 \cdot n \cdot \sigma^2 = \frac{\sigma^2}{n}
+\operatorname{Var}(\bar{X}_n) = \frac{1}{n^2} \cdot n\sigma^2 = \frac{\sigma^2}{n}.
 \]
 \end{proof}
 
-The probability distribution of $\bar{X}_n$ will be more concentrated arount the mean value $\mu$ that was the original distribution. 
+Thus, the sample mean is unbiased, and its variance shrinks at rate $1/n$. As $n$ grows, the distribution of $\bar{X}_n$ becomes more concentrated around the population mean $\mu$. 
 
-In the area of statistical inference, it is also highly convenient to compute the sample variance as a measure of the dispersion of \( n \) discrete random variables. In particular, we will compute the sample variance of random samples.
+In statistical inference, it is also convenient to compute the sample variance as a measure of the dispersion of the sample values.
 
 \begin{definition}
-Let \( X_1, X_2, \ldots, X_n \) be a set of discrete random variables with sample mean \( \bar{X}_n \). The \emph{sample variance}\index{Sample variance} of \( X_1, X_2, \ldots, X_n \), denoted by \( S^2 \), is defined as:
+Let \( X_1, X_2, \ldots, X_n \) be a set of discrete random variables with sample mean \( \bar{X}_n \). The \emph{sample variance}\index{Sample variance}, denoted by \( S^2 \), is:
 \[
-S^2 = \frac{1}{n - 1} \sum_{i=1}^n \left( X_i - \bar{X}_n \right)^2
+S^2 = \frac{1}{n - 1} \sum_{i=1}^n ( X_i - \bar{X}_n )^2
 \]
 \end{definition}
 
-Do not confuse the sample variance, which is a statistic based on observed values, with the theoretical variance of the distribution. We will study some important properties of the variance of large random samples in Section \ref{sec:probability_random_samples}.
+The factor $1/(n-1)$ ensures that $S^2$ is an unbiased estimator of the population variance when the $X_i$ are i.i.d. Do not confuse the sample variance, which is computed from observed data, with the theoretical variance of the underlying distribution.
 
 \begin{example}
-Continuing from the previous example, suppose we have the observed values of \( X_1, X_2, \ldots, X_5 \) as follows:
+Suppose we observe $X_1=6, \, X_2=4, \, X_3=5, \, X_4=7, \, X_5=3 $. Then
 \[
-X_1 = 6, \quad X_2 = 4, \quad X_3 = 5, \quad X_4 = 7, \quad X_5 = 3
+\bar{X}_5 = \frac{6+4+5+7+3}{5} = 5,
 \]
-The sample mean is:
+and
 \[
-\bar{X}_5 = \frac{1}{5} \left( 6 + 4 + 5 + 7 + 3 \right) = \frac{25}{5} = 5
+S^2 = \frac{1}{4}\big[(6-5)^2 + (4-5)^2 + (5-5)^2 + (7-5)^2 + (3-5)^2\big] = \frac{10}{4} = 2.5.
 \]
-The sample variance is:
-\[
-S^2 = \frac{1}{5 - 1} \sum_{i=1}^{5} \left( X_i - 5 \right)^2 = \frac{1}{4} \left[ (6 - 5)^2 + (4 - 5)^2 + (5 - 5)^2 + (7 - 5)^2 + (3 - 5)^2 \right]
-\]
-\[
-S^2 = \frac{1}{4} \left( 1 + 1 + 0 + 4 + 4 \right) = \frac{10}{4} = 2.5
-\]
-Thus, the sample variance is 2.5.
 \end{example}
 
 The sample standard deviation is used to estimate the standard deviation of a population based on a sample taken from it. Unlike the population standard deviation, which uses the true mean of the entire population, the sample standard deviation uses the mean of the sample as an estimate of the true mean.
 
 \begin{definition}
-Let \( X_1, X_2, \ldots, X_n \) be \( n \) discrete random variables with sample mean \( \bar{X}_n \) and sample variance \( S^2 \). The \emph{sample standard deviation}\index{Sample standard deviation} of \( X_1, X_2, \ldots, X_n \), denoted by \( S \), is defined as:
+Let \( X_1, X_2, \ldots, X_n \) be \( n \) discrete random variables with sample mean \( \bar{X}_n \) and sample variance \( S^2 \). The \emph{sample standard deviation}\index{Sample standard deviation}, denoted by \( S \), is:
 \[
 S = \sqrt{S^2} = \sqrt{ \frac{1}{n - 1} \sum_{i=1}^{n} \left( X_i - \bar{X}_n \right)^2 }
 \]
 \end{definition}
 
 \begin{example}
-Using the sample variance calculated in the previous example, the sample standard deviation is:
+Using the variance from the previous example, the sample standard deviation is
 \[
-S = \sqrt{S^2} = \sqrt{2.5} \approx 1.5811
+S = \sqrt{2.5} \approx 1.58.
 \]
 \end{example}
 
-The sample covariance is used to estimate the covariance between two populations based on a sample taken from them.
+Finally, when two variables are sampled together, the sample covariance estimates the covariance between their populations.
 
 \begin{definition}
-Let \( X_1, X_2, \ldots, X_n \) and \( Y_1, Y_2, \ldots, Y_n \) be two sets of discrete random variables with sample means \( \bar{X} \) and \( \bar{Y} \) respectively. The \emph{sample covariance}\index{Sample covariance} between \( X \) and \( Y \) is defined as:
+Let \( X_1, X_2, \ldots, X_n \) and \( Y_1, Y_2, \ldots, Y_n \) be two sets of discrete random variables with sample means \( \bar{X} \) and \( \bar{Y} \) respectively. The \emph{sample covariance}\index{Sample covariance} is:
 \[
-s_{XY} = \frac{1}{n - 1} \sum_{i=1}^n \left( X_i - \bar{X} \right) \left( Y_i - \bar{Y} \right)
+s_{XY} = \frac{1}{n - 1} \sum_{i=1}^n ( X_i - \bar{X} ) ( Y_i - \bar{Y} )
 \]
 \end{definition}
 
 \begin{example}
-Suppose we have paired observations of two discrete random variables \( X \) and \( Y \):
+Suppose we observe the paired data
 \[
 \begin{array}{c|ccccc}
 \hline
@@ -1601,30 +1594,23 @@ Y_i & 1 & 3 & 5 & 7 & 9 \\
 \hline
 \end{array}
 \]
-Compute the sample means:
+Then
 \[
-\bar{X} = \frac{1}{5} \sum_{i=1}^{5} X_i = \frac{30}{5} = 6, \quad \bar{Y} = \frac{1}{5} \sum_{i=1}^{5} Y_i = \frac{25}{5} = 5
+\bar{X} = 6, \quad \bar{Y} = 5,
 \]
-Compute the sample covariance:
+and
 \[
-s_{XY} = \frac{1}{5 - 1} \sum_{i=1}^{5} \left( X_i - 6 \right) \left( Y_i - 5 \right)
+s_{XY} = \frac{1}{4}\big[(-4)(-4) + (-2)(-2) + (0)(0) + (2)(2) + (4)(4)\big] = \frac{40}{4} = 10.
 \]
-\[
-s_{XY} = \frac{1}{4} \left[ (2 - 6)(1 - 5) + (4 - 6)(3 - 5) + (6 - 6)(5 - 5) + (8 - 6)(7 - 5) + (10 - 6)(9 - 5) \right]
-\]
-\[
-s_{XY} = \frac{1}{4} \left[ ( -4 )( -4 ) + ( -2 )( -2 ) + ( 0 )( 0 ) + ( 2 )( 2 ) + ( 4 )( 4 ) \right] = \frac{1}{4} \left[ 16 + 4 + 0 + 4 + 16 \right] = \frac{40}{4} = 10
-\]
-Thus, the sample covariance between \( X \) and \( Y \) is 10.
 \end{example}
 
 % Law of Large Numbers
 
 \subsection{Law of Large Numbers}
 
-The law of large numbers is a theorem that states that the sample mean of a large random sample, i.e. a large number of independent and identically distributed discrete random variables, should be close to the expected value of the discrete random variables, and that the more variables we add, the closer will be to that value. Before to prove this important theorem we have to prove two other related propostions: Markov's inequality and Chebyshev's inequality.
+The law of large numbers states that the sample mean of a large random sample, i.e., a large number of independent and identically distributed (i.i.d.) discrete random variables, will be close to the expected value of the distribution, and that as we increase the sample size, the sample mean gets closer (in a precise probabilistic sense) to that value. Before proving this theorem, we establish two related propositions: Markov's inequality and Chebyshev's inequality.
 
-Markov's inequality provides a simple way to measure how unlikely it is for a discrete random variable to take on large values, given its expected value. It leverages the fact that if the average value of discrete random variable $X$ is small, then it is improbable for $X$ to take on a large value (recall Example \ref{ex:expected_salary}). Markov's inequality is particularly useful because it makes no assumptions about the distribution of the discrete random variable, apart from it being non-negative and having a finite expected value.
+Markov's inequality provides a simple bound on how unlikely it is for a nonnegative discrete random variable to take a large value, given its expected value. Intuitively, if the average value of a nonnegative random variable $X$ is small, then $X$ is unlikely to be very large (recall Example \ref{ex:expected_salary}). Markov's inequality is particularly useful because it requires no assumptions on the distribution of $X$ beyond nonnegativity and finiteness of the mean.
 
 \begin{proposition}[Markov's Inequality]\index{Markov's Inequality}
 Let $X$ be a nonnegative discrete random variable, i.e. $P\left( X \geq 0 \right) = 1$, with expected value $E(X)$. Then for every real number $t>0$ we have that 
@@ -1634,55 +1620,57 @@ P \left( X \geq t \right) \leq \frac{E(X)}{t}
 \end{proposition}
 \begin{proof}
 Let $f$ be the probability mass function of $X$. Since $X$ is non-negative we have that $E(X) = \sum_{x>0} x f \left( x \right)$. Then
-\[
-E(X) = \sum_{x>0} x f \left( x \right) = \sum_{x=0}^{t} x f \left( x \right) + \sum_{x=t}^{\infty} x f \left( x \right) \geq
-\sum_{x=t}^{\infty} x f \left( x \right) \geq \sum_{x=t}^{\infty} t f \left( x \right) = t \sum_{x=t}^{\infty} f \left( x \right) =
+\begin{equation*}
+\begin{split}
+E(X) = & \sum_{x>0} x f \left( x \right) = \sum_{x=0}^{t} x f \left( x \right) + \sum_{x=t}^{\infty} x f \left( x \right) \geq \\
+& \sum_{x=t}^{\infty} x f \left( x \right) \geq \sum_{x=t}^{\infty} t f \left( x \right) = t \sum_{x=t}^{\infty} f \left( x \right) =
 t P \left( X \geq t \right)
-\]
+\end{split}  
+\end{equation*}
 that is, $E(X) \geq t P \left( X \geq t \right)$.
 \end{proof}
 
-For example, if the expected value of a discrete random variable $X$ is $10$, and we are interested in the probability that $X$ is at least $50$, Markov's inequality tells us that $P(X \geq 50) \leq 10/50 = 0.2$. While Markov's inequality is very general and easy to use, it is often not tight (i.e., the bound is not very close to the true probability). This is because it does not use any other information about the distribution of $X$ other than its expectation.
+For example, if $E(X)=10$ and we ask for $P(X \ge 50)$, Markov's inequality gives $P(X \ge 50) \le 10/50 = 0.2$. While Markov's inequality is very general and easy to use, its bound is often not tight because it uses only the mean of $X$.
 
-Chebyshev's inequality provides a bound on the probability that a discrete random variable deviates from its expected value by more than a specified number of standard deviations. Unlike Markov's inequality, which only requires non-negativity, Chebyshev's inequality does not require the discrete random variable to be nonnegative, but it requires knowledge of both the mean and variance of the discrete random variable. The inequality is applicable to any discrete random variable with a finite mean and variance, regardless of the specific distribution.
+Chebyshev's inequality bounds the probability that a random variable deviates from its expected value by more than a specified number of standard deviations. Unlike Markov's inequality, which only requires non-negativity, it does not require $X$ to be nonnegative, but it requires knowledge of both the mean and variance.
 
-\begin{corollary}[Chebyshev's inequality]\index{Chebyshev's inequality}
- Let $X$ be a discrete random variable with expected value $E(X)$ and variance $Var(X)$. Then for every real number $t > 0$ we have that
+\begin{corollary}[Chebyshev's Inequality]\index{Chebyshev's inequality}
+Let $X$ be a discrete random variable with finite mean $E(X)$ and finite variance $\operatorname{Var}(X)$. Then for every $t>0$,
 \[
-P \left( \left| X - E(X) \right| \geq t \right) \leq \frac{var(X)}{t^2}
+P\big(|X - E(X)| \ge t\big) \le \frac{\operatorname{Var}(X)}{t^2}.
 \]
 \end{corollary}
 \begin{proof}
-Applying Markov's inequality we have that
+Apply Markov's inequality to the nonnegative random variable $(X - E(X))^2$:
 \[
-P \left( \left| X - E(X) \right| \geq t \right) = P \left( \left( X - E(X) \right)^2 \geq t^2 \right) \leq \frac{E \left( \left( X - E(X) \right)^2 \right)}{t^2} = \frac{var(X)}{t^2}
+P\big(|X - E(X)| \ge t\big) \;=\; P\big((X - E(X))^2 \ge t^2\big)
+\;\le\; \frac{E\big[(X - E(X))^2\big]}{t^2}
+\;=\; \frac{\operatorname{Var}(X)}{t^2}.
 \]
 \end{proof}
 
-Chebyshev's inequality provides insight into the concentration of a discrete random variable around its mean. It quantifies the idea that most of the probability mass of a discrete random variable lies within a certain range of its mean, with fewer values appearing further away. This concept is particularly useful in understanding the spread of a distribution and the likelihood of large deviations.
+Chebyshev's inequality formalizes the idea that most of the probability mass of a distribution lies near its mean: the probability of being several standard deviations away decays at least on the order of $1/t^2$.
 
-The last element we need to formally prove the law of large numbers is to introduce the concept of convergence in probability for discrete random variables. Intuitively, a sequence of discrete random variables converges in probability to a value $b$ if $X_n$ lies around $b$.
+The last notion we need for the law of large numbers is convergence in probability. Intuitively, a sequence of random variables converges in probability to $b$ if the values $X_n$ concentrate around $b$ as $n$ increases.
 
 \begin{definition}
-Let $X_{1}, X_{2}, \ldots$ be a sequence of discrete random variables. It is said that the sequence $X_{1}, X_{2}, \ldots$ \emph{converges in probability}\index{Convergence in probability} to $b$ , denoted by $X_{n} \overset{p}{\rightarrow}b$, if for every positive real number $\varepsilon>0$ we have that
+Let $X_{1}, X_{2}, \ldots$ be a sequence of discrete random variables. It is said that the sequence $X_{1}, X_{2}, \ldots$ \emph{converges in probability}\index{Convergence in probability} to $b$ , denoted by $X_{n} \overset{p}{\rightarrow}b$, if for every positive real number $\varepsilon>0$,
 \[
 \lim_{n \rightarrow \infty} P \left( \left| X_{n} - b \right| < \varepsilon \right) = 1
 \]
 \end{definition}
 
-Convergence in probability essentially means that as the sequence progresses (i.e., as $n$ increases), the discrete random variables $X_n$ become arbitrarily close to the number $b$ with high probability. The distance between $X_n$ and $b$ can be made as small as desired, and the likelihood of $X_n$ being far from $b$ diminishes as $n$ increases.
-
-Given the above definitions and partial results, we can now formally introduce and prove the law of large numbers.
+Given these elements, we can state and prove the (weak) law of large numbers.
 
 \begin{theorem}[Law of Large Numbers]\index{Law of Large Numbers}
 \label{th:law_large_numbers}
-Let $X_1, \ldots, X_n$ be a random sample with finite expected value and finite variance, and let $\overline {X}_n = \frac {1}{n} \left( X_1 + \ldots + X_n \right)$ be the sample mean. Then we have that
+Let $X_1, X_2, \ldots$ be i.i.d.\ random variables with finite mean $E(X_i)=\mu$ and finite variance $\operatorname{Var}(X_i)=\sigma^2$. Let $\overline{X}_n = \frac{1}{n}(X_1 + \cdots + X_n)$ be the sample mean. Then
 \[
-\overline {X}_n \overset{p}{\rightarrow} \mu
+\overline{X}_n \overset{p}{\to} \mu.
 \]
 \end{theorem}
 \begin{proof}
-Since the variables $X_1, \ldots, X_n$ are independent and identically distributed, we have that the variance of the sample mean is $Var \left( \overline {X}_n \right) = \frac{\sigma^2}{n}$ and that the mean is $E \left( \overline {X}_n \right) = \mu$ (see Proposition \ref{prop:sample_mean}). Applying the Chebyshev's inequality to the discrete random variable $\overline {X}_n$ we have that
+By Proposition \ref{prop:sample_mean}, $E(\overline{X}_n)=\mu$ and $\operatorname{Var}(\overline{X}_n)=\sigma^2/n$. Applying Chebyshev's inequality,
 \[
 P \left( \left| \overline {X}_n- \mu \right| \geq \varepsilon \right) \leq \frac{\sigma ^2}{n \varepsilon^2}.
 \]
@@ -1690,22 +1678,29 @@ From there we can obtain
 \[
 P \left( \left| \overline {X}_n - \mu \right| < \varepsilon \right) = 1 - P \left( \left| \overline {X}_n - \mu \right| \geq \varepsilon \right) \geq 1 - \frac{\sigma ^2}{n \varepsilon^2}.
 \]
-As n approaches infinity, the above expression approaches 1. Aplying the definition of convergence in probability, we have that
+As n approaches infinity, the above expression approaches 1. Thus,
 \[
 \overline{X}_n \overset{p}{\rightarrow} \mu
 \]
 \end{proof}
 
-It is very important to note that the law of large numbers only works in case that the discrete random variables are independent and identicaly distributed. Also, that the law is true only in the limit. If we have a finite number of discrete random variables, the sample mean will be close to the distribution mean, but not necesarily equal.
-
-Let's see an example of the use of the law of large numbers in practice.
+It is important to note that the assumptions (independence and identical distribution, with finite variance) are essential. The theorem is an asymptotic statement: for a finite sample, the sample mean is typically close to the population mean, but not necessarily equal to it.
 
 \begin{example}
-Consider the experiment of rolling a fair six-sided die $\Omega = \{1, 2, 3, 4, 5, 6\}$, being each side equally probable with $P(\omega)=1/6$ for $\omega \in \Omega$. Let $X:\Omega \rightarrow \mathbb{R}$ be a discrete random variable that maps each side of the die with the number depicted on it. The probability mass function $f: range(X) \rightarrow [0, 1]$ of $X$ assigns $1/6$ to each value of $range(X)$. The expected value of $X$ is $E(X) = 3.5$.
+Consider rolling a fair six-sided die with sample space $\Omega = \{1,2,3,4,5,6\}$ and $P(\omega)=1/6$ for each outcome. Let $X:\Omega \to \mathbb{R}$ map each side to its face value, so $E(X)=3.5$.
 
-Let's consider a random sample of size two, that is, trowing two dice (one after the other, so they are distinguishible), and call the corresponding discrete random variables $X_1$ and $X_2$. The sample mean would be the discrete random variable $\frac{X_1 + X_2}{2}: \Omega \times \Omega \rightarrow \mathbb{R}$ that maps each pair $(\omega_1, \omega_2) \in \Omega \times \Omega$ to the real value $X_1(\omega_1) + X_2(\omega_2) / 2$. 
-
-The law of large numbers proposes to study the discrete random variable $\frac{X_1 + X_2}{2} - E(X): \Omega \times \Omega \rightarrow \mathbb{R}$, whose probability mass function is depicted in Figure \ref{fig:law_large_numbers_1}. And lets, for example, compute the probability $P(  |\frac{X_1 + X_2}{2} - E(X)| < 1 )$ which is $0.444$.
+First take a random sample of size two: roll the die twice (in sequence, so the rolls are distinguishable) and let $X_1$ and $X_2$ be the outcomes. The sample mean is the random variable
+\[
+\frac{X_1 + X_2}{2} : \Omega \times \Omega \to \mathbb{R}, \quad
+(\omega_1,\omega_2) \mapsto \frac{X_1(\omega_1) + X_2(\omega_2)}{2}.
+\]
+whose probability mass function is depicted in Figure \ref{fig:law_large_numbers_1}. A direct calculation shows
+\begin{equation*}
+\begin{split}
+P\!\left(\left|\frac{X_1+X_2}{2} - E(X)\right| < 1\right) & = P\big(\,|X_1+X_2 - 7| < 2\,\big) \\
+& = P\big(X_1+X_2 \in \{6,7,8\}\big) = \frac{16}{36} \approx 0.444.
+\end{split}  
+\end{equation*}
 
 \begin{figure}[t]
 \centering
@@ -1744,7 +1739,15 @@ The law of large numbers proposes to study the discrete random variable $\frac{X
 \caption{\label{fig:law_large_numbers_1}Probability mass function of the discrete random variable $\frac{X_1 + X_2 }{2} - \mathbb{E}(X)$.}
 \end{figure}
 
-Now let's consider a random sample of size ten. In Figure \ref{fig:law_large_numbers_2} is depicted the probability mass function of the discrete random variable $\frac{X_1 + X_2 + \ldots +  X_{10}}{10} - E(X): \Omega \times \ldots \times \Omega \rightarrow \mathbb{R}$. The probability $P(  |\frac{X_1 + X_2 + \ldots +  X_{10}}{10} - E(X)| < 1 )$ is $0.973$.
+Now consider a random sample of size ten. The distribution of
+\[
+\frac{X_1 + \cdots + X_{10}}{10} - E(X)
+\]
+is much more concentrated around $0$ (see Figure \ref{fig:law_large_numbers_2}); numerically,
+\[
+P\!\left(\left|\frac{X_1+\cdots+X_{10}}{10} - 3.5\right| < 1\right) \approx 0.97,
+\]
+illustrating the sharpening concentration predicted by the law of large numbers.
 
 \begin{figure}[t]
 \centering
@@ -1785,134 +1788,89 @@ Now let's consider a random sample of size ten. In Figure \ref{fig:law_large_num
 
 \end{example}
 
-It is important to clarify that the law of large numbers refers to the sample mean, that is $\frac {1}{n} \sum_{i=1}^{n} X_{i}$, and it is not necesarily true for other formulas, like for example, the deviation from the theoretical expected value $\sum_{i=1}^{n} X_{i} - n \times E(X)$ which not only it does not converge, but inscreases in absolute value as $n$ increases (see Example \ref{ex:gambler's_fallacy}).
+Finally, the law of large numbers concerns the \emph{sample mean} $\frac{1}{n}\sum_{i=1}^n X_i$, not other aggregates. For instance, the deviation from the expected total,
+\[
+\sum_{i=1}^n X_i \;-\; n\,E(X),
+\]
+does not converge to $0$; in fact, its typical size grows on the order of $\sqrt{n}$ (see Example \ref{ex:gambler's_fallacy}). Confusing these statements underlies a common misconception.
 
 \begin{example}
 \label{ex:gambler's_fallacy}
-If we toss a fair coin, the probability that the outcome will be head is equal to $1/2$. According to the law of large numbers, the proportion of heads in a large number of coin tosses will be close to $1/2$. However, the difference between the number of heads and tails will not be close to zero. In fact, the larger the number of coin tosses, the larger will be this difference. This is a highly conterintuitive fact, since most of the people think that the more we toss the coin, the closer will be the number of heads to the number of tails, which is not true.
+If we toss a fair coin, the probability of heads is $1/2$. By the law of large numbers, the \emph{proportion} of heads in many tosses is close to $1/2$. However, the \emph{difference} between the number of heads and tails need not be close to $0$; in fact, its typical magnitude grows like a constant multiple of $\sqrt{n}$ as the number of tosses $n$ increases. The belief that the counts of heads and tails should stay nearly equal as $n$ grows is a form of the gambler’s fallacy.
 \end{example}
 
 % Central Limit Theorem
 
 \subsection{Central Limit Theorem}
 
-Let $X_1, \ldots, X_n$ be a sample of $n$ independent and identically distributed discrete random variables with mean $\mu$ and variance $\sigma^2$. As we saw in the previous section, the law of large numbers states that the sample average $\overline {X}_n$ converges in probability to $\mu$ as $n$ increases. The central limit theorem states that the distribution of the difference between the sample average $\overline {X}_n$ and the population mean $\mu$, when multiplied by the factor $\sqrt {n}$ approximates to the normal distribution with mean $0$ and variance $\sigma^2 / n$. The theorem is true regardless of the shape of the original random vairables.
+Let $X_1, \ldots, X_n$ be a sample of $n$ independent and identically distributed random variables with mean $\mu$ and variance $\sigma^2$. As we saw in the previous section, the law of large numbers states that the sample average $\overline{X}_n$ converges in probability to $\mu$ as $n$ increases. The central limit theorem strengthens this by describing the distribution of the centered and scaled sample mean: the quantity $\sqrt{n}(\overline{X}_n-\mu)$ converges in distribution to a normal random variable with mean $0$ and variance $\sigma^2$. Equivalently, the standardized statistic
+\[
+Z_n=\frac{\overline{X}_n-\mu}{\sigma/\sqrt{n}}
+\]
+converges in distribution to the standard normal distribution $N(0,1)$. This result holds regardless of the shape of the underlying distribution, provided it has finite variance.
 
-\begin{theorem}[Central Limit Theorem]
-\label{th:central_limit_theorem_pdf}\index{Central limit theorem}
-Let $X_{1}, \ldots, X_{n}$ be a random sample of size $n$ from a distribution with mean $\mu$ and finite variance $\sigma^{2}$. Define the standardized sum as
+\begin{theorem}[Central Limit Theorem]\label{th:central_limit_theorem_pdf}\index{Central limit theorem}
+Let $X_{1}, \ldots, X_{n}$ be i.i.d.\ random variables with mean $\mu$ and finite variance $\sigma^{2}$. Define
 \[
-Z_n = \frac{\overline{X}_{n}-\mu}{\sigma/\sqrt{n}},
+Z_n \;=\; \frac{\overline{X}_{n}-\mu}{\sigma/\sqrt{n}},
+\quad\text{where}\quad
+\overline{X}_{n} = \frac{1}{n} \sum_{i=1}^{n} X_i.
 \]
-where $\overline{X}_{n} = \frac{1}{n} \sum_{i=1}^{n} X_i$ is the sample mean. Then, as $n \rightarrow \infty$, the probability density function of $Z_n$ converges to the probability density function of the standard normal distribution $\phi(x)$, that is,
+Then, as $n \to \infty$,
 \[
-\lim_{n \rightarrow \infty} f_{Z_n}(x) = \phi(x),
+Z_n \;\Rightarrow\; N(0,1),
 \]
-where $f_{Z_n}(x)$ is the probability density function of $Z_n$, and $\phi(x)$ is the probability density function of the standard normal distribution, given by
+i.e., $Z_n$ converges in distribution to the standard normal law with density $\phi(x)=\frac{1}{\sqrt{2\pi}}\exp(-x^2/2)$.
+Equivalently,
 \[
-\phi(x) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{x^2}{2}\right).
+\sqrt{n}\,(\overline{X}_n-\mu) \;\Rightarrow\; N(0,\sigma^2).
 \]
 \end{theorem}
-\begin{proof}
-Let $X_{1}, \ldots, X_{n}$ be independent and identically distributed (i.i.d.) discrete random variables with mean $\mu$ and finite variance $\sigma^2$. Define the sample mean as
+\begin{proof}[Proof sketch]
+We first consider the special case of Bernoulli random variables.  
+Let $X_i \sim \mathrm{Bernoulli}(p)$ and $S_n = \sum_{i=1}^n X_i$.  
+The standardized sum is
 \[
-\overline{X}_n = \frac{1}{n} \sum_{i=1}^{n} X_i.
+Z_n = \frac{S_n - np}{\sqrt{np(1-p)}}.
 \]
-We are interested in the distribution of the standardized variable
+Using Stirling's approximation for factorials in the binomial formula, one shows that for integers $k$ close to $np$ (within order $\sqrt{n}$),
 \[
-Z_n = \frac{\overline{X}_n - \mu}{\sigma / \sqrt{n}}.
+P(S_n = k) \approx \frac{1}{\sqrt{2\pi\,np(1-p)}} 
+  \exp\!\left(-\frac{(k-np)^2}{2np(1-p)}\right).
 \]
+This is exactly the probability mass function of a discretized normal distribution.  
+Summing over such $k$ produces a Riemann sum converging to the normal distribution function, proving the result for Bernoulli variables.
 
-First, consider the sum of the $X_i$'s, which we write as
-\[
-S_n = \sum_{i=1}^{n} X_i.
-\]
-The sample mean can then be written as
-\[
-\overline{X}_n = \frac{S_n}{n}.
-\]
-Thus, the standardized variable $Z_n$ becomes
-\[
-Z_n = \frac{S_n - n\mu}{\sigma\sqrt{n}}.
-\]
-
-To analyze the behavior of $Z_n$ as $n \to \infty$, we consider the sum $S_n = \sum_{i=1}^{n} X_i$. According to the Law of Large Numbers, $S_n/n$ converges to $\mu$, and hence $Z_n$ should converge to a normal distribution due to the nature of sums of independent discrete random variables.
-
-For large $n$, $Z_n$ can be approximated by considering the Taylor expansion of the exponential function. Since the $X_i$'s are i.i.d., the distribution of $S_n$ can be approximated by a normal distribution with mean $n\mu$ and variance $n\sigma^2$. The key idea is that as $n$ increases, the distribution of $Z_n$ approaches a normal distribution because the sum of i.i.d. discrete random variables tends to be normally distributed by the Central Limit Theorem.
-
-Let us consider the moment generating function (MGF) of $Z_n$. The MGF of $Z_n$ is given by:
-\[
-M_{Z_n}(t) = \mathbb{E}\left[\exp\left(t Z_n\right)\right] = \mathbb{E}\left[\exp\left(t \frac{S_n - n\mu}{\sigma\sqrt{n}}\right)\right].
-\]
-For large $n$, by the Central Limit Theorem, the MGF of $Z_n$ approaches that of a standard normal variable $N(0,1)$:
-\[
-M_{Z_n}(t) \approx \exp\left(\frac{t^2}{2}\right),
-\]
-which implies that $Z_n$ converges in distribution to $N(0,1)$ as $n \to \infty$.
-
-Since $Z_n$ converges in distribution to $N(0,1)$, the probability density function of $Z_n$, denoted by $f_{Z_n}(x)$, must converge to the probability density function of a standard normal distribution $\phi(x)$, given by:
-\[
-\phi(x) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{x^2}{2}\right).
-\]
-Thus, we have
-\[
-\lim_{n \rightarrow \infty} f_{Z_n}(x) = \phi(x).
-\]
-
-Therefore, as $n \to \infty$, the distribution of the standardized sum $Z_n$ approaches the standard normal distribution, completing the proof.
+For general i.i.d. random variables with finite mean and variance, one reduces to the Bernoulli case by truncating the variables to control large deviations and matching means and variances. 
+The same approximation then applies, and the limiting distribution is again standard normal.
 \end{proof}
 
-The Central Limit Theorem is a fundamental concept in probability theory used in statistical analysis and inference. It allows us to compute the probability that the sample average is close to the distribution mean. It is important to recall the conditons for the central limit theorem to be true: the samples must be independent and identically distributed, the original distribution has to have a finite variance, and the sample size must be sufficiently large.
+The central limit theorem is a cornerstone of probability and statistics. It justifies normal approximations for sampling distributions of means and enables approximate inference. The basic conditions used here are i.i.d. observations with finite variance. 
 
 \begin{example}
-Suppose a factory produces light bulbs, and the lifespan of each light bulb is a discrete random variable with a mean of $\mu = 1000$ hours and a standard deviation of $\sigma = 50$ hours. The factory tests a random sample of $n = 36$ light bulbs to estimate the average lifespan of the bulbs produced in a particular batch. What is the probability that the sample mean lifespan of these 36 bulbs is between 990 and 1010 hours?
+Suppose a factory produces light bulbs and the lifetime of each bulb (measured, say, in hours) has mean $\mu=1000$ and standard deviation $\sigma=50$. A random sample of $n=36$ bulbs is tested. What is the probability that the sample mean lifetime lies between $990$ and $1010$ hours?
 
-We can apply the Central Limit Theorem to solve this problem because we are dealing with the sample mean of a large number of independent, identically distributed discrete random variables (lifespans of light bulbs). First, define the sample mean $\overline{X}_n$ as:
+By the CLT, for $n=36$ the sample mean $\overline{X}_n$ is approximately normal with mean $\mu$ and standard deviation $\sigma/\sqrt{n}=50/6\approx 8.33$:
 \[
-\overline{X}_n = \frac{1}{n} \sum_{i=1}^{n} X_i,
+\overline{X}_n \approx N\!\left(1000,\;\left(\frac{50}{\sqrt{36}}\right)^2\right).
 \]
-where $X_i$ represents the lifespan of the $i$-th light bulb in the sample, and $n = 36$ is the sample size.
-
-By the Central Limit Theorem, for sufficiently large $n$, the distribution of the sample mean $\overline{X}_n$ approaches a normal distribution with mean $\mu$ and standard deviation $\sigma/\sqrt{n}$:
+Standardizing,
 \[
-\overline{X}_n \sim N\left(\mu, \frac{\sigma}{\sqrt{n}}\right) = N\left(1000, \frac{50}{\sqrt{36}}\right) = N\left(1000, \frac{50}{6}\right) = N\left(1000, 8.33\right).
+z_{990}=\frac{990-1000}{8.33}\approx -1.20,
+\qquad
+z_{1010}=\frac{1010-1000}{8.33}\approx 1.20.
 \]
-
-Next, we calculate the z-scores corresponding to 990 hours and 1010 hours using the formula:
-\[
-z = \frac{X - \mu}{\sigma/\sqrt{n}},
-\]
-where $X$ is the value for which we want to find the z-score.
-
-For $X = 990$:
-\[
-z_{990} = \frac{990 - 1000}{8.33} \approx \frac{-10}{8.33} \approx -1.20.
-\]
-
-For $X = 1010$:
-\[
-z_{1010} = \frac{1010 - 1000}{8.33} \approx \frac{10}{8.33} \approx 1.20.
-\]
-
-Now, we use the standard normal distribution table (or a calculator) to find the probabilities corresponding to these z-scores:
-\[
-P(z_{990} \leq Z \leq z_{1010}) = P(-1.20 \leq Z \leq 1.20).
-\]
-
-From the standard normal distribution table:
-\[
-P(Z \leq 1.20) \approx 0.8849,
-\]
-\[
-P(Z \leq -1.20) \approx 0.1151.
-\]
-
-Thus, the probability that the sample mean lifespan of the 36 light bulbs is between 990 and 1010 hours is:
-\[
-P(990 \leq \overline{X}_n \leq 1010) = P(-1.20 \leq Z \leq 1.20) = 0.8849 - 0.1151 = 0.7698.
-\]
-
-The probability that the sample mean lifespan of the 36 light bulbs falls between 990 and 1010 hours is approximately 76.98\%. This result demonstrates how the Central Limit Theorem allows us to use the normal distribution to approximate the sampling distribution of the sample mean, even when the original data is not normally distributed, as long as the sample size is sufficiently large.
+Thus
+\begin{equation*}
+\begin{split}
+P(990 \le \overline{X}_n \le 1010)
+& \approx P(-1.20 \le Z \le 1.20)
+= \Phi(1.20)-\Phi(-1.20) \\
+& \approx 0.8849-0.1151
+= 0.7698.
+\end{split}  
+\end{equation*}
+So the probability is about $76.98\%$.
 \end{example}
 
 %

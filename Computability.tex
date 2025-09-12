@@ -35,7 +35,7 @@ Turing machines reveal the intrinsic limitations of computation. Exploring these
 \section{Turing Machines}
 \label{sec:Turing-Machines}
 
-A Turing machine is an extremely simplified model of a general-purpose computer, yet it is capable of solving any problem that real computers can address. Intuitively, one can envision the machine as consisting of a head that operates on a two-way infinite tape striped with symbols. At each time step, the machine reads the symbol under the head and decides to either write a new symbol on the tape, move the head one square to the left or right, or execute both actions. Algorithms are implemented using an internal table of rules housed within the control head, and the actual input to the algorithm is encoded on the tape. Once the machine reaches its final state, the algorithm's output can be read from the tape. Figure \ref{fig:Turing-Machine} depicts an example of a machine in its initial state, with the head located at the beginning of the input string.
+A Turing machine is an extremely simplified model of a general-purpose computer, yet it is powerful enough to capture the notion of effective computation. Intuitively, the machine consists of a head that operates on a two-way infinite tape divided into cells, each containing a symbol. At each time step, the machine reads the symbol under the head and, according to a fixed set of rules, either writes a new symbol, moves the head one cell to the left or right, or performs both actions. The rules are encoded in a finite control table. The input to the computation is written on the tape at the start, and once the machine enters a designated halting state, the output can be read from the tape. Figure \ref{fig:Turing-Machine} illustrates a machine in its initial configuration, with the head positioned at the beginning of the input string.
 
 \begin{figure}[t]
 \centering
@@ -62,29 +62,25 @@ A Turing machine is an extremely simplified model of a general-purpose computer,
 \caption{\label{fig:Turing-Machine}Turing Machine}
 \end{figure}
 
-The following definition formally introduces the concept of a Turing machine.
-
 \begin{definition}[Turing Machine]
 \label{def:Turing-Machine}\index{Turing machine}
-A \emph{Turing machine} is a 7-tuple $\left(Q,\Gamma,\sqcup,\Sigma,q_{i},q_{f},\tau\right)$ where:
+A \emph{Turing machine} is a 7-tuple $\left(Q,\Gamma,\sqcup,\Sigma,q_{0},q_{f},\tau\right)$ where:
 \begin{align*}
- & Q \quad \text{is a finite, non-empty, set of \emph{states},} \index{Machine State} \\
- & \Gamma \quad \text{is a finite, non-empty, set of \emph{tape symbols},} \index{Tape Symbol} \\
+ & Q \quad \text{is a finite, non-empty set of \emph{states},} \index{Machine State} \\
+ & \Gamma \quad \text{is a finite, non-empty set of \emph{tape symbols},} \index{Tape Symbol} \\
  & \sqcup\in\Gamma \quad \text{is the \emph{blank symbol},} \index{Blank Symbol} \\
- & \Sigma\subseteq\Gamma\setminus\sqcup \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
- & q_{o}\in Q \quad \text{is the \emph{initial state},} \index{Initial State} \\
- & q_{f}\in Q \setminus \{q_o\} \quad \text{is the \emph{final state},} \index{Final State} \\ 
- & \tau:\left(Q\setminus \{q_{f}\}\right)\times\Gamma \rightarrow  Q\times\Gamma\times\left\{ L,R,S\right\} \quad\text{is a partial \emph{transition function}. \index{Transition Function} }
+ & \Sigma\subseteq\Gamma\setminus\{\sqcup\} \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
+ & q_{0}\in Q \quad \text{is the \emph{initial state},} \index{Initial State} \\
+ & q_{f}\in Q \setminus \{q_0\} \quad \text{is the designated \emph{halting state},} \index{Halting State} \\ 
+ & \tau:\left(Q\setminus \{q_{f}\}\right)\times\Gamma \rightharpoonup  Q\times\Gamma\times\{L,R,S\} \quad\text{is a \emph{transition function}. \index{Transition Function} }
 \end{align*}
 \end{definition}
 
-The algorithm executed by the machine is defined by the transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$ and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Sigma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, it will enter in an infinite loop, never halting.
-
-The machine's input consists of a string of symbols, with the assumption that the machine's head is initially positioned at the first symbol of the input string. To address problems involving an object $O$ that isn’t a string, we must first develop a method to encode that object as a string, denoted as $\left\langle O \right\rangle$.
+The algorithm executed by the machine is defined by the (partial) transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$\footnote{Some authors allow multiple halting states in the definition of Turing machines.} and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Gamma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, it will enter an infinite loop, never halting. We assume that the head of the machine is initially positioned at the first symbol of the input string.
 
 \begin{example}
 \label{ex:Turing-Machine}
-The following Turing machine is designed to solve the problem of adding two natural numbers. It consists of the set of states $Q = \left\{q_{o}, q_{1}, q_{f}\right\}$, the set of tape symbols $\Gamma = \left\{0, 1, \sqcup \right\}$, and the set of input symbols $\mathcal{B} = \left\{0, 1 \right\}$. The transition function is defined in the table below, where rows are indexed by machine states, and columns by tape symbols:
+The following Turing machine is designed to solve the problem of adding two natural numbers. It consists of the set of states $Q = \left\{q_{o}, q_{1}, q_{f}\right\}$, the set of tape symbols $\Gamma = \left\{0, 1, \sqcup \right\}$, and the set of input symbols $\Sigma = \left\{0, 1 \right\}$. The transition function is defined in the table below, where rows are indexed by machine states, and columns by tape symbols:
 
 \begin{table}[h]
 \centering
@@ -92,14 +88,14 @@ The following Turing machine is designed to solve the problem of adding two natu
 \toprule
  & 0 & 1 & $\sqcup$ \\
 \midrule
-$q_{o}$ & $\left(q_{f}, \sqcup, S\right)$ & $\left(q_{1}, \sqcup, R\right)$ & $\uparrow$ \\
-$q_{1}$ & $\left(q_{f}, 1     , S\right)$ & $\left(q_{f}, 1     , R\right)$ & $\uparrow$ \\
+$q_{o}$ & $\left(q_{f}, \sqcup, R\right)$ & $\left(q_{1}, \sqcup, R\right)$ & $\uparrow$ \\
+$q_{1}$ & $\left(q_{f}, 1     , S\right)$ & $\left(q_{1}, 1     , R\right)$ & $\uparrow$ \\
 \bottomrule
 \end{tabular}
 \caption{Transition Rules}
 \end{table}
 
-For natural numbers $n$ and $m$, the input string is composed of $n$ occurrences of the symbol ‘1’, followed by a ‘0’, and then followed by $m$ occurrences of ‘1’. The machine's output will be a string of $n+m$ consecutive ‘1’s. For instance, to add the numbers 2 and 3, the input string should be $\sqcup 1 1 0 1 1 1 \sqcup$, resulting in the output string $\sqcup 1 1 1 1 1 \sqcup$.
+For natural numbers $n$ and $m$, the input string is composed of $n$ occurrences of the symbol '1', followed by a '0', and then followed by $m$ occurrences of '1'. The machine's output will be a string of $n+m$ consecutive '1's. For instance, to add the numbers 2 and 3, the input string should be $\sqcup 1 1 0 1 1 1 \sqcup$, resulting in the output string $\sqcup 1 1 1 1 1 \sqcup$.
 \end{example}
 
 A Turing machine can also be represented by a \emph{state diagram}\index{State diagram}. A state diagram is similar to a labeled directed graph\footnote{In this particular case, we allow loops and multiple edges originating from vertices.} where the vertices represent the states of the machine. The edges signify transitions from one state to another, and the edge labels indicate the symbol under the head that leads to the new state, the symbol that gets written on the tape, and the direction in which the head moves. Following these conventions, the state diagram for the Turing machine in Example \ref{ex:Turing-Machine} is depicted in Figure \ref{fig:Example-Turing-Machine}.
@@ -117,10 +113,10 @@ A Turing machine can also be represented by a \emph{state diagram}\index{State d
     (q_1) edge  node {0$\to$1,S} (q_f)
     (q_1) edge [loop above] node {1$\to$1,R} ();
 \end{tikzpicture}
-\caption{\label{fig:Example-Turing-Machine}Example of Turing Machine}
+\caption{\label{fig:Example-Turing-Machine}State diagram of the addition machine}
 \end{figure}
 
-It is a remarkable fact that minor alterations to the definition of a Turing machine do not change its computational power. In other words, the definition is highly robust. In Example \ref{ex:multitape_turing_machine}, it's demonstrated that adding more tapes to the machine doesn't expand the range of problems it can solve. Similar arguments can be made when adding finite storage to the control tape, allowing for parallel processing with multiple control heads, and so on.
+It is a remarkable fact that minor alterations to the definition of a Turing machine do not change its computational power. In other words, the definition is highly robust. In Example \ref{ex:multitape_turing_machine}, it's demonstrated that adding more tapes to the machine doesn't expand the range of problems it can solve. Similar arguments can be made when adding finite storage to the control, allowing for parallel processing with multiple control heads, and so on.
 
 \begin{example}
 \label{ex:multitape_turing_machine}
@@ -136,7 +132,7 @@ For the remainder of this book, without any loss of generality, we'll assume tha
 In addition to providing a formal definition of a Turing machine, it's essential to formally outline its computational process. This entails detailing how the machine reads the input string, produces the output string, and transitions between states during computation. We will start by defining the concept of the machine's internal configuration. This configuration captures the machine's current state and position, as well as the present state of the tape.
 
 \begin{definition}\index{Configuration}
-A \emph{configuration}\index{Configuration} of a Turing machine $T$ is the 3-tuple $\left(q,s,i\right)$, where $q\in Q$ represents a state of the machine, $s\in\Gamma^+$ denotes a string containing the tape's content (excluding the blank symbols), and $1 \le i \le n$ is the index of the symbol $s_i$ beneath the head. Here, $s_1$ is the first non-blank symbol on the tape, and $n=l(s)$. 
+A \emph{configuration}\index{Configuration} of a Turing machine $T$ is the 3-tuple $\left(q,s,i\right)$, where $q\in Q$ represents a state of the machine, $s\in\Gamma^+$ denotes a string containing the tape's content (excluding the blank symbols), and $1 \le i \le n$ is the index of the symbol $s_i$ beneath the head. Here, $s_1$ is the first symbol on the tape, and $n=l(s)$. 
 \end{definition}
 
 Configurations enable us to describe the current state of a Turing machine without any loss of information. At any stage of computation, one could halt the machine, record its configuration, and later resume the computation from the exact point of interruption using this configuration.
@@ -154,13 +150,15 @@ A configuration $C=\left(q,s,i\right)$ \emph{yields}\index{Yield} another config
 \end{equation}
 \end{definition}
 
+If $a=L$ and $i=1$, we extend $s$ on the left by a blank and keep the head at position $1$ (now on $\sqcup$); if $a=R$ and $i=n$, we extend $s$ on the right by a blank and set the head to position $n+1$.
+
 Building on the concepts of configuration and one configuration yielding another, we can now formally articulate the notion of computation.
 
 \begin{definition}[Computation]\index{Computation}
 Let $T$ be a Turing machine, $C_{0}$ its initial configuration, and $C_n$ a configuration encompassing the final state $q_f$. A \emph{computation}\index{Computation} under machine $T$ refers to a finite sequence of $n+1$ configurations $\left(C_{0},C_{1},\ldots,C_n\right)$ wherein each configuration $C_{k}$ yields the subsequent configuration $C_{k+1}$, for all $0\leq k < n$.
 \end{definition}
 
-Computations are deterministic; meaning, for a given Turing machine $T$ and an input string $s$, the configuration sequence is preordained. If machine $T$ neither halts nor progresses with input $s$, we deduce the absence of computation.
+Computations are deterministic; meaning, for a given Turing machine $T$ and an input string $s$, the configuration sequence is uniquely determined.. If machine $T$ neither halts nor progresses with input $s$, we deduce the absence of computation.
 
 \begin{example}
 The computation of the Turing machine described in Example \ref{ex:Turing-Machine} using the input string $110111$ results in the following sequence of configurations:
@@ -201,7 +199,7 @@ To describe a Turing machine concisely, we need to encode the transition functio
 \]
 where $m \leq d\left(Q\setminus \{q_{f}\}\right) \times d(\Gamma)$, with the stipulation that the first quintuple refers to the initial state and the second one to the final state; i.e., $q_{1} = q_{o}$ and $r_{2} = q_{f}$. A possible approach to describe these quintuples is to encode the elements of the set $Q\cup\Gamma\cup\left\{ L, R, S \right\}$ using a fixed-length binary code (refer to Definition \ref{def:Fixed-Length-Codes} for more details), encoding the quintuple $\left(q,s,r,t,a\right)$ as $\left\langle q, s, r, t, a \right\rangle$. The length of an encoded quintuple is $5l$, where $l=\left\lceil \log\left(d\left(Q\cup\Gamma\cup\left\{ L,R,S\right\}\right)\right)\right\rceil$. Following this convention, machine $T$ is encoded as the binary string:
 \[
-\left\langle T \right\rangle = \left\langle \bar{l}, \left\langle q_{1}, r_{1}, s_{1}, t_{1}, a_{1} \right\rangle, \ldots, \left\langle q_{r}, r_{r}, s_{r}, t_{r}, a_{r} \right\rangle \right\rangle 
+\left\langle T \right\rangle = \left\langle \bar{l}, \left\langle q_{1}, s_{1}, r_{1}, t_{1}, a_{1} \right\rangle, \ldots, \left\langle q_{r}, r_{r}, s_{r}, t_{r}, a_{r} \right\rangle \right\rangle 
 \]
 The length of the encoded machine, following this schema, would be $l(\left\langle T \right\rangle) \leq 5lm + \log l + 1$.
 \end{example}
@@ -331,7 +329,6 @@ If $A$ is computable, by definition, there exists a Turing machine that decides 
 Conversely, suppose $A$ and $A^c$ are computably enumerable. This means there exist two Turing machines, $T_A$ and $T_{A^c}$, that enumerate the elements of $A$ and $A^c$, respectively. To show that $A$ is computable, construct a Turing machine $T$ that, given an input $x \in \mathcal{B}^\ast$, simulates $T_A$ and $T_{A^c}$ in parallel to search for $x$. If $x$ appears in the enumeration produced by $T_A$, $T$ halts and accepts $x$ as an element of $A$. If $x$ appears in the enumeration produced by $T_{A^c}$, $T$ halts and accpts $x$, indicating $x \notin A$. Since every element of $\mathcal{B}^\ast$ must be in either $A$ or $A^c$ and both sets are computably enumerable, $T$ will eventually halt for every input $x$, proving that $A$ is computable.
 \end{proof}
 
-
 %
 % Section: Oracle Turing Machine
 %
@@ -381,7 +378,7 @@ An \emph{oracle Turing machine} with oracle set $\mathcal{O}$ is a 8-tuple $\lef
  & \sqcup\in\Gamma \quad \text{is the \emph{blank symbol},} \index{Blank Symbol} \\
  & \Sigma\subseteq\Gamma\setminus\sqcup \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
  & q_{o}\in Q \quad \text{is the \emph{initial state},} \index{Initial State} \\
- & q_{f}\in Q \setminus \{q_o\} \quad \text{is the \emph{final state},} \index{Final State} \\ 
+ & q_{f}\in Q \setminus \{q_0\} \quad \text{is the \emph{final state},} \index{Final State} \\ 
  & \tau: \left(Q \setminus \{q_{f}\}\right) \times \Gamma \times \{0, 1\} \rightarrow  Q\times\Gamma\times\left\{ L,R,S\right\} \quad\text{is the \emph{transition function}, \index{Transition Function} } \\
  & \mathcal{O} \subseteq \Sigma^\ast \quad \text{is the \emph{oracle set}.}
 \end{align*}
@@ -395,143 +392,191 @@ The transition function $\tau$ for the oracle Turing machine is nuanced. At each
 In the realm of theoretical computer science, an oracle can be invoked to "solve" the halting problem (refer to Theorem \ref{th:halting-problem}). The oracle is a hypothetical device or black box that, as if by magic, provides an instantaneous answer to a specific problem instance. The oracle set $\mathcal{O}$ would consist of a collection of strings in the form $\langle P, I \rangle$, where $P$ represents a program encoded as a string and $I$ denotes its input. Given a program and its input, this oracle would instantly inform us whether the program halts on that input. Naturally, this concept is purely theoretical. No such oracle exists in reality, and the halting problem remains unsolvable in practical terms.
 \end{example}
 
-{\color{red} Turing machines are a subset of oracle Turing machines}
+A standard Turing machine can be viewed as an oracle machine that simply \emph{ignores} its oracle or, equivalently, uses any fixed oracle set and never branches on the oracle bit. Thus ordinary Turing machines embed as a subclass of oracle Turing machines.
 
 \begin{proposition}
+\label{prop:tm_subset_otm}
+For every (ordinary) Turing machine $T=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ and every oracle set $\mathcal{O}\subseteq\Sigma^\ast$, there exists an oracle Turing machine $T^{\mathcal{O}}$ such that for all inputs $x\in\Sigma^\ast$, the computation of $T$ on $x$ and the computation of $T^{\mathcal{O}}$ on $x$ (with oracle $\mathcal{O}$) produce the same outcome.
 \end{proposition}
 
-{\color{red} The machine is independent of the oracle set}
+\begin{proof}
+Define $T^{\mathcal{O}}=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau',\mathcal{O})$ with the same components as $T$ and transition function $\tau'$ given by
+\[
+\tau'(q,s,b) \;=\; \tau(q,s)\qquad\text{for all }(q,s)\in (Q\setminus\{q_f\})\times\Gamma\text{ and }b\in\{0,1\}.
+\]
+That is, $T^{\mathcal{O}}$ ignores the oracle bit. A step-by-step induction on the unique computation of $T$ on $x$ shows that $T$ and $T^{\mathcal{O}}$ visit identical configurations (up to the presence of the unused oracle bit) and therefore have the same outcome and output.
+\end{proof}
+
+An oracle machine is specified by two pieces of data: the \emph{machine component} $(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ and the \emph{oracle set} $\mathcal{O}$. The former is defined syntactically and does not depend on which $\mathcal{O}$ is chosen. Semantically, the behavior of a fixed machine component on a given input depends only on the answers to the queries it actually makes (i.e., on the restriction of $\mathcal{O}$ to those queries).
 
 \begin{proposition}
+\label{prop:indep_machine_oracle}
+Let $M=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ be a fixed machine component. For any two oracle sets $\mathcal{O}_1,\mathcal{O}_2\subseteq\Sigma^\ast$ and any input $x$, if $\mathcal{O}_1$ and $\mathcal{O}_2$ give the same answers to all oracle queries made during the run of $M$ on input $x$ (with either oracle), then the computations $M^{\mathcal{O}_1}(x)$ and $M^{\mathcal{O}_2}(x)$ are identical (same sequence of configurations, hence same outcome and output).
 \end{proposition}
+\begin{proof}
+Consider the (unique) run of $M^{\mathcal{O}_1}$ on input $x$. By hypothesis, $\mathcal{O}_2$ agrees with $\mathcal{O}_1$ on precisely the queried strings that arise along this run. Since $\tau$ is deterministic given the current state, scanned symbol, and oracle bit, and the oracle bit provided by $\mathcal{O}_2$ matches that from $\mathcal{O}_1$ at every step, both computations take the same transition at each step. Thus the configuration sequences coincide, yielding identical outcomes.
+\end{proof}
 
-{\color{red} An oracle machie is characterized by two independent components: a particular Turing machine and a particular oracle set.}
+A (partial) function is \emph{computable relative to} $\mathcal{O}$ if some oracle machine with oracle $\mathcal{O}$ computes it. Two useful facts: (i) ordinary computable functions are $\mathcal{O}$-computable for any oracle (by ignoring the oracle); (ii) if $\mathcal{O}$ is itself computable, then $\mathcal{O}$-computability coincides with ordinary computability.
 
-{\color{red} How to encode oracle Turing machines}
+\begin{definition}[Oracle computability]\index{Oracle computable function}
+Given $\mathcal{O}\subseteq\Sigma^\ast$, a partial function $f:\Sigma^\ast\rightharpoonup\Sigma^\ast$ is \emph{$\mathcal{O}$-computable} if there exists an oracle Turing machine $M^{\mathcal{O}}$ such that, for every $x\in\Sigma^\ast$:
+\begin{itemize}
+\item if $f(x)$ is defined, then $M^{\mathcal{O}}$ halts on input $x$ and outputs $f(x)$ (under the chosen output convention);
+\item if $f(x)$ is undefined, then $M^{\mathcal{O}}$ does not halt on input $x$.
+\end{itemize}
+\end{definition}
 
-\begin{example}
+\begin{proposition}
+\label{prop:O_comp_equals_comp_if_O_decidable}
+If $\mathcal{O}$ is (ordinarily) computable, then a partial function $f$ is $\mathcal{O}$-computable if and only if $f$ is computable by an ordinary Turing machine.
+\end{proposition}
+\begin{proof}
+Suppose $f$ is $\mathcal{O}$-computable via $M^{\mathcal{O}}$. Since $\mathcal{O}$ is computable, there exists an ordinary machine $D$ deciding membership in $\mathcal{O}$. Simulate $M^{\mathcal{O}}$ step by step on an ordinary machine; whenever $M^{\mathcal{O}}$ needs the oracle bit, call $D$ on the current query string to obtain the bit and continue the simulation. This yields an ordinary machine computing $f$.
+
+If $f$ is computable by an ordinary machine $T$, then by Proposition \ref{prop:tm_subset_otm} there is an oracle machine $T^{\mathcal{O}}$ that ignores the oracle and computes $f$ for any $\mathcal{O}$. Hence $f$ is $\mathcal{O}$-computable.
+\end{proof}
+
+More generally, if $\mathcal{O}$ is \emph{Turing reducible} to $\mathcal{O}'$ (i.e., decidable by some $\mathcal{O}'$-oracle machine), then every $\mathcal{O}$-computable function is $\mathcal{O}'$-computable. This captures the standard notion of \emph{relative computability}.
+
+\begin{example}[Toy oracle machine that outputs the oracle's answer]
+\label{ex:encode_otm}
+Let $\Sigma={0,1}$ and $\Gamma={0,1,\sqcup}$. Fix the oracle set $\mathcal{O}={11,101}$ (finite for concreteness). Consider the oracle machine $M^{\mathcal{O}}$ that, on any input $w\in\Sigma^\ast$, writes a single symbol indicating the oracle's answer and halts:
+\begin{itemize}
+\item If the queried string (as per your convention) is in $\mathcal{O}$, write $1$ and halt.
+\item Otherwise, write $0$ and halt.
+\end{itemize}
+Use states $Q={q_0,q_f}$, with $q_0$ initial and $q_f$ halting. Define $\tau$ independently of the scanned symbol $s\in\Gamma$ by the sextuples
+\[
+(q_0,0,1,q_f,1,S),\quad (q_0,1,1,q_f,1,S),\quad (q_0,\sqcup,1,q_f,1,S),
+\]
+\[
+(q_0,0,0,q_f,0,S),\quad (q_0,1,0,q_f,0,S),\quad (q_0,\sqcup,0,q_f,0,S),
+\]
+and leave all other transitions undefined (so the machine halts after one step). Then $\langle M\rangle$ is obtained by concatenating the fixed-length codes of these six sextuples after the header. The oracle's finite code is, for example,
+\[
+\langle \mathcal{O}\rangle \;=\; \big\langle\, 2,\ \langle 11\rangle,\ \langle 101\rangle \,\big\rangle,
+\]
+using any self-delimiting code for strings. The full encoding is the pairing $\big\langle \langle M\rangle,\langle \mathcal{O}\rangle\big\rangle$.
 \end{example}
 
-{\color{red} What means a function or set to be oracle computable}
-
-\begin{definition}
-\end{definition}
+These additions make explicit (i) how ordinary computation embeds into oracle computation, (ii) in what precise sense the machine component is independent of the oracle set, (iii) that an oracle machine is exactly a pair $(M,\mathcal{O})$, and (iv) what it means for a function to be computable \emph{relative} to an oracle. The encoding example matches your earlier quintuple-based scheme with a minimal extension to handle the oracle bit.
 
 %
 % Section: Computational Complexity
 %
 
-\section{Computational Complexity}
-\label{sec:computational_complexity}
+% \section{Computational Complexity}
+% \label{sec:computational_complexity}
 
-\emph{Computational complexity}\index{Computational complexity} refers to the study of the efficiency of algorithms in terms of the resources they consume, such as time and space, to solve a given problem. By categorizing problems based on their inherent difficulty, computational complexity provides insights into the feasibility of solving problems within practical limits. It involves classifying problems into \emph{complexity classes}\index{Complexity class} offering a framework to analyze and compare the performance of algorithms. In this book we are insterested mostly in the time required to solve a problem. We compute the running time of an algorithm as a function of the length of the string representing the input.
+% \emph{Computational complexity}\index{Computational complexity} refers to the study of the efficiency of algorithms in terms of the resources they consume, such as time and space, to solve a given problem. By categorizing problems based on their inherent difficulty, computational complexity provides insights into the feasibility of solving problems within practical limits. It involves classifying problems into \emph{complexity classes}\index{Complexity class} offering a framework to analyze and compare the performance of algorithms. In this book we are insterested mostly in the time required to solve a problem. We compute the running time of an algorithm as a function of the length of the string representing the input.
 
-\begin{definition}
-Let $M$ a Turing machine. The running time or \emph{time complexity}\index{Time complexity} of $M$ is the function $T_M:\mathbb{N} \to \mathbb{N}$, where $T_M(n)$ is the maximum number of steps that machine $M$ takes for any input of length $n$.
-\end{definition}
+% \begin{definition}
+% Let $M$ a Turing machine. The running time or \emph{time complexity}\index{Time complexity} of $M$ is the function $T_M:\mathbb{N} \to \mathbb{N}$, where $T_M(n)$ is the maximum number of steps that machine $M$ takes for any input of length $n$.
+% \end{definition}
 
-\emph{Big-O notation}\index{Big-O notation} is a mathematical notation that describes the upper bound of an algorithm's running time in the worst-case scenario, serving as a measure of its efficiency. Big-O notation provides a high-level analysis of an algorithm's performance, offering insights into how the running time requirements grow as the size of the input increases. It abstracts the details of the machine model and focuses on the most significant factors that contribute to the growth rate of the algorithm's complexity.
+% \emph{Big-O notation}\index{Big-O notation} is a mathematical notation that describes the upper bound of an algorithm's running time in the worst-case scenario, serving as a measure of its efficiency. Big-O notation provides a high-level analysis of an algorithm's performance, offering insights into how the running time requirements grow as the size of the input increases. It abstracts the details of the machine model and focuses on the most significant factors that contribute to the growth rate of the algorithm's complexity.
 
-\begin{definition}
-Let $f:\mathbb{N} \to \mathbb{N}$ and $g:\mathbb{N} \to \mathbb{N}$ be two functions. We say that the function $f$ is or order $g$, denoted \(f(n) = O(g(n))\), if there exist constants \(c > 0\) and \(n_0 \geq 0\) such that for all \(n \geq n_0\), \(f(n) \leq c \cdot g(n)\).
-\end{definition}
+% \begin{definition}
+% Let $f:\mathbb{N} \to \mathbb{N}$ and $g:\mathbb{N} \to \mathbb{N}$ be two functions. We say that the function $f$ is or order $g$, denoted \(f(n) = O(g(n))\), if there exist constants \(c > 0\) and \(n_0 \geq 0\) such that for all \(n \geq n_0\), \(f(n) \leq c \cdot g(n)\).
+% \end{definition}
 
-Big-O notation is instrumental in comparing different algorithms and selecting the most appropriate one for a given problem and dataset size.
+% Big-O notation is instrumental in comparing different algorithms and selecting the most appropriate one for a given problem and dataset size.
 
-\begin{example}
-Consider a polynomial function that represents the time complexity of an algorithm:
-\[
-f(n) = 3n^3 + 2n^2 + 5n + 7
-\]
-In the context of big-O notation, we are interested in the term with the highest growth rate as \(n\) approaches infinity, because it will eventually dominate the function. In this case, the term \(3n^3\) has the highest growth rate. Thus, we have
-\[
-f(n) = O(n^3)
-\]
-\end{example}
+% \begin{example}
+% Consider a polynomial function that represents the time complexity of an algorithm:
+% \[
+% f(n) = 3n^3 + 2n^2 + 5n + 7
+% \]
+% In the context of big-O notation, we are interested in the term with the highest growth rate as \(n\) approaches infinity, because it will eventually dominate the function. In this case, the term \(3n^3\) has the highest growth rate. Thus, we have
+% \[
+% f(n) = O(n^3)
+% \]
+% \end{example}
 
-A complexity class consists of a collection of problems that are classified together due to their shared level of computational complexity. Each problem within a class shares similar characteristics of time complexity, ensuring a consistent measure of computational effort needed for resolution. These classes offer valuable insights and are integral in assessing and distinguishing the practical solvability and resource requirements of various computational challenges.
+% A complexity class consists of a collection of problems that are classified together due to their shared level of computational complexity. Each problem within a class shares similar characteristics of time complexity, ensuring a consistent measure of computational effort needed for resolution. These classes offer valuable insights and are integral in assessing and distinguishing the practical solvability and resource requirements of various computational challenges.
 
-\begin{definition}\index{Complexity class}
-A complexity class $C$ is a collection of problems for which there exists a time bound function $f(n)$ such that any problem $P$ in $C$ can be solved by a Turing machine $M$ with time compexity $T_M = f(n)$, where $n$ is the size of the input.
-\end{definition}
+% \begin{definition}\index{Complexity class}
+% A complexity class $C$ is a collection of problems for which there exists a time bound function $f(n)$ such that any problem $P$ in $C$ can be solved by a Turing machine $M$ with time compexity $T_M = f(n)$, where $n$ is the size of the input.
+% \end{definition}
 
-The class $P$ consists of problems that can be solved in polynomial time by a Turing machine. In other words, for every problem in $P$, there exists an algorithm that can determine the solution in a number of steps that is a polynomial function of the size of the input. This class is foundational in computational complexity, serving as a baseline for measuring the efficiency of algorithms. 
+% The class $P$ consists of problems that can be solved in polynomial time by a Turing machine. In other words, for every problem in $P$, there exists an algorithm that can determine the solution in a number of steps that is a polynomial function of the size of the input. This class is foundational in computational complexity, serving as a baseline for measuring the efficiency of algorithms. 
 
-\begin{definition}\index{Class P}
-The class problems that can be solved in polynomial time, denoted by $P$, is defined as the collection of problems for which there exists a Turing machine $M$ that solve them and a polynomial $p(n)$ such that the time complexity of $M$ is $p(n)$.
-\end{definition}
+% \begin{definition}\index{Class P}
+% The class problems that can be solved in polynomial time, denoted by $P$, is defined as the collection of problems for which there exists a Turing machine $M$ that solve them and a polynomial $p(n)$ such that the time complexity of $M$ is $p(n)$.
+% \end{definition}
 
-Problems within $P$ are considered tractable, meaning they can be practically solved even for large inputs. The concept of polynomial time solvability is crucial in distinguishing between problems that have efficient solutions in practice and those that do not.
+% Problems within $P$ are considered tractable, meaning they can be practically solved even for large inputs. The concept of polynomial time solvability is crucial in distinguishing between problems that have efficient solutions in practice and those that do not.
 
-\begin{example}
-A classic example of a problem in class $P$ is the \emph{shortest path problem}\index{Shortest-path problem}. In this problem, you're given a weighted graph and two vertices, and the objective is to find the path of minimum total weight between these two vertices. One common algorithm to solve this problem is Dijkstra's algorithm. It works by iteratively selecting the vertex with the smallest known distance from the start vertex, and updating the estimated distances to its neighbors. This algorithm runs in polynomial time, specifically $O(V^2)$ for a graph with $V$ vertices. Since there exists a polynomial-time solution to this problem it is in class $P$.
-\end{example}
+% \begin{example}
+% A classic example of a problem in class $P$ is the \emph{shortest path problem}\index{Shortest-path problem}. In this problem, you're given a weighted graph and two vertices, and the objective is to find the path of minimum total weight between these two vertices. One common algorithm to solve this problem is Dijkstra's algorithm. It works by iteratively selecting the vertex with the smallest known distance from the start vertex, and updating the estimated distances to its neighbors. This algorithm runs in polynomial time, specifically $O(V^2)$ for a graph with $V$ vertices. Since there exists a polynomial-time solution to this problem it is in class $P$.
+% \end{example}
 
-A \emph{verifier}\index{Verifier} is a Turing machine that, given an input string and an additional string known as a \emph{certificate}\index{Certificate} or witness, determines whether the input satisfies a particular property, resulting in a binary "yes" or "no" answer. The core idea behind a verifier is not necessarily to find a solution to a problem, but rather to efficiently check or "verify" the validity of a proposed solution. 
+% A \emph{verifier}\index{Verifier} is a Turing machine that, given an input string and an additional string known as a \emph{certificate}\index{Certificate} or witness, determines whether the input satisfies a particular property, resulting in a binary "yes" or "no" answer. The core idea behind a verifier is not necessarily to find a solution to a problem, but rather to efficiently check or "verify" the validity of a proposed solution. 
 
-\begin{definition}
-A verifier is a Turing machine $M$ that, given an input string $x$ and an additional certificate string $y$, determines if $x$ belongs to a certain subset $S$ of strings. The machine satisfies two conditions:
-\begin{enumerate}
-    \item If $x$ belongs to subset $S$, there exists a certificate $y$ such that $V(x, y) = 1$.
-    \item If $x$ does not belong to subset $S$, then for every possible certificate $y$, $V(x, y) = 0$.
-\end{enumerate}
-\end{definition}
+% \begin{definition}
+% A verifier is a Turing machine $M$ that, given an input string $x$ and an additional certificate string $y$, determines if $x$ belongs to a certain subset $S$ of strings. The machine satisfies two conditions:
+% \begin{enumerate}
+%     \item If $x$ belongs to subset $S$, there exists a certificate $y$ such that $V(x, y) = 1$.
+%     \item If $x$ does not belong to subset $S$, then for every possible certificate $y$, $V(x, y) = 0$.
+% \end{enumerate}
+% \end{definition}
 
-Being the verifier a Turing machine, we can measure its time complexity, in terms of the length of the certificate. When a problem has solutions that can be verified in polynomial time using a verifier, it sheds light on the inherent complexity of that problem, situating it within specific computational classes.
+% Being the verifier a Turing machine, we can measure its time complexity, in terms of the length of the certificate. When a problem has solutions that can be verified in polynomial time using a verifier, it sheds light on the inherent complexity of that problem, situating it within specific computational classes.
 
-\begin{definition}
-A problem is in the class $NP$ if there exists a polynomial $p(n)$ and a Turing verifier $V$ such that for every instance $x$:
-\begin{enumerate}
-    \item If $x$ has a solution in subset $S$, then there exists a certificate $y$ with length at most $p(|x|)$ such that $V$ confirms $x$ as a valid instance of $S$ using $y$ in polynomial time.
-    \item If $x$ does not have a solution in subset $S$, then for every possible certificate $y$ with length at most $p(|x|)$, $V$ does not confirm $x$ as a valid instance of $S$.
-\end{enumerate}
-\end{definition}
+% \begin{definition}
+% A problem is in the class $NP$ if there exists a polynomial $p(n)$ and a Turing verifier $V$ such that for every instance $x$:
+% \begin{enumerate}
+%     \item If $x$ has a solution in subset $S$, then there exists a certificate $y$ with length at most $p(|x|)$ such that $V$ confirms $x$ as a valid instance of $S$ using $y$ in polynomial time.
+%     \item If $x$ does not have a solution in subset $S$, then for every possible certificate $y$ with length at most $p(|x|)$, $V$ does not confirm $x$ as a valid instance of $S$.
+% \end{enumerate}
+% \end{definition}
 
-\begin{example}
-{\color{red} TODO: Rewrite}
-A classic example of a problem in class $NP$ is the \emph{Traveling Salesman Problem}\index{Traveling salesman problem} or TSP: given a list of cities and the distances between each pair of cities, the problem is to find the shortest possible route that visits each city exactly once and returns to the original city. To show that TSP is in $NP$, we don't need to demonstrate how to efficiently find the shortest route; we only need to show that, given a proposed route (or tour), we can efficiently verify whether that route satisfies the conditions of the problem and is shorter than or equal to a certain length. The verification process would be:
-\begin{itemize}
-\item Check if the proposed route visits each city exactly once and returns to the starting city. This can be done by traversing the proposed route and marking visited cities.
-\item Compute the total distance of the proposed route by summing up the distances between consecutive cities in the route. 
-\item Compare the computed distance to the given threshold or limit.
-\end{itemize}
-Given a proposed solution (the route) and the distances between cities, a verifier can perform the above steps in polynomial time with respect to the number of cities, thereby verifying the solution's validity. In the context of the $NP$ definition, the "certificate" for TSP would be the proposed route. If TSP has a route shorter than or equal to a specific distance, then there exists a certificate (the route itself) that can be verified in polynomial time. If not, no such certificate would make the verifier confirm the solution.
-\end{example}
+% \begin{example}
+% {\color{red} TODO: Rewrite}
+% A classic example of a problem in class $NP$ is the \emph{Traveling Salesman Problem}\index{Traveling salesman problem} or TSP: given a list of cities and the distances between each pair of cities, the problem is to find the shortest possible route that visits each city exactly once and returns to the original city. To show that TSP is in $NP$, we don't need to demonstrate how to efficiently find the shortest route; we only need to show that, given a proposed route (or tour), we can efficiently verify whether that route satisfies the conditions of the problem and is shorter than or equal to a certain length. The verification process would be:
+% \begin{itemize}
+% \item Check if the proposed route visits each city exactly once and returns to the starting city. This can be done by traversing the proposed route and marking visited cities.
+% \item Compute the total distance of the proposed route by summing up the distances between consecutive cities in the route. 
+% \item Compare the computed distance to the given threshold or limit.
+% \end{itemize}
+% Given a proposed solution (the route) and the distances between cities, a verifier can perform the above steps in polynomial time with respect to the number of cities, thereby verifying the solution's validity. In the context of the $NP$ definition, the "certificate" for TSP would be the proposed route. If TSP has a route shorter than or equal to a specific distance, then there exists a certificate (the route itself) that can be verified in polynomial time. If not, no such certificate would make the verifier confirm the solution.
+% \end{example}
 
-The $P=NP$ problem is one of the most fundamental questions in computer science. It asks whether every problem for which a potential solution can be verified quickly can also have its solution found quickly. In essence, if $P$ equals $NP$, it would mean that finding solutions is as "easy" as checking them. Despite extensive study, no one has been able to prove that $P=NP$ or $P\neq NP$, making it a longstanding open challenge in theoretical computer science.
+% The $P=NP$ problem is one of the most fundamental questions in computer science. It asks whether every problem for which a potential solution can be verified quickly can also have its solution found quickly. In essence, if $P$ equals $NP$, it would mean that finding solutions is as "easy" as checking them. Despite extensive study, no one has been able to prove that $P=NP$ or $P\neq NP$, making it a longstanding open challenge in theoretical computer science.
 
-\begin{theorem}[P=NP Problem]\index{P=NP Problem}
-The class of problems $P$ is equal to the class of problems $NP$.
-\end{theorem}
+% \begin{theorem}[P=NP Problem]\index{P=NP Problem}
+% The class of problems $P$ is equal to the class of problems $NP$.
+% \end{theorem}
 
-If $P$ were to equal $NP$, it would signify a monumental shift in our understanding of computational tasks. Practically, many problems considered intractable today, especially those in cryptography, would become tractable. Secure communication over the internet relies on certain problems being hard to solve (like factoring large numbers). If $P=NP$, then encryption methods underpinning online security could be broken, potentially leading to a crisis in digital security. Conversely, numerous challenges in fields like optimization, drug discovery, and logistics could see groundbreaking solutions, revolutionizing industries. While it's tempting to view $P=NP$ solely in the context of its challenges, especially to security, it would also herald unprecedented opportunities and advancements in multiple domains.
+% If $P$ were to equal $NP$, it would signify a monumental shift in our understanding of computational tasks. Practically, many problems considered intractable today, especially those in cryptography, would become tractable. Secure communication over the internet relies on certain problems being hard to solve (like factoring large numbers). If $P=NP$, then encryption methods underpinning online security could be broken, potentially leading to a crisis in digital security. Conversely, numerous challenges in fields like optimization, drug discovery, and logistics could see groundbreaking solutions, revolutionizing industries. While it's tempting to view $P=NP$ solely in the context of its challenges, especially to security, it would also herald unprecedented opportunities and advancements in multiple domains.
 
-\emph{Turing reducibility}\index{Turing reducibility} is a fundamental concept in the realm of theoretical computer science and computability theory. It provides a means to compare the "computational difficulty" of problems. Specifically, a problem $A$ is Turing reducible to a problem $B$ if there exists an algorithm for solving $A$ that may make use of a subroutine solving $B$ an arbitrary number of times.
+% \emph{Turing reducibility}\index{Turing reducibility} is a fundamental concept in the realm of theoretical computer science and computability theory. It provides a means to compare the "computational difficulty" of problems. Specifically, a problem $A$ is Turing reducible to a problem $B$ if there exists an algorithm for solving $A$ that may make use of a subroutine solving $B$ an arbitrary number of times.
 
-\begin{definition}
-Let $A$ and $B$ be two problems. We say that $A$ is \textbf{Turing reducible} to $B$, denoted by $A \leq_T B$, if there exists a Turing machine that solves $A$ by making use of one or more Turing machines that solve $B$.
-\end{definition}
+% \begin{definition}
+% Let $A$ and $B$ be two problems. We say that $A$ is \textbf{Turing reducible} to $B$, denoted by $A \leq_T B$, if there exists a Turing machine that solves $A$ by making use of one or more Turing machines that solve $B$.
+% \end{definition}
 
-If $A$ is Turing reducible to $B$ and vice versa, then the two problems are said to be Turing equivalent, indicating they have the same computational complexity.
+% If $A$ is Turing reducible to $B$ and vice versa, then the two problems are said to be Turing equivalent, indicating they have the same computational complexity.
 
-\begin{example}
-{\color{red} TODO: rewrite.}
-Consider the problems of GRAPH ISOMORPHISM and SUBGRAPH ISOMORPHISM.
+% \begin{example}
+% {\color{red} TODO: rewrite.}
+% Consider the problems of GRAPH ISOMORPHISM and SUBGRAPH ISOMORPHISM.
 
-GRAPH ISOMORPHISM (GI): Given two graphs \(G_1\) and \(G_2\), is there a one-to-one correspondence (isomorphism) between their vertices such that the edges are preserved?
+% GRAPH ISOMORPHISM (GI): Given two graphs \(G_1\) and \(G_2\), is there a one-to-one correspondence (isomorphism) between their vertices such that the edges are preserved?
 
-SUBGRAPH ISOMORPHISM (SI): Given two graphs \(G_1\) and \(G_2\), does \(G_1\) contain a subgraph that is isomorphic to \(G_2\)?
+% SUBGRAPH ISOMORPHISM (SI): Given two graphs \(G_1\) and \(G_2\), does \(G_1\) contain a subgraph that is isomorphic to \(G_2\)?
 
-The GRAPH ISOMORPHISM problem is Turing reducible to the SUBGRAPH ISOMORPHISM problem. Here's the reasoning:
+% The GRAPH ISOMORPHISM problem is Turing reducible to the SUBGRAPH ISOMORPHISM problem. Here's the reasoning:
 
-If we have an efficient solver for SUBGRAPH ISOMORPHISM, then we can use it to solve GRAPH ISOMORPHISM. For two graphs \(G_1\) and \(G_2\) of the same size, we ask the SI solver if \(G_2\) is a subgraph of \(G_1\) and vice versa. If both answers are affirmative, then \(G_1\) and \(G_2\) are isomorphic. Thus, an efficient solution for SI can be used to determine a solution for GI.
+% If we have an efficient solver for SUBGRAPH ISOMORPHISM, then we can use it to solve GRAPH ISOMORPHISM. For two graphs \(G_1\) and \(G_2\) of the same size, we ask the SI solver if \(G_2\) is a subgraph of \(G_1\) and vice versa. If both answers are affirmative, then \(G_1\) and \(G_2\) are isomorphic. Thus, an efficient solution for SI can be used to determine a solution for GI.
 
-This example demonstrates the essence of Turing reducibility: by solving the more general problem (SUBGRAPH ISOMORPHISM), we inherently find a solution for the more specific problem (GRAPH ISOMORPHISM).
-\end{example}
+% This example demonstrates the essence of Turing reducibility: by solving the more general problem (SUBGRAPH ISOMORPHISM), we inherently find a solution for the more specific problem (GRAPH ISOMORPHISM).
+% \end{example}
 
-{\color{red} NP-hard}
+% {\color{red} NP-hard}
 
-{\color{red} NP-Complete}
+% {\color{red} NP-Complete}
 
 %
 % Section: References
@@ -539,30 +584,5 @@ This example demonstrates the essence of Turing reducibility: by solving the mor
 
 \section*{References}
 
-{\color{red} TODO:  Briefly mention the historical emergence of the concept, including the works of pioneers like Alan Turing, Alonzo Church, and others.}
-
 The original paper form Alan Turing where the concepts of Turing machine, universal Turing machine, and non-computable problems were introduced is \cite{turing1936computable}, however it is a difficult to read paper for the contemporary reader. An easier to read introduction to computability theory, from the point of view of languages, can be found in \cite{sipser2012introduction}, and a more advanced introductions in \cite{cooper2003computability} and \cite{soare2016turing}. In \cite{fernandez2009models} we can find a description of the most important computability models proposed so far. The Post Correspondence Problem was introduced by Emil Post in \cite{post1946variant}; for the details of the proof sketched in Example \ref{ex:PCP} please refer to \cite{sipser2012introduction}.
-
-{\color{red} TODO: Here are a few seminal academic works on non-computability:
-
-Turing, A. M. (1936). On Computable Numbers, with an Application to the Entscheidungsproblem. Proceedings of the London Mathematical Society, s2-42(1), 230-265. Content: This foundational paper by Alan Turing introduces the concept of Turing machines, laying the groundwork for the theory of computation and establishing the halting problem's non-computability.
-
-Church, A. (1936). An Unsolvable Problem of Elementary Number Theory. American Journal of Mathematics, 58(2), 345-363. Content: Alonzo Church presents the $\lambda$-calculus and establishes Church’s Thesis, claiming that his formalism captures the intuitive notion of "computable," and proving the unsolvability of the Entscheidungsproblem.
-
-Gödel, K. (1931). Über formal unentscheidbare Sätze der Principia Mathematica und verwandter Systeme, I. Monatshefte für Mathematik, 38(1), 173-198. Content: Kurt Gödel's landmark paper where he introduces his incompleteness theorems, showing that within any sufficiently powerful mathematical system, there are statements that cannot be proven or disproven.
-
-Post, E. (1946). A Variant of a Recursively Unsolvable Problem. Bulletin of the American Mathematical Society, 52(4), 264-268. Content: Emil Post presents a simpler, more accessible proof of unsolvability (non-computability) related to the halting problem and delves into the Post Correspondence Problem, a classic example of a non-computable problem.
-
-Davis, M. (1958). Computability and Unsolvability. McGraw-Hill. Content: In this book, Martin Davis offers a comprehensive overview of the theory of computability and unsolvability, addressing topics like recursive functions, Turing machines, and Gödel’s incompleteness theorems in an accessible manner.
-
-These references should provide a solid academic foundation for exploring the multifaceted and intriguing world of non-computability. Each offers unique insights and perspectives that collectively illuminate the complexity and depth of this area of study.
-}
-
-{\color{red} TODO: Add a reference to how to build a universal Turing machine.}
-
-{\color{red} TODO: Introduce other well-known non-computable problems besides the halting problem, like Turing’s “Entscheidungsproblem” or the Busy Beaver function.}
-
-{\color{red} TODO: Relate non-computability to Gödel's incompleteness theorems to illustrate the inherent limitations in formal mathematical systems.}
-
-{\color{red} TODO: Explore philosophical discussions on the implications of non-computability for artificial intelligence and human cognition.}
 

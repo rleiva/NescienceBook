@@ -2,7 +2,7 @@
 % CHAPTER 5.- The MDL Principle
 %
 
-\chapterimage{TuringMachine.pdf} % Chapter heading image
+\chapterimage{terra_incognita.pdf} % Chapter heading image
 
 \chapter{Learning}
 \label{ch:Learning}
@@ -16,7 +16,7 @@ Gregory Chaitin
 \end{quote}
 \bigskip
 
-{\color{red} Warning: This section still requires a significant amount of work!}
+{\color{red} Warning: This chapter still requires a significant amount of work!}
 
 Machine learning refers to a large collection of algorithms designed to automatically build mathematical models based on sample data sets, usually with the aim of making predictions, classifying objects, or simply to better understand the structure of the data. In the past decade, machine learning algorithms have been highly successful in areas like self-driving cars, practical speech recognition, effective web search, and purchase recommendations.
 
@@ -30,22 +30,22 @@ Most of the learning algorithms used today in practice are known since forty yea
 
 \section{Statistical Inference}
 
-\emph{Statistical inference}\index{Statistical inference} has traditionally been presented as the way to make sense of reality through data. It applies probabilistic models to relate finite observations to broader populations, aiming to offer predictions and structured conclusions. However, statistical inference is not a direct reflection of reality but rather a tool that depends heavily on assumptions and idealized models. These models simplify complex phenomena, and the validity of their conclusions relies on how well these assumptions align with the underlying data-generating processes.
+\emph{Statistical inference}\index{Statistical inference} has traditionally been presented as the process of making sense of reality through data. It applies probabilistic models to relate finite observations to broader populations, aiming to offer predictions and structured conclusions. However, statistical inference is not a direct reflection of reality but rather a tool that depends heavily on assumptions and idealized models. These models simplify complex phenomena, and the validity of their conclusions relies on how well these assumptions align with the underlying data-generating processes.
 
 The random sampling model serves as a stepwise framework in statistical inference, guiding how we connect finite samples to broader populations:
 
 Step 1.- Defining the Population and Collecting Data: The first step is to define the population of interest and determine how data will be collected. This involves specifying the sampling process and ensuring that each data point is drawn independently and identically distributed (iid) from the same population, with every unit having a nonzero probability of selection. Once the sampling process is defined, data is collected as a sample from the population, and each observation is treated as a realization of a random variable following the specified distribution.
 
-Step 2.- Constructing and Checking the Random Sampling Model: Based on the assumptions about how the data was generated, the random sampling model is mathematically expressed. For example, , where  is the unknown population distribution with parameter . This step formalizes the relationship between the data and the population. Real-world data rarely fits these idealized assumptions perfectly, so it is essential to check for deviations such as selection biases or lack of independence and address them appropriately.
+Step 2.- Constructing and Checking the Random Sampling Model: Based on assumptions about how the data was generated, the random sampling model is mathematically expressed. For example, we may assume that $X_1, \ldots, X_n$ are iid random variables with common distribution $f(x \mid \theta)$, where $\theta$ is an unknown parameter of the population distribution. This step formalizes the relationship between the data and the population. Real-world data rarely fits these idealized assumptions perfectly, so it is essential to check for deviations such as selection bias or lack of independence, and to address them appropriately.
 
-Step 3.- Applying the Likelihood Function and Estimating Parameters: The likelihood function plays a central role in parameter estimation by quantifying how plausible different parameter values are given the observed data . Methods such as maximum likelihood estimation (MLE) or Bayesian inference refine these estimates, translating raw data into structured knowledge about the population. For example, the sample mean  is often used as an estimate of the population mean .
+Step 3.- Applying the Likelihood Function and Estimating Parameters: The likelihood function plays a central role in parameter estimation by quantifying how plausible different parameter values are given the observed data $\mathbf{X}$. Methods such as maximum likelihood estimation (MLE) or Bayesian inference refine these estimates, translating raw data into structured knowledge about the population. For example, the sample mean $\overline{X}$ is often used as an estimate of the population mean $\mu$.
 
-Step 4.- Quantifying Uncertainty and Generalizing to the Population: Recognizing that the sample is just one realization of a random process, uncertainty must be quantified to understand how sample statistics behave across repeated samples. Sampling distributions, confidence intervals, and hypothesis tests help describe this variability. The Central Limit Theorem ensures that for large samples, the sample mean  approximates a normal distribution, making inference more reliable. Finally, results are generalized from the sample to the population using frequentist methods such as confidence intervals and p-values or Bayesian methods that update beliefs about  by incorporating prior knowledge.
+Step 4.- Quantifying Uncertainty and Generalizing to the Population: Recognizing that the sample is just one realization of a random process, uncertainty must be quantified to understand how sample statistics behave across repeated samples. Sampling distributions, confidence intervals, and hypothesis tests help describe this variability. The Central Limit Theorem ensures that for large samples, the distribution of the sample mean $\overline{X}$ approximates a normal distribution, making inference more reliable. Finally, results are generalized from the sample to the population using frequentist methods such as confidence intervals and $p$-values, or Bayesian methods that update beliefs about $\theta$ by incorporating prior knowledge.
 
 The random sampling model provides a structured, step-by-step approach for making inferences from data. However, each step depends on assumptions that rarely hold perfectly in practice. As such, conclusions drawn from statistical inference should be viewed as tentative and context-dependent, subject to revision when new data or insights become available.
 
 \begin{definition}
-A \emph{statistical model}\index{Statistical model} is a random variable, together with a specification of its probability distribution, and the identification of the parameters, denoted by $\theta$, of that distribution.
+A \emph{statistical model}\index{Statistical model} is a family of probability distributions, together with a specification of its probability distribution, and the identification of the parameters, denoted by $\theta$, of that distribution.
 \end{definition}
 
 A statistic is a function of the observable data. A statistic is used to summarize or describe some aspect of the sample. For example, the sample mean and the sample variance are statistics because they summarize data drawn from a sample.
@@ -54,14 +54,14 @@ A statistic is a function of the observable data. A statistic is used to summari
 Let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be a random sample. A \emph{statistic}\index{Statistic} is a random variable $T = r \left( X_1, \ldots, X_n \right)$, where $r()$ is an arbitrary real-valued function of $n$ variables.
 \end{definition}
 
-A \emph{parametric random variable}\index{Parametric random variable} is a random variable $X$ that belongs to a family of functions parameterized by $\theta$. The parameter $\theta$ can either be a single scalar or a vector of values, and it is treated itself as a random variable that follows a probability distribution. The set $\Theta = \{ \theta_1, \theta_2, \ldots \}$, consisting of all possible values of $\theta$, is called the \emph{parameter space}\index{Parameter space}, and its elements are referred to as \emph{parameters}\index{Parameter of a probability distribution}. When the parameter $\theta$ is unknown, the distribution of the random variable $X$ is said to be conditional on $\theta$, denoted by $f\left(X \mid \theta \right)$.
+A \emph{parametric random variable}\index{Parametric random variable} is a random variable $X$ that belongs to a family of distributions parameterized by $\theta$. The parameter $\theta$ can either be a single scalar or a vector of values, and it is often treated as a fixed but unknown quantity. In the Bayesian setting, $\theta$ itself is modeled as a random variable with a prior distribution. The set $\Theta = \{ \theta_1, \theta_2, \ldots \}$, consisting of all possible values of $\theta$, is called the \emph{parameter space}\index{Parameter space}, and its elements are referred to as \emph{parameters}\index{Parameter of a probability distribution}. When the parameter $\theta$ is unknown, the distribution of the random variable $X$ is said to be conditional on $\theta$, denoted by $f\left(X \mid \theta \right)$.
 
-As was the case in Chapter \ref{chap:Probability Theory}, in this section, we are only considering parametric discrete random variables defined over discrete probability spaces.
+As in Chapter \ref{chap:Probability Theory}, in this section we are only considering parametric discrete random variables defined over discrete probability spaces.
 
 \begin{example}
 We have seen in Definition \ref{def:binomial_distribution} that a binomial distribution with parameters $n$ and $p$ is a model for a family of experiments in which we are interested in knowing the number of successes in a sequence of $n$ independent binary trials, where the probability of success is $p$. If $X$ is a random variable following a binomial distribution, the probability of getting exactly $k$ successes is given by:
 \[
-Pr(X=k) = {\binom {n}{k}}p^{k}(1-p)^{n-k}
+P(X=k) = {\binom {n}{k}}p^{k}(1-p)^{n-k}
 \]
 In statistical inference, we are usually interested in the inverse problem. That is, we have the actual result of an experiment composed of $n$ trials, in which we know how many successes $k$ we have obtained, and we would like to estimate the parameter $p$, that is, the probability of success.
 \end{example}
@@ -76,29 +76,33 @@ Let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be a random sample from a discr
 
 The estimator itself is a random variable, and its probability distribution can be derived from the joint distribution of $X_1, \ldots, X_n$. Every estimator is a statistic, but not every statistic is an estimator. The estimate is a real number.
 
-Estimators help us estimate the quantities of interest in statistical inference and quantitatively assess the quality of the results. A good estimator is one where it is highly likely that the error $\delta(\mathbf{X}) - \theta$ will be close to zero.
-
-In practice, we begin our analysis by deriving a distribution for the parameter $\theta$ based on theoretical assumptions and our current knowledge of the experiment.
-
 When selecting an estimator, it is important to measure how "good" an estimate is. One common approach is to quantify the loss or cost associated with choosing an estimate that deviates from the true parameter value. This is done using a loss function, which assigns a numerical penalty to the difference between the estimate and the actual parameter.
 
 \begin{definition}
-A loss function is a real-valued function of two variables, $L\left(\theta,a\right)$, where $\theta \in \Theta$ and $a$ is a real number.
+A \emph{loss function}\index{Loss function} is a real-valued function of two variables, $L\left(\theta,a\right)$, where $\theta \in \Theta$ and $a$ is a real number.
 \end{definition}
 
 The loss function represents the cost incurred when the true parameter value is $\theta$ and the estimate is $a$. In other words, $L\left(\theta,a\right)$ quantifies the loss when there is a discrepancy between the estimate and the true value.
 
-Let $\xi\left(\theta\right)$ denote the prior probability mass function (p.m.f.) of $\theta$ on the set $\Theta$. Given a particular estimate $a$, the expected loss for discrete random variables is computed as:
+Let $\xi\left(\theta\right)$ denote the prior probability mass function of $\theta$ on the set $\Theta$. Given a particular estimate $a$, the expected loss for discrete random variables is computed as:
 \[
 E\left[L\left(\theta,a\right)\right]=\sum_{\theta \in \Theta} L\left(\theta,a\right)\xi\left(\theta\right)
 \]
 The expected loss is the weighted average of the losses, where the weights are the probabilities $\xi(\theta)$ assigned to each possible value of $\theta$. The goal is to choose an estimate $a$ that minimizes this expected loss.
 
-{\color{red}
-The loss function $L\left(\theta,a\right)=\left(\theta-a\right)^{2}$ is called squared error loss. Let $\theta$ be a real-valued parameter. Suppose that the squared error loss function is used and that the posterior mean of $\theta$, $E\left(\theta\mid\mathbf{X}\right)$, is finite. Then, a Bayes estimator of $\theta$ is $\delta^{\ast}\left(\mathbf{X}\right)=E\left(\theta\mid\mathbf{X}\right)$.
+\begin{example}
+The loss function $L\left(\theta,a\right) = (\theta-a)^2$ is called the \emph{squared error loss}. Let $\theta$ be a real-valued parameter. Suppose that squared error loss is used and that the posterior mean of $\theta$, $E(\theta \mid \mathbf{X})$, is finite. Then, the Bayes estimator of $\theta$ under squared error loss is
+\[
+\delta^\ast(\mathbf{X}) = E(\theta \mid \mathbf{X}).
+\]
+In words, the posterior mean minimizes the expected squared deviation from the true parameter.
 
-The loss function $L\left(\theta,a\right)=\left|\theta-a\right|$ is called absolute error loss. When the absolute error loss function is used, a Bayes estimator of a real-valued parameter $\delta^{\ast}\left(\mathbf{X}\right)$ equal to a median of the posterior distribution of $\theta$.
-}
+The loss function $L\left(\theta,a\right) = \lvert \theta-a \rvert$ is called the \emph{absolute error loss}. When absolute error loss is used, a Bayes estimator of a real-valued parameter $\theta$ is any median of the posterior distribution of $\theta$. That is,
+\[
+\delta^\ast(\mathbf{X}) \in \operatorname{Median}\big(\theta \mid \mathbf{X}\big).
+\]
+In words, the posterior median minimizes the expected absolute deviation from the true parameter.
+\end{example}
 
 % Maximum likelihood estimator
 
@@ -111,87 +115,91 @@ The likelihood represents the probability (or likelihood) of observing the data 
 \begin{definition}
 Let \( X_1, X_2, \dots, X_n \) be $n$ independent and identically distributed discrete random variables, and let \( P(X_i = x_i \mid \theta) \) be the probability mass function of \( X_i \), where \( \theta \in \Theta \) is an unknown parameter, and \( \Theta \) is the parameter space. The \emph{likelihood function}\index{Likelihood function} is then defined as:
 \[
-L(\theta \mid X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i = x_i \mid \theta)
+L(\theta \mid X_1, X_2, \dots, X_n) \;=\; \prod_{i=1}^{n} P(X_i = x_i \mid \theta),
 \]
-where \( x_1, x_2, \dots, x_n \) are the observed data points.
+where \( x_1, x_2, \dots, x_n \) are the observed data points (held fixed when viewing \(L\) as a function of \(\theta\)).
 \end{definition}
 
-The likelihood function is a product of probabilities. Taking the logarithm of the likelihoodm, what it is called the \emph{log-likelihood function}\index{Log-likelihood function}, simplifies this product into a sum:
+The likelihood function is a product of probabilities. Taking the logarithm of the likelihood, the \emph{log-likelihood function}\index{Log-likelihood function}, simplifies this product into a sum:
 \[
-\ell(\theta \mid X_1, X_2, \dots, X_n) = \log L(\theta \mid X_1, X_2, \dots, X_n) = \sum_{i=1}^{n} \log f(X_i \mid \theta)
+\ell(\theta \mid X_1, X_2, \dots, X_n)
+\;=\; \log L(\theta \mid X_1, X_2, \dots, X_n)
+\;=\; \sum_{i=1}^{n} \log P(X_i \mid \theta).
 \]
-Sums are generally much easier to work with than products, particularly when performing differentiation for optimization purposes. This transformation makes it more straightforward to compute derivatives and apply optimization algorithms.
+Sums are generally easier to work with than products, particularly when performing differentiation for optimization purposes. This transformation makes it more straightforward to compute derivatives and apply optimization algorithms.
 
 Maximum likelihood estimation is a method that determines values for the parameters of a model. The parameter values are found such that they maximise the likelihood that the process described by the model produced the data that were actually observed.
 
 \begin{definition}
-The \emph{Maximum Likelihood Estimator}\index{Maximum Likelihood Estimator}, abreviated as MLE, for discrete random variables is defined as the parameter value that maximizes the likelihood function, i.e.,
+The \emph{Maximum Likelihood Estimator}\index{Maximum Likelihood Estimator}, abbreviated as MLE, for discrete random variables is defined as the parameter value that maximizes the likelihood function, i.e.,
 \[
-\hat{\theta}_n = \arg \max_{\theta \in \Theta} L(\theta \mid X_1, X_2, \dots, X_n)
+\hat{\theta}_n \in \arg \max_{\theta \in \Theta} \; L(\theta \mid X_1, X_2, \dots, X_n).
 \]
 \end{definition}
 
-Equivalently, the MLE can also be found by maximizing the log-likelihood function:
+Equivalently, any maximizer of the log-likelihood \(\ell(\theta \mid X_1, \dots, X_n)\) is an MLE. When there are multiple maximizers, any of them may be taken.
+
+The MLE can also be found by maximizing the log-likelihood function:
 \[
 \hat{\theta}_n = \arg \max_{\theta \in \Theta} \ell(\theta \mid X_1, X_2, \dots, X_n)
 \]
 
 \begin{example}
-Consider \( X_1, X_2, \dots, X_n \) i.i.d. random variables from a Bernoulli distribution with parameter \( p \). The probability mass function is:
+Consider \( X_1, X_2, \dots, X_n \) i.i.d. random variables from a Bernoulli distribution with parameter \( p \). The probability mass function is
 \[
-P(X_i = x_i \mid p) = p^{x_i}(1 - p)^{1 - x_i}
+P(X_i = x_i \mid p) = p^{x_i}(1 - p)^{1 - x_i}, \qquad x_i \in \{0,1\}.
 \]
-where \( X_i \in \{0, 1\} \). The likelihood function for this sample is:
+The likelihood function for this sample is
 \[
 L(p \mid X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} p^{X_i}(1 - p)^{1 - X_i}
+= p^{S} (1 - p)^{n - S},
 \]
-Which can be rewritten as:
+where \( S = \sum_{i=1}^{n} X_i \) is the total number of successes. The function \( f(p) = p^{a}(1-p)^{b} \) on \(p \in (0,1)\) attains its maximum at \( p = \dfrac{a}{a+b} \). In our case, \( a = S \) and \( b = n-S \), so
 \[
-L(p) = p^S (1 - p)^{n - S}
+\hat{p} = \frac{S}{S + (n - S)} = \frac{S}{n}.
 \]
-where \( S = \sum_{i=1}^{n} X_i \) is the total number of successes (number of times \( X_i = 1 \)).  The function \( f(p) = p^a (1 - p)^b \) attains its maximum at \( p = \dfrac{a}{a + b} \). In our case, \( a = S \) and \( b = n - S \), so the likelihood function \( L(p) \) reaches its maximum at:
+Therefore, the maximum likelihood estimator for \( p \) is
 \[
-\hat{p} = \dfrac{S}{S + (n - S)} = \dfrac{S}{n}
-\]
-Therefore, the maximum likelihood estimator for \( p \) is:
-\[
-\hat{p} = \dfrac{1}{n} \sum_{i=1}^{n} X_i
+\hat{p} = \frac{1}{n} \sum_{i=1}^{n} X_i,
 \]
 which is simply the sample mean of the Bernoulli trials (the proportion of successes).
 \end{example}
 
-The maximun likelihood estimator is consitant.
+The maximum likelihood estimator is consistent under suitable conditions.
 
 \begin{proposition}
-Let \( \hat{\theta}_n \) be the MLE for \( \theta \) when the random variables are discrete. Under regularity conditions (such as identifiability of the model and the existence of a unique maximizer of the likelihood function), the MLE is consistent, i.e.,
+Let \( \hat{\theta}_n \) be an MLE for \( \theta \) based on an i.i.d.\ sample from a discrete model \( \{P_{\theta} : \theta \in \Theta\} \). Suppose the model is identifiable (i.e., \(P_{\theta} = P_{\theta_0}\) implies \(\theta=\theta_0\)), \(\Theta\) is compact, and for each \(x\), \( \log P(X=x \mid \theta) \) is continuous in \(\theta\). If \(E_{\theta_0}\big[\,|\log P(X_1 \mid \theta)|\,\big] < \infty\) for all \(\theta\in\Theta\), then
 \[
-\hat{\theta}_n \xrightarrow{\text{P}} \theta_0 \quad \text{as} \quad n \to \infty
+\hat{\theta}_n \xrightarrow{\mathrm{P}} \theta_0 \qquad \text{as } n \to \infty,
 \]
 where \( \theta_0 \) is the true value of the parameter.
 \end{proposition}
-\begin{proof}
-{\color{red} TODO: Finish}
-1. Show that the expected log-likelihood is maximized at the true parameter \( \theta_0 \).
-2. Prove that the empirical likelihood function converges uniformly to the expected log-likelihood as the sample size increases.
-3. Establish that \( \hat{\theta}_n \) converges to \( \theta_0 \) as \( n \to \infty \).
+\begin{proof}[Sketch]
+(1) By identifiability and Gibbs' inequality, the expected log-likelihood (per observation) is uniquely maximized at \(\theta_0\):
+\[
+Q(\theta) \;:=\; E_{\theta_0}\!\left[\log P(X_1 \mid \theta)\right]
+\;\le\; Q(\theta_0),
+\]
+with equality iff \(\theta=\theta_0\). \\
+(2) By the Law of Large Numbers and the continuity/integrability assumptions, the average log-likelihood converges uniformly to \(Q(\theta)\) on \(\Theta\):
+\[
+\sup_{\theta \in \Theta}\left|\frac{1}{n}\sum_{i=1}^n \log P(X_i \mid \theta) - Q(\theta)\right| \xrightarrow{\mathrm{P}} 0.
+\]
+(3) By the argmax continuous mapping principle, any maximizer \(\hat{\theta}_n\) of the sample log-likelihood converges in probability to the unique maximizer of \(Q\), namely \(\theta_0\).
 \end{proof}
 
-The MLE has several notable disadvantages. Firstly, it is highly dependent on sample size; for small samples, MLE may exhibit bias or high variance, as its desirable asymptotic properties, such as consistency, are guaranteed only for large datasets. Additionally, MLE requires correct model specification. It is sensitive to assumptions about the underlying model, and if the model is misspecified, the resulting estimates can be misleading. From a computational perspective, maximizing the likelihood function can pose numerical challenges, often necessitating complex optimization techniques that are computationally demanding and may result in convergence to local rather than global maxima. Furthermore, MLE is sensitive to outliers; since it seeks to maximize the likelihood based on observed data, extreme values can disproportionately affect the estimates, leading to distortions.
+The MLE has several notable disadvantages. Firstly, it is highly dependent on sample size; for small samples, MLE may exhibit bias or high variance, as its desirable asymptotic properties, such as consistency, are guaranteed only for large datasets. Additionally, MLE requires correct model specification. It is sensitive to assumptions about the underlying model, and if the model is misspecified, the resulting estimates can be misleading. From a computational perspective, maximizing the likelihood function can pose numerical challenges, often necessitating complex optimization techniques that are computationally demanding and may result in convergence to local rather than global maxima. Furthermore, MLE can be sensitive to extreme observations; because it seeks to maximize the likelihood of the observed sample, large or influential data points may have a disproportionate impact on the estimate, leading to distortions under contamination.
 
 \begin{example}
 Consider a situation where we are dealing with a uniform distribution \( U(0, \theta) \), where \( \theta \) is the unknown upper bound of the distribution. We have a sample \( X_1, X_2, \dots, X_n \) of i.i.d. observations from this distribution, and we wish to estimate the parameter \( \theta \) using the maximum likelihood estimator. The log-likelihood function is:
 \[
-\ell(\theta \mid X_1, X_2, \dots, X_n) = -n \log \theta, \quad \text{subject to} \quad \theta \geq \max(X_1, X_2, \dots, X_n)
+\ell(\theta \mid X_1, X_2, \dots, X_n) = -n \log \theta, \qquad \text{subject to } \theta \geq \max(X_1, X_2, \dots, X_n).
 \]
-To maximize the log-likelihood, observe that \( \ell(\theta) \) is a decreasing function of \( \theta \). Therefore, the maximum likelihood occurs when \( \theta \) is minimized, subject to the constraint \( \theta \geq \max(X_1, X_2, \dots, X_n) \). Hence, the MLE for \( \theta \) is:
+Since \( \ell(\theta) \) is decreasing in \( \theta \), the maximum likelihood occurs at the smallest feasible value, namely
 \[
-\hat{\theta} = \max(X_1, X_2, \dots, X_n)
+\hat{\theta} = \max(X_1, X_2, \dots, X_n).
 \]
-The MLE \( \hat{\theta} \) tends to underestimate the true value of \( \theta \) when the sample size is small. This is because the maximum observation in a sample is unlikely to exactly reach the true upper bound, leading to a systematic bias. For example, if \( \theta = 10 \) and we take a sample of size 5, the expected value of \( \hat{\theta} \) is \( \frac{5}{6} \cdot 10 = 8.33 \), meaning we systematically underestimate the true parameter.
-
-Since the MLE depends only on the maximum observed value, the estimate \( \hat{\theta} \) is highly sensitive to outliers. If an unusually large value appears in the sample, it can drastically inflate the estimate of \( \theta \), even if the rest of the data suggests a much smaller upper bound. This makes the MLE fragile in the presence of anomalous observations.
-
-Another issue with the MLE in this case is that it ignores most of the data. The MLE is solely determined by the largest value in the sample, meaning the other \( n-1 \) data points do not contribute to the estimate. This seems inefficient because the estimator does not use all available information, which could be helpful in producing a more reliable estimate.
+For small samples, \( \hat{\theta} \) is biased downward: \( E[\hat{\theta}] = \frac{n}{n+1}\,\theta \) (e.g., if \( \theta = 10 \) and \( n=5 \), then \( E[\hat{\theta}]=\frac{5}{6}\cdot 10 = 8.33 \)). Moreover, the estimator depends only on the sample maximum; the other \(n-1\) observations do not affect the estimate, which is statistically inefficient in finite samples. Finally, the estimator has high sensitivity to the largest observation: small perturbations of the maximum change \(\hat{\theta}\) directly (and under data contamination, a single large outlying value can inflate \(\hat{\theta}\) substantially).
 \end{example}
 
 % Bayesian inference
@@ -199,7 +207,7 @@ Another issue with the MLE in this case is that it ignores most of the data. The
 \subsection{Bayesian Inference}
 \label{sec:bayesian_inference}
 
-Unlike the Maximum Likelihood Estimator (MLE), which selects the parameter values that maximize the probability of the observed data, \emph{Bayesian inference}\index{Bayesian inference} takes a fundamentally different approach by treating parameters as probability distributions rather than fixed values. Bayesian inference also incorporates prior knowledge, allowing for an informed estimation process even before observing data. This approach enables Bayesian methods to dynamically update beliefs as new data becomes available. Bayes' theorem (see Theorem \ref{th:Bayes_theorem})\index{Bayes theorem}) formalizes this process by combining a prior probability mass function with the likelihood of the observed data to produce a posterior probability mass function, which represents the updated belief about the parameter.
+Unlike the Maximum Likelihood Estimator (MLE), which selects the parameter values that maximize the probability of the observed data, \emph{Bayesian inference}\index{Bayesian inference} takes a fundamentally different approach by treating parameters as random variables endowed with probability distributions rather than fixed values. Bayesian inference also incorporates prior knowledge, allowing for an informed estimation process even before observing data. This approach enables Bayesian methods to dynamically update beliefs as new data become available. Bayes' theorem (see Theorem \ref{th:Bayes_theorem})\index{Bayes' theorem} formalizes this process by combining a prior probability mass function with the likelihood of the observed data to produce a posterior probability mass function, which represents the updated belief about the parameter.
 
 \begin{definition}
 Let $f\left(X \mid \theta \right)$ be the probability mass function of a discrete random variable $X$ with parameter $\theta$. The probability distribution of the parameter $\theta$, denoted by $\xi\left(\theta\right)$, is called the \emph{prior distribution}\index{Prior distribution}.
@@ -211,23 +219,23 @@ The prior distribution must be defined over the parameter space $\Theta$. It is 
 Let $f\left(X \mid \theta \right)$ be the probability mass function of a discrete random variable $X$ with parameter $\theta$, and let $\mathbf{X}=\left(X_{1},\ldots,X_{n}\right)$ be a random sample from $X$. The conditional probability mass function of the parameter $\theta$ given the observed values $X_1 = x_1, \ldots, X_n = x_n$, denoted $\xi \left( \theta \mid x_1, \ldots, x_n \right)$, is called the \emph{posterior distribution}\index{Posterior distribution}.
 \end{definition}
 
-The posterior distribution represents our updated knowledge of the parameter $\theta$ after taking into account the observed data. A strongly informative prior will dominate the posterior, while a weak or uniform prior will let the data speak for itself.
+The posterior distribution represents our updated knowledge of the parameter $\theta$ after taking into account the observed data. A strongly informative prior can dominate the posterior, while a weak or diffuse prior allows the likelihood to play a larger role (and, under regularity, the likelihood typically dominates as $n$ grows).
 
 The posterior pmf is computed using Bayes' theorem:
 \[
-\xi(\theta \mid \mathbf{X}) = \frac{L(\mathbf{X} \mid \theta) \xi(\theta)}{P(\mathbf{X})}
+\xi(\theta \mid \mathbf{X}) = \frac{L(\mathbf{X} \mid \theta)\,\xi(\theta)}{P(\mathbf{X})},
 \]
 where:
 \begin{itemize}
-\item \(\xi(\theta)\) is the prior distribution, which encodes our belief about \(\theta\) before seeing the data.
-\item \(L(\mathbf{X} \mid \theta)\) is the likelihood function, representing the probability of observing the data given a particular value of \(\theta\).
-\item \(P(\mathbf{X})\) is the marginal probability, ensuring the posterior pmf is a valid probability mass function, computed as:
+\item \(\xi(\theta)\) is the prior distribution, which encodes our belief about \(\theta\) before seeing the data;
+\item \(L(\mathbf{X} \mid \theta)\) is the likelihood function, representing the probability of observing the data given \(\theta\); under i.i.d.\ sampling, \(L(\mathbf{X}\mid\theta)=\prod_{i=1}^n f(x_i\mid\theta)\);
+\item \(P(\mathbf{X})\) is the marginal probability (also called the evidence), ensuring the posterior pmf is a valid probability mass function, computed as
 \[
-P(\mathbf{X}) = \sum_{\theta \in \Theta} L(\mathbf{X} \mid \theta) \xi(\theta)
+P(\mathbf{X}) = \sum_{\theta \in \Theta} L(\mathbf{X} \mid \theta)\,\xi(\theta).
 \]
 \end{itemize}
 
-Thus, the posterior pmf $\xi(\theta \mid \mathbf{X})$ represents an updated belief about $\theta$ after incorporating the observed data.
+Thus, the posterior pmf $\xi(\theta \mid \mathbf{X})$ represents an updated belief about $\theta$ after incorporating the observed data. \emph{(If $\Theta$ is uncountable, replace sums by integrals and pmfs by densities.)}
 
 \begin{example}
 Suppose we have a biased coin with an unknown probability \(\theta\) of landing heads. We want to estimate \(\theta\) using Bayesian inference after observing a few coin flips. Before flipping the coin, we assume a prior belief about \(\theta\). Let's say we assume a uniform prior:
@@ -279,21 +287,23 @@ Now, calculating the posterior probabilities:
 Before observing the data, we believed \(\theta\) was equally likely to be 0.2, 0.5, or 0.8. After observing 2 heads in 3 flips, our belief has shifted: the most probable value for \(\theta\) is now 0.8 (44.9\% probability), followed by 0.5 (43.9\% probability). The probability that \(\theta = 0.2\) has dropped significantly to 11.2\%.
 \end{example}
 
-A Bayes estimator is a point estimate derived from the posterior distribution in Bayesian inference, similar to the Maximum Likelihood Estimator (MLE), which selects the parameter values that maximize the likelihood function. However, while MLE relies solely on observed data, the Bayes estimator incorporates both prior knowledge and observed data through the posterior distribution. It is a single value that represents the "best guess" for the unknown parameter by minimizing the expected loss under a given loss function.
+A Bayes estimator is a point estimate derived from the posterior distribution in Bayesian inference, analogous to how the MLE selects parameter values maximizing the likelihood. However, while MLE relies solely on observed data, the Bayes estimator incorporates both prior knowledge and observed data through the posterior. It is a single value that represents the "best guess" for the unknown parameter by minimizing the expected loss under a given loss function.
 
-Suppose we can observe the value $\mathbf{x}$ of the random vector $\mathbf{X}$ before estimating $\theta$, and let $\xi\left(\theta\mid\mathbf{x}\right)$ denote the posterior pmf of $\theta$ on $\Omega$. For each estimate $a$ the expected loss will be
+Suppose we observe the value $\mathbf{x}$ of the random vector $\mathbf{X}$ before estimating $\theta$, and let $\xi\left(\theta\mid\mathbf{x}\right)$ denote the posterior pmf of $\theta$ on $\Theta$. For each estimate $a$, the posterior expected loss is
 \[
-E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]=\sum_{\theta \in \Theta} L\left(\theta,a\right)\xi\left(\theta\mid\mathbf{x}\right)
+E\!\left[L\left(\theta,a\right)\mid\mathbf{x}\right]=\sum_{\theta \in \Theta} L\left(\theta,a\right)\,\xi\left(\theta\mid\mathbf{x}\right).
 \]
+
 \begin{definition}
-Let $L\left(\theta,a\right)$ be a loss function. For each possible value $\mathbf{x}$ of $\mathbf{X}$, let $\delta^{\ast}\left(\mathbf{x}\right)$ be a value of $a$ such that $E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]$ is minimized. Then $\delta^{\ast}$ is called a \emph{Bayes estimator} of $\theta$. Once $\mathbf{X=\text{\ensuremath{\mathbf{x}}}}$ is observed, $\delta^{\ast}\left(\mathbf{x}\right)$ is called a \emph{Bayes estimate} of $\theta$.
+Let $L\left(\theta,a\right)$ be a loss function. For each possible value $\mathbf{x}$ of $\mathbf{X}$, let $\delta^{\ast}\left(\mathbf{x}\right)$ be a value of $a$ that minimizes $E\!\left[L\left(\theta,a\right)\mid\mathbf{x}\right]$. Then $\delta^{\ast}$ is called a \emph{Bayes estimator} of $\theta$. Once $\mathbf{X}=\mathbf{x}$ is observed, $\delta^{\ast}\left(\mathbf{x}\right)$ is called a \emph{Bayes estimate} of $\theta$.
 \end{definition}
 
-Another way to describe a Bayes estimator $\delta^{\ast}$ is to note that, for each possible value $\mathbf{x}$ of $\mathbf{X}$, the value $\delta^{\ast}\left( \mathbf{x} \right)$ is chosen so that
+Equivalently, for each possible value $\mathbf{x}$ of $\mathbf{X}$, the value $\delta^{\ast}\left( \mathbf{x} \right)$ is chosen so that
 \[
-E\left[L\left(\theta, \delta^{\ast}\left(\mathbf{x}\right) \right)\mid \mathbf{x} \right] = \min_{\forall a} E\left[L\left(\theta,a\right)\mid\mathbf{x}\right]
+E\!\left[L\left(\theta, \delta^{\ast}\left(\mathbf{x}\right) \right)\mid \mathbf{x} \right]
+\;=\; \min_{a}\; E\!\left[L\left(\theta,a\right)\mid\mathbf{x}\right].
 \]
-The theory of Bayes estimators provides a satisfactory and coherent theory for the estimation of parameters. To apply the theory, it is necessary to specify a particular loss function, and also a prior distribution for the parameter. Specifying a meaningful prior distribution in a multidimensional parameter space $\Omega$ is particularly challenging because it requires incorporating dependencies between multiple parameters, which may not be well understood. Additionally, computational complexity increases significantly as the number of parameters grows, making posterior calculations more difficult.
+The theory of Bayes estimators provides a coherent framework for parameter estimation. To apply it, one must specify both a loss function and a prior distribution for the parameter. Specifying a meaningful prior in a multidimensional parameter space $\Theta$ can be challenging because it requires modeling dependencies among parameters, and the computational cost of posterior inference typically grows with dimension (often necessitating MCMC or variational methods).
 
 %
 % Section: Machine Learning

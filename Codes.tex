@@ -15,13 +15,15 @@ Claude Shannon
 \end{quote}
 \bigskip
 
-In this section, we are going to review the conceptual ideas and main results behind coding theory and the related area of information theory.
+In this section, we review the conceptual foundations and main results of coding theory and the closely related field of information theory.
 
-Coding is the process of describing a sequence of symbols from some alphabet by a sequence of symbols from another alphabet. Coding has many practical applications, such as error detection, cryptography, and telecommunications. Here, our interest is in data compression, that is, encoding a message using fewer symbols than its original representation, without losing any information. Compression algorithms reduce the size of messages by identifying unnecessary elements and removing them, usually by means of computing and eliminating statistical redundancies. For example, data compression can be achieved by assigning shorter descriptions to the most frequent symbols from the source, and longer descriptions to the less frequent symbols. A particular type of codes, the prefix-free codes, will be discussed as playing a central role in this book. Prefix-free codes allow us to link coding theory with probability theory, a link that will be very useful in the context of the theory of nescience.
+Coding is the process of representing a sequence of symbols from one alphabet by a sequence of symbols from another alphabet. Coding has many practical applications, such as error detection and correction, cryptography, and telecommunications. Our focus here is on data compression, that is, encoding a message using fewer symbols than in its original representation, while preserving all the information it contains. Compression algorithms reduce message size by identifying and eliminating statistical redundancies. For example, one may assign shorter descriptions to the most frequent symbols in the source and longer descriptions to the less frequent ones. A particular class of codes, known as prefix-free codes, will play a central role in this book. Prefix-free codes establish a natural connection between coding theory and probability theory, a connection that will be essential in the context of the theory of nescience.
 
-Information theory proposes that the amount of information we receive when some event happens is the negative logarithm of the probability of that event. In this sense, the theory assumes that information is equivalent to surprise: the more unlikely an event is, the more information we receive when the event occurs. We are not going to use that interpretation of information in our theory of nescience, but we will extensively use another concept from information theory: entropy. Entropy quantifies the amount of uncertainty involved in the value of a random variable or the outcome of a random process. Entropy is important to us because it establishes a limit to the compression of texts: it is not possible to find a code with an average word length smaller than the entropy of the source alphabet.
+Information theory proposes that the amount of information conveyed by the occurrence of an event is given by the negative logarithm of the probability of that event. In this sense, information can be interpreted as surprise: the less likely an event is, the more information we gain when it occurs. Although we will not adopt this interpretation of information in the theory of nescience, we will rely extensively on another fundamental concept from information theory: entropy. Entropy quantifies the uncertainty in the value of a random variable or the outcome of a random process. It is particularly relevant because it establishes a fundamental bound on compression: no code can achieve an average word length smaller than the entropy of the source alphabet.
 
 There exist many interesting concepts derived from entropy, like joint entropy, conditional entropy, or mutual information. However, these concepts are more relevant in the context of communication because they allow us to solve the problem of how to transmit information in a reliable manner over a noisy channel. Here, they are introduced for completeness purposes, and to compare them with our own definitions of joint nescience and conditional nescience.
+
+Several additional concepts are derived from entropy, including joint entropy, conditional entropy, and mutual information. These quantities play a central role in communication theory, as they are instrumental in addressing the problem of transmitting information reliably over noisy channels. In this book, however, they are introduced primarily for completeness and as a basis for comparison with our own definitions of joint nescience and conditional nescience.
 
 %
 % Section: Codes and their properties
@@ -30,134 +32,148 @@ There exist many interesting concepts derived from entropy, like joint entropy, 
 \section{Coding}
 \label{Codes}
 
-Intuitively, coding refers to the process of losslessly describing a sequence of symbols (a message) coming from some alphabet by other sequences of symbols coming from a (potentially) different alphabet. There is no general agreement about what exactly a code is, as different authors propose different definitions in the literature. Fortunately, the definition of a prefix-free code, the kind of codes used in the theory of nescience, is a standard one.
+Intuitively, coding refers to the process of losslessly describing a sequence of symbols (a message) from some alphabet by another sequence of symbols from a (possibly different) alphabet. There is no universal agreement on what exactly constitutes a code, as different authors propose different definitions in the literature. Fortunately, the definition of a prefix-free code (the kind of code used in the theory of nescience) is standard and widely accepted.
 
-Let $\mathcal{S}=\left\{ s_{1},s_{2},\ldots,s_{q}\right\}$ be a finite set called \emph{source alphabet}\index{Source alphabet}, and $\mathcal{X}=\left\{ x_{1}, x_{2}, \ldots, x_{r} \right\}$ a finite set called \emph{code alphabet}\index{Code alphabet}.
+Let $\mathcal{S}=\left\{ s_{1},s_{2},\ldots,s_{q}\right\}$ be a finite set called the \emph{source alphabet}\index{Source alphabet}, and let $\mathcal{X}=\left\{ x_{1}, x_{2}, \ldots, x_{r} \right\}$ be a finite set called the \emph{code alphabet}\index{Code alphabet}.
 
 \begin{definition}[Code]
-A \emph{code}\index{Code} for $\mathcal{S}$ is a total function $C:\mathcal{S}\rightarrow\mathcal{X}^{+}$. If $(s,x) \in C$ we say that $s$ is the \emph{source symbol}\index{Source symbol} and $x$ is the \emph{code word}\index{Code word}. If $C$ is an injective function we say that the code is \emph{nonsingular}\index{Non-singular code}.
+A \emph{code}\index{Code} for $\mathcal{S}$ is a total function $C:\mathcal{S}\rightarrow\mathcal{X}^{+}$. If $(s,x) \in C$ we say that $s$ is a \emph{source symbol}\index{Source symbol} and $x$ is the corresponding \emph{code word}\index{Code word}. If $C$ is injective, we say that the code is \emph{nonsingular}\index{Non-singular code}.
 \end{definition}
 
-Nonsingularity allows us to unambiguously describe the individual symbols of the source alphabet. For the rest of this book, whenever we talk about a code we mean a nonsingular code. Moreover, without any loss of generality, we will restrict ourselves to \emph{binary codes}, that is, $\mathcal{X} = \mathcal{B} = \left\{0, 1\right\}$.
+Nonsingularity ensures that each symbol in the source alphabet is represented by a distinct code word, allowing us to unambiguously describe the individual symbols of the source alphabet. In what follows, unless otherwise stated, the term \emph{code} will always mean a nonsingular code. Moreover, without loss of generality, we restrict our discussion to \emph{binary codes}, that is, $\mathcal{X} = \mathcal{B} = \{0, 1\}$.
 
-The property of nonsingularity can also be applied to strings of symbols. In order to do that, we have to extend the concept of code from symbols to strings.
+The property of nonsingularity can also be extended from individual symbols to strings of symbols. For that, we introduce the notion of extensions of a code.
 
 \begin{definition}
-The \emph{extension of order $n$} of a code $C$\index{Code extension} is a function $C^{n}:\mathcal{S}^{n}\rightarrow\mathcal{B}^{+}$ defined as $C^{n}(s_{i_1} \ldots s_{i_n}) = C(s_{i_1}) \ldots C(s_{i_n})$, where $C(s_{i_1}) \ldots C(s_{i_n})$ is the concatenation of the code words corresponding to the symbols of the string $s_{i_1} \ldots s_{i_n} \in \mathcal{S}^{n}$. An extension of order $n$ of a code $C$ is \emph{nonsingular} if the function $C^{n}$ is injective.
+The \emph{extension of order $n$} of a code $C$\index{Code extension} is a function $C^{n}:\mathcal{S}^{n}\rightarrow\mathcal{B}^{+}$ defined by
+\[
+C^{n}(s_{i_1} \ldots s_{i_n}) = C(s_{i_1}) \ldots C(s_{i_n}),
+\]
+where the right-hand side is the concatenation of the code words corresponding to the symbols $s_{i_1} \ldots s_{i_n} \in \mathcal{S}^{n}$. An extension of order $n$ is \emph{nonsingular} if $C^{n}$ is injective.
 \end{definition}
 
 If it is clear from the context, we will also use the word \emph{code} to refer to a nonsingular extension of order $n$ of a code, and the elements of \(\mathcal{S}^{n}\) will be called \emph{source words}.
 
 \begin{example}
 \label{ex:nonsingularity}
-The code $C(a)=0$, $C(b)=00$, $C(c)=01$, and $C(d)=11$ is a nonsingular code, but its extension of order 2 is singular, since, for example, $C^2(ab)=C^2(ba)=000$.
+The code defined by $C(a)=0$, $C(b)=00$, $C(c)=01$, and $C(d)=11$ is nonsingular, but its extension of order $2$ is singular, since $C^2(ab)=C^2(ba)=000$.
 \end{example}
 
-As we have seen in Example \ref{ex:nonsingularity} not all nonsingular codes have nonsingular extensions, that is, it might happen that we are not able to decode the original messages given their encoded versions. Unique decodability is a highly desirable property of codes.
+As Example \ref{ex:nonsingularity} illustrates, not all nonsingular codes have nonsingular extensions. In such cases, it may be impossible to recover the original message from its encoded version. To address this, we introduce the stronger property of unique decodability.
 
 \begin{definition}
-A code $C$ is called \emph{uniquely decodable}\index{Uniquely decodable code} if its order $n$ extension $C^{n}$ is nonsingular for all $n$.
+A code $C$ is \emph{uniquely decodable}\index{Uniquely decodable code} if its extension $C^{n}$ is nonsingular for all $n$.
 \end{definition}
 
-Next proposition provides a characterization of the unique decodability of codes.
+The following proposition provides a useful characterization of unique decodability.
 
 \begin{proposition}
-A code $C$ is uniquely decodable if, and only if, the function $C^{+}:\mathcal{S}^{+}\rightarrow\mathcal{B}^{+}$ is injective.
+A code $C$ is uniquely decodable if and only if the function $C^{+}:\mathcal{S}^{+}\rightarrow\mathcal{B}^{+}$ is injective.
 \end{proposition}
 \begin{proof}
-If the function $C^{+}$ is injective, then the restriction to $C^{n}$ must be injective for all $n$. Now, let us assume that $C^{n}$ is nonsingular for all $n$ and let's prove that $C^{+}$ must be nonsingular by contradiction: select two source words $s_{1} \in \mathcal{S}^{n}$ and $s_{2} \in \mathcal{S}^{m}$, $n \neq m$, and assume that they have the same code word $C^{+}(s_{1}) = C^{+}(s_{2})$. Then construct the words $s_{3} = s_{1}s_{2}$ and $s_{4} = s_{2}s_{1}$, both $s_{3}$ and $s_{4}$ have the same length, and $C^{+}(s_{3}) = C^{+}(s_{4})$, which is a contradiction with the fact that $C^{n+m}$ must be nonsingular.
+If $C^{+}$ is injective, then every restriction $C^{n}$ is injective, and the code is uniquely decodable.  
+
+Conversely, assume that $C^{n}$ is nonsingular for all $n$. Suppose, for contradiction, that $C^{+}$ is not injective. Then there exist two source words $s_{1} \in \mathcal{S}^{n}$ and $s_{2} \in \mathcal{S}^{m}$ with $n \neq m$ such that $C^{+}(s_{1}) = C^{+}(s_{2})$. Construct $s_{3} = s_{1}s_{2}$ and $s_{4} = s_{2}s_{1}$. Both have the same length, but
+\[
+C^{+}(s_{3}) = C^{+}(s_{1})C^{+}(s_{2}) = C^{+}(s_{2})C^{+}(s_{1}) = C^{+}(s_{4}),
+\]
+contradicting the injectivity of $C^{n+m}$. Therefore $C^{+}$ must be injective.
 \end{proof}
 
 \begin{example}
 \label{ex:uniquely-decodable}
-The code $C(a)=0$, $C(b)=01$, $C(c)=011$, and $C(d)=0111$ is a uniquely decodable code. For example, the code word $0010011$ uniquely corresponds to the source word $abac$. Unique decodability is achieved because the $0$ symbol plays the role of a delimiter, separating code words.
+The code $C(a)=0$, $C(b)=01$, $C(c)=011$, and $C(d)=0111$ is uniquely decodable. For example, the code word $0010011$ corresponds uniquely to the source word $abac$. Unique decodability is achieved because the leading $0$ acts as a delimiter, separating code words.
 \end{example}
 
-The Sardinas-Patterson theorem provides a necessary and sufficient condition for a code to be uniquely decodable. The theorem is based on an algorithmic approach, enabling the examination of a code's unique decodability through a sequence of iterative steps. Let $C_0$ denote the set of code words of a code $C$. We define the set $C_n$ as
+The Sardinas-Patterson theorem provides a necessary and sufficient condition for unique decodability. The theorem is based on an algorithmic construction that examines successive sets of possible ambiguities.
+
+Let $C_0$ denote the set of code words of a code $C$. Define
 \[
-C_n = C^{-1} C_{n-1} \cup C^{-1}_{n-1} C
+C_n = C^{-1} C_{n-1} \cup C_{n-1}^{-1} C,
 \]
-for all $n \in \mathbb{N}$ and where $C^{-1} C_{n-1}$ represents the left quotient of $C$ and $C_{n-1}$. And let $C_\infty$ be defined as
+for all $n \in \mathbb{N}$, where $C^{-1}D = \{ y \mid \exists x \in C, \, xy \in D \}$ is the left quotient of $C$ and $D$. Finally, let
 \[
-C_\infty = \bigcup^\infty_{n=1} C_n
+C_\infty = \bigcup_{n=1}^{\infty} C_n.
 \]
 
 \begin{proposition}[Sardinas-Patterson]\index{Sardinas-Patterson}
-A code $C$ is uniquely decodable if and only if the sets $C_0$ and $C_\infty$ are disjoint.
+A code $C$ is uniquely decodable if and only if $C_0 \cap C_\infty = \varnothing$.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO: Pending}
+If $C_0 \cap C_\infty \neq \varnothing$, then there exists a nonempty overlap between some code word and a concatenation of code words, implying that at least two distinct source words map to the same encoded string, so $C$ is not uniquely decodable.  
+
+Conversely, if $C_0 \cap C_\infty = \varnothing$, then the iterative construction guarantees that no ambiguity arises in the decoding process, regardless of message length. Therefore the code is uniquely decodable.  
 \end{proof}
 
 \begin{example}
-Given the code of Example \ref{ex:nonsingularity} we have that
+For the code of Example \ref{ex:nonsingularity}:
 \begin{align*}
  & C_0 = \{0, 00, 01, 11\} \\
  & C_1 = \{0, 1\}
 \end{align*}
-And since $C_0 \cap C_1 \neq \varnothing$ we can conclude that the code is not uniquely decodable.
+Since $C_0 \cap C_1 \neq \varnothing$, the code is not uniquely decodable.
 
-Given the code of Example \ref{ex:uniquely-decodable} we have that
+For the code of Example \ref{ex:uniquely-decodable}:
 \begin{align*}
  & C_0 = \{0, 01, 011, 0111\} \\
  & C_1 = \{1, 11, 111\} \\
  & C_2 = \varnothing
 \end{align*}
-And since $C_0 \cap C_\infty = C_0 \cap \bigcup^\infty_{n=1} C_n = C_0 \cap C_1 = \varnothing$ we can conclude that the code is uniquely decodable.
+Here $C_0 \cap C_\infty = C_0 \cap \bigcup^\infty_{n=1} C_n = C_0 \cap C_1 = \varnothing$, so the code is uniquely decodable.
 \end{example}
 
 Next definition introduces the concept of prefix-free codes. Prefix-free codes will play a critical role in the computation of the amount of algorithmic information of an arbitrary string (described in Chapter \ref{chap:Algorithmic_Information}), and in our own theory of nescience. Prefix-free codes also allow us to link coding theory and probability theory through the Kraft inequality (Theorem \ref{th:Kraft-Inequality}). Note that we prefer the name \emph{prefix-free code} over the more standard \emph{prefix code}, since the former more accurately describes the concept.
 
 \begin{definition}[Prefix-free Code]\index{Prefix-free code}
 \label{def:Prefix-free-Code}
-A code $C$ is \emph{prefix-free} if for all $i, j$ where $1 \leq i, j \leq q$ and $i \neq j$, $C(s_i)$ is not a prefix of $C(s_j)$.
+A code $C$ is \emph{prefix-free} if for all $i, j$ whth $1 \leq i, j \leq q$ and $i \neq j$, $C(s_i)$ is not a prefix of $C(s_j)$.
 \end{definition}
 
-Note that the fact that a string is a prefix of itself does not violate the prefix-free property because the condition specifically excludes considering a string as a prefix of itself ($i \neq j$) for the purpose of determining whether a set of code words is prefix-free.
+Note that the fact that a string is a prefix of itself does not violate the prefix-free property, because the condition specifically excludes considering a string as a prefix of itself ($i \neq j$) when determining whether a set of code words is prefix-free.
 
 \begin{example}
 \label{ex:prefix-free}
-The code $C(a)=0$, $C(b)=10$, $C(c)=110$ and $C(d)=1110$ is a prefix-free code. Here, the $0$ symbol plays the role of a comma as it was the case of Example \ref{ex:uniquely-decodable}, but its new position at the end of the code words is what makes the code prefix-free.
+The code $C(a)=0$, $C(b)=10$, $C(c)=110$, and $C(d)=1110$ is prefix-free. Here, the symbol $0$ plays the role of a delimiter (as in Example \ref{ex:uniquely-decodable}), but placing it at the end of each code word ensures that no code word can be a prefix of another.
 \end{example}
 
-Prefix-free codes are uniquely decodable, as the next proposition proves.
+Prefix-free codes are uniquely decodable, as the next proposition shows.
 
 \begin{proposition}
-Let $C$ be a prefix-free code, then $C$ is uniquely decodable.
+Let $C$ be a prefix-free code. Then $C$ is uniquely decodable.
 \end{proposition}
 \begin{proof}
-Let \( C \) be a prefix-free code, and assume that \( C \) is not uniquely decodable. This implies there exist two different sequences of source symbols, say \( r \) and \( s \), such that they encode to the same sequence of code words: \( C(r) = C(s) \). Since \( C \) is prefix-free, the start of any code word sequence uniquely determines the first code word, as no other code word can be a prefix. Therefore, the first symbols in \( r \) and \( s \) must be the same, as they are encoded into the same first code word. However, this leads to the conclusion that \( r = s \), contradicting our initial assumption that \( r \) and \( s \) are different. Therefore, our assumption must be false, and the code \( C \) must be uniquely decodable. 
+Assume, for contradiction, that $C$ is not uniquely decodable. Then there exist two distinct sequences $r \neq s$ of source symbols such that $C(r)=C(s)$. Among all such pairs, choose one with the minimal common encoded length. Let $r = a r'$ and $s = b s'$ with $a \neq b$ (if $a=b$, cancel the common first symbols to get a shorter counterexample, contradicting minimality). Then $C(a)$ is a prefix of $C(b)C(s')$ and $C(b)$ is a prefix of $C(a)C(r')$. In particular, one of $C(a)$ or $C(b)$ must be a prefix of the other, contradicting the prefix-free property. Hence $C$ must be uniquely decodable.
 \end{proof}
 
-From an engineering point of view it is highly convenient to have codes whose source symbols can be decoded as soon as the corresponding code words are received, that is, it is not necessary to wait for the next code word in order to decode the current symbol, this is why some authors refer to these codes as \emph{instantaneous codes}.
+From an engineering point of view, it is highly convenient to have codes whose source symbols can be decoded as soon as the corresponding code words are received. In other words, it should not be necessary to wait for the next code word in order to decode the current symbol. For this reason, some authors refer to these codes as \emph{instantaneous codes}.
 
 \begin{definition}
 A code $C$ is \emph{instantaneous} if, for any order $n$ and for any sequence of code words $C(s_{i_1}), C(s_{i_2}), \ldots, C(s_{i_n})$, each sequence of code words $\mathbf{t} = C(s_{i_1})C(s_{i_2})\ldots C(s_{i_m})\ldots$ can be uniquely decoded as $\mathbf{s} = s_{i_1}s_{i_2}\ldots s_{i_m}\ldots$ without ambiguity, regardless of the continuation of $\mathbf{t}$.
 \end{definition}
 
 \begin{example}
-The code described in Example \ref{ex:uniquely-decodable} is not instantaneous. For example, after receiving the sequence $011$ the source symbol could be a $c$ if the next symbol is a $0$ or a $d$ if it is a $1$.
+The code described in Example \ref{ex:uniquely-decodable} is not instantaneous. For instance, after receiving the sequence $011$, the decoded symbol could be $c$ if the next bit is $0$ or $d$ if it is $1$; thus, one must look ahead to decide.
 \end{example}
 
-Prefix-free codes and instantaneous codes are essentially two terms for the same concept. A prefix-free code is one in which no code word is a prefix of any other code word. This property ensures that there is a clear demarcation between code words when they are concatenated in a sequence, allowing each code word to be decoded immediately upon receipt without the need to look ahead to subsequent code words for context.
+Prefix-free codes and instantaneous codes are essentially two terms for the same concept. A prefix-free code is one in which no code word is a prefix of any other code word. This ensures a clear boundary between consecutive code words, allowing immediate decoding upon receipt.
 
 \begin{proposition}
-A code $C$ is instantaneous if, and only if, it is a prefix code.
+A code $C$ is instantaneous if and only if it is prefix-free.
 \end{proposition}
 \begin{proof}
-Assume $C$ is an instantaneous code, and suppose that $C$ is not a prefix-free code. This means there exists at least a pair of code words, say $C(s_i)$ and $C(s_j)$, such that $C(s_i)$ is a prefix of $C(s_j)$. Consider a sequence where $C(s_j)$ is transmitted. Since $C(s_i)$ is a prefix of $C(s_j)$, the decoder would decode $C(s_i)$ from the initial part of $C(s_j)$, leading to ambiguity, as the rest of $C(s_j)$ could be seen as another code or part of the next code. This contradicts the assumption that $C$ is instantaneous.
+Suppose $C$ is instantaneous but not prefix-free. Then there exist at least a pair of code words, say $C(s_i)$ and $C(s_j)$, such that $C(s_i)$ is a prefix of $C(s_j)$. Consider a sequence where $C(s_j)$ is transmitted. Since $C(s_i)$ is a prefix of $C(s_j)$, the decoder would decode $C(s_i)$ from the initial part of $C(s_j)$, leading to ambiguity, as the rest of $C(s_j)$ could be seen as another code or part of the next code. This contradicts the assumption that $C$ is instantaneous.
 
-Assume $C$ is a prefix code. This property ensures that once a code word is identified in a sequence, there can be no confusion as to where it ends, and the next code word begins. There is no need to look ahead to determine the boundary between code words, as the end of one code word cannot be mistaken for the beginning of another. Hence, a prefix code allows for instantaneous decoding.
+Suppose $C$ is prefix-free. Reading a concatenation of code words from left to right, the first position at which a code word ends is unambiguous, because no longer code word can have the current code word as a prefix. Thus each code word can be decoded immediately upon completion, with no lookahead. Hence $C$ is instantaneous.
 \end{proof}
 
-The last type of codes we are going to review are fixed length codes. We will use fixed length codes to compute the length of a text when there are no regularities we can exploit to compress it.
+The last type of codes we review are fixed-length codes. We will use fixed-length codes to compute the length of a text when there are no regularities we can exploit to compress it.
 
 \begin{definition}
 \label{def:Fixed-Length-Codes}\index{Fixed-length code}
-If all the code words of a code have the same length we say that the code is a \emph{fixed length code}.
+If all the code words of a code have the same length, we say that the code is a \emph{fixed-length code}.
 \end{definition}
 
-Fixed length codes have the property of being prefix-free (or instantaneous).
+Fixed-length codes are prefix-free (and therefore instantaneous).
 
 \begin{proposition}
 Let $C$ be a fixed-length code, then $C$ is prefix-free.
@@ -166,15 +182,15 @@ Let $C$ be a fixed-length code, then $C$ is prefix-free.
 Let $C$ be a fixed length code, and $C(s_i)$ and $C(s_j)$ the code words of two arbitrary source words $s_i$ and $s_j$. Assume that $C(s_i) <_p C(s_j)$, given the fact that $l(C(s_i)) = l(C(s_j))$ we have that $C(s_i) = C(s_j)$ and so, the code $C$ is prefix-free.
 \end{proof}
 
-Of course, the converse of the previous proposition does not hold; not all prefix-free codes are of fixed length. The code described in Example \ref{ex:prefix-free} is prefix-free but it is not fixed-length.
+Of course, the converse does not hold: not all prefix-free codes are fixed-length. The code in Example \ref{ex:prefix-free} is prefix-free but not fixed-length.
 
-Figure \ref{fig:Classification-Codes} provides a graphical representation of the relation among the different types of codes that have been introduced in this section.
+Figure \ref{fig:Classification-Codes} provides a graphical representation of the relationships among the different types of codes introduced in this section.
 
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}
   % Draw the outer circle for "All Codes"
-  \draw (3,0) ellipse (6cm and 3cm) node[right,xshift=3.8cm] {All Codes};
+  \draw (3,0) ellipse (5.8cm and 3cm) node[right,xshift=3.8cm] {All Codes};
 
   % Draw the middle circle for "Nonsingular Codes"
   \draw (2,0) ellipse (4.5cm and 2.5cm) node[right,xshift=2.1cm] {Nonsingular};
@@ -189,18 +205,37 @@ Figure \ref{fig:Classification-Codes} provides a graphical representation of the
 \caption{\label{fig:Classification-Codes}Classification of Codes}
 \end{figure}
 
+% \begin{figure}[t]
+% \centering
+% \begin{tikzpicture}
+%   % Draw the outer circle for "All Codes"
+%   \draw (3,0) ellipse (6cm and 3cm) node[right,xshift=3.8cm] {All Codes};
+
+%   % Draw the middle circle for "Nonsingular Codes"
+%   \draw (2,0) ellipse (4.5cm and 2.5cm) node[right,xshift=2.1cm] {Nonsingular};
+
+%   % Draw the inner circle for "Uniquely Decodable Codes"
+%   \draw (1,0) ellipse (3cm and 2cm) node[right, xshift=-0.5cm] {Uniquely Decodable};
+
+%   % Draw the most inner circle for "Prefix-free Codes"
+%   \draw (-0.5,0) ellipse (1cm and 1cm) node {Prefix-free};
+
+% \end{tikzpicture}
+% \caption{\label{fig:Classification-Codes}Classification of Codes}
+% \end{figure}
+
 %
 % Section: Kraft Inequality
 %
 
 \section{Kraft Inequality}
 
-The Kraft inequality provides a condition for the existence of a prefix-free code given a set of code word lengths. Kraft's inequality states that for a given set of code word lengths in a binary code, the sum of the reciprocals of the powers of two corresponding to the code word lengths must be less than or equal to one. This condition is both necessary and sufficient; not only must any prefix-free code satisfy this inequality, but given a set of lengths that meets this condition, it is always possible to construct a corresponding prefix-free code. The elegance and utility of Kraft's inequality lie in its ability to link the lengths of code words with the mathematical properties of probability.
+The Kraft inequality provides a condition for the existence of a prefix-free code given a set of code word lengths. Kraft's inequality states that for a given set of code word lengths in a binary code, the sum of the reciprocals of powers of two corresponding to the code word lengths must be less than or equal to one. This condition is both necessary and sufficient: any prefix-free code must satisfy this inequality, and given a set of lengths that meets this condition, it is always possible to construct a corresponding prefix-free code. The elegance and utility of Kraft's inequality lie in its ability to link the lengths of code words with probabilistic structure.
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}[grow=right,->,>=stealth',level/.style={sibling distance = 4cm/#1,
-  level distance = 3cm}] 
+\begin{tikzpicture}[grow=right,->,>=stealth',level/.style={sibling distance = 3.2cm/#1,
+  level distance = 2.5cm}] 
 \node [circle,draw] (n1){}
     child{node [circle,draw] (n2) {$0$}
     }
@@ -225,6 +260,35 @@ The Kraft inequality provides a condition for the existence of a prefix-free cod
 \end{tikzpicture}
 \caption{\label{fig:Prefix-Free-Tree}Prefix-free Tree}
 \end{figure}
+
+% \begin{figure}[t]
+% \centering
+% \begin{tikzpicture}[grow=right,->,>=stealth',level/.style={sibling distance = 4cm/#1,
+%   level distance = 3cm}] 
+% \node [circle,draw] (n1){}
+%     child{node [circle,draw] (n2) {$0$}
+%     }
+%     child{node [circle,draw] (n3) {$1$}
+%         child{node [circle,draw] (n4) {$10$}}
+%         child{node [circle,draw] (n5) {$11$}
+%             child{node [circle,draw] (n6) {$110$}}
+%             child{node [circle,draw] (n7) {$111$}
+%                 child{node [circle,draw] (n8) {$1110$}}
+%             }
+%         }
+%     };
+    
+% % Now, we add the edge labels
+% \path (n1) -- (n2) node [midway, above]  {$0$};
+% \path (n1) -- (n3) node [midway, above] {$1$};
+% \path (n3) -- (n4) node [midway, above]  {$0$};
+% \path (n3) -- (n5) node [midway, above] {$1$};
+% \path (n5) -- (n6) node [midway, above] {$0$};
+% \path (n5) -- (n7) node [midway, above] {$1$};
+% \path (n7) -- (n8) node [midway, above] {$0$};
+% \end{tikzpicture}
+% \caption{\label{fig:Prefix-Free-Tree}Prefix-free Tree}
+% \end{figure}
 
 \begin{theorem}[Kraft Inequality]
 \label{th:Kraft-Inequality}
@@ -257,7 +321,7 @@ Given a code $C$ whose code word lengths $\mathcal{L}$ satisfy the Kraft inequal
 The code $C(a)=0$, $C(b)=111$, $C(c)=110$ and $C(d)=100$ satisfies the Kraft inequality, but it is not prefix-free.
 \end{example}
 
-McMillan's Inequality enriches our understanding of coding theory by establishing a crucial link between the lengths of code words in uniquely decodable codes. This inequality mirrors Kraft's Inequality, yet it broadens the scope to encompass all uniquely decodable codes, not just those that are prefix-free. By demonstrating that the sum of the reciprocals of the powers of two for code word lengths must be less than or equal to one for a code to be uniquely decodable, McMillan's Inequality ensures that such codes can be constructed with a given set of lengths.
+McMillan's inequality extends Kraft's bound to all uniquely decodable codes: any such code with lengths \(l_i\) satisfies \(\sum_i 2^{-l_i}\le 1\). Combined with Kraft's theorem, this means a set of lengths meets this inequality if and only if it can be realized by a prefix-free---and thus uniquely decodable---code.
 
 \begin{theorem}[McMillan's Inequality]
 \index{McMillan's Inequality}
@@ -268,56 +332,29 @@ Let $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ be a set of lengths, 
 \]
 \end{theorem}
 \begin{proof}
-
-{\color{red} TODO: review}
-
-We must show that if there exists a uniquely decodable code with code word lengths \( l_1, l_2, \ldots, l_q \), then the inequality holds.
-
-Suppose \( C \) is a uniquely decodable code with code word lengths \( l_1, l_2, \ldots, l_q \). Consider a sequence of code words produced by \( C \) that is long enough to contain any possible concatenation of \( n \) code words (for some \( n \) large enough). Let's denote the set of all such sequences as \( S_n \). 
-
-Because \( C \) is uniquely decodable, each sequence in \( S_n \) corresponds to a unique sequence of source symbols. The number of different sequences in \( S_n \) is at least \( 2^{nl} \), where \( l \) is the smallest length among all \( l_i \). This is because, for the shortest code word, we can consider a sequence of length \( nl \) and all possible fillings with the shortest code word. Since the code is uniquely decodable, none of these sequences can be the same as any sequence containing longer code words.
-
-The total number of bits required to represent all sequences in \( S_n \) can indeed be calculated as \( (2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q})^n \), considering the combinatorial possibilities of all code word concatenations.
-
-Since each sequence in \( S_n \) must be different (uniquely decodable) and can be represented in a binary tree (where each leaf corresponds to a code word and the length of the path to the leaf corresponds to the length of the code word), the number of sequences in \( S_n \) cannot exceed \( 2^{nl_{max}} \), where \( l_{max} \) is the length of the longest code word.
-
-Therefore, we have:
-
+Let $S=\sum_{i=1}^q 2^{-l_i}$. For each $n\in\mathbb{N}$, let $C^n$ be the set of all concatenations of $n$ code words. Because the code is uniquely decodable, distinct concatenations in $C^n$ produce distinct binary strings. Consider an infinite fair-coin binary sequence $X=(X_1,X_2,\ldots)$, and for any finite binary string $u$ write $[u]=\{X:\, X \text{ begins with } u\}$. Then $\mathbb{P}([u])=2^{-|u|}$, and the cylinder sets $\{[w]: w\in C^n\}$ are pairwise disjoint. Therefore,
 \[
-(2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q})^n \leq 2^{nl_{max}}
+\sum_{w\in C^n} 2^{-|w|} \;=\; \sum_{w\in C^n} \mathbb{P}([w]) \;\le\; 1.
 \]
-
-Taking the \( n \)th root of both sides, we have:
-
+But the left-hand side factors as
 \[
-2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q} \leq 2^{l_{max}}
+\sum_{w\in C^n} 2^{-|w|} \;=\; \Big(\sum_{i=1}^q 2^{-l_i}\Big)^n \;=\; S^n.
 \]
-
-Since \( 2^{l_{max}} \) is always less than or equal to 1 (because there must be at least one code word of the maximum length and thus occupying the "full" length of the binary tree), we obtain:
-
-\[
-2^{-l_1} + 2^{-l_2} + \ldots + 2^{-l_q} \leq 1
-\]
-
-To prove sufficiency, we must show that if the inequality holds, then there exists a uniquely decodable code with those lengths.
-
-If the inequality holds, we can use the Kraft construction to build a prefix-free code, which is always uniquely decodable, with code word lengths \( l_1, l_2, \ldots, l_q \). The construction starts by assigning the shortest code word first and ensuring no other code word is a prefix of any other. Since prefix-free codes are a subset of uniquely decodable codes, we have constructed the required code.
-
-Therefore, by satisfying the inequality, we can construct a uniquely decodable code, proving that the condition is sufficient.
-
+Hence $S^n\le 1$ for all $n$, which implies $S\le 1$.
 \end{proof}
 
-In the theory of nescience, we are primarily interested in prefix-free codes. This preference may seem to impose a limitation, as it appears more rational to consider the broader category of uniquely decodable codes. However, this perceived limitation does not actually exist. As the following theorem demonstrates, uniquely decodable codes also satisfy Kraft's inequality. This means that for any uniquely decodable code, there exists a prefix-free code with exactly the same code word lengths, ensuring no compromise in the generality of our analysis when focusing on prefix-free codes.
+In the theory of nescience, we focus on prefix-free codes without loss of generality: every uniquely decodable code satisfies Kraft's inequality, so there exists a prefix-free code with the same code-word lengths.
 
 \begin{corollary}
 There is an instantaneous (prefix-free) code with word lengths $l_1, \ldots, l_q$ if and only if there is a uniquely decodable code with these word lengths.
 \end{corollary}
 \begin{proof}
-{\color{red} TODO: Review}
-This corollary is a direct consequence of McMillan's Inequality, which is a counterpart to Kraft's Inequality for uniquely decodable codes. McMillan's Inequality states that for a set of code word lengths $\{l_1, l_2, \ldots, l_q\}$, a uniquely decodable code exists if and only if the sum of $2^{-l_i}$ for all $i$ is less than or equal to one. Given that prefix-free codes are a subset of uniquely decodable codes and also satisfy this condition, the existence of a uniquely decodable code with given word lengths implies the possibility of constructing a prefix-free code with the same lengths. The reverse is inherently true by the definition of prefix-free codes, which are always uniquely decodable.
+Every prefix-free code is uniquely decodable.
+
+If a uniquely decodable code exists with lengths $l_1,\ldots,l_q$, then by McMillan's inequality $\sum_i 2^{-l_i}\le 1$. By Theorem \ref{th:Kraft-Inequality} (sufficiency), there exists a prefix-free code with the same lengths.
 \end{proof}
 
-In the context of nescience, our interest lies not in the specific codes themselves but in the lengths of the code words. This emphasis allows us to abstract away from the details of code construction to concentrate on the mathematical properties and implications of these lengths, which are central to understanding and applying the principles of nescience.
+In the context of nescience, our interest lies not in particular code assignments but in the multiset of code word lengths. This emphasis lets us abstract away from code construction details and focus on the mathematical properties of lengths, which are central to the measures we will use.
 
 %
 % Section: Optimal Codes
@@ -328,132 +365,146 @@ In the context of nescience, our interest lies not in the specific codes themsel
 
 In coding theory, a compact code is an optimal encoding strategy that minimizes the expected length of code words, a concept central to evaluating a code's efficiency. The expected length of a code is determined by the weighted average of the lengths of its code words, with weights corresponding to the probability distribution of the source symbols. By designing code words so that more frequent symbols are assigned shorter lengths and less frequent ones longer lengths, compact codes effectively reduce the average size needed to encode information. This principle is pivotal in data compression, as it allows for a significant reduction in the space required for storage or the bandwidth needed for transmission.
 
-Let's establish $\mathcal{S}=\left\{ s_{1},s_{2},\ldots,s_{q}\right\}$ as a finite source alphabet, with $P$ denoting a probability distribution defined over the elements of $\mathcal{S}$.
+Let $\mathcal{S}=\{ s_{1},\ldots,s_{q}\}$ be a finite source alphabet, and let $P$ be a probability distribution on $\mathcal{S}$.
 
 \begin{definition}
-The \emph{expected length}\index{Expected length of a code} of a code $C$, denoted by $L_{C}$, is the weighted sum of the lengths of the code words, calculated as
+The \emph{expected length}\index{Expected length of a code} of a code $C$, denoted by $L_{C}$, is
 \[
-L_{C} = \sum_{i=1}^{q} P(s_{i})l_{i},
+L_{C} \;=\; \sum_{i=1}^{q} P(s_{i})\,l_{i},
 \]
-where $\mathcal{L} = \left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ represents the lengths of the code words of $C$. We may simply use $L$ to denote $L_{C}$ when the code $C$ is understood from the context.
+where $\mathcal{L} = \{ l_{1},\ldots,l_{q}\}$ are the code-word lengths of $C$. We may simply write $L$ when $C$ is clear from context.
 \end{definition}
 
-Our goal is to identify a code $C$ that minimizes the expected length $L$ of the codewords $\mathcal{L}$ under the given probability distribution $P$. Such an optimal code $C$ would enable us to compress messages composed of the source alphabet $\mathcal{S}$ effectively, reducing the number of symbols required to encode these messages.
+Our goal is to identify a code $C$ that minimizes $L$ under $P$. Such a code is optimal for $\mathcal{S}$ and $P$.
 
-Next, the following definition formalizes what it means for a code to be compact, which is a desirable attribute for efficient data encoding.
+Compact codes achieve the lowest possible weighted average codeword length.
 
 \begin{definition}
-A code $C$ is \emph{compact}\index{Compact code} if its average length $L$ is less than or equal to the average length of all the other codes for the same source alphabet and code alphabet.
+A code $C$ is \emph{compact}\index{Compact code} (optimal) if, for the given source alphabet $\mathcal{S}$ and distribution $P$, its expected length $L_{C}$ is minimal among all codes over the same code alphabet.
 \end{definition}
 
-\begin{definition}
-A code $C$ is \emph{compact}\index{Compact code} if, for a given source alphabet $\mathcal{S}$ and a corresponding probability distribution, its expected length $L_{C}$ is minimized among all possible codes that can be constructed for $\mathcal{S}$.
-\end{definition}
-
-This means $C$ achieves the lowest possible weighted average codeword length, where each codeword length is weighted by the probability of its corresponding source symbol.
-
-The existence of compact codes for all possible source alphabets is a foundational aspect of coding theory, suggesting that for every finite source alphabet, an optimally efficient encoding scheme can be devised. It is not entirely clear that compact codes exist for all possible source alphabets, so the following proposition must be proven.
+The existence of compact codes for all possible source alphabets is a foundational aspect of coding theory, suggesting that for every finite source alphabet, an optimally efficient encoding scheme can be devised.
 
 \begin{proposition}
-For every finite source alphabet $\mathcal{S}=\left\{ s_{1},s_{2},\ldots,s_{q}\right\}$ with a defined probability distribution over its symbols, there exists at least one code $C$ that is compact.
+For every finite source alphabet $\mathcal{S}$ and distribution $P$ there exists at least one code $C$ that is compact.
 \end{proposition}
 \begin{proof}
-The proof of this proposition involves constructing or identifying a code $C$ for the source alphabet $\mathcal{S}$ that achieves the minimum possible expected length $L_{C}$. This can be demonstrated through the use of Huffman's algorithm, which is designed to produce an optimal prefix code based on the probabilities of the source symbols. By definition, the Huffman code for a given probability distribution over $\mathcal{S}$ minimizes the expected length of the codewords, thereby proving the existence of a compact code for any finite source alphabet with a given probability distribution.
+Huffman's algorithm (see Section \ref{sec:Huffman-Algorithm}) constructs a prefix-free code that minimizes the expected length for the given $P$. Hence an optimal code exists.
 \end{proof}
 
-This clarification not only completes the explanation but also aligns the definition of compactness with established principles in coding theory. It provides a more rigorous basis for discussing the efficiency of encoding schemes and underscores the role of probability distributions in determining the compactness of a code.
-
-
-{\color{red} TODO: Introduce this concept}
+It is convenient to distinguish between \emph{coding efficiency} and \emph{redundancy} relative to the source entropy. Let $H_r(P)=-\sum_i P(s_i)\log_r P(s_i)$ be the $r$-ary entropy (logarithms base $r$, where $r$ is the code alphabet size).
 
 \begin{definition}
-The redundancy of a code is defined as
+The \emph{coding efficiency} is
 \[
-\eta = \frac{H(\mathcal(S))}{L}
+\eta \;=\; \frac{H_r(P)}{L}\in(0,1],
+\]
+and the (normalized) \emph{redundancy} is
+\[
+\rho \;=\; 1-\eta \;=\; \frac{L-H_r(P)}{L}\in[0,1).
 \]
 \end{definition}
 
-Of course, our goal is to minimize the redundancy of codes.
+Our aim is to \emph{maximize} efficiency (equivalently, \emph{minimize} redundancy). Note that $L\ge H_r(P)$ (Theorem \ref{th:optimal_codes} below), so $\eta\le 1$.
 
 Next theorem states that the entropy of the probability distibution $P$ poses a limit to the average length of prefix-free codes.
 
 \begin{theorem}
 \label{th:optimal_codes}
-The expected length $L_{C}$ of any prefix-free $r$-ary code, given the probability distribution $P$, is greater than or equal to the entropy of $P$, that is
+For any prefix-free $r$-ary code with lengths $\{l_i\}$ and source distribution $P$,
 \[
-H_{r}(P) \leq L_{C}
+H_{r}(P) \;\le\; L \;=\; \sum_{i=1}^{q} P(s_i)l_i,
 \]
-with equality if, and only if, $r^{-l_{i}} = P_{i}$ for all $0 \leq i \leq q$.
+with equality if and only if $r^{-l_{i}} = P(s_i)$ for all $i$.
 \end{theorem}
 \begin{proof}
+Let $\alpha=\sum_{i} r^{-l_i}\le 1$ by Kraft's inequality. Define a probability distribution $\tilde{Q}$ by
+\[
+\tilde{Q}(s_i)\;=\;\frac{r^{-l_i}}{\alpha}.
+\]
+Then
+\begin{equation*}
+\begin{split}
+L - H_r(P)
+& = \sum_i P(s_i)\Big(l_i + \log_r P(s_i)\Big) \\
+& = \sum_i P(s_i)\log_r\!\Big(\frac{r^{l_i}P(s_i)}{1}\Big)
+= \sum_i P(s_i)\log_r\!\Big(\frac{P(s_i)}{r^{-l_i}}\Big).
+\end{split}
+\end{equation*}
+Write $r^{-l_i}=\alpha\,\tilde{Q}(s_i)$ to get
+\begin{equation*}
+\begin{split}
+L - H_r(P)
+& = \sum_i P(s_i)\log_r\!\Big(\frac{P(s_i)}{\tilde{Q}(s_i)}\Big)
+\;+\; \log_r\!\Big(\frac{1}{\alpha}\Big) \\
+& = D_r\!\big(P\;\|\;\tilde{Q}\big) \;+\; \log_r(1/\alpha)\;\ge\;0,
+\end{split}
+\end{equation*}
+since the $r$-ary Kullback–Leibler divergence $D_r$ is nonnegative and $\alpha\le 1$. Equality holds iff both terms vanish, i.e., $\alpha=1$ and $P=\tilde{Q}$, which is equivalent to $r^{-l_i}=P(s_i)$ for all $i$.
 \end{proof}
 
+
+In data compression we are particularly interested in $r$-adic distributions.
+
 \begin{definition}
-A probability distribution is called \emph{D-adic} if each of the probabilities is equal to $D^n$ for some $n$.
+A distribution $P$ is called \emph{$r$-adic} if each $P(s_i)$ is an exact $r$-adic probability, i.e., $P(s_i)=r^{-n_i}$ for some integers $n_i \ge 0$.
 \end{definition}
+
+Equality in Theorem \ref{th:optimal_codes} occurs precisely for sources whose symbol probabilities are exact powers of $r^{-1}$.
 
 \begin{corollary}
-We have the equality in the theorem if, and only if, the distribution of X is D-adic.
+Equality $L=H_r(P)$ in Theorem \ref{th:optimal_codes} holds if and only if $P$ is $r$-adic (equivalently, there exists a prefix-free code with $l_i=-\log_r P(s_i)$).
 \end{corollary}
 \begin{proof}
-{\color{red} TODO}
+Theorem \ref{th:optimal_codes} shows equality holds exactly when $r^{-l_i}=P(s_i)$ for all $i$, i.e., when each $P(s_i)$ is an $r$-adic probability.
 \end{proof}
 
-{\color{red} Mention that in practice we will non-integer code word lengths. Show that, on average, the length of the encoded string will be less than 1 bit than usind a code with code words with integer lengths} 
+In analysis it is natural to consider the \emph{ideal} real-valued lengths $\ell_i^\ast=-\log_r P(s_i)$, which need not be integers. Choosing integer lengths $l_i=\lceil \ell_i^\ast\rceil$ yields a feasible prefix-free code (by Kraft) with near-optimal average length.
 
-Kraft's inequality allows us to compare how efficient different codes are for the same source alphabet.
-
-\begin{definition}
-Let $C_1:\mathcal{S}\rightarrow\mathcal{X}^{+}$ and $C_2:\mathcal{S}\rightarrow\mathcal{X}^{+}$ be two different codes. We say that code $C_1$ is \emph{more efficient}\index{Code efficiency} than code $C_2$ if for all $s \in \mathcal{S}$ we have that $l(C_1(s)) \leq l(C_2(s))$, and there exists at least one $s' \in \mathcal{S}$ such that $l(C_1(s')) < l(C_2(s'))$.
-\end{definition}
-
-\begin{example}
-The code described in Example \ref{ex:not-prefix-fix} is more efficient than the code of Example \ref{ex:prefix-free}. Of course, the problem with the code described in Example \ref{ex:not-prefix-fix} is that it is not prefix-free, but since it satisfies Kraft's inequality, we know that there must exist another code with the same code word lengths that is prefix-free. For example, $C(a)=0$, $C(b)=10$, $C(c)=110$ and $C(d)=111$.
-\end{example}
-
-We are interested in the most efficient possible codes.
-
-{\color{red} TODO: This definition is wrong}
-
-\begin{definition}
-A code $C$ is \emph{complete}\index{Complete code} if there does not exist a code $C'$ that is more efficient than $C$.
-\end{definition}
-
-It turns out that Kraft's inequality provides a very useful characterization of complete codes.
-
-\begin{proposition}
-A code $C$ is complete if, and only if, its code word lengths $\mathcal{L}=\left\{ l_{1},l_{2},\ldots,l_{q}\right\}$ satisfy the property:
+\begin{proposition}[Shannon–Fano bound]
+For $l_i=\lceil -\log_r P(s_i)\rceil$,
 \[
-\sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} = 1
+H_r(P) \;\le\; L \;<\; H_r(P)+1.
 \]
 \end{proposition}
 \begin{proof}
-Suppose the sum of the exponentiated inverses of the code word lengths equals 1:
-
+By definition $l_i< -\log_r P(s_i)+1$, hence
 \[
-\sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} = 1
+L=\sum_i P(s_i)l_i \;<\; \sum_i P(s_i)\big(-\log_r P(s_i)+1\big) \;=\; H_r(P)+1.
 \]
+Moreover, $\sum_i r^{-l_i}\le \sum_i r^{\log_r P(s_i)}=\sum_i P(s_i)=1$, so the lengths are feasible. The lower bound $L\ge H_r(P)$ is Theorem \ref{th:optimal_codes}.
+\end{proof}
 
-This implies that the code utilizes the full capacity of the coding space. In other words, there is no redundancy or additional space in the code that could be used to encode a symbol with a shorter length. This is because each term in the sum \( 2^{-l_{i}} \) represents the proportion of the coding space taken up by the code word of length \( l_{i} \). If these proportions sum up to 1, then all possible code words of the given lengths are used, and there's no space left to introduce any new code word without increasing the length of at least one existing code word. Therefore, the code is as efficient as possible, hence complete.
+Kraft's inequality and expected length allow us to compare codes for a fixed source.
 
-Now suppose that the code \( C \) is complete. This means that there is no other code \( C' \) with the same source alphabet and the same or shorter code word lengths that is more efficient than \( C \).
+\begin{definition}
+Let $C_1,C_2$ be two codes on $\mathcal{S}$ with expected lengths $L_{C_1},L_{C_2}$ under $P$. We say that $C_1$ is \emph{more efficient}\index{Code efficiency} than $C_2$ (for $P$) if $L_{C_1}\le L_{C_2}$, with strict inequality for at least one symbol probability configuration (equivalently, $L_{C_1}<L_{C_2}$ for the given $P$).
+\end{definition}
 
-Assume for contradiction that the sum of the exponentiated inverses is less than 1:
-
+\begin{example}
+The non–prefix-free code in Example \ref{ex:not-prefix-fix} has lengths $(1,3,3,3)$, which satisfy Kraft's inequality. Therefore, there exists a prefix-free code with the \emph{same} lengths; for instance,
 \[
-\sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} < 1
+C(a)=1,\quad C(b)=000,\quad C(c)=001,\quad C(d)=010.
 \]
+For many $P$, these lengths yield a smaller expected length than the prefix-free code of Example \ref{ex:prefix-free} (which has lengths $(1,2,3,4)$); the comparison is determined by $P$ via $L=\sum_i P(s_i)l_i$.
+\end{example}
 
-This would imply that there is still unused coding space, meaning that it would be possible to construct a more efficient code by using this unused space to represent at least one symbol with a shorter code word, contradicting the assumption that \( C \) is complete. Therefore, the sum cannot be less than 1.
+Intuitively, a prefix-free code is \emph{complete} if its set of code words cannot be augmented (by adding another code word) while preserving the prefix-free property.
 
-Since \( C \) is complete and cannot be less efficient, the only alternative left is that the sum is exactly 1:
+\begin{definition}
+A prefix-free code $C$ is \emph{complete}\index{Complete code} if there does not exist a binary string $w$ such that $C\cup\{w\}$ is still prefix-free.
+\end{definition}
 
+Kraft's inequality characterizes completeness.
+
+\begin{proposition}
+A prefix-free code $C$ with lengths $\mathcal{L}=\{l_1,\ldots,l_q\}$ is complete if and only if
 \[
-\sum_{l_{i}\in\mathcal{L}}2^{-l_{i}} = 1
+\sum_{i=1}^q 2^{-l_i}=1.
 \]
-
-Combining both directions, we have shown that a code \( C \) is complete if and only if the sum of the exponentiated inverses of its code word lengths equals 1, as stated in the proposition.
-
+\end{proposition}
+\begin{proof}
+If the sum is $<1$, there remains unused capacity in the binary tree at some depth, so one can add at least one more leaf without violating prefix-freeness, contradicting completeness. Conversely, if the sum equals $1$, the descendant subtrees of the selected leaves exactly partition the leaf set at some depth; no additional leaf can be added without creating a prefix conflict.
 \end{proof}
 
 %
@@ -463,18 +514,18 @@ Combining both directions, we have shown that a code \( C \) is complete if and 
 \section{Entropy}
 \label{sec:Entropy}
 
-In this section we are going to introduce the concept of \emph{entropy}, as a measure of the uncertainty of a random variable. Entropy is a very difficult to grasp concept that can be applied in many different contexts, such as communications, statistics, finance, etc. Here we are interested in entropy because it will allow us to identify codes with the shortest possible average length.
+In this section we introduce \emph{entropy} as a measure of the uncertainty of a discrete random variable. Entropy appears in many contexts (communications, statistics, finance, etc.); here it is important because it will allow us to identify codes with the shortest possible average length.
 
-Let $A = \{a_1, a_2, \ldots, a_n\}$ a finite set, and $X$ a random variable defined over the set $A$ with probability mass function $p(a)$.
+Let $A=\{a_1,a_2,\ldots,a_n\}$ be a finite set, and let $X$ be a random variable on $A$ with probability mass function $p(a)$.
 
 \begin{definition}[Entropy]
-The \emph{entropy} of the random variable $X$, denoted by $H(X)$ and measured in \emph{bits}, is defined as:
+The \emph{entropy}\index{Entropy} of $X$, denoted $H(X)$ and measured in \emph{bits}\index{Bit}, is
 \[
-H(X) = \sum_{a \in A} p(a) \log \frac{1}{p(a)}
+H(X)=\sum_{a\in A} p(a)\,\log\frac{1}{p(a)}.
 \]
 \end{definition}
 
-Note that the entropy of $X$ does not depend on the individual elements of $A$, but on their probabilities. It is easy to show that $H(X) \geq 0$ since $0 \leq p(a) \leq 1$ implies that $-\log p(a) \geq 0$. In case of $p(a_i) = 0$ for some $i$, the value of the corresponding summand $0 \log 0$ is taken to be $0$, which is consistent with the limit $\lim_{p\to 0^+} p \log p = 0$. If we change the base of the logarithm to $u$, entropy will be scaled by a factor of $\log_u 2$ (see Equation \ref{eq:change_base_logarithm}).
+Entropy depends only on the probabilities $\{p(a)\}$, not on the labels in $A$. Clearly $H(X)\ge 0$ since $0\le p(a)\le 1$ implies $-\log p(a)\ge 0$. If $p(a_i)=0$ for some $i$, the corresponding summand is taken to be $0$, consistent with $\lim_{p\to 0^+} p\log(1/p)=0$. If we change the logarithm base to $u$, entropy scales by a factor $\log_u 2$ (see Equation \ref{eq:change_base_logarithm}).
 
 \begin{example}
 Let $X$ a random variable defined over the set $A = \{a_1, a_2\}$, with values $p(a_1) = q$ and $p(a_2) = 1-q$. Then, the entropy of $X$ is given by:
@@ -489,34 +540,42 @@ Figure \ref{fig:entropy_function} shows the entropy of $X$ for different values 
 \caption{\label{fig:entropy_function}Binary Entropy Function}
 \end{figure}
 
-Next proposition shows that the maximum value for entropy is the logarithm of the number of symbols of $A$, and that this value is reached when all the symbols have the same probability.
+The next proposition shows that entropy is maximized by the uniform distribution and that the maximum equals the logarithm of the alphabet size.
 
 \begin{proposition}
 \label{prop:maximum_entropy}
-Given the random variable $X$ we have that $H(X) \leq \log n$, and $H(X) = \log n$ if, and only if, $p(a_1) = p(a_2) = \ldots = p(a_n)$.
+For $X$ on $A$ with $d(A)=n$, we have $H(X)\le \log n$, with equality if and only if $p(a_1)=\cdots=p(a_n)=1/n$.
 \end{proposition}
 \begin{proof}
-Consider the expression:
+Compute
 \[
-\log n - H(X) = \sum_{i=1}^n p(a_i) \log n - \sum_{i=1}^n p(a_i) log {\frac{1}{p(a_i)}} = \sum_{i=1}^n p(a_i) \log n p(a_i)
+\log n - H(X)
+= \sum_{i=1}^n p(a_i)\log n - \sum_{i=1}^n p(a_i)\log\frac{1}{p(a_i)}
+= \sum_{i=1}^n p(a_i)\,\log\!\big(n\,p(a_i)\big).
 \]
-Applying property \ref{eq:change_base_logarithm} we have that:
+Using the change-of-base formula,
 \[
-\log n - H(X) = \log e \sum_{i=1}^n p(a_i) \ln n p(a_i)
+\log n - H(X)
+= (\log e)\sum_{i=1}^n p(a_i)\,\ln\!\big(n\,p(a_i)\big).
 \]
-And applying property \ref{eq:natural_logarithm_inequality} (equalling $x = 1 / n p(a_i)$):
+By the inequality $\ln x \le x-1$, applied with $x=\frac{1}{n\,p(a_i)}$, we have
 \[
-\log n - H(X) \geq \log e \sum_{i=1}^n p(a_i) \left( 1 - \frac{1}{n p(a_i)} \right) \geq \log e \left( \sum_{i=1}^n p(a_i) - \frac{1}{n} \sum_{i=1}^n \frac{p(a_i)}{p(a_i)} \right) \geq 0
+\ln\!\big(n\,p(a_i)\big)\;\ge\; 1-\frac{1}{n\,p(a_i)}.
 \]
-Which proves that $H(X) \leq \log n$.
-
-The inequality becomes an equality if, and only if, $p(a_i) = 1 / n$ (given that the inequality \ref{eq:natural_logarithm_inequality} becomes an equality if, and only if, $x=1$).
-
+Hence
+\[
+\log n - H(X)
+\;\ge\; (\log e)\sum_{i=1}^n p(a_i)\!\left(1-\frac{1}{n\,p(a_i)}\right)
+= (\log e)\Big(1-\tfrac{1}{n}\sum_{i=1}^n 1\Big)=0.
+\]
+Equality holds iff $\ln(n\,p(a_i))=0$ for all $i$, i.e., $p(a_i)=1/n$.
 \end{proof}
 
 \begin{example}
-If we choose a random symbol from $A$ according to the probability mass function $p$, entropy would be the minimum expected number of binary questions (Yes/No questions) required to identify the selected symbol. If the symbols of $A$ are equiprobable, the expected number of questions is maximal and equal to $\log d(A)$.
+If we select a symbol from $A$ according to $p$, the entropy $H(X)$ is the minimum expected number of binary (Yes/No) questions required to identify the symbol. For equiprobable symbols this expected number is maximal and equals $\log |A|$.
 \end{example}
+
+% Joint entropy
 
 We can extend the concept of entropy to a pair of random variables by means of using the joint probability mass function. In this way, the joint entropy will be a measure of the uncertainty associated to both variables. Let $A = \{a_1, a_2, \ldots, a_n\}$ and $B = \{b_1, b_2, \dots, b_m\}$ two finite sets, and $X$ and $Y$ two random variables defined over the sets $A$ and $B$ respectively, with probability mass function $p(a)$ and $p(b)$, and joint probability mass function $p(a, b)$.
 
@@ -527,9 +586,9 @@ H(A, B) = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a, b)}
 \]
 \end{definition}
 
-Since $p(a, b) = p(b, a)$ we have that the joint entropy does not depend of the order in which the random variables are selected, that is $H(A, B) = H(B, A)$. We can provide a similar definition for the joint entropy of a set of $n$ random variables $A_1, A_2, \ldots, A_n$ using the joint probability mass function $p(a_1, a_2, \ldots, a_n)$.
+Joint entropy is symmetric: $H(A, B)=H(B, A)$, since the double sum is unchanged by swapping $a$ and $b$. The definition extends to any finite tuple $(A_1, \ldots, A_k)$ via the joint mass function $p(a_1, \ldots, a_k)$.
 
-Adding a second random variable whose outcome is not know might increase the entropy, as following proposition proves.
+Adding a second random variable with an unknown outcome may increase entropy, as the following proposition shows.
 
 \begin{proposition}
 We have that
@@ -538,25 +597,42 @@ H(A, B) \geq \max \left( H(A), H(B) \right)
 \]
 \end{proposition}
 \begin{proof}
-\[
-H(A, B) = \sum_{a \in A} \sum_{b \in B} p(a,b) \log \frac{1}{p(a,b)} \geq \sum_{a \in A} \sum_{b \in B} p(a,b) \log \frac{1}{p(a)} = \sum_{a \in A} p(a) \log \frac{1}{p(a)} = H(A)
-\]
-In the same way we can prove that $H(A, B) \geq H(B)$. Combining both inequalities we get the desired result.
+Because $\sum_{b}p(a,b)=p(a)$, we have $p(a,b)\le p(a)$ for all $a,b$, hence $\log\frac{1}{p(a,b)}\ge \log\frac{1}{p(a)}$. Therefore,
+\begin{equation*}
+\begin{split}
+H(A, B) & = \sum_{a,b} p(a,b)\log\frac{1}{p(a,b)}
+\;\ge\; \sum_{a,b} p(a,b)\log\frac{1}{p(a)} \\
+& = \sum_{a} p(a)\log\frac{1}{p(a)}=H(X).
+\end{split}
+\end{equation*}
+The inequality $H(A, B)\ge H(B)$ is analogous. Taking the maximum yields the claim.
 \end{proof}
 
-The joint entropy of two random variables cannot be greater that the sum of their individual entropies.
+The joint entropy of two variables cannot exceed the sum of their individual entropies.
 
 \begin{proposition}
 \label{prop:joint_entropy}
-We have that $H(A, B) \leq H(A) + H(B)$ and $H(A, B) = H(A) + H(B)$ if, and only if, $p(a)$ and $p(b)$ are statistically independent.
+We have $H(A, B)\le H(A) + H(B)$, with equality if and only if $A$ and $B$ are independent (i.e., $p(a,b)=p(a)p(b)$ for all $a,b$).
 \end{proposition}
 \begin{proof}
-{\color{red} TODO: Prove without using the concept of conditional entropy nor mutual information.}
+By Gibbs' inequality (which follows from $\ln x\le x-1$),
+\begin{equation*}
+\begin{split}
+0 \;\le\; \sum_{a,b} p(a,b)\,\log\frac{p(a,b)}{p(a)p(b)}
+& = \sum_{a,b} p(a,b)\log p(a,b) \\
+& - \sum_{a,b} p(a,b)\log p(a) - \sum_{a,b} p(a,b)\log p(b).
+\end{split}
+\end{equation*}
+Rearranging and recognizing the entropies,
+\[
+0 \;\le\; -H(A, B) + H(A) + H(B),
+\]
+which gives $H(A, B) \le H(A) + H(B)$. Equality in Gibbs' inequality holds if and only if $p(a,b)=p(a)p(b)$ for all $a,b$, i.e., when $A$ and $B$ are independent.
 \end{proof}
 
 % Conditional Entropy
 
-The next derived concept from entropy that we are going to introduce is conditional entropy. Conditional entropy measures the uncertainty of a random variable given that the value of another random variable is known.
+The next concept derived from entropy is conditional entropy. It measures the remaining uncertainty about one random variable once the outcome of another is known.
 
 \begin{definition}
 The \emph{conditional entropy} of the random variable $B$ given the random variable $A$, denoted by $H(B \mid A)$, is defined as:
@@ -565,33 +641,38 @@ H(B \mid A) = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(b \mid a)}
 \]
 \end{definition}
 
-Since $p(b \mid a) \neq p(a \mid b)$ we have that $H(B \mid A) \neq H(A \mid B)$. If $H(B \mid A) = 0$ we have that the value of $B$ is completely determined by the value of $A$.
+In general $p(b\mid a)\neq p(a\mid b)$, so $H(B \mid A)\neq H(A \mid B)$. We have $H(B \mid A) = 0$ if and only if $B$ is (almost surely) a function of $A$.
 
-Next proposition proves that knowing the value of a second random variable can never increase the uncertainty of a random variable.
+The next proposition formalizes that conditioning cannot increase uncertainty.
 
 \begin{proposition}
 Given the random variables $X$ and $Y$, we have that $H(Y \mid X) \leq H(Y)$, and $H(Y \mid X) = H(Y)$ if, and only if, $p(a)$ and $p(b)$ are independent.
 \end{proposition}
 \begin{proof}
-\begin{multline}
-H(Y \mid X) = \sum_{a \in A} \sum_{y \in B} p(a, b) \log \frac{1}{p(b \mid a)} = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{p(a)}{p(a, b)} \\
-\notag = \sum_{a \in A} \sum_{b \in B} p(a, b) \log p(a) - \sum_{a \in A} \sum_{b \in B} p(a, b) \log p(a, b) = -H(X) + H(X, Y)
-\end{multline}
-Applying Propositon \ref{prop:joint_entropy} we have that $H(Y \mid X) = H(X, Y) - H(X) \leq H(X) + H(Y) - H(X) = H(Y)$.
-The iff equality is also proved by applying Proposition \ref{prop:joint_entropy}.
+\begin{equation*}
+\begin{split}
+H(Y \mid X) & = \sum_{a \in A} \sum_{y \in B} p(a, b) \log \frac{1}{p(b \mid a)} = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{p(a)}{p(a, b)} \\
+& = \sum_{a \in A} \sum_{b \in B} p(a, b) \log p(a) - \sum_{a \in A} \sum_{b \in B} p(a, b) \log p(a, b) \\
+& = -H(X) + H(X, Y)
+\end{split}
+\end{equation*}
+By Proposition \ref{prop:joint_entropy}, $H(X,Y)\le H(X)+H(Y)$, hence $H(Y\mid X)\le H(Y)$. Equality holds if and only if $H(X,Y)=H(X)+H(Y)$, i.e., $X$ and $Y$ are independent.
 \end{proof}
 
-From an intuitive point of view we could expect that the uncertainty associated to a pair of random variables must be equal to the uncertainty of one of them plus the uncertainty of the second given that we know the outcome of the first one.
+From an intuitive standpoint, the uncertainty of a pair $(X,Y)$ should equal the uncertainty of $X$ plus the remaining uncertainty of $Y$ after observing $X$. This is the \emph{chain rule}.
 
 \begin{proposition}[Chain rule]
 \label{prop:chain_rule_entropy}
-Given the random variables $X$ and $Y$ we have that $H(X, Y) = H(X) + H(Y \mid X)$.
+For any discrete $X,Y$, $H(X,Y)=H(X)+H(Y\mid X)$.
 \end{proposition}
 \begin{proof}
-\begin{multline}
-H(Y, X) = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a, b)} = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a) p(a \mid b)} \\
-\notag = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a)} + \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a \mid b)} = H(X) + H(Y \mid X)
-\end{multline}
+\begin{equation*}
+\begin{split}
+H(Y, X) & = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a, b)} = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a) p(a \mid b)} \\
+& = \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a)} + \sum_{a \in A} \sum_{b \in B} p(a, b) \log \frac{1}{p(a \mid b)} \\
+& = H(X) + H(Y \mid X)
+\end{split}
+\end{equation*}
 \end{proof}
 
 % Mutual information
@@ -610,42 +691,84 @@ Since $p(a, b) = p(b, a)$ we have that $I(X ; Y) = I(Y ; X)$, that is, the order
 Next proposition shows that mutual information is a positive quantity, and it is equal to 0 if, and only if, the random variables are independent.
 
 \begin{proposition}
-Given the random variables $X$ and $Y$ we have that $I(X ; Y) \geq 0$, and $I(X ; Y) = 0$ if, and only if, the variables $X$ and $Y$ are independent.
+For any discrete random variables $X$ and $Y$ we have that $I(X ; Y) \geq 0$, and $I(X ; Y) = 0$ if, and only if, the variables $X$ and $Y$ are independent.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO: to be done}
+Interpret $I(X;Y)$ as the Kullback-Leibler divergence
+\[
+I(X;Y)= D\big(p_{X,Y}\,\|\,p_Xp_Y\big)\;=\;\sum_{a,b} p(a,b)\,\log\frac{p(a,b)}{p(a)p(b)}\;\ge\;0
+\]
+by Gibbs' inequality, with equality if and only if $p(a,b)=p(a)p(b)$ for all $a,b$.
 \end{proof}
 
-{\color{red} Introduce this proposition}
+Mutual information admits several equivalent forms that make its operational meaning explicit: it quantifies the reduction in uncertainty achieved by observing one variable about the other. Using the chain rule $H(X,Y)=H(X)+H(Y\mid X)=H(Y)+H(X\mid Y)$, we obtain the identities below, showing that $I(X;Y)$ is exactly the decrease in entropy of $X$ due to $Y$ (and symmetrically for $Y$).
 
 \begin{proposition}
-Given the random variables $X$ and $Y$, we have that:
+For any discrete random variables $X$ and $Y$, we have that:
 \[
 I(X;Y) = H(X) - H(X \mid Y) = H(Y) - H(Y \mid X)
 \]
 \end{proposition}
 \begin{proof}
-{\color{red} TODO: to be done}
+By the chain rule, $H(X,Y)=H(Y)+H(X\mid Y)$. Substituting into
+\[
+I(X;Y)=\sum_{a,b} p(a,b)\log\frac{p(a,b)}{p(a)p(b)}
+= -H(X,Y)+H(X)+H(Y),
+\]
+we obtain $I(X;Y)=H(X)-H(X\mid Y)$. The other identity follows by symmetry.
 \end{proof}
 
-{\color{red} Introduce this proposition}
+Another equivalent form of mutual information is its “inclusion-exclusion” expression: the sum of the marginal entropies minus the joint entropy. It follows immediately by substituting $H(X\mid Y)=H(X,Y)-H(Y)$ (or symmetrically $H(Y\mid X)=H(X,Y)-H(X)$) into $I(X;Y)=H(X)-H(X\mid Y)$, and highlights the Venn-diagram overlap interpretation.
 
 \begin{proposition}
-Given the random variables $X$ and $Y$, we have that:
+For any discrete random variables $X$ and $Y$, we have that:
 \[
 I(X;Y) = H(X) + H(Y) - H(X, Y)
 \]
 \end{proposition}
 \begin{proof}
-{\color{red} TODO: to be done}
+Combine $I(X;Y)=H(X)-H(X\mid Y)$ with $H(X\mid Y)=H(X,Y)-H(Y)$ (chain rule), yielding
+$I(X;Y)=H(X)+H(Y)-H(X,Y)$.
 \end{proof}
 
-{\color{red} Prove that $I(\mathcal{S}; \mathcal{S}) = H(\mathcal{S})$}
+A useful sanity check is the self-information case. Since observing $S$ reveals $S$ completely, the remaining uncertainty $H(S\mid S)$ is zero; hence the mutual information of a variable with itself equals its entropy, as stated below.
 
-{\color{red} Use the Venn diagrams in this example}
+\begin{proposition}
+For any discrete random variable $S$ we have that $I(S;S)=H(S)$.
+\end{proposition}
+\begin{proof}
+By the identity $I(X;Y)=H(X)-H(X\mid Y)$ with $X=Y=S$,
+\[
+I(S;S)=H(S)-H(S\mid S)=H(S)-0=H(S).
+\]
+\end{proof}
 
 \begin{example}
+Let $X\sim\mathrm{Bernoulli}(1/2)$ and let $Y=X\oplus N$, where $N\sim\mathrm{Bernoulli}(\varepsilon)$ is independent noise ($\oplus$ is XOR). Then $H(X)=H(Y)=1$, and
+\[
+H(X\mid Y)=H_\mathrm{b}(\varepsilon):=-\varepsilon\log\varepsilon-(1-\varepsilon)\log(1-\varepsilon),\qquad
+I(X;Y)=1-H_\mathrm{b}(\varepsilon).
+\]
+For instance, with $\varepsilon=0.1$, $H_\mathrm{b}(0.1)\approx 0.469$, so $I(X;Y)\approx 0.531$ bits. A Venn diagram interpretation: the circle areas represent $H(X)$ and $H(Y)$, the overlap is $I(X;Y)$, and the non-overlapping parts are $H(X\mid Y)$ and $H(Y\mid X)$.
 \end{example}
+
+Figure \ref{fig:venn-entropy} provides Venn-style schematic for entropies, conditional entropies and mutual information.
+
+\begin{figure}[h]
+\label{fig:venn-entropy}
+\centering
+\begin{tikzpicture}[scale=1.0]
+\def\r{1.8}
+\draw (0,0) circle (\r);
+\draw (2.2,0) circle (\r);
+\node at (-1.7,1.4) {$H(X)$};
+\node at (3.9,1.4) {$H(Y)$};
+\node at (1.1,0) {$I(X;Y)$};
+\node at (-0.8,0) {$H(X\mid Y)$};
+\node at (3.0,0) {$H(Y\mid X)$};
+\end{tikzpicture}
+\caption{$H(X)$ and $H(Y)$ with overlap $I(X;Y)$.}
+\end{figure}
 
 %
 % Section: Huffman Algorithm

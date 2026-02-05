@@ -18,135 +18,174 @@ Eugène Ionesco
 
 In this chapter, we introduce a set of metrics for classifying research topics according to their potential to generate interesting problems, along with a methodology for the assisted discovery of new research questions. The objective is to propose new directions, novel research ideas, that contribute to reducing nescience, that is, to diminishing the extent of the scientific unknown. The proposed methodology supports both the identification of new applications for existing tools to address open problems (the known unknown\index{Known unknown}) and the discovery of entirely new and previously unexplored research directions (the unknown unknown\index{Unknown unknown}). While the methodology is applicable to both intradisciplinary and interdisciplinary topics, the most impactful results typically arise in the latter case. In Chapter \ref{chap:computational-creativity}, we demonstrate the methodology in practice and propose several new questions and research topics.
 
-We have already examined three dimensions for classifying research topics: miscoding (Chapter \ref{chap:Miscoding}), inaccuracy (Chapter \ref{chap:Error}), and surfeit (Chapter \ref{chap:Redundancy}). These metrics allow us to quantitatively assess our level of understanding of a topic, a concept we refer to as nescience. In this section, we introduce two additional metrics for characterizing topics: relevance (Section \ref{sec:relevance}) and applicability (Section \ref{sec:applicability}). Relevance measures the impact a topic has on people's lives and complements the existing metrics of nescience. Applicability quantifies how frequently a topic has been applied in other domains and helps identify new uses for existing technologies.
+We have already examined three dimensions for classifying research topics: miscoding (Chapter \ref{chap:Miscoding}), inaccuracy (Chapter \ref{chap:Error}), and surfeit (Chapter \ref{chap:Redundancy}). These metrics allow us to quantitatively assess our level of understanding of a topic, a breoader concept we refer to as nescience. In this section, we introduce two additional metrics for characterizing topics: relevance (Section \ref{sec:relevance}) and applicability (Section \ref{sec:applicability}). Relevance measures the impact a topic has on people's lives and complements the existing dimensions used to quantify nescience. Applicability quantifies how frequently a topic has been applied in other domains and helps identify new uses for existing technologies.
 
-What is proposed in this chapter is an algebraic approach to the assisted discovery of potentially interesting research questions, grounded in the theory of nescience. The objective of this methodology is twofold. On the one hand, it aims to support researchers in their day-to-day work. The methodology can be used to uncover novel tools that may be applied to a given problem, or to identify new problems where existing tools could be effectively used. In its more advanced form, the methodology facilitates the exploration of the unknown unknown, that is, research areas that have not yet been conceptualized, described, or even imagined.
+What is proposed in this chapter is an algebraic approach to the assisted discovery of potentially interesting research questions, grounded in the theory of nescience. On the one hand, it aims to support researchers in their day-to-day work. The methodology can be used to uncover novel tools that may be applied to a given problem, or to identify new problems where existing tools could be effectively used. In its more advanced form, the methodology facilitates the exploration of the unknown unknown, that is, research areas that have not yet been conceptualized, described, or even imagined.
 
-On the other hand, because the methodology is based on well-defined mathematical principles, it lends itself to automation. This opens the door for artificial intelligence systems to move beyond their current limitations, namely, their inability to autonomously generate truly novel research directions. By formalizing the process of question discovery, the methodology enables AI to propose interesting and previously unexplored research questions, and even to discover entirely new topics of scientific inquiry.
+On the other hand, because the methodology is based on well-defined mathematical principles, it lends itself to automation. This opens the door for artificial intelligence systems to move beyond their current limitations in autonomously generate truly novel research directions. By formalizing the process of question discovery, the methodology enables AI to propose interesting and previously unexplored research questions, and even to discover entirely new topics of scientific inquiry.
 
 %
-% Relevance
+% Integrative Depth
 %
 
-\section{Relevance}
-\label{sec:relevance}
+\section{Integrative Depth}
+\label{sec:integrative_depth}
 
-In this chapter, we propose additional metrics to complement nescience in the task of evaluating the interest of research topics. These metrics will be useful not only for classifying individual topics, but also for developing a methodology for discovering potential solutions to open problems (Section \ref{sec:intro_interesting_questions}), as well as for identifying entirely new research topics (Section \ref{sec:New_Research_Topics}).
+In addition of the metrics that compose nescience, further metrics are required in order to characterize the role that different research topics play within the scientific knowledge. Such metrics are useful not only for classifying individual topics, but also for identifying promising directions for inquiry (Section~\ref{sec:intro_interesting_questions}), and guiding the combination of topics in the discovery of new research questions (Section~\ref{sec:New_Research_Topics}).
 
-One of these new metrics is \emph{relevance}. Relevance quantifies the impact that a research topic has on people's lives. Intuitively, the greater the relevance of a topic, the higher its potential as a source of interesting problems, since it concerns issues that affect many individuals directly.
+A new metric of \emph{integrative depth} is introduced to capture the multiplicity of nescience-reducing relation among topics. Intuitively, some research topics admit a substantial reduction of nescience by conditioning on a small number of other topics, whereas others admit reductions along many distinct directions. In the latter case, there exist multiple background knowledge bases such that conditioning on each of them yields a decrease in the nescience of the topic, even though none of these backgrounds is individually necessary. 
 
-Before we can measure the relevance of a topic, that is, its impact on people's lives, we must introduce the concept of a \emph{relevance graph}. The relevance graph (see Figure \ref{fig:Relevance-Graph}) captures the relationship between people and the research topics that affect them.
-
-\begin{definition}\index{Relevance Graph}
-\label{def:relevance-graph}
-We define the \emph{relevance graph}\index{Relevance graph}, denoted by $\mathbf{RG}$, as the bipartite graph $\mathbf{RG} = (\mathcal{T}, \mathcal{P}, E)$, where $\mathcal{T}$ is the set of topics, $\mathcal{P}$ is the set of people, and $E\subseteq\left\{ \left(i,j\right):i\in \mathcal{T},j\in \mathcal{P} \right\}$ is the set of edges between topics and people. An edge $(i, j)$ belong to $E$ if, and only if, person $j$ is affected by topic $i$.
-\end{definition}
-
-When we refer to the set of people $\mathcal{P}$, we mean all individuals in the world. A connection between a topic and a person indicates that the person is affected by the topic, not that they are necessarily interested in it. For example, someone researching a cure for diabetes would not be connected to the research topic "diabetes," but someone who actually suffers from the disease would be.
-
-The higher the relevance of a topic, the greater its potential as a source of interesting problems to solve. In this sense, the research topic "how to cure diabetes" is more relevant than "how far dog fleas can jump," because more people are affected by the former than by the latter.
-
-The precise meaning of "\emph{being affected by}" is inherently abstract and must be approximated in practice. For instance, one could argue that the spouse of a person with diabetes is also affected by the disease in some way. In Section \ref{sec:relevance_in_practice}, we will explore how this concept can be operationalized in the context of scientific research topics.
-
-% \begin{figure}[h]
-% \centering\includegraphics[scale=0.7]{bipartite_graph}
-% \caption{\label{fig:Relevance-Graph}Relevance Graph}
-% \end{figure}
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[scale=1, every node/.style={circle, fill=black, inner sep=2pt}]
-
-% Nodes: Topics (top row)
-\node (t1) at (0.5,2) {};
-\node (t2) at (1.5,2) {};
-\node (t3) at (2.5,2) {};
-
-% Nodes: People (bottom row)
-\node (p1) at (0,0) {};
-\node (p2) at (1,0) {};
-\node (p3) at (2,0) {};
-\node (p4) at (3,0) {};
-
-% Edges
-\draw (t1) -- (p1);
-\draw (t1) -- (p3);
-\draw (t2) -- (p1);
-\draw (t2) -- (p4);
-\draw (t3) -- (p2);
-\draw (t3) -- (p3);
-
-% Labels
-\node[draw=none, fill=none] at (3.75,2) {Topics};
-\node[draw=none, fill=none] at (3.75,0) {People};
-
-\end{tikzpicture}
-\caption{\label{fig:Relevance-Graph}Relevance Graph}
-\end{figure}
-
-Optionally, we can assign a weight $w_{ij} \in [0,1]$ to the edges of the graph to indicate the degree to which a person $j$ is affected by a topic $i$. A weight of $1$ could represent a life-or-death dependence, while a weight of $0$ would mean that the person is not affected at all. Figure \ref{fig:Relevance-Graph} shows an example of a relevance graph.
-
-The relevance of a topic measures the extent to which it affects people. This can be assessed either by counting the number of affected individuals or by taking into account the magnitude of the effect.
-
-\begin{definition}\index{Relevance}
-\label{def:relevance}
-Let $t \in \mathcal{T}$ be a topic, $\mathcal{P}_t \subseteq \mathcal{P}$ the set of people connected to $t$ in the relevance graph, and $w_{tp} \in [0,1]$ the weight of the edge between $t$ and $p \in \mathcal{P}_t$. We define the \emph{relevance} of $t$ as
+\begin{definition}\index{Integrative depth}
+Given the nescience dependency graph $NDG = (\mathcal{T}, E_N)$ we define the \emph{integrative depth}\index{Integrative depth} of a research topic $t \in \mathcal{T}$ as its indegree in $NDG$, that is,
 \[
-R(t) = \sum_{p : (t,p) \in E} w_{tp},
+ID(t) = indeg(t)
 \]
 \end{definition}
 
-The unweighted relevance $R(t)$ (with $w_{tp} = 1$) counts the number of people affected by the topic, while the weighted relevance $R(t)$ reflects both the number of people and the severity of the effect. A higher relevance value indicates greater potential for generating important and impactful questions.
+\noindent
+Recall that a directed edge from B to A in the nescience dependency graph indicates that conditioning on the knowledge background associated with B reduces the nescience of A. This does not imply that such background knowledge is necessary to understand A, nor that it is the only background capable of reducing its nescience.
 
-In practice it is useful to normalize the relevance of a topic so that the least relevant topic has a value of $0$, the most relevant has a value of $1$, and all others lie proportionally in between.
+Integrative depth measures the extent to which understanding a research topic requires the integration of knowledge originating from other topics. A topic with low integrative depth can be substantially understood in relative isolation, whereas a topic with high integrative depth might require to understand many other independent sources of knowledge.
 
-\begin{definition}\index{Normalized relevance}
-\label{def:minmax_normalized_relevance}
-Let $t \in \mathcal{T}$ be a topic. We define the \emph{min-max normalized relevance} of $t$ as
+In practice, topics with high integrative depth often benefit from combining insights drawn from several contributing areas (see Section XXX), although the existence of multiple nescience-reducing directions does not, by itself, imply that such combination is necessary.
+
+\begin{example}
+Consider the research topic of cancer. Conditioning on knowledge from genetics reduces nescience by clarifying the role of mutations and oncogenes, while conditioning on cell biology reduces nescience by explaining mechanisms of uncontrolled proliferation. Knowledge from immunology further reduces nescience by accounting for immune surveillance and evasion, and insights from tissue mechanics and the tumor microenvironment contribute by explaining how physical and structural factors influence tumor growth. Each of these background topics independently yields a reduction in the nescience associated with cancer, even though none of them is individually necessary or sufficient to achieve a comprehensive understanding. The high integrative depth of this topic therefore reflects the existence of multiple distinct directions along which ignorance can be reduced, rather than a single required sequence of prerequisites.
+\end{example}
+
+The integrative depth metric inherits several basic properties directly from its graph-theoretic definition: \emph{i)} for any research topic $t \in \mathcal{T}$, the integrative depth $D(t)$ is a non-negative integer; \emph{ii)} a research topic $t$ has integrative depth $D(t) = 0$ if and only if there is no other topic whose representations reduce the nescience of $t$.
+
+Topics with zero integrative depth are autonomous in the sense that their nescience cannot be reduced by conditioning on other topics alone.
+
+Integrative depth is independent of the current level of nescience of a topic. A topic may have high integrative depth and low nescience, corresponding to a well-understood domain that nonetheless requires the integration of many different areas. Conversely, a topic may have high integrative depth and high nescience, indicating a complex, unresolved problem whose understanding depends on progress across multiple topics.
+
+% Subsubsection: Weighted integrative depth
+
+\subsubsection*{Weighted integrative depth}
+\label{subsec:weighted_integrative_depth}
+
+In some cases, it is not sufficient to know how many topics contribute to reducing the nescience of a given topic; it is also important to quantify \emph{how much} each contributing topic reduces nescience. For this purpose, we consider the weighted version of the nescience dependency graph.
+
+\begin{definition}\index{Integrative depth}
+Given the weighted nescience dependency graph $WNDG = (\mathcal{T}, E_N, w)$ we define the \emph{weighted integrative depth}\index{Weighted integrative depth} of a research topic $t \in \mathcal{T}$ as 
 \[
-\bar{R}(t) = \frac{R(t) - \min_{t' \in \mathcal{T}} R(t')}{\max_{t' \in \mathcal{T}} R(t') - \min_{t' \in \mathcal{T}} R(t')}
+D_w(t) \;=\; \sum_{A : (A,t) \in E_N} w(A,t)
+\;=\; \sum_{A : (A,t) \in E_N} \bigl( N(t \mid A) - N(t) \bigr).
 \]
 \end{definition}
 
-This transformation ensures that $\bar{R}(t) \in [0,1]$, with $0$ assigned to the least relevant topic and $1$ to the most relevant. In the degenerate case where all topics have the same relevance, all normalized values are set to $0$.
+\noindent
+The weighted integrative depth of a topic measures the total reduction in nescience obtained by integrating all topics that contribute to its understanding.
 
-We could also compute the weighted degree of a person $p$, denoted $R(p)$, defined as the sum of the weights of the edges that link $p$ to topics in the relevance graph. This quantity measures the overall impact of all topics on a particular person. However, this measure is not used in the theory of nescience.
+While integrative depth counts the number of distinct topics whose representations reduce the nescience of a given topic, weighted integrative depth captures the overall magnitude of that reduction. A topic may have a high integrative depth but a modest weighted integrative depth if each contributing topic yields only a small reduction in nescience. Conversely, a topic with moderate integrative depth may exhibit a large weighted integrative depth if a few incoming topics provide substantial explanatory power.
 
-The relation between the weighted relevance of topics and the weighted degrees of people is given by the weighted degree sum formula:
-\[
-\sum_{t \in \mathcal{T}} R(t) \;=\; \sum_{p \in \mathcal{P}} R(p) \;=\; \sum_{(t,p) \in E} w_{tp}.
-\]
-In the unweighted case ($w_{tp} = 1$ for all edges), this formula reduces to the standard degree sum formula
-\[
-\sum_{t \in \mathcal{T}} \deg(t) \;=\; \sum_{p \in \mathcal{P}} \deg(p) \;=\; d(E).
-\]
+Weighted integrative depth therefore quantifies the \emph{strength of integration} required to understand a topic, complementing the purely structural information provided by integrative depth.
 
-The next proposition shows that, in the weighted case, adding more topics to a research project can only increase its overall relevance. Of course, a research project dealing with "life, the universe, and everything" would be highly relevant, but also highly impractical. How to properly combine research topics will be described in Section \ref{sec:New_Research_Topics}.
+\begin{example}
+Consider again the entity corresponding to \emph{climate change}. Its integrative depth is high, since many topics contribute to reducing its nescience. However, the magnitude of these contributions may vary substantially. Conditioning on atmospheric physics may yield a large reduction in nescience, while conditioning on a narrowly scoped economic model may yield a smaller one. The weighted integrative depth aggregates these heterogeneous contributions into a single measure of total epistemic gain.
+\end{example}
+
+The weighted integrative depth satisfies several immediate properties: \emph{i)} For any research topic $t \in \mathcal{T}$, the weighted integrative depth $D_w(t)$ is a non-negative real number. {\color{red} Add another property derived from graph theory.}
+
+{\color{red}Introduce this propostion}
 
 \begin{proposition}
-Let $S \subseteq \mathcal{T}$ be a finite set of topics and let $t' \in \mathcal{T} \setminus S$ be an additional topic. Then
-\[
-R(S \cup \{t'\}) \;\geq\; R(S),
-\]
-where the total weighted relevance of a set of topics $S$ is defined as
-\[
-R(S) = \sum_{\substack{t \in S \\ p \in \mathcal{P} \\ (t,p) \in E}} w_{tp}.
-\]
+A research topic $t$ has weighted integrative depth $D_w(t)=0$ if and only if it has integrative depth $D(t)=0$.
 \end{proposition}
 \begin{proof}
-We can write
-\[
-R(S \cup \{t'\}) = \sum_{\substack{t \in S \cup \{t'\} \\ p \in \mathcal{P} \\ (t,p) \in E}} w_{tp}
-= R(S) + \sum_{\substack{p \in \mathcal{P} \\ (t',p) \in E}} w_{t'p}.
-\]
-Since all weights $w_{tp}$ are non-negative,
-\[
-\sum_{\substack{p \in \mathcal{P} \\ (t',p) \in E}} w_{t'p} \geq 0,
-\]
-which implies $R(S \cup \{t'\}) \geq R(S)$.
+If $D(t)=0$, there are no incoming edges, and the defining sum for $D_w(t)$ is empty, yielding $D_w(t)=0$. Conversely, if $D_w(t)=0$, there can be no incoming edges with positive weight, and hence $D(t)=0$.
 \end{proof}
 
-This property shows that weighted relevance is monotone with respect to topic inclusion: if you enlarge the set of topics under consideration, the total weighted relevance can never decrease. In other words, adding topics can only maintain or increase the number (or severity) of connections to people in the relevance graph.
+Integrative depth and weighted integrative depth capture complementary aspects of epistemic integration. Integrative depth reflects the number of distinct sources that must be combined to reduce the nescience of a topic, while weighted integrative depth reflects the total magnitude of the reduction achieved by those sources. Together, these metrics distinguish between topics that depend on many weakly informative contributors and those that depend on a smaller number of highly informative ones.
+
+In later chapters, weighted integrative depth will be used to refine the classification of research topics and to guide the construction of composite research directions that balance epistemic feasibility with the potential for substantial nescience reduction.
+
+% Subsection: Normalized weighted integrative depth
+
+\subsubsection*{Normalized weighted integrative depth}
+\label{subsec:norm_weighted_integrative_depth_subset}
+
+In many practical situations, we are not interested in the full set of research topics $\mathcal{T}$, but rather in a restricted collection $S \subseteq \mathcal{T}$ corresponding, for instance, to a discipline, a research program, or the scope of a particular organization. In this case, it is natural to evaluate integrative metrics relative to the weighted nescience dependency graph restricted to $S$.
+
+Assume that the restriction of the weighted nescience dependency graph to a subset $S$ has been defined elsewhere in the book. We denote the resulting restricted weighted graph by
+\[
+G_{N,S}^w = (S, E_{N,S}, w),
+\]
+where $E_{N,S} \subseteq S \times S$ is the set of directed edges between topics in $S$, and each edge $(A,t)\in E_{N,S}$ satisfies $w(A,t) = N(t\mid A) - N(t) > 0$.
+
+\begin{definition}\index{Weighted integrative depth!restricted to a subset}
+Let $S \subseteq \mathcal{T}$ and let $G_{N,S}^w = (S, E_{N,S}, w)$ be the restricted weighted nescience dependency graph. The \emph{weighted integrative depth of $t$ restricted to $S$} is defined as
+\[
+D_{w,S}(t) \;=\; \sum_{A : (A,t) \in E_{N,S}} w(A,t),
+\qquad t \in S.
+\]
+\end{definition}
+
+This quantity measures the total reduction in nescience of $t$ obtained by integrating only those topics that lie within $S$.
+
+Since the absolute scale of $D_{w,S}(t)$ depends on the size and composition of $S$, it is often useful to normalize the weighted integrative depth within $S$ so that values lie in the unit interval and are comparable across subsets.
+
+\begin{definition}\index{Normalized weighted integrative depth on a subset}
+Let $S \subseteq \mathcal{T}$ be finite. The \emph{min--max normalized weighted integrative depth on $S$} is defined for each $t \in S$ by
+\[
+\overline{D}_{w,S}(t)
+\;=\;
+\frac{D_{w,S}(t) - \min_{u \in S} D_{w,S}(u)}
+{\max_{u \in S} D_{w,S}(u) - \min_{u \in S} D_{w,S}(u)}.
+\]
+\end{definition}
+
+\noindent
+In the degenerate case where $\max_{u \in S} D_{w,S}(u) = \min_{u \in S} D_{w,S}(u)$, all normalized values are set to $0$.
+
+\begin{proposition}
+Let $S \subseteq \mathcal{T}$ be finite. For any topic $t \in S$, the restricted weighted integrative depth satisfies $D_{w,S}(t) \ge 0$.
+\end{proposition}
+
+\begin{proof}
+By construction, each edge in $E_{N,S}$ has strictly positive weight $w(A,t)>0$. Therefore, $D_{w,S}(t)$ is a sum of non-negative terms, and hence non-negative.
+\end{proof}
+
+\begin{proposition}
+Let $S \subseteq \mathcal{T}$ be finite. For any topic $t \in S$, the normalized weighted integrative depth satisfies
+\[
+0 \le \overline{D}_{w,S}(t) \le 1.
+\]
+Moreover, $\overline{D}_{w,S}(t)=0$ for at least one topic in $S$, and $\overline{D}_{w,S}(t)=1$ for at least one topic in $S$, whenever the denominator is non-zero.
+\end{proposition}
+
+\begin{proof}
+If the denominator is non-zero, then $\min_{u \in S} D_{w,S}(u) \le D_{w,S}(t) \le \max_{u \in S} D_{w,S}(u)$, and the stated bounds follow immediately. The extreme values are attained by any minimizer and maximizer of $D_{w,S}$ on $S$.
+\end{proof}
+
+\begin{proposition}
+Let $S \subseteq \mathcal{T}$ be finite and let $a>0$ and $b\in \mathbb{R}$. Define a rescaled depth
+\[
+D'_{w,S}(t) = a\,D_{w,S}(t) + b,
+\qquad t \in S.
+\]
+If $\max_{u \in S} D_{w,S}(u) \neq \min_{u \in S} D_{w,S}(u)$, then the min--max normalized values are invariant under this transformation:
+\[
+\overline{D}'_{w,S}(t) = \overline{D}_{w,S}(t)
+\qquad \text{for all } t\in S.
+\]
+\end{proposition}
+
+\begin{proof}
+Substituting $D'_{w,S}(t)=aD_{w,S}(t)+b$ into the min--max normalization formula shows that the factor $a$ cancels and the shift $b$ subtracts out in numerator and denominator.
+\end{proof}
+
+\begin{proposition}
+Let $S \subseteq \mathcal{T}$ be finite and let $t \in S$. If new incoming edges pointing to $t$ are added to the restricted weighted graph $G_{N,S}^w$ (or if the weight of an existing incoming edge is increased), then $D_{w,S}(t)$ can only increase. Consequently, if the minimum and maximum of $D_{w,S}$ over $S$ remain unchanged, then $\overline{D}_{w,S}(t)$ can only increase.
+\end{proposition}
+
+\begin{proof}
+Each new incoming edge contributes an additional positive term to the sum defining $D_{w,S}(t)$, and increasing an existing incoming weight increases that sum. If $\min_{u \in S} D_{w,S}(u)$ and $\max_{u \in S} D_{w,S}(u)$ remain fixed, then the normalization is an increasing affine transformation of $D_{w,S}(t)$, and the same monotonicity carries over to $\overline{D}_{w,S}(t)$.
+\end{proof}
+
+The restricted quantity $D_{w,S}(t)$ measures the degree to which a topic $t$ can be clarified by integrating knowledge \emph{available within} the subset $S$. This is particularly important when $S$ represents the effective scope of a research team or organization: a topic may have large global weighted integrative depth, but small restricted weighted integrative depth if most of its supporting topics lie outside the subset.
+
+The normalized score $\overline{D}_{w,S}(t)$ provides a dimensionless ranking of topics within $S$, enabling comparisons across different subsets and supporting portfolio-level analyses in later chapters.
 
 %
 % Applicability
@@ -155,166 +194,125 @@ This property shows that weighted relevance is monotone with respect to topic in
 \section{Applicability}
 \label{sec:applicability}
 
-In this section, we introduce a new metric, applicability, which measures the potential of a research topic to serve as a tool for understanding or solving problems in other topics. The intuition is that some topics act as powerful enablers: mastering them allows progress to be made in many other areas.
-
-From a formal standpoint, we say that a topic $t_j$ can be applied to a topic $t_i$ if the conditional nescience of $t_i$ given $t_j$ is smaller than the unconditional nescience of $t_i$ (see Section \ref{sec:conditional_nescience}).
-
-Before defining applicability formally, we introduce the applicability graph, which encodes which topics have been successfully applied to others. This is a directed graph whose nodes are research topics, and where an arc from $t_j$ to $t_i$ indicates that $t_j$ has been successfully applied to explain or solve $t_i$.
-
-\begin{definition}\index{Applicability graph}
-\label{def:applicability-graph}
-We define the \emph{applicability graph}, denoted by $AG$, as the directed graph $AG = (\mathcal{T}, E)$, where $\mathcal{T}$ is the set of research topics, and $E \subseteq \{ (i,j) : i,j \in \mathcal{T} \}$ is the set of arcs. An arc $(i,j)$ belongs to $E$ if $N(t_i \mid t_j) < N(t_i)$, that is, knowing $t_j$ reduces the nescience of $t_i$. The weight of the arc $(i,j)$ is defined as $w_{ij} = N(t_i) - N(t_i \mid t_j)$, representing the reduction in nescience obtained by applying $t_j$ to $t_i$.
-\end{definition}
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[scale=1.2, every node/.style={circle, fill=black, inner sep=2pt}]
-
-% Nodes (topics)
-\node (t1) at (0,2) {};
-\node (t2) at (2,2.5) {};
-\node (t3) at (4,2) {};
-\node (t4) at (1,0) {};
-\node (t5) at (3,0) {};
-
-% Directed edges
-\draw[->] (t1) -- (t4);
-\draw[->] (t1) -- (t2);
-\draw[->] (t2) -- (t3);
-\draw[->] (t2) -- (t4);
-\draw[->] (t3) -- (t5);
-\draw[->] (t4) -- (t5);
-\draw[->] (t5) -- (t1);
-
-% Labels
-\node[draw=none, fill=none] at (4.8,2.5) {Topics};
-
-\end{tikzpicture}
-\caption{\label{fig:ApplicabilityGraph}Example of an applicability graph.}
-\end{figure}
-
-The applicability of a topic measures the total reduction in nescience it has produced when applied to other topics.
+In addition to nescience and integrative depth, it is useful to characterize the extent to which a research topic can serve as a tool for reducing ignorance in other topics. Some topics play a primarily enabling role: conditioning on them yields reductions in nescience across a broad range of other topics. The metric of \emph{applicability} is introduced to capture this structural property.
 
 \begin{definition}\index{Applicability}
-\label{def:applicability}
-Given the applicability graph $AG = (\mathcal{T}, E)$, the \emph{applicability} of a topic $t_i \in \mathcal{T}$, denoted $A(t_i)$, is defined as
+Let $NDG = (\mathcal{T}, E_N)$ be the nescience dependency graph. We define the \emph{applicability}\index{Applicability} of a research topic $t \in \mathcal{T}$ as its out-degree in $NDG$, that is,
 \[
-A(t_i) = \sum_{(i,j) \in E} w_{ij},
+A(t) = outdeg(t)
 \]
-where the sum is over all arcs leaving $t_i$.
 \end{definition}
 
-A topic with high applicability is a versatile tool, capable of contributing to the understanding of many other topics. Intuitively, if a tool has been successfully applied multiple times in the past, it is more likely to be useful for solving new problems in the future.
+Applicability measures the breadth of the nescience-reducing influence of a research topic. A topic with low applicability contributes to the reduction of nescience in few other topics, whereas a topic with high applicability admits many distinct directions along which it can be used to reduce ignorance elsewhere.
 
-As with relevance, applicability is monotone with respect to topic inclusion: combining topics can only increase their total applicability.
+\begin{example}
+As an example of a topic with high applicability, consider \emph{linear algebra}. Conditioning on linear algebra reduces the nescience of a wide range of topics, including numerical analysis, machine learning, quantum mechanics, signal processing, and control theory. In the nescience dependency graph, this corresponds to many outgoing arcs, and hence a high applicability.
 
-\begin{proposition}
-\label{prop:nondecreasing_applicability}
-Let $S \subseteq \mathcal{T}$ be a finite set of topics and $t' \in \mathcal{T} \setminus S$ an additional topic. Then
-\[
-A(S \cup \{t'\}) \geq A(S),
-\]
-where
-\[
-A(S) = \sum_{\substack{t \in S \\ (t,j) \in E}} w_{tj}.
-\]
-\end{proposition}
-\begin{proof}
-We can write
-\[
-A(S \cup \{t'\}) = A(S) + \sum_{(t',j) \in E} w_{t'j}.
-\]
-Since all weights $w_{ij}$ are non-negative,
-\[
-\sum_{(t',j) \in E} w_{t'j} \geq 0,
-\]
-which implies $A(S \cup \{t'\}) \geq A(S)$.
-\end{proof}
+By contrast, a narrowly scoped descriptive topic, such as the \emph{maximum recorded jump distance of a specific flea species}, may reduce the nescience of few or no other topics. Such a topic therefore exhibits low applicability.
+\end{example}
 
-This property ensures that adding more tools to a research effort can only maintain or increase its applicability.
+Applicability inherits several immediate properties from its graph-theoretic definition: \emph{i)} for any research topic $t \in \mathcal{T}$, the applicability $A(t)$ is a non-negative integer; \emph{ii)} A research topic $t$ has applicability $A(t) = 0$ if and only if conditioning on $t$ does not reduce the nescience of any other topic.
 
-To compare applicability values across topics on a standard scale, we define a normalized measure using min-max normalization.
+% Subsubsection: weighted applicability
+
+\subsubsection*{Weighted applicability}
+
+\begin{definition}\index{Weighted applicability}
+Let $G_N^w = (\mathcal{T}, E_N, w)$ be the weighted nescience dependency graph. The \emph{weighted applicability} of a research topic $t \in \mathcal{T}$ is defined as
+\[
+A_w(t) \;=\; \sum_{u : (t,u) \in E_N} w(t,u).
+\]
+\end{definition}
+
+Weighted applicability measures not only how many topics benefit from conditioning on $t$, but also the total magnitude of the nescience reductions it provides.
+
+% Subsubsection: Normalized applicability
+
+\subsubsection{Normalized applicability}
+
+To facilitate comparison across topics, applicability values can be normalized using min-max normalization.
 
 \begin{definition}\index{Normalized applicability}
-\label{def:normalized-applicability}
-Given the applicability graph $AG = (\mathcal{T}, E)$, we define the \emph{min–max normalized applicability} of a topic $t_i \in \mathcal{T}$, denoted $\tilde{A}(t_i)$, as
+Let $\mathcal{T}$ be finite. The \emph{min--max normalized applicability} of a topic $t \in \mathcal{T}$ is defined as
 \[
-\tilde{A}(t_i) =
-\frac{A(t_i) - \min_{t_k \in \mathcal{T}} A(t_k)}
-     {\max_{t_k \in \mathcal{T}} A(t_k) - \min_{t_k \in \mathcal{T}} A(t_k)}
+\overline{A}(t) \;=\;
+\frac{A(t) - \min_{u \in \mathcal{T}} A(u)}
+{\max_{u \in \mathcal{T}} A(u) - \min_{u \in \mathcal{T}} A(u)}.
 \]
-where $A(t_i)$ is the applicability of $t_i$ as in Definition \ref{def:applicability}.
 \end{definition}
 
-This normalization ensures that $\tilde{A}(t_i) \in [0,1]$, with $0$ assigned to the least applicable topic and $1$ to the most applicable. In the degenerate case where all topics have the same applicability, all normalized values are set to 0. Note that min-max normalization can be sensitive to extreme values: if a single topic has exceptionally high applicability, the normalized scores of all other topics will be compressed toward zero.
+\noindent
+In the degenerate case where all topics have the same applicability, all normalized values are set to $0$.
 
-In practice, computing the exact applicability graph is difficult because, for most topics, $N(t_i \mid t_j)$ is not known. We can approximate it by using a \emph{simplified applicability graph}, where arcs are unweighted and represent known instances of one topic being applied to another.
+An analogous normalization can be applied to weighted applicability by replacing $A(t)$ with $A_w(t)$.
 
-\begin{definition}\index{Simplified applicability graph}
-\label{def:simplified-applicability-graph}
-We define the \emph{simplified applicability graph}, denoted $SAG$, as the directed graph $SAG = (\mathcal{T}, E)$,
-where $\mathcal{T}$ is the set of research topics, and $E \subseteq \{ (i,j) : i,j \in \mathcal{T} \}$ contains an arc $(i,j)$ if topic $j$ has been used to understand topic $i$.
-\end{definition}
+Applicability and integrative depth capture complementary structural aspects of research topics within the nescience dependency graph. Integrative depth characterizes the plurality of directions along which the nescience of a topic can be reduced, whereas applicability characterizes the plurality of directions along which a topic can reduce the nescience of others.
 
-Using the simplified applicability graph, we can define an unweighted applicability measure.
-
-\begin{definition}\index{Simplified applicability}
-\label{def:simplified-applicability}
-Given $SAG = (\mathcal{T}, E)$, the \emph{simplified applicability} of a topic $t \in \mathcal{T}$, denoted $SA(t)$, is the outdegree of $t$ in $SAG$, $SA(t) = \mathrm{outdeg}(t)$.
-\end{definition}
-
-Finally, we normalize simplified applicability to the range $[0,1]$:
-
-\begin{definition}\index{Normalized simplified applicability}
-\label{def:normalized-simplified-applicability}
-Given the simplified applicability graph $SAG = (\mathcal{T}, E)$, we define the \emph{min–max normalized simplified applicability} of a topic $t_i \in \mathcal{T}$, denoted $SA_n(t_i)$, as
-\[
-SA_n(t_i) =
-\frac{SA(t_i) - \min_{t_k \in \mathcal{T}} SA(t_k)}
-     {\max_{t_k \in \mathcal{T}} SA(t_k) - \min_{t_k \in \mathcal{T}} SA(t_k)}
-\]
-where $SA(t_i)$ is the simplified applicability of $t_i$ as in Definition \ref{def:simplified-applicability}.
-\end{definition}
-
-This normalization ensures that $SA_n(t_i) \in [0,1]$, with $0$ assigned to the least applicable topic and $1$ to the most applicable. In the degenerate case where all topics have the same applicability, all normalized values are set to 0. As with the weighted case, min-max normalization may be sensitive to extreme values.
+In later chapters, these metrics will be used jointly to distinguish between research topics that primarily function as tools and those that primarily function as problems, and to guide the construction of research portfolios that balance enabling power with epistemic challenge.
 
 %
 % Section: Maturity
 %
 
 \section{Maturity}
-\label{sec:intro_maturity}
+\label{sec:maturity}
 
-When selecting topics to use as tools, we are primarily interested in those that are well understood. Relying on background knowledge that is poorly understood is generally unwise, even if it appears to significantly reduce the conditional nescience of our main problem.
+Given an unknown topic $A$, a natural strategy for reducing its nescience is to rely on background topics $B$ such that conditioning on $B$ yields a reduction in nescience, that is,
+\[
+N(A \mid B) < N(A).
+\]
+However, not all background topics satisfying this condition are equally suitable to be used as tools. In particular, the usefulness of a background topic depends not only on how much it reduces the nescience of $A$, but also on how well understood the background topic itself is.
 
-We therefore introduce the concept of the maturity of a topic, which measures the degree to which a topic is understood. Maturity is defined as the inverse of the nescience of the topic: the lower the nescience, the higher the maturity.
+To capture this trade-off, we adopt the following guiding principle: a background topic $B$ is considered preferable for reducing the nescience of $A$ when the combined unresolved nescience associated with using $B$ is smaller than the original nescience of $A$. Formally, this corresponds to requiring that
+\[
+N(A \mid B) + N(B) < N(A).
+\]
+This condition expresses that the reduction in nescience obtained by conditioning on $B$ is large enough to compensate for the remaining nescience of $B$ itself.
+
+This principle is particularly relevant in situations where errors propagate strongly, commitments are irreversible, or independent means of verification are unavailable. In such contexts, relying on background knowledge that is itself poorly understood may introduce additional uncertainty that outweighs the apparent reduction in nescience of the primary topic.
+
+At the same time, the condition above does not exclude the use of poorly understood background topics in all circumstances. In particular, reliance on such topics may be justified when no better-understood alternative is known to yield a reduction in the nescience of the target topic, or when errors are inexpensive and results can be independently verified. In these situations, even a background topic with high nescience may be used as a provisional tool, provided that it contributes to lowering the nescience of the primary problem.
+
+\begin{example}
+\label{ex:llm_maturity}
+Large language models illustrate this situation. Conditioning on such models often produces substantial reductions in the nescience of a wide range of tasks, including text generation, code synthesis, and exploratory problem solving. Although these models are themselves only partially understood, they are typically employed in settings where alternative well-understood tools are unavailable, errors are inexpensive, and outputs can be checked or corrected by external means. Under these conditions, reliance on such models can be epistemically productive despite their limited maturity.
+\end{example}
+
+To formalize the notion of how well a topic is understood, we introduce the concept of \emph{maturity}. Maturity is defined as a simple reparameterization of nescience, emphasizing its inverse interpretation.
 
 \begin{definition}\index{Maturity}
 \label{def:maturity}
 Let $t \in \mathcal{T}$ be a topic, and let $N(t)$ denote its nescience.
-The \emph{maturity} of $t$, denoted $M(t)$, is defined as $M(t) = \frac{1}{N(t)}$.
+The \emph{maturity} of $t$, denoted $M(t)$, is defined as
+\[
+M(t) = 1 - N(t).
+\]
 \end{definition}
 
-A higher maturity value indicates that the topic is better understood, and thus more suitable to be used as a tool in solving other problems. Conversely, highly immature topics (low $M(t)$) should be avoided as tools, since applying them would risk transferring our lack of understanding from one domain to another.
+A higher maturity value indicates that a topic is better understood and therefore more suitable to be used as a background tool for reducing the nescience of other topics. Conversely, topics with low maturity should be used with caution, since their own unresolved nescience contributes to the total uncertainty associated with their application.
 
 \begin{example}
-Linear regression is a highly mature topic, since its nescience is very small, and so, its maturity is large.
+\label{ex:linear_regression_maturity}
+Linear regression provides an example of a highly mature research topic. Its theoretical assumptions, limitations, and behavior are well characterized, resulting in a low nescience and a correspondingly high maturity. When used as background knowledge, linear regression typically satisfies the condition $N(A \mid B) + N(B) < N(A)$ for a wide range of applied problems, making it a reliable tool in settings where stability and interpretability are important.
 \end{example}
 
-To compare maturity values across topics on a standard scale, we define a min-max normalized version. This transformation assigns $0$ to the least mature topic, $1$ to the most mature, and scales all others proportionally.
+Maturity is an intrinsic property of a research topic, reflecting the extent to which its representations are complete and reliable. It is independent of the topic’s applicability or integrative depth, and should therefore not be interpreted as a measure of usefulness or importance. Rather, maturity provides a measure of epistemic stability: mature topics tend to behave predictably when used as background knowledge, whereas immature topics introduce additional uncertainty that must be managed explicitly.
+
+In practice, when comparing maturity values across the topics of a given research area, it is often convenient to work with a normalized scale.
 
 \begin{definition}\index{Normalized maturity}
 \label{def:normalized-maturity}
-Given the set of topics $\mathcal{T}$, the \emph{min-max normalized maturity} of a topic $t \in \mathcal{T}$, denoted $\tilde{M}(t)$, is
+Given a finite set of topics $\mathcal{T}$, the \emph{min--max normalized maturity} of a topic $t \in \mathcal{T}$, denoted $\tilde{M}(t)$, is defined as
 \[
 \tilde{M}(t) =
 \frac{M(t) - \min_{t' \in \mathcal{T}} M(t')}
-     {\max_{t' \in \mathcal{T}} M(t') - \min_{t' \in \mathcal{T}} M(t')}
+     {\max_{t' \in \mathcal{T}} M(t') - \min_{t' \in \mathcal{T}} M(t')},
 \]
-where $M(t)$ is the maturity of $t$ as in Definition \ref{def:maturity}.
+where $M(t)$ is the maturity of $t$ as in Definition~\ref{def:maturity}.
 \end{definition}
 
-Min-max normalization ensures $\tilde{M}(t) \in [0,1]$, facilitating direct comparison between topics. However, as with other metrics, extreme outliers in maturity can compress the normalized values of the remaining topics toward zero.
+\noindent
+In the degenerate case where all topics have the same maturity, all normalized values are set to $0$. Normalized maturity values will be used in later chapters to guide the selection of background knowledge and to balance nescience reduction against the reliability of the tools employed.
 
 %
 % Section: Interestingness
@@ -323,145 +321,252 @@ Min-max normalization ensures $\tilde{M}(t) \in [0,1]$, facilitating direct comp
 \section{Interestingness}
 \label{sec:interestingness-metrics}
 
-We measure the interest of a topic in two complementary ways: as a tool, based on its usefulness in solving other problems; and as a problem, by studying its intrinsic research value.
+In many scientific and practical contexts it is necessary to compare research topics and to decide which ones are more promising to pursue, either as tools for solving other problems or as problems worthy of investigation in their own right. In this section, we introduce the notion of \emph{interestingness} as a decision-oriented concept derived from the metrics previously introduced.
 
-The interestingness of a topic as a tool reflects how likely it is that the topic can be successfully applied to solve new problems. This likelihood depends on two key factors: maturity, or how well the topic is understood; and applicability, how widely it has been applied to other problems. We combine normalized measures of these two quantities into a single score:
+The theory of nescience naturally induces several dimensions along which topics may be evaluated, but it does not prescribe a unique way of aggregating them into a single scalar score. As a result, interestingness should be understood as arising from a multi-objective optimization problem (see Section \ref{sec:multiobjective_optimization}), together with a choice of decision rule.
 
-\begin{definition}\index{Interestingness of a topic as a tool}
-We define the \emph{interestingness as a tool} of $t$ as
+A research topic may be considered interesting as a tool when it can be reliably used to reduce the nescience of other topics. Two theory-derived quantities are relevant in this context: maturity, which measures how well the topic itself is understood and applicability, which measures how widely the topic has been successfully used to reduce nescience in other topics.
+
+\begin{definition}
+We define the \emph{interestingness as a tool}\index{Interestingness as a tool} of a topic $t$ as the multi-objective optimization problem:
 \[
-IT(t)=\frac{\sqrt{\,\tilde{M}(t)^2+\tilde{A}(t)^2\,}}{\sqrt{2}}
+\text{maximize } \bigl( M(t), A(t) \bigr),
 \]
+where $M(t)$ denotes the maturity of the topic $t$ and $A(t)$ its applicability.
 \end{definition}
 
-A topic will have a high $IT_n(t)$ value when it is both well understood ($\tilde{M}(t)$ close to $1$) and widely applicable ($\tilde{A}(t)$ close to $1$). In other words, the most interesting tools are those that combine deep understanding with broad utility in solving other problems.
+This formulation induces a partial order on topics: a topic $t_1$ dominates another topic $t_2$ if $M(t_1) \ge M(t_2)$ and $A(t_1) \ge A(t_2)$, with at least one inequality strict. The set of non-dominated topics forms the pareto frontier\index{Pareto frontier} of interesting tools.
 
-\begin{example}
-The Pythagorean theorem\index{Pythagorean theorem} (in a right-angled triangle, the square of the length of the hypotenuse is equal to the sum of the squares of the other two sides) is undoubtedly one of the most widely used and applied theorems in various fields and practical situations, including but not limited to: engineering (calculating distances, angles, and forces in structures and mechanical systems), architecture (determining lengths and angles in building design and construction projects), land surveying (measuring distances and calculating areas of land parcels), physics (analyzing problems in mechanics, optics, and electromagnetism), computer graphics and game development (calculating distances and angles in 2D and 3D spaces) or trigonometry(serving as a foundation for the study of trigonometric functions and their applications).
-\end{example}
+A research topic may also be interesting as a problem, independently of its usefulness as a tool. In this case, two different theory-internal quantities play a central role: nescience, which measures the extent to which the topic is not yet understood, and integrative depth, which measures the number of distinct background topics whose knowledge reduces the nescience of the topic. Together, these quantities characterize both the magnitude of unresolved ignorance and the structural richness of the ways in which that ignorance can be reduced. 
 
-Some topics may have little utility as tools but are nonetheless highly valuable as research problems in their own right. To capture this idea, we define the interestingness of a topic as a problem, which reflects how compelling it is to investigate the topic itself. This depends on two main factors: relevance, or the degree to which the topic impacts people's lives; and nescience, as a measure of the extent to which the topic is not yet well understood.
-
-\begin{definition}\index{Interestingness of a topic as a problem}
-The \emph{interestingness as a problem} of $t$ is
+\begin{definition}
+We define the \emph{interestingness as a problem}\index{Interestingness as a problem} of a topic $t$ as the multi-objective optimization problem
 \[
-IP(t)=\frac{\sqrt{\,\tilde{N}(t)^2+\bar{R}(t)^2\,}}{\sqrt{2}}
+\text{maximize } \bigl( N(t), D(t) \bigr),
 \]
+where $N(t)$ is the nescience of topic $t$ and $D(t)$ its integrative depth.
 \end{definition}
 
-Intuitively, a topic is interesting as a problem worth investigating if it has a large relevance (it has high impact in people's life) and a large nescience (it is not very well understood). In this sense, we are borrowing ideas from Popper's falsificationism: the more risky is a conjecture, the higher the advance achieved in science given its confirmation.
+As in the case of tools, this formulation induces a partial order. Topics with high nescience but low integrative depth correspond to forms of ignorance that admit few known avenues for progress, whereas topics with both high nescience and high integrative depth admit many distinct nescience-reducing directions and are structurally richer as research problems.
 
-\begin{example}
-World War I is a very relevant topic, because it had a huge impact on many people's life, and also it is not very well understood topic, since it takes hundreds of pages to explain its causes, and there is no general agreement among the specialists. So, according to our definition, it is a very interesting research problem.
-\end{example}
+In practical applications it is often necessary to produce a total ordering of topics. This requires the introduction of a decision maker, that is, a scalarization of the underlying multi-objective problem.
+
+One possible choice is a balanced \emph{Euclidean scalarization}\index{Euclidean decision rule}. For example, the interestingness of a topic as a tool may be defined as
+\[
+IT(t) = \frac{\sqrt{\tilde{M}(t)^2 + \tilde{A}(t)^2}}{\sqrt{2}},
+\]
+where $\tilde{M}(t)$ and $\tilde{A}(t)$ are normalized versions of maturity and applicability. Analogously, interestingness as a problem may be defined as
+\[
+IP(t) = \frac{\sqrt{\tilde{N}(t)^2 + \tilde{D}(t)^2}}{\sqrt{2}},
+\]
+where $\tilde{N}(t)$ and $\tilde{D}(t)$ denote normalized nescience and integrative depth.
+
+These metrics correspond to a particular decision method that favors balanced topics over extreme ones. Other decision makers may be more appropriate in different contexts. For instance, a \emph{minimum-based} decision rule\index{Minimum decisions rule}, $\min\{\tilde{M}(t), \tilde{A}(t)\}$, emphasizes robustness by penalizing weaknesses in any dimension, meanwhile a \emph{weighted sum}\index{Weighted sum decision rule} allows explicit prioritization of maturity versus applicability, or nescience versus integrative depth, according to external constraints or strategic goals.
+
+Such decision makers do not alter the underlying theory, but provide practical means of selecting and ranking topics for specific purposes.
 
 %
 % Section: Interesting Questions
 %
 
 \section{Interesting Questions}
-\label{sec:interestingness-metrics}
+\label{sec:intro_interesting_questions}
 
-In the theory of nescience we distinguish two kinds of unknowns, the known unknown and the unknown unknown. By known unknown we mean all those already known problems for which we do not know their solutions, for example, nobody knows how to cure diabetes, but we know what diabetes is and we are aware that nobody knows how to cure it. By unknown unknown we mean the collection of unknown problems, that is, all those problems that have not been found yet. In this section we focus on tools to takcle known unknown.
+In the theory of nescience we distinguish between known unknowns\index{Known unknowns}, that is, problems whose existence is recognized but whose solutions are not known, and unknown unknowns\index{Unknown unknowns}, corresponding to problems that have not yet been identified. In this section we focus on the former, and introduce a formal notion of \emph{interesting questions} aimed at supporting the systematic exploration of known unknowns.
 
-In our methodology, an interesting question emerges from the combination of two pre-existing topics. An interesting question is an ordered pair of topics $t$ and $p$, where $t$ has high interestingness as a tool, and $p$ has high interestingness as a problem.
+A central observation underlying this approach is that new research questions often arise when existing knowledge is brought to bear on unresolved problems. In the theory of nescience, such situations are naturally captured by the \emph{nescience dependency graph}, which encodes when knowledge of one topic reduces the nescience of another.
 
 \begin{definition}\index{Question}
-Given $t, p\in\mathcal{T}$, we call \emph{question}\index{Question} the ordered pair $Q_{t\to p}=(t,p)$.
+Let $G_N = (\mathcal{T}, E_N)$ denote the nescience dependency graph. We define \emph{interesting question}\index{Interesting question} as an ordered pair of topics $Q_{t \to p} = (t,p)$ such that $(t,p) \in E_N$.
 \end{definition}
 
-Given a pair of a topics in $t_1, t_2 \in \mathcal{T}$, the question can be framed as "can we apply the tool described by topic $t_1$ to solve the problem described by topic $t_2$?".
+\noindent
+In other words, a question exists only when the theory predicts that the topic $t$ can be meaningfully used to reduce the nescience of the topic $p$. The directed nature of the dependency graph makes the asymmetry between tools and problems explicit: in general, $Q_{t \to p}$ and $Q_{p \to t}$ represent distinct questions, and only one of them may be well defined.
 
-The most interesting questions arise when topic $t_1$ exhibits high interestingness as a tool, and topic $t_2$ exhibits high interestingness as a problem. We define the interestingness of a question using the Euclidean distance, considering the interestingness of topics $t_1$ and $t_2$ as points in a two-dimensional space. The coordinates of these points are $(A_{t_1}, M_{t_1})$ for the tool and $(R_{t_2}, N_{t_2})$ for the problem. The distance between these points reflects how promising the combination of $t_1$ as a tool and $t_2$ as a problem is.
+Operationally, the question $Q_{t \to p}$ can be interpreted as asking whether, and how, the knowledge associated with topic $t$ can be used to make progress on the unresolved aspects of topic $p$.
 
-\begin{definition}\index{Interestingness of a question}
-We define the interestingness of $Q_{t\to p}$ as
+The nescience dependency graph not only specifies the existence of a question, but also provides a quantitative measure of its potential impact.
+
+\begin{definition}\index{Pair-specific nescience reduction}
+Let $Q_{t \to p}$ be a question. The \emph{pair-specific nescience reduction} associated with $Q_{t \to p}$ is defined as
 \[
-IQ(t\to p)=\frac{\sqrt{\,IT(t)^2+IP(p)^2\,}}{\sqrt{2}}
+\Delta N(p;t) = N(p) - N(p \mid t),
 \]
+which is strictly positive by definition of the dependency graph.
 \end{definition}
 
-Using the Euclidean distance in this way provides a clear geometric interpretation of a question's interestingness in the two-dimensional interestingness space. The greater the magnitude of the resulting vector, the more interesting the question is likely to be.
+\noindent
+The quantity $\Delta N(p;t)$ measures how much of the unresolved ignorance about $p$ can be reduced by assuming the knowledge background associated with $t$. Unlike topic-level metrics, this quantity is intrinsically relational and depends on the specific pairing of tool and problem.
 
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[scale=1.5, axis/.style={thick}, vector/.style={thick},
-                    point/.style={circle, inner sep=1pt, fill, color=black}
-]
+The interestingness of a question cannot, in general, be reduced to a single scalar quantity without introducing additional assumptions. Instead, the theory of nescience naturally induces a multi-objective evaluation of questions based on theory-derived quantities.
 
-% Coordinate axes
-\draw[axis] (-0.5, 0) -- (3, 0) node[right] {IT};
-\draw[axis] (0, -0.5) -- (0, 3) node[above] {IP};
+Given a question $Q_{t \to p}$, the following dimensions are relevant:
 
-% Points for t1 and t2
-\coordinate (t1) at (1, 2);
-\coordinate (t2) at (2, 1);
-\coordinate (iq) at (3, 3);
+\begin{itemize}
+\item $\Delta N(p;t)$, the pair-specific nescience reduction;
+\item $M(t)$, the maturity of the tool topic $t$;
+\item $A(t)$, the applicability of the tool topic $t$;
+\item $N(p)$, the nescience of the problem topic $p$;
+\item $D(p)$, the integrative depth of the problem topic $p$.
+\end{itemize}
 
-% Vectors for t1, t2, and the sum
-\draw[vector] (0, 0) -- node[pos=0.5, above] {$t_1$} (t1);
-\draw[vector] (0, 0) -- node[pos=0.5, below] {$t_2$} (t2);
-\draw[vector] (0, 0) -- node[pos=0.5, above] {Question} (iq);
+Together, these quantities define the objective vector
+\[
+\Phi(t,p) = \bigl( \Delta N(p;t),\; M(t),\; A(t),\; N(p),\; D(p) \bigr).
+\]
 
-% Points and labels for t1 and t2
-\node[point, label={left:$A_{t_1}, M_{t_1}$}] at (t1) {};
-\node[point, label={right:$R_{t_2}, N_{t_2}$}] at (t2) {};
-
-\end{tikzpicture}
-\caption{\label{fig:InterestingQuestion}Example of an interesting quetion.}
-\end{figure}
-
-In practice, we must calculate all possible combinations of topics with high interestingness as tools and those with high interestingness as problems. We then select the combinations with the highest interestingness as questions. Naturally, most questions generated using this approach will be meaningless, much like those arising during brainstorming sessions when researchers attempt to identify new tools for tackling difficult problems.
-
-This methodology can be applied in other scenarios as well. For instance, a researcher familiar with problem $p$ might be interested in finding applicable tools to solve it. Similarly, a researcher specializing in tool $t$ may be interested in discovering open problems where his expertise can be applied.
-
-The above procedure can be easily generalized to encompass multiple tools and possibly multiple problems. This leads to the application of two tools to a given problem ($ t_1 + t_2 \rightarrow p$), the application of a single tool to the combination of two problems ($t \rightarrow p_1 + p_2$), and so on. The exact meaning of these tool and problem combinations depends on the topics themselves.
-
-An interesting question is intradisciplinary if it combines two topics that are studied in the framework of the same research area (e.g., computer science). An interesting question is interdisciplinary if it combines two topics of different research areas (e.g., computer science and philosophy). In principle, the most innovative questions would be interdisciplinary questions, because the probability that somebody has thought about them is lower, since it requires specialists in both research areas working together to come up with that particular question.
-
-\begin{definition}\index{Intradisciplinary question}\index{Interdisciplinary question}
-Let $\mathcal{A}\subseteq\mathcal{T}$ be a research area. The question $Q_{t\to p}$ is \emph{intradisciplinary}\index{Intradisciplinary question} if $t,p\in\mathcal{A}$; otherwise it is \emph{interdisciplinary}\index{Interdisciplinary question}.
+\begin{definition}\index{Interesting question}
+A question $Q_{t \to p}$ is said to be \emph{at least as interesting} as another question $Q_{t' \to p'}$ if
+\[
+\Phi(t,p) \ge \Phi(t',p')
+\]
+componentwise, with at least one inequality being strict. The set of \emph{interesting questions} is defined as the Pareto frontier of questions under this partial order.
 \end{definition}
+
+\noindent
+This definition does not impose a total ordering on questions, and naturally allows for the existence of incomparable questions corresponding to different trade-offs between nescience reduction, reliability of tools, and structural richness of problems.
+
+In practical applications, such as research planning, portfolio construction, or automated recommendation systems, it is often necessary to rank questions or to select a subset of them. This requires the introduction of a \emph{decision maker}, understood as a scalarization of the underlying multi-objective problem.
+
+Several decision makers are particularly natural in the present framework:
+
+\begin{itemize}
+\item \textbf{Risk-averse decision maker.} Select questions that maximize $\Delta N(p;t)$ subject to a lower bound on tool maturity, $M(t) \ge \tau$, for some threshold $\tau$.
+\item \textbf{Exploratory decision maker.} Maximize $\Delta N(p;t) \cdot N(p)$, favoring questions that yield large reductions on highly unresolved problems.
+\item \textbf{Scarcity-aware decision maker.} Favor questions associated with problems of low integrative depth $D(p)$, reflecting situations where few alternative nescience-reducing paths are available.
+\item \textbf{Balanced scalarization.} Combine normalized versions of the components of $\Phi(t,p)$ using a weighted or Euclidean aggregation, yielding a total ordering suitable for visualization or large-scale comparison.
+\end{itemize}
+
+\noindent
+The choice of decision maker depends on contextual factors such as acceptable risk, available resources, and strategic goals. Importantly, these choices do not alter the underlying theory, but merely provide different ways of navigating the space of interesting questions it defines.
+
+\medskip
+\noindent
+In summary, interesting questions are defined in the theory of nescience as graph-grounded objects corresponding to nescience-reducing relationships between topics. Their interestingness emerges from a multi-objective structure inherent in the theory, while scalar rankings arise only at the level of decision making and application.
 
 \begin{example}
-We could combine the topics with high interestingness as tools found in the area of "computer science" with those topics with high interestingness as problems found in the area of "biochemistry" in order to find new interesting interdisciplinary questions. Some examples of the kind of questions we can find with this approach include: "can we use regular expressions to identify DNA genes?" or "can we use a recursive algorithm to characterize proteins tertiary structure?"
+\label{ex:interesting_questions_example_cancer}
+
+We illustrate the proposed framework with a simplified example drawn from cancer research. Consider the following topics in the set $\mathcal{T}$:
+
+\begin{itemize}
+\item $p =$ \emph{Cancer progression}, understood as the set of mechanisms by which cancer develops, invades tissue, and metastasizes.
+\item $t_1 =$ \emph{Genomics}, including gene expression profiling and mutation analysis.
+\item $t_2 =$ \emph{Statistical learning}, encompassing classification, regression, and model selection techniques.
+\item $t_3 =$ \emph{Cell signaling pathways}, describing biochemical interaction networks inside cells.
+\item $t_4 =$ \emph{Immunotherapy}, covering immune-based treatment strategies.
+\end{itemize}
+
+Assume that empirical and theoretical work has established the following nescience-reducing relationships:
+\[
+N(p \mid t_i) < N(p) \quad \text{for } i \in \{1,2,3,4\}.
+\]
+These relationships define arcs $(t_i,p)$ in the nescience dependency graph $G_N$. Each arc corresponds to a question $Q_{t_i \to p}$ asking whether the knowledge associated with $t_i$ can be used to reduce ignorance about cancer progression.
+
+Suppose further that the estimated pair-specific nescience reductions satisfy
+\[
+\Delta N(p;t_1) > \Delta N(p;t_2) > \Delta N(p;t_3) > \Delta N(p;t_4),
+\]
+reflecting the fact that genomic data currently explains a larger fraction of observed variability in cancer progression than the other topics.
+
+At the same time, the maturity values of the tool topics may differ substantially. For instance, statistical learning may have high maturity due to well-established theory and methods, whereas immunotherapy may exhibit lower maturity due to incomplete understanding of immune response dynamics. Integrative depth $D(p)$ is high, since multiple independent background topics reduce the nescience of $p$.
+
+Within this framework, the set of questions
+\[
+\{ Q_{t_1 \to p}, Q_{t_2 \to p}, Q_{t_3 \to p}, Q_{t_4 \to p} \}
+\]
+forms the candidate space of graph-grounded questions. Their interestingness is evaluated by comparing the corresponding objective vectors
+\[
+\Phi(t_i,p) = \bigl( \Delta N(p;t_i),\, M(t_i),\, A(t_i),\, N(p),\, D(p) \bigr).
+\]
+
+Different decision makers may select different questions from this set. A risk-averse decision maker may favor $Q_{t_2 \to p}$ due to the high maturity of statistical learning, even if its nescience reduction is not maximal. An exploratory decision maker may prioritize $Q_{t_1 \to p}$, which yields the largest reduction in nescience. A scarcity-aware decision maker would note that $D(p)$ is high, indicating that cancer progression admits many independent lines of inquiry, and may therefore prioritize questions that explore underrepresented connections, such as $Q_{t_4 \to p}$.
 \end{example}
 
-The most innovative questions tend to be interdisciplinary, as they have a lower likelihood of having been considered previously. This is because they require collaboration between specialists from different research areas. 
+This example illustrates how the theory of nescience supports the systematic generation and evaluation of research questions. Questions are not arbitrary combinations of topics, but graph-grounded objects whose interestingness emerges from the interplay between pair-specific nescience reduction, the maturity of available tools, and the structural richness of the underlying problem.
 
 %
 % Section: New Research Topics
 %
+
+
 \section{New Topics}
-\label{sec:new-topics}
+\label{sec:New_Research_Topics}
 
-The area composed by the unknown unknown problems is a highly interesting one, since it contains those research topics that will be addressed in the future. One of the main goals of this book is to help scientists discover the topics that lay in this unknown unknown area, since that would bring to the present the research problems of the future. In this section we focus on how to indentify the topics hidden in the unknown unknown area.
+The region of \emph{unknown unknowns} plays a central role in scientific progress, as it contains those research topics that have not yet been conceptualized or identified. One of the main objectives of the theory of nescience is to provide principled tools for exploring this region and for anticipating the emergence of future research topics. In this section we introduce a formal framework for the identification of \emph{new topics}, understood as topics that lie beyond the current knowledge frontier.
 
-\begin{definition}\index{New topic}
-Given $t_1,t_2\in T'$, a (candidate) \emph{new topic} from their combination is the unordered pair
+A guiding intuition, illustrated in Figure~\ref{fig:NewTopics}, is that the probability of crossing the knowledge frontier through the combination of existing topics is higher when the topics involved are themselves poorly understood. Well-understood topics are typically embedded in dense and highly explored neighborhoods of the representation space, so their combinations tend to remain within the domain of known knowledge. In contrast, topics with high nescience are associated with sparser and less structured neighborhoods, making combinations involving them more likely to reach unexplored regions.
+
+\subsection{Candidate Topic Combinations}
+
+Let $\mathcal{T}$ denote the set of existing research topics, and let $N(t)$ denote the nescience of topic $t$, with $\tilde{N}(t)$ its normalized version. Let $D(t)$ denote the (normalized) integrative depth of $t$, as introduced in Section~\ref{sec:integrative_depth}.
+
+\begin{definition}\index{Candidate topic combination}
+Given two distinct topics $t_1,t_2 \in \mathcal{T}$, a \emph{candidate topic combination} is the unordered pair
 \[
-S_{\{t_1,t_2\}}=\{t_1,t_2\}.
+C_{\{t_1,t_2\}} = \{t_1,t_2\}.
 \]
-Associate $v(t)=(\tilde{N}(t),\bar{R}(t))$ and define the combination vector $v^\oplus(t_1,t_2)=v(t_1)+v(t_2)$.
 \end{definition}
 
-The exact meaning of the new topic that results as the combination of topics $t_{1}$ and $t_{2}$ is left to the creative interpretation of the researcher.
+\noindent
+A candidate topic combination does not, by itself, constitute a new topic. Rather, it represents a potential source from which a new topic may emerge, depending on whether the combination leads beyond the knowledge frontier.
 
-\begin{definition}\index{Interestingness of a new topic}
-We define the interestingness of $S_{\{t_1,t_2\}}$ as
+\subsection{Multi-Objective Characterization of New Topics}
+
+The emergence of a new topic from a candidate combination cannot be adequately captured by a single scalar quantity. Instead, it is naturally described as a multi-objective problem involving theory-internal quantities.
+
+Given a candidate combination $C_{\{t_1,t_2\}}$, we associate the following objective vector:
 \[
-IS(\{t_1,t_2\})=\frac{\sqrt{\,IT(t_1)^2+IT(t_2)^2\,}}{\sqrt{2}}
+\Psi(t_1,t_2)
+=
+\bigl(
+\tilde{N}(t_1),\;
+\tilde{N}(t_2),\;
+D(t_1),\;
+D(t_2)
+\bigr).
 \]
 
+Each component has a clear interpretation:
+\begin{itemize}
+\item $\tilde{N}(t_1), \tilde{N}(t_2)$ measure how close the topics are to the knowledge frontier;
+\item $D(t_1), D(t_2)$ measure the structural richness of the topics, in terms of the number of distinct ways background knowledge can reduce their nescience.
+\end{itemize}
+
+High values of $\tilde{N}$ indicate proximity to the frontier, while high values of $D$ indicate that the topic participates in many independent nescience-reducing relations. Combinations in which both topics exhibit high nescience and substantial integrative depth are therefore structurally well positioned to give rise to new topics beyond the frontier.
+
+\begin{definition}\index{Potential new topic}
+A candidate combination $C_{\{t_1,t_2\}}$ is said to have \emph{high potential as a new topic} if it lies on the Pareto frontier of the set
+\[
+\{ \Psi(t_i,t_j) : t_i,t_j \in \mathcal{T},\ i \neq j \}
+\]
+under the componentwise partial order.
 \end{definition}
 
-In practice, what we have to do is to compute all possible combination of those topics with very large interestingness as problems $IP_{t}$ with themselves, and select the combinations with higher $IS$. Of course, some of the combinations generated would be totally meaningless. Advanced techniques from the area of natural language processing or machine learning could be used to try filter out those nonsense combinations.
+\noindent
+This definition avoids imposing an arbitrary total ordering on candidate combinations and reflects the fact that different combinations may represent different trade-offs between proximity to the frontier and structural richness.
+
+\subsection{Decision Makers and Practical Selection}
+
+In practical applications, such as research planning or automated topic discovery systems, it is often necessary to select or rank candidate combinations. This requires introducing a \emph{decision maker}, understood as a scalarization of the multi-objective problem above.
+
+Examples of decision makers include:
+\begin{itemize}
+\item \textbf{Frontier-seeking decision maker}, which prioritizes combinations maximizing $\tilde{N}(t_1)+\tilde{N}(t_2)$;
+\item \textbf{Structure-aware decision maker}, which prioritizes combinations with high $D(t_1)+D(t_2)$, favoring structurally rich topics;
+\item \textbf{Balanced decision maker}, which applies a weighted aggregation of the components of $\Psi(t_1,t_2)$.
+\end{itemize}
+
+The choice of decision maker depends on contextual factors and does not alter the underlying theoretical framework.
+
+\subsection{Intradisciplinary and Interdisciplinary Combinations}
 
 \begin{definition}\index{Intradisciplinary new topic}\index{Interdisciplinary new topic}
-Let $\mathcal{A}\subseteq\mathcal{T}$. The new topic $S_{\{t_1,t_2\}}$ is \emph{intradisciplinary} if $t_1,t_2\in\mathcal{A}$; otherwise it is \emph{interdisciplinary}.
+Let $\mathcal{A} \subseteq \mathcal{T}$ be a research area. A candidate combination $C_{\{t_1,t_2\}}$ is said to be \emph{intradisciplinary} if $t_1,t_2 \in \mathcal{A}$; otherwise, it is \emph{interdisciplinary}.
 \end{definition}
 
-Again, the most innovative new topics would be by the combination of interdisciplinary topics, because the probability that somebody has already though about them is lower.
+\noindent
+Interdisciplinary combinations often correspond to candidate combinations whose components lie in distant regions of the nescience dependency graph. Such combinations are therefore more likely to explore underconnected regions of the representation space and to contribute to the expansion of the knowledge frontier, although this is not guaranteed in general.
 
 %
 % References

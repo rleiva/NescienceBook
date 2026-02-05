@@ -30,56 +30,90 @@ In the last part of the chapter, we will apply the set of metrics defined for th
 \section{Relevance}
 \label{sec:relevance_in_practice}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.6\textwidth]{RelevanceTopics.png}
+\caption{Relevance of Topics.}
+\label{figure:relevance_all_topics}
+\end{figure}
+
 In Definition \ref{def:relevance} we introduced the concept of the relevance of a research topic as a measure of the impact that this topic could have on people's lives. The idea was that the higher the relevance, the greater its potential as a source of interesting questions, since it would address problems that affect many people. Relevance was defined as the degree of the research topic in the relevance graph, a bipartite graph connecting topics and people (see Definition \ref{def:relevance-graph}). Of course, this relevance graph is a mathematical abstraction that is very difficult to compute in practice, since we do not have information about how people are affected by each topic.
 
-As an approximation of the relevance of a topic, we have used the number of links (URLs) from external web pages on the Internet that point to the topic's page on Wikipedia. The rationale is that the more relevant a topic is, the more people will discuss it on the Internet, and the more URLs will link to its Wikipedia page, since Wikipedia is a well-known source of information that many people cite. In fact, we are not interested in knowing the absolute relevance of research topics; what we need is a measure of \emph{relative} relevance between different topics. An underestimate of the relevance is not harmful as long as this underestimation is distributed uniformly across all topics. Further research is needed to understand how accurately this URL-counting procedure approximates the theoretical concept of relevance. 
-
-Another difficulty is that we do not know the exact number of links to a web page on the Internet. Therefore, we apply a second approximation. In this case, the number of links is estimated using Google's \texttt{link:} search operator. This operator lists the links that Googlebot has discovered during its crawling and indexing process. For example, the number of external pages that link to the \emph{Computer Science} article on Wikipedia can be queried as follows:
-
-\smallskip
-
-\texttt{
-link:http://en.wikipedia.org/wiki/Computer\_science
-}
-
-\smallskip
-
-As Google acknowledges on its website, not all links to a page may be listed. The number of reported links may vary due to redirections, crawling errors, and other factors. How these errors affect the accuracy of link counting is not clear, since the details of Google's crawling algorithm are not public.
-
-Table \ref{tab:Relevance-of-Topics} lists the ten most relevant topics according to this metric. For each topic, it shows its raw relevance (number of external links) and its normalized value. The list includes basic concepts (\emph{binary number}, \emph{floating point}), advanced concepts (\emph{Turing machine}, \emph{finite-state machine}, \emph{cellular automaton}, \emph{lambda calculus}, \emph{Turing completeness}), widely used tools (\emph{recursion}, \emph{regular expression}), and classical problems (\emph{halting problem}). All these topics align well with our intuitive idea of highly relevant concepts, although some authors might disagree that certain items (for example, \emph{floating point}) are among the most relevant in the field of the theory of computation.
+As a practical proxy for the relevance of a topic, we use its Wikipedia pageviews over the last two months (i.e., the sum of daily visits during the most recent 60 complete UTC days). The intuition is that the more relevant a topic is, the more frequently people will consult its Wikipedia article. Our goal is not an absolute notion of relevance but a measure of relative relevance across topics. Moderate under- or over-estimation is acceptable provided it affects all topics roughly uniformly—for example, due to seasonal effects or platform-wide trends—so that comparative rankings remain stable. Further work is needed to quantify how well pageview-based relevance aligns with the theoretical construct of relevance and to correct for known biases (e.g., transient news spikes or bot traffic).
 
 \begin{table}
 \begin{centering}
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|c|}
 \hline 
-Topic & Relevance & Norm.\tabularnewline
+Topic & Relevance \tabularnewline
 \hline 
 \hline 
-Regular expression & 409 & 1.00\tabularnewline
+Dirac delta function & 70,869 \tabularnewline
 \hline 
-Turing machine & 159 & 0.90\tabularnewline
+Rule of inference & 58,356 \tabularnewline
 \hline 
-Binary number & 141 & 0.89\tabularnewline
+Fast inverse square root & 46,570 \tabularnewline
 \hline 
-Recursion & 133 & 0.88\tabularnewline
+Euclidean algorithm & 38,032 \tabularnewline
 \hline 
-Finite-state machine & 118 & 0.86\tabularnewline
+Trie & 29,116 \tabularnewline
 \hline 
-Halting problem & 108 & 0.85\tabularnewline
+Binary search & 23,246 \tabularnewline
 \hline 
-Cellular automaton & 104 & 0.85\tabularnewline
+Reinforcement learning from human feedback & 22,294 \tabularnewline
 \hline 
-Floating point & 99 & 0.84\tabularnewline
+Commutative property & 17,322 \tabularnewline
 \hline 
-Lambda calculus & 95 & 0.84\tabularnewline
+Gale–Shapley algorithm & 11,251 \tabularnewline
 \hline 
-Turing completeness & 93 & 0.83\tabularnewline
+Pick's theorem & 7,255 \tabularnewline
 \hline 
 \end{tabular}
 \par\end{centering}
-
-\caption{\label{tab:Relevance-of-Topics}Relevance of topics}
+\caption{\label{tab:Most-Relevant-Topics}Most relevant topics}
 \end{table}
+
+In Figure \ref{figure:relevance_all_topics}, which shows the histogram of the relevance of all good articles in the area of theoretical computer science, total traffic over the last 60 days is 393,672 pageviews, with an average relevance of 7,719. The histogram shows a classic head–long-tail pattern: most topics cluster in the lowest bins (a few hundred to a few thousand pageviews), while a small number of articles receive very large traffic, extending the right tail out past ~70k. The top three pages—Dirac delta function (70,869), Rule of inference (58,356), and Fast inverse square root (46,570)—collect 44.7\% of all views. This strong right-skew implies that the mean relevance will sit far above the median and be dominated by a handful of high-visibility pages (e.g., widely taught or broadly cited topics). The sparsity of mid-range bins suggests a sharp separation between everyday background interest and a small set of standout articles; outliers are genuine and not just binning artifacts. For modeling purposes we will use log-transformed counts to stabilize variance.
+
+Table \ref{tab:Most-Relevant-Topics} lists the ten most relevant topics according to this metric. For each topic, it shows its raw relevance (number of external links). The top ten ariticles account for 82.4\% of the total page views. Overall, the list aligns reasonably well with what one would expect to attract broad attention around theoretical computer science. Judged purely by intuitive relevance (irrespective of formal classification), most items in the list plausibly merit attention from a theoretical computer science audience: Euclidean algorithm, Binary search, Trie, and the Gale–Shapley algorithm are canonical in algorithms, data structures, and algorithmic game theory; Rule of inference underpins proof techniques used throughout complexity and verification; Fast inverse square root is a celebrated algorithmic trick illustrating implementation–theory trade-offs; and Reinforcement learning from human feedback reflects an influential line of modern learning that interacts with algorithmic and statistical theory.
+
+A few highly viewed pages are better understood as adjacent or cross-disciplinary anchors rather than core theoretical computer science articles: Dirac delta function (analysis/mathematical physics), Commutative property (elementary algebra), or Pick’s theorem (discrete geometry). As it was explained in Section \ref{sec:measuring_research_areas}, Wikipedia’s hierarchical category system is not a strict ontological taxonomy with hard area–subarea boundaries; it is closer to a bibliographic organization in which topics are linked across neighboring fields when readers, editors, or sources commonly associate them. In this sense, it is unsurprising—and entirely reasonable—that a few non-pure TCS pages appear alongside canonical entries such as the Euclidean algorithm, binary search, tries, and the Gale–Shapley algorithm. 
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|}
+\hline 
+Topic & Relevance \tabularnewline
+\hline 
+\hline 
+Well-covered graph & 228 \tabularnewline
+\hline 
+BIT predicate	 & 242 \tabularnewline
+\hline 
+Halin graph & 360 \tabularnewline
+\hline 
+Laves graph & 462 \tabularnewline
+\hline 
+Tropical cyclone forecast model & 510 \tabularnewline
+\hline 
+Book embedding & 516 \tabularnewline
+\hline 
+Turán's brick factory problem & 520 \tabularnewline
+\hline 
+Farthest-first traversal & 626 \tabularnewline
+\hline 
+Cop-win graph & 647 \tabularnewline
+\hline 
+Finite subdivision rule & 662 \tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:Least-Relevant-Topics}Least relevant topics}
+\end{table}
+
+Table \ref{tab:Least-Relevant-Topics} lists the ten least relevant topics according to this metric. The bottom ten articles account for 1.2\% of the total page views. Well-covered graph, Halin graph, Cop-win graph, and Book embedding speak to structural and algorithmic themes in graph theory and graph drawing; Turán’s brick factory problem and Finite subdivision rule touch classic extremal and geometric constructions; Farthest-first traversal is a recognizable clustering/approximation heuristic; and the BIT predicate underlies descriptive complexity formalisms that, while niche, are conceptually central. By contrast, Laves graph and Tropical cyclone forecast model draw smaller, more domain-specific audiences yet still intersect algorithmic or structural concerns. The common thread is their narrow scope: these topics serve expert or subfield-focused needs rather than broad readership, which naturally depresses pageviews. Consequently, pageviews are a sensible proxy for broad relevance (what many people consult), that match or intuition of how many people could be affected by the topic.
+
+Taken together, both lists are consistent with what we would expect people to consult when engaging with theoretical computer science ideas. Using Wikipedia pageviews as a proxy for relevance is therefore a sensible first-order approximation: it captures widespread interest in core topics, is easy to compute at scale, and yields stable comparative rankings over multi-week windows, while benefiting from standard safeguards (e.g., log-scaling, smoothing, and outlier checks) to mitigate transient spikes or teaching-cycle effects.
 
 %
 % Section: Applicability
@@ -586,7 +620,7 @@ The crawl covered the scientific content of the English Wikipedia, starting from
 
 In Figure \ref{figure:maturity_all_topics} it is shown an histogram of the maturity of the known topics, computed as the ratio of the size of the text of the Wikipedia article and its compressed version. The histogram reveals that the maturity of Wikipedia’s scientific topics follows an approximately normal distribution centered around 0.4, indicating that most articles exhibit a balanced level of informational density. This suggests that, on average, about 40\% of each article’s content represents essential, non-redundant information, while the rest reflects natural linguistic and structural redundancy typical of encyclopedic writing.
 
-\begin{figure}[t]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.6\textwidth]{Maturity_all_topics.png}
 \caption{Maturity of scientific topics.}

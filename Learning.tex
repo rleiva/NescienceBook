@@ -5,7 +5,7 @@
 \chapterimage{terra_incognita.pdf} % Chapter heading image
 
 \chapter{Learning}
-\label{ch:Learning}
+\label{chap:Learning}
 
 \begin{quote}
 \begin{flushright}
@@ -16,13 +16,18 @@ Gregory Chaitin
 \end{quote}
 \bigskip
 
-{\color{red} Warning: This chapter still requires a significant amount of work!}
+Learning from data lies at the heart of scientific discovery and technological innovation. It refers to the broad collection of methods and algorithms designed to automatically build mathematical models from sample datasets, usually with the aim of making predictions, classifying objects, or revealing hidden structure in the data.  
+In the past decade, learning algorithms have achieved striking success in diverse domains such as self-driving cars, practical speech recognition, effective web search, and personalized recommendation systems.
 
-Machine learning refers to a large collection of algorithms designed to automatically build mathematical models based on sample data sets, usually with the aim of making predictions, classifying objects, or simply to better understand the structure of the data. In the past decade, machine learning algorithms have been highly successful in areas like self-driving cars, practical speech recognition, effective web search, and purchase recommendations.
+In this chapter, we will explore how the problem of learning from data is formally formulated within the field of machine learning. In doing so, this chapter builds on the probabilistic foundations introduced earlier in Section~\ref{sec:discrete_probability}, extending them toward the design of algorithms that can infer general patterns from finite observations.
 
-In this chapter we are going to see how the problem of learning from data is formally formulated in the area of machine learning. In this sense, the chapter is a continuation of the introduction to discrete probability included in Section \ref{sec:discrete_probability}. Also, we are going to study in detail two particular approaches to machine learning that are highly related to our theory of nescience: the Minimum Description Length principle and the Minimum Message Length principle.
+We will begin by reviewing the classical approach to learning based on \emph{statistical inference}, where learning is framed as estimating the parameters of an assumed probabilistic model. We will then turn to \emph{machine learning methods}, which often relax these assumptions and focus on constructing predictive models that generalize well to unseen data, even when the underlying data-generating process is unknown or too complex to model explicitly.
 
-Most of the learning algorithms used today in practice are known since forty years ago. The high success of current machine learning applications is largely due to the availability of huge, high-quality, training datasets, and to the advance of computing power, and in particular, thanks to the powerful graphical processing units (GPU) used in video-games. In Chapter \ref{chap:Machine-Learning} we will introduce a collection of new machine learning algorithms based on the theory of nescience, and we will compare them with the current, state of the art, algorithms.
+In addition, we will study two powerful principles that are central to the \emph{theory of nescience}: the \emph{Minimum Description Length (MDL)} and the \emph{Minimum Message Length (MML)} principles. These approaches reinterpret learning as a problem of finding the most concise explanation for the data, connecting model selection to fundamental concepts from algorithmic information theory and data compression. This perspective will also allow us to extend the concept of nescience—originally defined for textual descriptions—to empirical datasets.
+
+Finally, we will review the area of \emph{multiobjective optimization}, which addresses learning problems involving multiple, often conflicting, objectives. Unlike traditional single-objective approaches, multiobjective methods aim to find a set of Pareto-optimal solutions, requiring additional techniques to incorporate preference structures and select a final decision.
+
+Throughout the chapter, our goal will be to develop a unified view of learning, spanning from classical statistical inference to modern machine learning and nescience-based methods, and to prepare the ground for the introduction of new learning algorithms inspired by the theory of nescience in Chapter~\ref{chap:Machine-Learning}.
 
 %
 % Statistical Inference
@@ -340,7 +345,7 @@ An attribute is called \emph{qualitative}\index{Qualitative attribute} or \emph{
 Consider a population consisting of the inhabitants of a small village, where we are interested in studying three attributes: age, gender, and daily water consumption. The attribute representing age, mapping individuals to their age in years, is a quantitative discrete attribute, as it takes integer values. Gender, mapping individuals to categories like "Male" or "Female," is a qualitative nominal attribute, since the categories have no inherent order. Daily water consumption, mapping individuals to the number of liters they drink per day, is a quantitative continuous attribute, as it can take any real value within a measurable range.
 \end{example}
 
-Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning, we are given a collection of training samples (also called \emph{predictors}) along with their corresponding observed target values (or \emph{labels}), and our goal is to predict the target for new, previously unseen observations. In contrast, in \emph{unsupervised} learning, no target values are provided; we are given only training samples, and the objective is to uncover the underlying structure of the data. We postpone the discussion of unsupervised learning to {\color{red} Section XX}.
+Broadly speaking, machine learning algorithms can be classified into two main categories: supervised and unsupervised. In \emph{supervised} learning, we are given a collection of training samples (also called \emph{predictors}) along with their corresponding observed target values (or \emph{labels}), and our goal is to predict the target for new, previously unseen observations. In contrast, in \emph{unsupervised} learning, no target values are provided; we are given only training samples, and the objective is to uncover the underlying structure of the data. We postpone the discussion of unsupervised learning to another section.
 
 \begin{definition}
 Let $\mathcal{S}$ be a population whose individuals $\mathbf{x}$ are characterized by $p$ \emph{attributes}, with $\mathbf{x} = (x\_{1}, x\_{2}, \dots, x\_{p}) \in \mathcal{S}$. A \emph{target variable}\index{Target variable}, denoted by $\mathbf{y}$, is a vector corresponding to another attribute of the individuals in $\mathcal{S}$, distinct from the $p$ attributes used as predictors. The \emph{domain} of the target variable is $\mathcal{D}_{y} = {y_{i}}$.
@@ -390,361 +395,501 @@ The challenge for the machine learning algorithms is to ensure that the estimato
 % Parametric vs. Non-parametric Models
 
 \subsection{Parametric vs. Non-parametric Models}
+\label{sec:parametric_vs_nonparametric}
 
-Most of the statistical learning methods can be characterize as either parametric or non-parametric. With \emph{parametric} methods we select a priori a functional for, and the we fit the free parameters of this functional form. In contrast, with \emph{non-parametric} models we do not make any assumption about the form of the mmodels. Given their flexibility, non-parametric methods ususally require more traing data to train, and they are more difficult to interpret by human.
+Most statistical learning methods can be characterized as either \emph{parametric} or \emph{non-parametric}. 
+This distinction concerns the assumptions we make about the form of the underlying function $f$ that relates the input variables $X$ to the output variable $Y$.
 
-{\color{red} Parametric methods involve a two-step model-based approach: 1) First, we make an assumption abut the functional form, or shape, of f; 2) After a model has been selected, we need a procedure that uses the training data to fit or train the model. Parametric methods reduce the problem of estimating f down to one of estimating a set of parameters. The potential disadvantage of a parametric approach is that the model we choose will usually not match the true unknown form of f. More flexible models can fit may different possible functional forms for f. But fitting a more flexible model requires estimating a greater number of parameters. More complex models can lead to a phenomenon known as overfitting the data, which essentially means they follow the errors, or noise, too closely.}
+Parametric methods follow a two-step model-based approach. 
+\begin{enumerate}
+    \item First, we assume a specific functional form for $f$ (for example, a linear or polynomial function) that depends on a finite set of parameters $\theta$.
+    \item Second, we use the training data to estimate the values of these parameters.
+\end{enumerate}
+By making a strong assumption about the shape of $f$, the problem of estimating $f$ reduces to estimating a relatively small number of parameters. 
 
-{\color{red} TODO: Provide an example, like linear regression.}
+This makes parametric methods computationally efficient and less data-demanding. 
+However, if the chosen functional form does not match the true (unknown) $f$, the model will suffer from \emph{underfitting}: it will be unable to capture the actual structure of the data. 
+On the other hand, choosing a highly flexible parametric form (with many parameters) increases the risk of \emph{overfitting}: the model may follow the noise in the training data too closely, resulting in poor generalization to unseen data.
 
-{\color{red} Non-parametric methods do not make explicit assumption about the functional form of f. By avoiding the assumption of a particular functional form for $f$, they have the potential to accurately fit a wider range of possible shapes for $f$. However, with non-parametric methods, a very large number of observations is required in order to obtain an accurate estimate for f.}
+\begin{example}
+\textbf{Linear Regression.}  
+In simple linear regression we assume a linear functional form
+\[
+f(x) = \beta_0 + \beta_1 x,
+\]
+with just two parameters $\beta_0$ and $\beta_1$ to be estimated from the data. This strong assumption allows the model to be fitted with very little data, but it cannot capture nonlinear relationships between $x$ and $y$.
+\end{example}
 
-{\color{red} TODO: Provide an example.}
+Non-parametric methods make no explicit assumption about the functional form of $f$. 
+Instead, they allow the data to determine the shape of the model. 
+Because they are more flexible, non-parametric methods can in principle approximate a much wider range of functions than parametric ones.
+
+However, this flexibility comes at a cost: non-parametric methods typically require a much larger amount of training data to achieve accurate estimates of $f$, and they are often harder to interpret by humans. 
+Moreover, they can also overfit if not properly regularized or if the dataset is too small.
+
+\begin{example}
+\textbf{$k$-Nearest Neighbours (k-NN).}  
+In $k$-NN regression, to predict the value of $Y$ at a new point $x$, we take the average of the $Y$ values of the $k$ closest training points to $x$. 
+There is no assumed functional form: as more data points are added, the estimated function can take on increasingly complex shapes.
+\end{example}
+
+In short, parametric models are simpler, data-efficient, and easier to interpret but rely on strong assumptions about the form of $f$, while non-parametric models are more flexible and expressive but data-hungry and harder to interpret. 
+Choosing between them involves balancing bias (parametric models tend to have higher bias) and variance (non-parametric models tend to have higher variance).
+
+% Generative vs. Discriminative models
+
+\subsection{Generative vs. Discriminative Models}
+\label{sec:generative_vs_discriminative}
+
+Another important distinction among statistical learning methods is between \emph{generative} and \emph{discriminative} models. 
+These two classes of models differ in what they attempt to learn from the data, and consequently in how they make predictions.
+
+Generative models aim to learn the joint probability distribution $P(X,Y)$ of the input variables $X$ and the output variable $Y$. 
+From the joint distribution, they can recover the conditional distribution $P(Y\mid X)$ used for prediction by applying Bayes’ theorem:
+\[
+P(Y\mid X) = \frac{P(X,Y)}{P(X)}.
+\]
+
+Learning $P(X,Y)$ usually involves modeling two components: the prior class probabilities $P(Y)$ and the class-conditional densities $P(X\mid Y)$. 
+Once these are known, we can generate new synthetic data points $(X,Y)$, which is why these models are called “generative.”
+
+Generative models can be advantageous when:
+\begin{itemize}
+    \item we want to simulate or generate new data,
+    \item we have very limited data (priors help regularize estimation),
+    \item we care about understanding the underlying data distribution.
+\end{itemize}
+
+However, they may perform worse at prediction when their assumptions about $P(X\mid Y)$ are incorrect.
+
+\begin{example}
+\textbf{Naïve Bayes Classifier.}  
+Naïve Bayes assumes that the features $X_1,\dots,X_d$ are conditionally independent given $Y$. 
+It estimates $P(Y)$ and each $P(X_j\mid Y)$ separately, and uses Bayes’ rule to classify new observations. 
+This model can be trained with very little data and is robust to noise, but its strong independence assumption may be unrealistic.
+\end{example}
+
+Discriminative models directly learn the conditional distribution $P(Y\mid X)$ or a direct decision function $f\colon X\to Y$ without modeling $P(X)$. 
+They focus solely on the decision boundary between classes rather than modeling how the data is generated.
+
+This often allows discriminative models to achieve higher predictive accuracy, especially when the amount of training data is large. 
+However, they do not provide a full probabilistic model of the data and cannot generate new samples $(X,Y)$.
+
+\begin{example}
+\textbf{Logistic Regression.}  
+Logistic regression models the conditional probability of $Y$ given $X$ as
+\[
+P(Y=1\mid X=x)=\frac{1}{1+e^{-(\beta_0+\beta_1x)}},
+\]
+without making any assumption about the distribution of $X$. 
+It directly estimates the decision boundary separating the classes.
+\end{example}
+
+In essence, generative models learn how the data are produced, while discriminative models learn how to separate the classes. Generative models can be more data-efficient and interpretable but are more prone to model misspecification, whereas discriminative models tend to be more accurate given sufficient data but offer less insight into the data-generating process.
+
 
 % Regularization
-
-{\color{red} Concept of regularization to control model complexity. Ridge and Lasso: definitions and intuition. Regularized objective: Effect on optimization and generalization. Practical considerations: choosing.}
-
-{\color{red} TODO: Talk about the overfitting problem}
-
-{\color{red} There exists a trade-off between flexibility and interpretability of the machine learning methods. If we are interested in inference, then restrictive models are much more interpretable. If we are only interested in prediction, the interpretability of the predictive model is simply not of interest.}
+% 
+% {\color{red} Concept of regularization to control model complexity. Ridge and Lasso: definitions and intuition. Regularized objective: Effect on optimization and generalization. Practical considerations: choosing.}
+% 
+% {\color{red} TODO: Talk about the overfitting problem}
+% 
+% {\color{red} There exists a trade-off between flexibility and interpretability of the machine learning methods. If we are interested in inference, then restrictive models are much more interpretable. If we are only interested in prediction, the interpretability of the predictive model is simply not of interest.}
 
 % Model Accuracy
 
-\subsection{Model Accuracy}
+\section{Model Accuracy}
+\label{sec:model_accuracy}
 
-The error term $\epsilon$ introduced in Equation \ref{eq:machine_learning_model} correspond to variables that have not been taken into account in our study, and other effects that can not be measured. This kind of error is called \emph{irreducible}, since there is nothing we can do to reduced it. A second type of error, called \emph{reducible}, refers t the fact that our estimate $\hat{f}$ of the function $f$ might not be perfect. It is called reducible because with better estimates the error will decrease.
+When assessing the performance of a machine learning model, we want to quantify how close the model’s predictions $\hat{Y}=\hat{f}(X)$ are to the true responses $Y=f(X)+\epsilon$. As introduced in Equation~\ref{eq:machine_learning_model}, the error term $\epsilon$ accounts for factors that have not been included in the model and for inherent randomness in the data. 
 
-{\color{red} Derive this property}
+We can distinguish two conceptually different sources of prediction error:
 
-We are interested in the average error made by our model. Assuming that both $\hat{f}$ and $X$ are fixed, it can be shown that
+\begin{itemize}
+    \item The \emph{irreducible error}, given by the variance of $\epsilon$, reflects variability that cannot be explained by any model based on the given predictors.
+    \item The \emph{reducible error} comes from the difference between the true function $f$ and our estimate $\hat{f}$, which can be made smaller by choosing a better model or training procedure.
+\end{itemize}
+
+Formally, assuming that both $X$ and $\hat{f}$ are fixed,
 \[
-    E\left(Y-\hat{Y}\right)^{2}=E\left[f\left(X\right)+\epsilon-\hat{f}\left(X\right)\right]^{2}=\left[f\left(X\right)-\hat{f}\left(X\right)\right]^{2}+Var\left(\epsilon\right)
-\]
-The irreducible error is an upper bound to the accuracy of our predictions. Unfortunately, in practice, this bound is almost always unknown.
-
-\subsubsection{Mean Squared Error}
-
-A common metric used to quantitatively evaluate and compare the performance of the different machine learning algorithms is to compute the mean square error (MSE) of the predictions made,
-\[
-    MSE = \frac{1}{n} \sum_{i=1}^n \left( Y_i - \hat{f}(X_i) \right) ^ 2
-\]
-where $Y_i$ is the $i$th observed value, and the $\hat{f}(X_i)$ is the prediction that $\hat{f}$ gives for the $i$th vector of predictors.
-
-    {\color{red} Explain how MSR relates to MLE}
-
-We are interested in the capability of the model $\hat{f}$ to generalize to previously unseen data, that is, to correctly make predictions based on input vectors not included in the training dataset $\mathcal{X}$. In this sense, out goal should be to select that method with the lowest MSE over a test dataset, that is, over a collection of input vectors that have not been used for the training of the algorithm. When a model $\hat{f}$ has a very low train MSE but very high test MSE we say that the model overfits the training data.
-
-If the response variable is qualitative the quantity we seek to minimize is the average number of misclassification made by the model, that is,
-\[
-    \frac{1}{n} \sum_{i=1}^n I \left( Y_i \neq \hat{f}(X_i) \right)
-\]
-where $\hat{f}(X_i)$ is the predicted class for the $i$th observation, and $I$ is a function that equals $1$ if $Y_i \neq \hat{f}(X_i)$ and zero otherwise.
-
-\subsection{No free lunch theorem}
-
-{\color{red} Inductive Bias and the Role of Assumptions. Why learning is not possible without assumptions. Inductive bias: choosing H, priors, constraints. Examples: smoothness, sparsity, linearity. The No Free Lunch Theorem (informal statement)}
-
-{\color{red} There is no free lunch in statistics: no one method dominates all others over all possible data sets. On a particular data set, one specific method may work best, but some other method may work better on a similar but different data set}
-
-% Subsection
-
-\subsection{The bias-variance trade-off}
-
-{\color{red}
-
-    It is possible to show that the expected test MSE, for a given value $x_{0}$, can be always decomposed into the sum of tree fundamental quantities: the variance of $\hat{f}\left(x_{0}\right)$, the squared ed bias of $\hat{f}\left(x_{0}\right)$ and the variance of the error term $\epsilon$:
-    \[
-        E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}=Var\left(\hat{f}\left(x_{0}\right)\right)\left[Bias\left(\hat{f}\left(x_{0}\right)\right)\right]^{2}+Var\left(\epsilon\right)
-    \]
-    where $E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}$ defines the expected test MSE, and refers to the average test MSE that would obtain if we repeatedly estimated f using a large number of training sets, and tested each at $x_{0}$.
-
-    In order to minimize the expected test error, we need to select a statistical learning method that simultaneously achieves low variance and low bias. The expected test MSE can never lie below $Var\left(\epsilon\right)$, the irreducible error. Variance refers to the amount by which $\hat{f}$ would change if we estimated it using a different training data set. In general, more flexible statistical methods have higher variance. Bias refers to the error that is introduced by approximating a real-life problem, which may be extremely complicated, by a much more simpler model. Generally, more flexible methods result in less bias. As a general rule, as we use more flexible methods, the variance will increase and the bias will decrease. The relative rate of change of these two quantities determines whether the test MSE increases or decreases.
-
-    The relationship between bias, variance, and test set MSE is referred to as the bias-variance trade-off. It is easy to obtain a method with extremely low bias but high variance, or a method with very low variance but high bias. The challenge lies in finding a method fro which both the variance and the squared bias are low. In a real-life situation in which f is unobserved, it is generally not possible to explicitly compute the test MSE, bias, or variance for a statistical learning methods. Alternative approaches, like for example cross-validation, are used to estimate the test MSE using the training data.
-
-}
-
-\subsection{Generative vs. discriminative models}
-\label{sec:generative_discriminative}
-
-{\color{red} TODO: Pending}
-
-\subsection{k-means Clustering}
-\label{sec:kmeans_clustering}
-
-K-means clustering is an algorithms that partitions n observations into k clusters in such a way that each observation belongs to the cluster with the nearest mean. In this way, we can replace the observation that belong to a cluster by its means, as a discretization. The optimization criteria in k-means is to minize the within-cluster variance. Given the fact that the problem is NP-Complete, some approximation algorithms are used instead.
-
-{\color{red} TODO: Define the concept of Voronoi diagram / Voronoi cell}
-
-% Decision Trees
-
-\subsection{Decision Trees}
-\label{subsec:learning_decision_trees}
-
-A decision tree is a mathematical model $f$ that predicts the value of a target variable $\mathbf{y}$ by learning simple \texttt{if-else} decision rules inferred from the training set $(\mathbf{X}, \mathbf{y})$ (see Example \ref{ex:example_tree}). Trees are simple and easy to interpret, but they do not give good accuracy.
-
-
-The nodes of the tree contain pairs of values $(j, w)$, where $1 \leq j \leq p$ is a feature index and $w \in \mathbb{R}$ is a threshold, and the tree leafs contain labels of $\mathcal{G}$ in case of a classification problem, or numbers in case of a regression problem. Given a vector $\textbf{x} \in \mathbb{R}^p$ we perform a tree traversal checking at each node if $x_j \leq w$ to decide if we continue with the left or right branch of the node, until a leaf is reached. We associate the value $\hat{y}$ of the reached leaf with the vector $\textbf{x}$.
-
-\begin{example}
-    \label{ex:example_tree}
-    In Figure \ref{tab:DecisionTreeExample}, left side, it is shown an example of a dataset composed by two classes, red dots and blue dots. We want to find a decision tree such that given the features $X1$ and $X2$, it returns if the corresponding dot is blue or red. A possible solution to this problem is depicted in the right side of the figure. This decision tree can be also encoded as a function in a programming language, for example in Python, as next code shows.
-
-    \begin{sourcecode}
-        {\scriptsize \begin{verbatim}
-def tree(X1, X2):
-    if X1 < 50:
-        if X2 < 20:
-            return "red"
-        else:
-            return "blue"
-    else:
-        return "red"
-\end{verbatim}}
-    \end{sourcecode}
-
-\end{example}
-
-\begin{table}
-    \begin{center}
-
-        \begin{tabular}{ c c }
-
-            \includegraphics[scale=0.4]{decision_tree_example_data} & \raisebox{.4\height}{\includegraphics[scale=0.4]{decision_tree_example}}
-        \end{tabular}
-    \end{center}
-    \caption{\label{tab:DecisionTreeExample}Example of Decision Tree}
-\end{table}
-
-The algorithms for the construction of decision trees usually work by recursively partitioning the training set $\mathbf{X}$ in such a way that the values of the target vector $\textbf{y}$ are grouped together, until all partitions are composed by a single label. The problem with these building methods is that they produce very complex trees that overfit the training data. Overfitted trees not only lead to poor predictive capabilities on non-training data, but also produce models that can be exceedingly difficult to interpret. A common approach to avoid overfitting in decision trees is to force an early stopping of the algorithm before the tree becomes too complex. Popular stopping criteria include limiting the maximum depth of the tree, requiring a minimum number of sample points at leaf nodes, or computing the accuracy gain yielded by adding new nodes. However, those heuristics demand the optimization of hyperparameters which makes the training process computationally expensive.
-
-    {\color{red} TODO: briefly describe bagging, random forests, and boosting [...] produce multiple trees which are then combined to yield a single consensus prediction [...] combining a large number of trees can often result in dramatic improvement in prediction accuracy, at the expense of some loss of interpretability [...]}
-
-% Subsection: Time Series
-
-\subsection{Time Series Analysis}
-\label{sec:intro_time_series}
-
-A time series is a sequence of measurements taken at successively equally spaced points in time, so there exists a natural ordering of the observations. Examples of time series include the daily closing prices of the Standard and Poor's 500 index, the monthly number of passengers of an airline, or the yearly gross domestic product of a country.
-
-\begin{definition}
-A \emph{time series} of length $n \in \mathbb{N}$, denoted by $\{ x_t : t=1, \ldots, n \}$ or $\{ x_t \}$, is a sequence $\{ x_1, x_2, \ldots, x_n \}$ of \emph{observed values}.
-\end{definition}
-
-The elements $x_i$ of the series correspond to values sampled at fixed time intervals $1, 2, \ldots, n$. The sampling interval must be short enough to provide a very close approximation to the original continuous signal. Observed values could be continuous, discrete or even categorical.
-
-In statistics, a time series is usually represented as a sequence of $n$ random variables, and a particular time series is a realization of this representation. In this sense, $\{ x_t \}$ would denote a collection of random variables. In this book, we do not follow this approach for time series formalization.
-
-Time series forecasting refers to the process of building a model to predict future values of the series based on the previously observed values. Time series forecasting is based on identifying the mean features in data and the random variation, and it is generally based on the assumption that present characteristics will continue in the near future, something that cannot be validated in practice.
-
-\begin{notation}
-Given the time time series $\{ x_t : t=1, \ldots, n \}$ we denote $\hat{x}_{t+k \mid t}$ the forecast made at time $t$ for a future value at time $t+k$, where $k$ is the number of steps in the future.
-\end{notation}
-
-\subsubsection{Trends and Seasons}
-
-Many time series ... and a repeating seasonal component.
-
-{\color{red} a systematic change in a time series that does not appear to be periodic is known as a trend. [...] A repeating pattern [...] within any fixed period [...] is known as seasonal variation [...] cycles [...] do not correspond to some fixed natural period. [...]}
-
-{\color{red} trend [...] change direction in unpredictable times [...] stochastic trend [...]}
-
-{\color{red} The main features of many time series are trends and seasonal variations that can be modelled deterministically with mathematical functions of time.}
-
-{\color{red} it is usually appropiate to remove trends and seasonal effects before comparing multiple series.}
-
-\begin{definition}
-    Let $\{ x_t \}$ be a time series, a \emph{simple additive model} is defined as
-    \[
-        x_t = m_t + s_t + z_t
-    \]
-    where $m_t$ is called the \emph{trend component}, $s_t$ is the \emph{seasonal component}, and $z_t$ is the \emph{error term}.
-\end{definition}
-
-If the time series presents the property that the seasonal component increases as the trend increases, it might be better to use a multiplicative model.
-
-\begin{definition}
-    Let $\{ x_t \}$ be a time series, a \emph{simple multiplicative model} is defined as
-    \[
-        x_t = m_t \dot s_t + z_t
-    \]
-    where $m_t$ is called the \emph{trend component}, $s_t$ is the \emph{seasonal component}, and $z_t$ is the \emph{error term}.
-\end{definition}
-
-In practice, a simple approach of estimating the trend of a tiem series is to compute a moving average.
-
-\begin{definition}
-    Let $\{ x_t \}$ be a time series, a \emph{simple moving average} of lenth $l$ is 
-\end{definition}
-
-The best results are achieved when the length $l$ of the moving average is equal to the length of the seasonal component. The seasonal componet can be estimated by
-
-\begin{definition}
-    Additive
-    \[
-        \hat{s}_t = x_t - \hat{m}_t
-    \]
-    Multiplicative
-    \[
-        \hat{s}_t = \frac{x_t}{\hat{m}_t}
-    \]
-\end{definition}
-
-
-{\color{red} [...] many series are dominated by a trend and/or a seasonal effect [...] A simple additve decomposition model is given by
-\[
-    x_t = m_t + s_t + z_t
-\]
-where, a time $t$, $x_t$ is the observed series, $m_t$ is the trend, $_t$ is the seasonal effect, and $z_t$ is an error terms that is, in general, a sequence of correlated random variables with mean zero.
-
-If the seasonal effect tends to increase as the trend increases, a multiplicative model may be more appropriate
-\[
-    x_t = m_t \dot s_t + z_t
+\begin{aligned}
+E\!\left[\big(Y-\hat{Y}\big)^{2}\right] 
+&= E\!\left[\big(f(X)+\epsilon - \hat{f}(X)\big)^{2}\right] \\
+&= \big(f(X)-\hat{f}(X)\big)^{2} + Var(\epsilon).
+\end{aligned}
 \]
 
-}
+Here, the second term $Var(\epsilon)$ is the irreducible error, which places a lower bound on the achievable prediction error. Unfortunately, this quantity is almost always unknown in practice.
 
-\begin{definition}
+\subsection{Bias-Variance Decomposition}
+
+More generally, if we view $\hat{f}$ as a random estimator depending on the particular training sample used, we obtain the \emph{bias–variance decomposition}:
+\[
+E\!\left[\big(Y-\hat{f}(X)\big)^{2}\right] 
+= \underbrace{Bias\!\left(\hat{f}(X)\right)^{2}}_{\text{systematic error}}
++ \underbrace{Var\!\left(\hat{f}(X)\right)}_{\text{estimation variability}}
++ \underbrace{Var(\epsilon)}_{\text{irreducible error}}.
+\]
+This decomposition makes explicit the tradeoff between bias and variance: simpler models have high bias but low variance, whereas more complex models have low bias but high variance.
+
+\subsection{Regression Metrics}
+
+A common metric for regression tasks is the \emph{mean squared error}:
+\[
+MSE = \frac{1}{n} \sum_{i=1}^n \left( Y_i - \hat{f}(X_i) \right)^2.
+\]
+
+Minimizing the MSE is equivalent to maximizing the likelihood under a Gaussian noise model. Indeed, if we assume $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ independently, then
+\[
+\log P(Y\mid X,\theta) = -\frac{1}{2\sigma^2}\sum_{i=1}^n \big(Y_i-\hat{f}(X_i;\theta)\big)^2 + \text{const},
+\]
+so the maximum likelihood estimator (MLE) of the parameters $\theta$ is the one that minimizes the MSE.
+
+Other common regression metrics include:
+
+\begin{itemize}
+    \item The \emph{root mean squared error} (RMSE) is the square root of the MSE, which brings the error back to the original units of $Y$.
+    \item The \emph{mean absolute error} (MAE) is 
+    \[
+    MAE = \frac{1}{n}\sum_{i=1}^n \left|Y_i - \hat{f}(X_i)\right|,
+    \]
+    which is more robust to outliers than MSE.
+    \item The \emph{coefficient of determination} $R^2$ is
+    \[
+    R^2 = 1 - \frac{\sum_{i=1}^n (Y_i - \hat{f}(X_i))^2}{\sum_{i=1}^n (Y_i - \bar{Y})^2},
+    \]
+    and measures the proportion of variance in $Y$ explained by the model.
+\end{itemize}
+
+\subsection{Classification Metrics}
+
+When the response variable $Y$ is qualitative (categorical), we cannot directly compute squared errors. Instead, we measure how often the predicted class label matches the true class.
+
+A simple and widely used metric is the \emph{misclassification rate}:
+\[
+\text{Error rate} = \frac{1}{n} \sum_{i=1}^n I\!\left( Y_i \neq \hat{f}(X_i) \right),
+\]
+where $I(\cdot)$ is $1$ if its argument is true and $0$ otherwise.  
+The \emph{accuracy} is simply $1$ minus the error rate.
+
+In imbalanced classification problems, accuracy can be misleading.  
+In such cases we use metrics based on the \emph{confusion matrix}, such as:
+\[
+\text{Precision} = \frac{TP}{TP+FP},\qquad
+\text{Recall} = \frac{TP}{TP+FN},
+\]
+where $TP$, $FP$, and $FN$ are the numbers of true positives, false positives, and false negatives, respectively.  
+The \emph{F1-score} combines them as their harmonic mean:
+\[
+F1 = 2\cdot \frac{\text{Precision}\cdot \text{Recall}}{\text{Precision}+\text{Recall}}.
+\]
+
+Our ultimate goal is to build a model that generalizes well to previously unseen data.  
+For this reason, model accuracy should be evaluated not only on the training dataset but also on a separate test dataset. A model with very low training error but high test error is said to \emph{overfit} the training data.  
+Techniques such as cross-validation, regularization, and early stopping are commonly used to detect and reduce overfitting.
+
+
+% % Subsection: No free lunch theorem
+
+% \subsection{No free lunch theorem}
+
+% {\color{red} Inductive Bias and the Role of Assumptions. Why learning is not possible without assumptions. Inductive bias: choosing H, priors, constraints. Examples: smoothness, sparsity, linearity. The No Free Lunch Theorem (informal statement)}
+
+% {\color{red} There is no free lunch in statistics: no one method dominates all others over all possible data sets. On a particular data set, one specific method may work best, but some other method may work better on a similar but different data set}
+
+% % Subsection
+
+% \subsection{The bias-variance trade-off}
+
+% {\color{red}
+
+%     It is possible to show that the expected test MSE, for a given value $x_{0}$, can be always decomposed into the sum of tree fundamental quantities: the variance of $\hat{f}\left(x_{0}\right)$, the squared ed bias of $\hat{f}\left(x_{0}\right)$ and the variance of the error term $\epsilon$:
+%     \[
+%         E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}=Var\left(\hat{f}\left(x_{0}\right)\right)\left[Bias\left(\hat{f}\left(x_{0}\right)\right)\right]^{2}+Var\left(\epsilon\right)
+%     \]
+%     where $E\left(y_{0}-\hat{f}\left(x_{0}\right)\right)^{2}$ defines the expected test MSE, and refers to the average test MSE that would obtain if we repeatedly estimated f using a large number of training sets, and tested each at $x_{0}$.
+
+%     In order to minimize the expected test error, we need to select a statistical learning method that simultaneously achieves low variance and low bias. The expected test MSE can never lie below $Var\left(\epsilon\right)$, the irreducible error. Variance refers to the amount by which $\hat{f}$ would change if we estimated it using a different training data set. In general, more flexible statistical methods have higher variance. Bias refers to the error that is introduced by approximating a real-life problem, which may be extremely complicated, by a much more simpler model. Generally, more flexible methods result in less bias. As a general rule, as we use more flexible methods, the variance will increase and the bias will decrease. The relative rate of change of these two quantities determines whether the test MSE increases or decreases.
+
+%     The relationship between bias, variance, and test set MSE is referred to as the bias-variance trade-off. It is easy to obtain a method with extremely low bias but high variance, or a method with very low variance but high bias. The challenge lies in finding a method fro which both the variance and the squared bias are low. In a real-life situation in which f is unobserved, it is generally not possible to explicitly compute the test MSE, bias, or variance for a statistical learning methods. Alternative approaches, like for example cross-validation, are used to estimate the test MSE using the training data.
+
+% }
+
+% \subsection{k-means Clustering}
+% \label{sec:kmeans_clustering}
+
+% K-means clustering is an algorithms that partitions n observations into k clusters in such a way that each observation belongs to the cluster with the nearest mean. In this way, we can replace the observation that belong to a cluster by its means, as a discretization. The optimization criteria in k-means is to minize the within-cluster variance. Given the fact that the problem is NP-Complete, some approximation algorithms are used instead.
+
+% {\color{red} TODO: Define the concept of Voronoi diagram / Voronoi cell}
+
+% % Decision Trees
+
+% \subsection{Decision Trees}
+% \label{subsec:learning_decision_trees}
+
+% A decision tree is a mathematical model $f$ that predicts the value of a target variable $\mathbf{y}$ by learning simple \texttt{if-else} decision rules inferred from the training set $(\mathbf{X}, \mathbf{y})$ (see Example \ref{ex:example_tree}). Trees are simple and easy to interpret, but they do not give good accuracy.
+
+
+% The nodes of the tree contain pairs of values $(j, w)$, where $1 \leq j \leq p$ is a feature index and $w \in \mathbb{R}$ is a threshold, and the tree leafs contain labels of $\mathcal{G}$ in case of a classification problem, or numbers in case of a regression problem. Given a vector $\textbf{x} \in \mathbb{R}^p$ we perform a tree traversal checking at each node if $x_j \leq w$ to decide if we continue with the left or right branch of the node, until a leaf is reached. We associate the value $\hat{y}$ of the reached leaf with the vector $\textbf{x}$.
+
+% \begin{example}
+%     \label{ex:example_tree}
+%     In Figure \ref{tab:DecisionTreeExample}, left side, it is shown an example of a dataset composed by two classes, red dots and blue dots. We want to find a decision tree such that given the features $X1$ and $X2$, it returns if the corresponding dot is blue or red. A possible solution to this problem is depicted in the right side of the figure. This decision tree can be also encoded as a function in a programming language, for example in Python, as next code shows.
+
+%     \begin{sourcecode}
+%         {\scriptsize \begin{verbatim}
+% def tree(X1, X2):
+%     if X1 < 50:
+%         if X2 < 20:
+%             return "red"
+%         else:
+%             return "blue"
+%     else:
+%         return "red"
+% \end{verbatim}}
+%     \end{sourcecode}
+
+% \end{example}
+
+% \begin{table}
+%     \begin{center}
+
+%         \begin{tabular}{ c c }
+
+%             \includegraphics[scale=0.4]{decision_tree_example_data} & \raisebox{.4\height}{\includegraphics[scale=0.4]{decision_tree_example}}
+%         \end{tabular}
+%     \end{center}
+%     \caption{\label{tab:DecisionTreeExample}Example of Decision Tree}
+% \end{table}
+
+% The algorithms for the construction of decision trees usually work by recursively partitioning the training set $\mathbf{X}$ in such a way that the values of the target vector $\textbf{y}$ are grouped together, until all partitions are composed by a single label. The problem with these building methods is that they produce very complex trees that overfit the training data. Overfitted trees not only lead to poor predictive capabilities on non-training data, but also produce models that can be exceedingly difficult to interpret. A common approach to avoid overfitting in decision trees is to force an early stopping of the algorithm before the tree becomes too complex. Popular stopping criteria include limiting the maximum depth of the tree, requiring a minimum number of sample points at leaf nodes, or computing the accuracy gain yielded by adding new nodes. However, those heuristics demand the optimization of hyperparameters which makes the training process computationally expensive.
+
+%     {\color{red} TODO: briefly describe bagging, random forests, and boosting [...] produce multiple trees which are then combined to yield a single consensus prediction [...] combining a large number of trees can often result in dramatic improvement in prediction accuracy, at the expense of some loss of interpretability [...]}
+
+% % Subsection: Time Series
+
+% \subsection{Time Series Analysis}
+% \label{sec:intro_time_series}
+
+% A time series is a sequence of measurements taken at successively equally spaced points in time, so there exists a natural ordering of the observations. Examples of time series include the daily closing prices of the Standard and Poor's 500 index, the monthly number of passengers of an airline, or the yearly gross domestic product of a country.
+
+% \begin{definition}
+% A \emph{time series} of length $n \in \mathbb{N}$, denoted by $\{ x_t : t=1, \ldots, n \}$ or $\{ x_t \}$, is a sequence $\{ x_1, x_2, \ldots, x_n \}$ of \emph{observed values}.
+% \end{definition}
+
+% The elements $x_i$ of the series correspond to values sampled at fixed time intervals $1, 2, \ldots, n$. The sampling interval must be short enough to provide a very close approximation to the original continuous signal. Observed values could be continuous, discrete or even categorical.
+
+% In statistics, a time series is usually represented as a sequence of $n$ random variables, and a particular time series is a realization of this representation. In this sense, $\{ x_t \}$ would denote a collection of random variables. In this book, we do not follow this approach for time series formalization.
+
+% Time series forecasting refers to the process of building a model to predict future values of the series based on the previously observed values. Time series forecasting is based on identifying the mean features in data and the random variation, and it is generally based on the assumption that present characteristics will continue in the near future, something that cannot be validated in practice.
+
+% \begin{notation}
+% Given the time time series $\{ x_t : t=1, \ldots, n \}$ we denote $\hat{x}_{t+k \mid t}$ the forecast made at time $t$ for a future value at time $t+k$, where $k$ is the number of steps in the future.
+% \end{notation}
+
+% \subsubsection{Trends and Seasons}
+
+% Many time series ... and a repeating seasonal component.
+
+% {\color{red} a systematic change in a time series that does not appear to be periodic is known as a trend. [...] A repeating pattern [...] within any fixed period [...] is known as seasonal variation [...] cycles [...] do not correspond to some fixed natural period. [...]}
+
+% {\color{red} trend [...] change direction in unpredictable times [...] stochastic trend [...]}
+
+% {\color{red} The main features of many time series are trends and seasonal variations that can be modelled deterministically with mathematical functions of time.}
+
+% {\color{red} it is usually appropiate to remove trends and seasonal effects before comparing multiple series.}
+
+% \begin{definition}
+%     Let $\{ x_t \}$ be a time series, a \emph{simple additive model} is defined as
+%     \[
+%         x_t = m_t + s_t + z_t
+%     \]
+%     where $m_t$ is called the \emph{trend component}, $s_t$ is the \emph{seasonal component}, and $z_t$ is the \emph{error term}.
+% \end{definition}
+
+% If the time series presents the property that the seasonal component increases as the trend increases, it might be better to use a multiplicative model.
+
+% \begin{definition}
+%     Let $\{ x_t \}$ be a time series, a \emph{simple multiplicative model} is defined as
+%     \[
+%         x_t = m_t \dot s_t + z_t
+%     \]
+%     where $m_t$ is called the \emph{trend component}, $s_t$ is the \emph{seasonal component}, and $z_t$ is the \emph{error term}.
+% \end{definition}
+
+% In practice, a simple approach of estimating the trend of a tiem series is to compute a moving average.
+
+% \begin{definition}
+%     Let $\{ x_t \}$ be a time series, a \emph{simple moving average} of lenth $l$ is 
+% \end{definition}
+
+% The best results are achieved when the length $l$ of the moving average is equal to the length of the seasonal component. The seasonal componet can be estimated by
+
+% \begin{definition}
+%     Additive
+%     \[
+%         \hat{s}_t = x_t - \hat{m}_t
+%     \]
+%     Multiplicative
+%     \[
+%         \hat{s}_t = \frac{x_t}{\hat{m}_t}
+%     \]
+% \end{definition}
+
+
+% {\color{red} [...] many series are dominated by a trend and/or a seasonal effect [...] A simple additve decomposition model is given by
+% \[
+%     x_t = m_t + s_t + z_t
+% \]
+% where, a time $t$, $x_t$ is the observed series, $m_t$ is the trend, $_t$ is the seasonal effect, and $z_t$ is an error terms that is, in general, a sequence of correlated random variables with mean zero.
+
+% If the seasonal effect tends to increase as the trend increases, a multiplicative model may be more appropriate
+% \[
+%     x_t = m_t \dot s_t + z_t
+% \]
+
+% }
+
+% \begin{definition}
     
-\end{definition}
+% \end{definition}
 
-{\color{red} Once we have identired any trend and seasonal effects, we can deseasonalise the time series and remove the trend. If we use the additive decomposition method, we first calculate the seasonality adjusted time series and then remove the trend by substraction. This leaves the random component, but the random component is not necessarily well modelled by independent random variables. In many cases, consecutive variables will be correlated. If we identify such correlations, we can improve our forecast, quite dramatically if the correlations are high.}
+% {\color{red} Once we have identired any trend and seasonal effects, we can deseasonalise the time series and remove the trend. If we use the additive decomposition method, we first calculate the seasonality adjusted time series and then remove the trend by substraction. This leaves the random component, but the random component is not necessarily well modelled by independent random variables. In many cases, consecutive variables will be correlated. If we identify such correlations, we can improve our forecast, quite dramatically if the correlations are high.}
 
-\subsubsection{Second Order Properties}
+% \subsubsection{Second Order Properties}
 
-A possible approach to forecas future values of a time-series based variable is to extrapolate the current trend and to apply some adaptative estimations.
-
-
-\subsubsection{Exponential Smoothing}
-
-\begin{definition}
-Let's $x$ and $y$ two time series. The cross covariance function of $x$ and $y$ as a function of a lag $k$, denoted $\gamma \left( x, y \right)$, is defined as:
-\[
-    \gamma \left( x, y \right) = E 
-\] 
-
-\end{definition}
-
-\begin{definition}
-
-\end{definition}
-
-%
-% Autocorrelation, Crosscorrelation and Partial Autocorrelation
-% 
-\subsubsection{Autocorrelation, Cross-correlation and Partial Autocorrelation}
-\label{sub:autocorrelation}
-
-{\color{red} Another important feature of most time series is that observations close toghether in time tend to be correlated (serially dependent)}
-
-{\color{red} two unrelated time series will be correlated if they both contain a trend}
-
-Autocorrelation measures the (Pearson) correlation of a time series with a delayed version of itself, and as a function of that delay. Autocorrelation is intended to estimate the degree of similarity of an observation with respect to previous observations.
-
-\begin{definition}
-Let $\{\mathbf{X}_t\}$ be a time series with mean $\mu$ and varianze $\sigma^2$. The \emph{autocorrelation} function, denoted by $\rho$, is defined as:
-\[
-\rho_x(k) = \frac{E\left[\left(x_{t}-\mu\right)\left(x_{t+k}-\mu\right)\right]}{\sigma^{2}}
-\]
-The value $k$ is called \emph{lag}.
-\end{definition}
-
-The autocorrelation function is not defined for all time series, because the mean may not exist (time series with a trend), or the variance may be zero (constant time series). A time series for which the autocorrelation is defined is called \emph{second order stationary}.
-
-The \emph{sample autocorrelation} is computed in practice by:
-\[
-\hat{\rho}_x(k) = \frac{ \frac{1}{n}\sum_{t=1}^{n-k}\left(x_{t}-\bar{x}\right)\left(x_{t+k}-\bar{x}\right) }{ \left( \frac{1}{n}\sum_{t=1}^{n}\left(x_{t}-\bar{x}\right) \right)^2 }
-\]
-On the contrary of what happened with autocorrelation, sample autocorrelation is defined in case of time series with a trend. However, we must be carefull about the interpretation of the results. In general, sample autocorrelation is applied over the residuals of a time series once the trend and the seasonal components have been removed.
-
-A correlogram is a plot of the sample autocorrelations $\hat{\rho}(k)$ versus time lags $k$ (see Figure {\color{red} XXX}). The dotted lines are drawn at $-\frac{1}{n}\pm\frac{2}{\sqrt{n}}$. If $\hat{\rho}(k)$ is outside these lines for a value of $k$ we have evidence against the null hypothesis that $\hat{\rho}(k)=0$ at the $5\%$ level (See Section {\color{red} XXX}). It is expected that $5\%$ of the estimates $\hat{\rho}(k)$ fall outside these lines.
-
-\begin{example}
-{\color {red} TODO: Insert Figure. If the example is drawn using matplotlib.pyplot.acorr, the above paragraph is not true. Investigate how the shared areas in the correlogram used by matplotlib are computed.}
-\end{example}
-
-Crosscorrelation measures ...
-
-\begin{definition}
-Let $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ be time series with means $\mu_x$ and $\mu_y$ and variances $\sigma_x^2$ and $\sigma_y^2$. The \emph{crosscorrelation} function, denoted by $\rho$, is defined as:
-\[
-\rho_{x,y}(k) = \frac{E\left[\left(x_{t+k}-\mu_x\right)\left(y_t-\mu_y\right)\right]}{\sigma_x \sigma_y}
-\]
-The value $k$ is called \emph{lag}.
-\end{definition}
-
-If the crosscorrelation is defined it is said that the combined model is \emph{second order stationary}.
-
-The \emph{sample crosscorrelation} is computed in practice by:
-\[
-\hat{\rho}_{x,y}(k) = \frac{ \frac{1}{n}\sum_{t=1}^{n-k}\left(x_{t}-\bar{x}\right)\left(y_{t+k}-\bar{y}\right) }{ \frac{1}{n}\sum_{t=1}^{n}\left(x_{t}-\bar{x}\right) \frac{1}{n}\sum_{t=1}^{n}\left(y_{t}-\bar{y}\right) }
-\]
-
-In general, sample crosscorrelation is applied over the residuals of both time series once trends and the seasonal components have been removed.
-
-In the same way we draw a correlogram we can plot a crosscorrelogram of the crosscorrelation between to time series.
-
-\begin{example}
-{\color {red} TODO: Insert Figure. If the example is drawn using matplotlib.pyplot.acorr, the above paragraph is not true. Investigate how the shared areas in the correlogram used by matplotlib are computed.}
-\end{example}
+% A possible approach to forecas future values of a time-series based variable is to extrapolate the current trend and to apply some adaptative estimations.
 
 
-% Structural Time Series
-\subsubsection{Structural Time Series}
+% \subsubsection{Exponential Smoothing}
 
-{\color{red} A univariate structural time series model is one which is formulated in terms of components which, although unobservable, have a direct interpretation. It not only provides the basis for making predictions of future observations, but it also provides a description of the salient features of a time series.}
+% \begin{definition}
+% Let's $x$ and $y$ two time series. The cross covariance function of $x$ and $y$ as a function of a lag $k$, denoted $\gamma \left( x, y \right)$, is defined as:
+% \[
+%     \gamma \left( x, y \right) = E 
+% \] 
 
-Examples of structural components could be a trend, a seasonal effect, a cycle, an intervention, or the noise.
+% \end{definition}
 
-\begin{definition}
-Let $\mathbf{x}_t$ be a time series. The structural decomposition of $\mathbf{x}_t$ in given by
-\[
-y_t = \mu_t + \psi_t + \gamma_t + \ldots + \varepsilon_t
-\]
-where $\mu_t, \psi_t, \gamma_t, \ldots$ is a finite collection of additive stochastic terms, called structural components, and $\varepsilon_t$ is a random term composed by independent and identically distributed samples with zero mean. 
-\end{definition}
+% \begin{definition}
 
-\begin{example}
-dd
-\end{example}
+% \end{definition}
 
-\subsubsection{State Space Model}
+% %
+% % Autocorrelation, Crosscorrelation and Partial Autocorrelation
+% % 
+% \subsubsection{Autocorrelation, Cross-correlation and Partial Autocorrelation}
+% \label{sub:autocorrelation}
 
-\begin{definition}
-Let $y_t$ be a time series. The state space decomposition of $y_t$ is given by
-\begin{align*}
-    & y_t          \quad = \mathbf{Z}_t \alpha_t + \epsilon_t \\
-    & \alpha_{t+1} \quad = \mathbf{T}_t \alpha_t + \mathbf{R}_t \eta_t
-\end{align*}
-where
-\begin{align*}
-    & \alpha_t     \quad explain \\
-    & \mathbf{Z}_t \quad explain \\
-    & \mathbf{T}_t \quad explain
-\end{align*}
+% {\color{red} Another important feature of most time series is that observations close toghether in time tend to be correlated (serially dependent)}
 
-\begin{equation}
-    \label{eq:measurement_equation}
-    \mathbf{y} = f\left( \mathbf{X} \right) + \epsilon
-\end{equation}
+% {\color{red} two unrelated time series will be correlated if they both contain a trend}
 
-measurement equation and transition equation
+% Autocorrelation measures the (Pearson) correlation of a time series with a delayed version of itself, and as a function of that delay. Autocorrelation is intended to estimate the degree of similarity of an observation with respect to previous observations.
 
-\end{definition}
+% \begin{definition}
+% Let $\{\mathbf{X}_t\}$ be a time series with mean $\mu$ and varianze $\sigma^2$. The \emph{autocorrelation} function, denoted by $\rho$, is defined as:
+% \[
+% \rho_x(k) = \frac{E\left[\left(x_{t}-\mu\right)\left(x_{t+k}-\mu\right)\right]}{\sigma^{2}}
+% \]
+% The value $k$ is called \emph{lag}.
+% \end{definition}
 
-% Multivariate Time Series
-\subsubsection{Mulivariate Time Series}
+% The autocorrelation function is not defined for all time series, because the mean may not exist (time series with a trend), or the variance may be zero (constant time series). A time series for which the autocorrelation is defined is called \emph{second order stationary}.
 
-{\color{red} TODO: Introduce this section.}
+% The \emph{sample autocorrelation} is computed in practice by:
+% \[
+% \hat{\rho}_x(k) = \frac{ \frac{1}{n}\sum_{t=1}^{n-k}\left(x_{t}-\bar{x}\right)\left(x_{t+k}-\bar{x}\right) }{ \left( \frac{1}{n}\sum_{t=1}^{n}\left(x_{t}-\bar{x}\right) \right)^2 }
+% \]
+% On the contrary of what happened with autocorrelation, sample autocorrelation is defined in case of time series with a trend. However, we must be carefull about the interpretation of the results. In general, sample autocorrelation is applied over the residuals of a time series once the trend and the seasonal components have been removed.
 
-A time series could be multivariate, where a dependant variable $\{ x_{m+1} \}$ is sampled toghether with a collection of $m$ independent variables $\{ \mathbf{x}_i \}$.
+% A correlogram is a plot of the sample autocorrelations $\hat{\rho}(k)$ versus time lags $k$ (see Figure {\color{red} XXX}). The dotted lines are drawn at $-\frac{1}{n}\pm\frac{2}{\sqrt{n}}$. If $\hat{\rho}(k)$ is outside these lines for a value of $k$ we have evidence against the null hypothesis that $\hat{\rho}(k)=0$ at the $5\%$ level (See Section {\color{red} XXX}). It is expected that $5\%$ of the estimates $\hat{\rho}(k)$ fall outside these lines.
 
-\begin{definition}
-A \emph{multivariate time series} of length $n \in \mathbb{N}$ composed by $m+1 \in \mathbb{N}$ variables, denoted by $\{ \mathbf{x}^i_t : i=1, \ldots, m+1 \; \text{and} \; t=1, \ldots, n\}$ or $\{ \mathbf{x}_t \}$, is a sequence $\{ \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n \}$ of \emph{observed vector values}. The time series $\{ \mathbf{x}^{m+1} \}$ is called the \emph{independent variable}, and the time series $\{ \mathbf{x}^i : i=1, \ldots m\}$ the \emph{dependant variables}.
-\end{definition}
+% \begin{example}
+% {\color {red} TODO: Insert Figure. If the example is drawn using matplotlib.pyplot.acorr, the above paragraph is not true. Investigate how the shared areas in the correlogram used by matplotlib are computed.}
+% \end{example}
 
-{\color{red} TODO: cross-correlation and partial cross-correlation.}
+% Crosscorrelation measures ...
+
+% \begin{definition}
+% Let $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ be time series with means $\mu_x$ and $\mu_y$ and variances $\sigma_x^2$ and $\sigma_y^2$. The \emph{crosscorrelation} function, denoted by $\rho$, is defined as:
+% \[
+% \rho_{x,y}(k) = \frac{E\left[\left(x_{t+k}-\mu_x\right)\left(y_t-\mu_y\right)\right]}{\sigma_x \sigma_y}
+% \]
+% The value $k$ is called \emph{lag}.
+% \end{definition}
+
+% If the crosscorrelation is defined it is said that the combined model is \emph{second order stationary}.
+
+% The \emph{sample crosscorrelation} is computed in practice by:
+% \[
+% \hat{\rho}_{x,y}(k) = \frac{ \frac{1}{n}\sum_{t=1}^{n-k}\left(x_{t}-\bar{x}\right)\left(y_{t+k}-\bar{y}\right) }{ \frac{1}{n}\sum_{t=1}^{n}\left(x_{t}-\bar{x}\right) \frac{1}{n}\sum_{t=1}^{n}\left(y_{t}-\bar{y}\right) }
+% \]
+
+% In general, sample crosscorrelation is applied over the residuals of both time series once trends and the seasonal components have been removed.
+
+% In the same way we draw a correlogram we can plot a crosscorrelogram of the crosscorrelation between to time series.
+
+% \begin{example}
+% {\color {red} TODO: Insert Figure. If the example is drawn using matplotlib.pyplot.acorr, the above paragraph is not true. Investigate how the shared areas in the correlogram used by matplotlib are computed.}
+% \end{example}
+
+
+% % Structural Time Series
+% \subsubsection{Structural Time Series}
+
+% {\color{red} A univariate structural time series model is one which is formulated in terms of components which, although unobservable, have a direct interpretation. It not only provides the basis for making predictions of future observations, but it also provides a description of the salient features of a time series.}
+
+% Examples of structural components could be a trend, a seasonal effect, a cycle, an intervention, or the noise.
+
+% \begin{definition}
+% Let $\mathbf{x}_t$ be a time series. The structural decomposition of $\mathbf{x}_t$ in given by
+% \[
+% y_t = \mu_t + \psi_t + \gamma_t + \ldots + \varepsilon_t
+% \]
+% where $\mu_t, \psi_t, \gamma_t, \ldots$ is a finite collection of additive stochastic terms, called structural components, and $\varepsilon_t$ is a random term composed by independent and identically distributed samples with zero mean. 
+% \end{definition}
+
+% \begin{example}
+% dd
+% \end{example}
+
+% \subsubsection{State Space Model}
+
+% \begin{definition}
+% Let $y_t$ be a time series. The state space decomposition of $y_t$ is given by
+% \begin{align*}
+%     & y_t          \quad = \mathbf{Z}_t \alpha_t + \epsilon_t \\
+%     & \alpha_{t+1} \quad = \mathbf{T}_t \alpha_t + \mathbf{R}_t \eta_t
+% \end{align*}
+% where
+% \begin{align*}
+%     & \alpha_t     \quad explain \\
+%     & \mathbf{Z}_t \quad explain \\
+%     & \mathbf{T}_t \quad explain
+% \end{align*}
+
+% \begin{equation}
+%     \label{eq:measurement_equation}
+%     \mathbf{y} = f\left( \mathbf{X} \right) + \epsilon
+% \end{equation}
+
+% measurement equation and transition equation
+
+% \end{definition}
+
+% % Multivariate Time Series
+% \subsubsection{Mulivariate Time Series}
+
+% {\color{red} TODO: Introduce this section.}
+
+% A time series could be multivariate, where a dependant variable $\{ x_{m+1} \}$ is sampled toghether with a collection of $m$ independent variables $\{ \mathbf{x}_i \}$.
+
+% \begin{definition}
+% A \emph{multivariate time series} of length $n \in \mathbb{N}$ composed by $m+1 \in \mathbb{N}$ variables, denoted by $\{ \mathbf{x}^i_t : i=1, \ldots, m+1 \; \text{and} \; t=1, \ldots, n\}$ or $\{ \mathbf{x}_t \}$, is a sequence $\{ \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n \}$ of \emph{observed vector values}. The time series $\{ \mathbf{x}^{m+1} \}$ is called the \emph{independent variable}, and the time series $\{ \mathbf{x}^i : i=1, \ldots m\}$ the \emph{dependant variables}.
+% \end{definition}
+
+% {\color{red} TODO: cross-correlation and partial cross-correlation.}
 
 %
 % Minimum Message Length
@@ -752,198 +897,161 @@ A \emph{multivariate time series} of length $n \in \mathbb{N}$ composed by $m+1 
 \section{Minimum Message Length}
 \label{sec:MML}
 
-The \emph{Minimum Message Length} (MML) is based on the idea that a good theory, or explanation, for a dataset is a small collection of premises under which the data is not surprising. The best theories are those which are short, able to explain most of the data, and with a high accuracy. An \emph{explanation message} is composed by two parts: the fist part comprises all the premises induced from the data, including numerical values; the second part contains all the data that cannot be derived from the premises. The message also assumes the existence of some already known and accepted premises (prior knowledge). Given the prior premises and the message it should be possible to recover the original dataset. According to the MML, theories are not rejected due to contradictory measurements, they only make the second part of the message longer.
+The \emph{Minimum Message Length} (MML) principle is based on the idea that a good theory, or explanation, for a dataset is a small collection of premises under which the data is not surprising. The best theories are those that are concise, explain most of the data, and achieve high accuracy. An \emph{explanation message} is composed of two parts: the first part comprises all the premises induced from the data, including numerical values; the second part contains all the data that cannot be derived from these premises. The message also assumes the existence of some already known and accepted premises (prior knowledge). Given the prior premises and the message, it should be possible to recover the original dataset. According to the MML principle, theories are not rejected because of contradictory measurements; such contradictions only increase the length of the second part of the message.
 
-In the MML principle, a message is a lossless encoded version of the original data. The first part of the message contains a probabilistic model about the data, and the second part is the data encoded using this model. We are interested in finding the shortest possible explanation message. If the length of the explanation message is longer than the original data, the theory is considered unacceptable.
+In the MML framework, a message is a losslessly encoded version of the original data. The first part of the message contains a probabilistic model of the data, and the second part is the data encoded using this model. Our goal is to find the shortest possible explanation message. If the length of the explanation message is longer than that of the raw data, the theory is considered inadequate.
 
-Bayes' theorem (see Theorem \ref{th:bayes}) states that the probability $P(H \mid E)$ of a hypothesis $H$ given an evidence $E$ is:
+Bayes' theorem (see Theorem \ref{th:Bayes_theorem}) states that the probability $P(H \mid E)$ of a hypothesis $H$ given evidence $E$ is:
 \[
-    P(H \mid E) = \frac{ P( E \mid H ) P(H) }{ P(E) }
+    P(H \mid E) = \frac{ P( E \mid H ) P(H) }{ P(E) }.
 \]
-We are interested in finding the hypothesis $H$ with the highest posterior probability $P(H \mid E)$ of being true, assuming a fixed evidence $E$. That is, we are looking for maximize $P( E \mid H ) P(H)$ or, equivalently, maximize $P ( H \wedge E )$.
+We are interested in finding the hypothesis $H$ with the highest posterior probability $P(H \mid E)$, assuming a fixed evidence $E$. That is, we want to maximize $P( E \mid H ) P(H)$, or equivalently, maximize the joint probability $P ( H \wedge E )$.
 
-The \emph{Minimum Message Length} principle (MML for short) is based on the idea that the length of encoding $H \wedge E$ as a binary string using an optimal code is equal to $- \log_2 P ( H \wedge E )$ (see Theorem \ref{th:optimal_codes}). That is:
+The \emph{Minimum Message Length} principle (MML for short) builds on the fact that, using an optimal code, the length of encoding $H \wedge E$ as a binary string is given by $- \log_2 P ( H \wedge E )$ (see Theorem \ref{th:optimal_codes}). That is:
+\begin{equation*}
+\begin{split}
+l(H \wedge E) & = - \log_2 P ( H \wedge E ) = - \log_2 \big(P( E \mid H ) P(H)\big) \\
+              & = - \log_2 P( E \mid H ) - \log_2 P(H).
+\end{split}
+\end{equation*}
+Thus, the most probable model $H$ is the one that allows us to encode $H \wedge E$ with the shortest possible binary string. This encoded string consists of two parts: a general assertion about the data (the model itself) and a detailed description of the data given that assertion.
+
+Let $\mathbb{X}$ be the discrete set of all possible datasets, $\mathcal{X}$ a random variable taking values in $\mathbb{X}$, and $f(X \mid \theta)$ a probability distribution for $\mathcal{X}$ parameterized by $\theta$.
+
+\begin{definition}
+Let $\Theta$ be a discrete set of possible parameters for $f$, with prior probability distribution $h(\theta)$ for $\theta \in \Theta$, and let $\hat\theta \in \Theta$ be an inferred parameter. An \emph{assertion} is the encoded version of $\hat\theta$ using an optimal code given the distribution $h$.
+\end{definition}
+
+The length of the assertion using an optimal binary code is $- \log_2 h(\hat\theta)$ (see Section \ref{sec:Optimal-Codes}). Note that $\theta$ could be a single scalar or a vector of values. Moreover, $\theta$ could index more than one family of probability distributions $f$.
+
+\begin{definition}
+Let $X \in \mathbb{X}$ be a dataset, and $\hat \theta \in \Theta$ an inferred value for the distribution $f$. A \emph{detail} is the encoded version of $X$ using an optimal code given the probability distribution $f(X \mid \hat\theta)$.
+\end{definition}
+
+The length of the detail using an optimal binary code is $- \log_2 f( X \mid \hat\theta )$. In other words, the length of the detail is the negative log-likelihood of $X$ given $\hat\theta$.
+
+\begin{definition}
+Let $X \in \mathbb{X}$ be a dataset, and $\hat \theta \in \Theta$ an inferred value for the distribution $f$. A \emph{message} for the dataset $X$ given an inference $\hat\theta$ is the concatenation of the assertion for $\hat\theta$ and the corresponding detail for $X$ given $\hat\theta$.
+\end{definition}
+
+The length of a message using an optimal binary code is $- \log_2 h \left( \hat\theta \right) - \log_2 f \left( X \mid \hat\theta \right)$. This length allows us, for example, to compare the posterior plausibility of two competing explanations or hypotheses $\hat\theta_1$ and $\hat\theta_2$.
+
+\begin{definition}
+Let $X \in \mathbb{X}$ be a dataset. The \emph{Minimum Message Length} of $X$, denoted by $MML(X)$, is defined as:
 \[
-    l(H \wedge E) = - \log_2 P ( H \wedge E ) = - \log_2 P( E \mid H ) P(H) = - \log_2 P( E \mid H ) - \log_2 P(H)
+MML(X) = \argmin_{\hat\theta \in \Theta} \left( - \log_2 h \left( \hat\theta \right) - \log_2 f \left( X \mid \hat\theta \right) \right).
 \]
-The most probable model $H$ would be that model that allows us to encode $H \wedge E$ with the shortest possible string. The encoded string would be composed by two parts, a general assertion about the data, and a detailed description of the data assuming that the assertion is true.
-
-Let $\mathbb{X}$ be a discrete set composed by all possible datasets, $\mathcal{X}$ a random variable taking values on $\mathbb{X}$, and $f(X \mid \theta)$ a probability distribution for $\mathcal{X}$ given the parameter $\theta$.
-
-\begin{definition}
-    Let $\Theta$ be a discrete set of possibles parameters for $f$ with probability distribution $h(\theta) \, \theta \in \Theta$, and let $\hat\theta \in \Theta$ be an inferred parameter. An \emph{assertion} is the encoded version of $\hat\theta$ using an optimal code given the probability distribution $h$.
 \end{definition}
 
-The length of the assertion given an optimal binary code is $- \log_2 h(\hat\theta)$ (see Section {\ref{sec:Optimal-Codes}). Note that $\theta$ could be a single scalar or a vector of values. Moreover, $\theta$ could be related to more than one family of probability distributions $f$.
-
-\begin{definition}
-    Let $X \in \mathbb{X}$ be a dataset, and $\hat \theta \in \Theta$ an inferred value for the distribution $f$. A \emph{detail} is the encoded version of $X$ using an optimal code given the probability distribution $f(X \mid \hat\theta)$.
-\end{definition}
-
-The length of the detail given an optimal binary code is $- \log_2 f( X \mid \hat\theta )$. That is, the length of the detail is the negative of the log-likelihood of $X$ given $\hat\theta$.
-
-\begin{definition}
-    Let $X \in \mathbb{X}$ be a dataset, and $\hat \theta \in \Theta$ an inferred value for the distribution $f$ A \emph{message} for the dataset $X$ given an inference $\hat\theta \in \Theta$ is the concatenation of the assertion for $\hat\theta$ and the corresponding detail for $X$ given $\theta$.
-\end{definition}
-
-The length of a message given an optimal binary code is $- \log_2 h \left( \hat\theta \right) - \log_2 f \left( X \mid \hat\theta \right)$. The length of a message allow us, for example, to compare the posterior probabilities of two competing explanations or hypotheses $\hat\theta_1$ and $\hat\theta_2$.
-
-\begin{definition}
-    Let $X \in \mathbb{X}$ be a dataset. The \emph{Minimum Message Length} of $X$, denoted by $MML(X)$, is given by:
-    \[
-        MML(X) = \argmin_{\hat\theta \in \Theta} \left( - \log_2 h \left( \hat\theta \right) - \log_2 f \left( X \mid \hat\theta \right) \right)
-    \]
-
-\end{definition}
-
-In practice, the actual messages will not be constructed, since our interest is in the length of the messages, not in their content. It is assumed that the sets $\mathbb{X}$ and $\Theta$ and the functions $f(X \mid \hat\theta)$ and $h(\theta)$ are known a priori, and so, it is not necessary to include them as part of our encoding message.
+In practice, the actual messages are not physically constructed, since we are only interested in their lengths, not in their content. It is assumed that the sets $\mathbb{X}$ and $\Theta$, and the functions $f(X \mid \theta)$ and $h(\theta)$, are known a priori, and thus need not be included as part of the encoded message.
 
 \begin{example}
-    \label{ex:MML}
-    Consider an experiment in which we toss a weighted coin $100$ times. Denote by $1$ if we get a face and $0$ a cross, so that each experiment is a binary string of length $100$. Our collection of all possible datasets is $\mathbb{X} = \mathcal{B}^{100}$, $\theta$ is a number in the interval $[0, 1]$, the likelihood $f (X \mid \theta)$ follows a binomial distribution (that is, $f (X \mid \theta) ) = \theta^n (1-\theta)^{100-n}$ where $n$ is the number of faces in $X$), and since we do not know anything about how the coin is weighted, we could assume that $h(\theta)$ is the uniform distribution in the interval $[0, 1]$ (that is, $h(\theta) = 1$ for $\theta \in \Theta$). Under these assumptions, the length of a message for $X$ given an inferred parameter $\hat\theta$ would be:
-    \[
-        - \log_2 h \left( \hat\theta \right) - \log_2 f \left( X \mid \hat\theta \right) = - n \log_2 \hat\theta - (100-n) \log_2 (1 - \hat\theta)
-    \]
-    We are interested in finding the value of $\hat\theta$ that minimizes the length of the encoded version of $X$, that is, the minimum message length for $X$.
+\label{ex:MML}
+Consider an experiment in which we toss a weighted coin $100$ times. Denote by $1$ a face and by $0$ a cross, so that each experiment produces a binary string of length $100$. Our collection of all possible datasets is $\mathbb{X} = \mathcal{B}^{100}$, $\theta$ is a number in the interval $[0, 1]$, and the likelihood $f (X \mid \theta)$ follows a binomial distribution (that is, $f (X \mid \theta) = \theta^n (1-\theta)^{100-n}$ where $n$ is the number of faces in $X$). Since we do not know anything about how the coin is weighted, we assume that $h(\theta)$ is the uniform distribution over $[0, 1]$ (that is, $h(\theta) = 1$ for $\theta \in \Theta$). Under these assumptions, the length of a message for $X$ given an inferred parameter $\hat\theta$ is:
+\[
+- \log_2 h \left( \hat\theta \right) - \log_2 f \left( X \mid \hat\theta \right) = - n \log_2 \hat\theta - (100-n) \log_2 (1 - \hat\theta).
+\]
+We are interested in finding the value of $\hat\theta$ that minimizes the length of the encoded version of $X$, that is, the minimum message length for $X$.
 \end{example}
 
-A Maximum A Posteriori analysis of the experiment in Example \ref{ex:MML} would provide the same inference for $\hat\theta$ than the Minimum Message Length approach. Moreover, given that $h(\theta)$ follows an uniform distribution, a Maximum Likelihood approach would reach exactly the same value for $\hat\theta$.
+A Maximum A Posteriori (MAP) analysis of the experiment in Example \ref{ex:MML} would produce the same estimate for $\hat\theta$ as the Minimum Message Length approach. Moreover, given that $h(\theta)$ follows a uniform distribution, a Maximum Likelihood Estimation (MLE) approach would yield exactly the same value for $\hat\theta$. This illustrates that MML generalizes MAP and MLE by making explicit the trade-off between model complexity (assertion length) and goodness of fit (detail length).
 
 %
 % Minimum Description Length
 %
-\section{Minimum Description Length}
-\label{sec:MDL}
 
-The \emph{Minimum Description Length} (MDL) principle is a reformulation
-of the Kolmogorov complexity with the goal to make it applicable to
-solve practical problems. MDL explicitly address the two most important
-practical limitations of the Kolmogorov complexity: its uncomputability
-(in general, the Kolmogorov complexity cannot be computed), and the
-large constants involved in the invariance theorem (that makes it
-inapplicable to short strings). The approach of MDL to these problems
-is to scale down Kolmogorov complexity until it does become applicable:
-instead of using general-purpose computer languages, MDL is based
-on fixed languages and coding functions.
+\section{Minimum Message Length}
+\label{sec:MML}
 
-In contrast to Kolmogorov that states that the complexity of a string
-is equal to the length of the shortest program that prints that string,
-MDL proposes that our capacity to learn about a string is equivalent
-to our ability to compress that string. The idea behind MDL is to
-describe a dataset with the help of an hypothesis: the more the hypothesis
-fits the data (and here good fit equals learning), the more we can
-compress the data given that hypothesis.
+The \emph{Minimum Message Length} (MML) principle is a Bayesian approach to inductive inference closely related to the Minimum Description Length (MDL) principle introduced in Section~\ref{sec:MDL}. 
+While MDL was developed as a practical reformulation of Kolmogorov complexity, MML was originally proposed by Wallace and Boulton in 1968 as a formal method for statistical inference grounded in information theory and Bayesian probability.
 
-In our particular case, we are interested in MDL because it will allow
-us to compute the nescience of a topic given a dataset, instead of
-requiring a text describing the topic. Thus, given a topic $t$ and
-a sample dataset $D=\left\{ x_{1},x_{2},\ldots,x_{n}\right\} $, the
-nescience of a particular hypothesis $H$ will be related to the capacity
-of that hypothesis to compress the dataset.
+Both MDL and MML share the fundamental insight that \emph{learning can be understood as compression}: a good model of the data is one that allows the data to be described concisely. 
+However, while MDL is rooted in coding theory and emphasizes designing universal codes for classes of models, MML is firmly rooted in Bayesian statistics and emphasizes probabilistic inference.
+In MDL the model cost and the data cost are combined using coding arguments, while in MML they are combined using Bayes’ theorem.
 
-MDL comes into two versions, \emph{simplified (two-part code) MDL}
-and \emph{refined MDL}. Simplified MDL is easier to understand, and
-it will allows us to introduce some important concepts and notation.
-The extension of the concept of nescience to datasets will be based
-on the refined version of MDL.
+Like MDL, MML represents the communication of a dataset $D=\{x_1,\ldots,x_n\}$ as a two-part message:
+\begin{enumerate}
+    \item The first part describes a hypothesis $H$ (including its parametric form and numerical parameter values).
+    \item The second part describes the data $D$ given that the receiver already knows $H$.
+\end{enumerate}
 
-
-    {\color{red} TODO: Explain how this relates to cross entropy}
-
-
-In this section we are going to introduce the two-part code version
-of the minimum description length principle for probabilistic models.
-
-\emph{Given a set of candidate models (a set of probability distributions
-    (for example first-order Markov chains) or functions of the same functional
-    form (for example the kth degree polynomials)) $\mathcal{H^{\left(\text{1}\right)}},\mathcal{H}^{\left(2\right)},\ldots$
-    the simplified,} \emph{two-part version,} \emph{of the} Minimum Description
-Length Principle \cite{Gr=0000FC05}\emph{ states that the best point
-    hypothesis (a single probability distribution (e.g. a Markov chain
-    will all parameters values specified) $H\in\mathcal{H^{\left(\text{1}\right)}}\cup\mathcal{H}^{\left(2\right)}\cup\ldots$
-    to explain the data $D=\left(x_{1},\ldots,x_{n}\right)\in\mathcal{X}^{n}$
-    is the one that minimizes the sum $L(M)+L(D\mid M)$, where $L(M)$
-    is the length (in bits) of the model description, and $L(D\mid M)$
-    is the length (in bits) of the data encoded with the help of the hypothesis
-    ... there is only one reasonable choice for this code ... the so-called
-    Shannon-Fano code ... Each hypothesis $H$ may be viewed as a probability
-    distribution over $\mathcal{X}^{n}$. For each such distribution there
-    exists a code with length function $L$ such that for all $x^{n}\in\mathcal{X}^{n}$
-    we have that $L\left(x^{n}\right)=-\log_{2}P\left(x^{n}\mid H\right)$.
-    The quantity $L(M)$ depends on each model.}
-
-\emph{A description of the data ``with the help of'' a hypothesis
-    means that the better the hypothesis fits the data, the shorter the
-    description will be. A hypothesis that fits the data well gives us
-    a lot of information about the data. Such information can always be
-    used to compress the data. This is because we only have to code the
-    errors the hypothesis makes on the data rather than the full data.}
-
-\emph{The sum of the two description length will be minimized at a
-    hypothesis that is quite (but not too) ``simple'', with a good (but
-    not perfect) fit.}
-
-The length of the data given the model, that is, \emph{$L(D\mid M)$.}
-
+Formally, the total message length is
 \[
-    -\log P(D)=L_{C}(D)
+L(H,D) = L(H) + L(D \mid H),
+\]
+where $L(H)$ is the codelength (in bits) of describing the hypothesis, and $L(D \mid H)$ is the codelength of the data encoded using that hypothesis.
+
+Under information theory, the Shannon–Fano code assigns an optimal codelength of $-\log_2 P(D\mid H)$ bits to data $D$ when using hypothesis $H$. Thus,
+\[
+L(D\mid H) = -\log_2 P(D\mid H).
 \]
 
-
-This choice for C gives a short codelegth to sequences which have
-high probability according to (k, ttita) while it gives a high codelength
-to sequences with low probability. The codelength thus directly reflects
-the goodness-of-fit of the data with respect to (k,tita) measured
-in terms of the probability fo D according to (k,tita).
-
-When we say we ``code the data D with the help of probabilistic hypothesis
-P'' we mean that we code D using the Shannon-Fano code corresponding
-to P.
-
+The first part $L(H)$ is determined by the prior probability of $H$:
 \[
-    L(D\mid P):=-\log P(D)
+L(H) = -\log_2 P(H),
+\]
+where $P(H)$ is a prior density over hypotheses. 
+
+By Bayes’ theorem, minimizing the total message length is equivalent to maximizing the posterior probability of $H$:
+\[
+P(H\mid D) \propto P(H)\,P(D\mid H) \quad\Longleftrightarrow\quad 
+\arg\min_H L(H)+L(D\mid H).
 \]
 
+This gives MML a clear Bayesian interpretation: the best model is the one that achieves the greatest compression of the data \emph{and} has the highest prior plausibility.
 
-the code with these lengths is the only one that would be optimal
-if P where true. (mention we are only interested in code lengths,
-we are not interested in to find the code itself).
-
-For \emph{$L(M)$ we use the standard code for integers.}
+The term $L(D\mid H)=-\log_2 P(D\mid H)$ is the empirical negative log-likelihood of $H$ on $D$. 
+If the dataset $D$ is drawn from an unknown true distribution $P^\ast$, then for large $n$ this term approaches the \emph{cross-entropy} between $P^\ast$ and $P_H$:
+\[
+\frac{1}{n}L(D\mid H)\ \approx\ H(P^\ast,P_H) = -\sum_{x} P^\ast(x)\log_2 P_H(x).
+\]
+Minimizing this cross-entropy encourages models that assign high probability to the observed data, while the prior term $L(H)$ penalizes overly complex hypotheses. 
+This provides a natural protection against overfitting: complex models that perfectly fit the sample may have very small $L(D\mid H)$ but incur a large $L(H)$, whereas overly simple models may have small $L(H)$ but large $L(D\mid H)$.
 
 \begin{example}
-    Markov Chain Hypothesis Selection: Suppose we are given data $D X\textasciicircum{}n$
-    where $X=\{0,1\}$. We seek a reasonable model for D that allows us to
-    make good predictions of future data coming from the same source.
-    We decide to model our data using the cass B o all Markov chains ${[}...{]}$
-    we face the problem of overfitting: for a given sequence $D=(x1,...,xn)$,
-    there may be a Markov chain P of very high order that fits data D
-    quite well but that will behave very badly when predicting future
-    data from the same source.
+Suppose we are given a binary sequence $D=(x_1,\dots,x_n)$ and consider two candidate hypotheses: 
+$H_1$, a Bernoulli model with parameter $\theta$, and 
+$H_2$, a first-order Markov chain with four parameters.
+
+Under MML, the message length of $H_1$ would be
+\[
+L(H_1) + L(D\mid H_1) = -\log_2 P(H_1) - \log_2 P(D\mid \theta),
+\]
+where $P(\theta)$ is a prior over the Bernoulli parameter. 
+Similarly, the Markov chain would have
+\[
+L(H_2) + L(D\mid H_2) = -\log_2 P(H_2) - \log_2 P(D\mid \theta_{00},\theta_{01},\theta_{10},\theta_{11}).
+\]
+Even if $H_2$ fits the data better (lower $L(D\mid H)$), it may be penalized for its greater complexity via $L(H_2)$, leading to the selection of the simpler $H_1$ if the data does not justify the extra parameters.
 \end{example}
 
-\subsection{Refined MDL}
+The MML principle states that the best explanation for a dataset is the one that minimizes the total length of a two-part message describing both the model and the data. 
+This connects statistical inference and data compression: 
+\[
+\boxed{\arg\min_H \big(-\log_2 P(H) - \log_2 P(D\mid H)\big)}
+\]
+which is equivalent to Bayesian MAP estimation expressed in information-theoretic terms. 
+In practice, MML provides a robust framework for model selection, avoiding overfitting by balancing model complexity and goodness of fit, and offering a computable alternative to the ideal but uncomputable notion of Kolmogorov complexity.
 
-\emph{In refined MDL, we associate a code for encoding $D$ not with
-    a single $H\in\mathcal{H}$ but with the full model $\mathcal{H}$
-    ... we design a single one-part code with lengths $\bar{L}\left(D\mid H\right)$
-    (called the stochastic complexity of the data given the model). This
-    code is designed such that whenever there is a member of (parameter
-    in) $\mathcal{H}$ that fits the data well, in the sense the $L\left(D\mid H\right)$
-    is small, then the codelenth $\bar{L}\left(D\mid H\right)$ will also
-    be small. Codes with this property are called universal codes.}
+\subsection{Comparison between MDL and MML}
+\label{sec:MDL_vs_MML}
 
-\emph{There are at least four types of universal codes:}
-\begin{enumerate}
-    \item \emph{The normalized maximum likelihood (NML) code and its variations.}
-    \item \emph{The Bayesian mixture code and its variations.}
-    \item \emph{The prequential plug-in code.}
-    \item \emph{The two-part code.}
-\end{enumerate}
-\emph{Refined MDL is a general theory of inductive inference based
-    on universal codes that are designed to be minimax, or close to minimax
-    optimal. It has mostly been developed for model selection, estimation
-    and prediction.}
+Although the Minimum Description Length (MDL) and Minimum Message Length (MML) principles are closely related and often yield similar practical results, they are conceptually and technically distinct. Both are rooted in information theory and share the central idea that learning is equivalent to compression: the best hypothesis is the one that gives the shortest description of the data. However, they approach this idea from different philosophical and mathematical standpoints.
+
+MDL is rooted in coding theory and algorithmic information theory. It was designed as a computable approximation to Kolmogorov complexity. MML, in contrast, is rooted in Bayesian statistics and formal decision theory. 
+While MDL begins with the design of universal codes over sets of hypotheses, MML starts from a Bayesian prior over hypotheses and applies Bayes’ theorem to produce an optimal code.
+
+MDL does not require an explicit prior over models: the description length of a hypothesis is determined by a chosen coding scheme, and priors are only implicit in the choice of that scheme. MML, on the other hand, explicitly incorporates prior probabilities $P(H)$ over hypotheses, making the prior an integral part of the inference process. 
+This gives MML a clear Bayesian interpretation, while MDL is often regarded as a frequentist or agnostic method.
+
+In its refined form, MDL encodes the data using a \emph{one-part universal code} for the whole model class, which avoids having to specify the parameter values explicitly. MML always uses a \emph{two-part message}: first the model (with its parameter values), then the data given the model. 
+This makes MML closer to Maximum A Posteriori (MAP) estimation, whereas refined MDL is closer to minimax-optimal universal coding.
+
+In MDL, the model description length is a tool to penalize complex models and is not necessarily interpretable as a probability. In MML, the model description length is explicitly the negative log of the prior probability, $L(H) = -\log_2 P(H)$, and the data length is the negative log-likelihood, $L(D\mid H) = -\log_2 P(D\mid H)$.
+
+In practice, MDL is often used for model selection and structure learning when explicit priors are unavailable or undesirable, while MML is preferred when strong prior knowledge about the models or parameters is available. 
+Both criteria penalize overfitting by trading off model complexity against data fit, but they do so under different philosophical assumptions.
 
 %
 % Section: Multiobjective Optimization
@@ -952,24 +1060,24 @@ For \emph{$L(M)$ we use the standard code for integers.}
 \section{Multiobjective Optimization}
 \label{sec:multiobjective_optimization}
 
-Multiobjective optimization is the area of mathematics that deals with the problem of simultaneously optimizing two or more conflicting functions. Multiobjective optimization has been applied in many areas of science, including engineering, economics and logistics, where there is no single solution that simultaneously satisfies all objectives, so a decision must be made in the presence of trade-offs between the conflicting goals.
+Multiobjective optimization is the area of mathematics that deals with the problem of simultaneously optimizing two or more conflicting functions. It has been applied in many areas of science, including engineering, economics, and logistics, where there is typically no single solution that simultaneously satisfies all objectives. In such situations, a decision must be made in the presence of trade-offs between the conflicting goals.
 
 From a formal point of view, we are interested in solving the following \emph{multiobjective optimization} problem:
 \begin{align*}
      & \text{minimize}	  \quad \left\{f_1(\mathbf{x}), f_2(\mathbf{x}), \ldots, f_k(\mathbf{x}) \right\} \\
      & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}
 \end{align*}
-where $f_i:\mathbb{R}^n \rightarrow \mathbb{R}$, $i = 1, \ldots, k$, are two or more objective \emph{objective functions}, and the nonempty set $\mathbf{S} \subset \mathbb{R}^n$ is the \emph{feasible region}, whose elements $\mathbf{x} = \left( x_1, x_2, \ldots, x_n \right)$ are \emph{decision vectors}. The image of the feasible region $f(\mathbf{S}) \subset \mathbb{R}^k$, denoted by $\mathbf{Z}$, is called \emph{objective region}, and its elements $\mathbf{z} = \left(f_1(\mathbf{x}), f_2(\mathbf{x}), \ldots, f_k(\mathbf{x}) \right)$ \emph{objective vectors}. In some applications, the feasible region is formed by a collection of inequality constraints $\mathbf{S} = \{ \mathbf{x} \in \mathbb{R}^n \mid g(\mathbf{x}) = \left( g_1(\mathbf{x}), \ldots, g_m(\mathbf{x}) \right) \leq 0 \}$.
+where $f_i:\mathbb{R}^n \rightarrow \mathbb{R}$, $i = 1, \ldots, k$, are two or more \emph{objective functions}, and the nonempty set $\mathbf{S} \subset \mathbb{R}^n$ is the \emph{feasible region}, whose elements $\mathbf{x} = \left( x_1, x_2, \ldots, x_n \right)$ are \emph{decision vectors}. The image of the feasible region $f(\mathbf{S}) \subset \mathbb{R}^k$, denoted by $\mathbf{Z}$, is called the \emph{objective region}, and its elements $\mathbf{z} = \left(f_1(\mathbf{x}), f_2(\mathbf{x}), \ldots, f_k(\mathbf{x}) \right)$ are \emph{objective vectors}. In some applications, the feasible region is defined by a collection of inequality constraints $\mathbf{S} = \{ \mathbf{x} \in \mathbb{R}^n \mid g(\mathbf{x}) = \left( g_1(\mathbf{x}), \ldots, g_m(\mathbf{x}) \right) \leq 0 \}$.
 
-In this book we will be dealing with nonlinear multiobjective minimization problems, where at at least one of the objective functions, or the constraint functions, is not linear. Objective functions can be also incommensurable, that is, measured in different units or in different scales.
+In this book we will be dealing with nonlinear multiobjective minimization problems, where at least one of the objective functions or constraint functions is not linear. Objective functions can also be incommensurable, that is, measured in different units or on different scales.
 
-Since the objective functions are conflicting, it does not exist a single solution that is optimal with respect to every objective function (the objective region is partially ordered). 
+Since the objective functions are conflicting, there does not exist a single solution that is optimal with respect to every objective function (the objective region is only partially ordered). 
 
 \begin{definition}
 A decision vector $\mathbf{x} \in \mathbf{S}$ \emph{dominates} another decision vector $\mathbf{y} \in \mathbf{S}$ if $f_i(\mathbf{y}) \leq f_i(\mathbf{x})$ for all $i \in \{1, \ldots, k\}$ and $f_j(\mathbf{y}) < f_j(\mathbf{x})$ for at least one $j \in \{1, \ldots, k\}$. An objective vector $\mathbf{z} \in \mathbf{Z}$ \emph{dominates} another objective vector $\mathbf{w} \in \mathbf{Z}$ if $w_i \leq z_i$ for all $i \in \{1, \ldots, k\}$ and $w_j < z_j$ for at least one $j \in \{1, \ldots, k\}$.
 \end{definition}
 
-Dominance can be studied from the point of view of decision variable space or objective space. An objective vector dominates another objective vector if, and only if, its corresponding decision vector also dominates the other decision vector.
+Dominance can be studied from the point of view of the decision variable space or the objective space. An objective vector dominates another objective vector if, and only if, its corresponding decision vector also dominates the other decision vector.
 
 We are interested in those objective vectors for which none of its individual components can be improved without deteriorating at least one of the others.
 
@@ -978,38 +1086,96 @@ We are interested in those objective vectors for which none of its individual co
 A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{Pareto optimal} if there does not exists another decision vector $\mathbf{y} \in \mathbf{S}$ such that $\mathbf{y}$ dominates $\mathbf{x}$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is Pareto optimal if there does not exits another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $\mathbf{w}$ dominates $\mathbf{z}$.
 \end{definition}
 
-Pareto optimality can be also studied from the point of view of decision variable space or objective space. An objective vector is Pareto optimal if, and only if, its corresponding decision vector is Pareto optimal.
+Pareto optimality can also be studied from the point of view of the decision variable space or the objective space. An objective vector is Pareto optimal if, and only if, its corresponding decision vector is Pareto optimal.
 
 \begin{definition}
 The set of Pareto optimal solutions, denoted by $\mathbf{P}_D$, is called the \emph{Pareto optiomal set}. The set of Pareto optimal solutions in the space of objectives, denoted by $\mathbf{P}_O$, is called the \emph{Pareto frontier}.
 \end{definition}
 
-Sometimes, in practice, it is convenient to use a more restrictive definition of the concept of optimaily, in which we identify those vectors for which there does not exist any other vector that improves over all the components simultaneously.
+Sometimes, in practice, it is convenient to use a more restrictive definition of optimality, in which we identify those vectors for which there does not exist any other vector that improves over all the components simultaneously.
 
 \begin{definition}
 A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{weakly Pareto optimal} if there does not exist another decision vector $\mathbf{y} \in \mathbf{S}$ such that $f_i ( \mathbf{y} ) < f_i ( \mathbf{x} )$ for all $i = 1, \ldots, k$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is weakly Pareto optimal if there does not exists another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $w_i < z_i$ for all $i = 1, \ldots, k$.
 \end{definition}
 
-An objetive vector is weakly Pareto optimal if its corresponding decision vector is weakly Pareto optimal. Oviously, the Pareto optimal set is a subset of the weakly Pareto optimal set.
+An objective vector is weakly Pareto optimal if its corresponding decision vector is weakly Pareto optimal. Obviously, the Pareto optimal set is a subset of the weakly Pareto optimal set.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.8cm,>=Latex]
+
+% Axes
+\draw[line width=0.6pt] (0,0) -- (11,0) ;
+\draw[line width=0.6pt] (0,0) -- (0,9) ;
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (10.7,0) -- (11,0);
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (0,8.7) -- (0,9);
+
+% Axis labels
+\node[below] at (10.9,0) {$f1$};
+\node[left]  at (0,8.9) {$f2$};
+
+% Helper styles
+\tikzset{
+  ptfilled/.style={circle,fill=black,draw=black,inner sep=1.8pt},
+  pthollow/.style={circle,fill=white,draw=black,inner sep=1.8pt}
+}
+
+% --- Points (approximate positions to match the image) ---
+
+% Leftmost filled points (A and B)
+\node[ptfilled] (Apt) at (1.6,7.3) {};
+\node[ptfilled] (Bpt) at (1.6,5.6) {};
+
+% Label A and B
+\node[left]  at (Apt) {A};
+\node[left]  at (Bpt) {B};
+
+% Nearby hollow point (C) and its label
+\node[pthollow] (Cpt) at (3.0,6.6) {};
+\node[left]  at (3.0,6.6) {C};
+
+% Upper hollow cloud
+\node[pthollow] at (3.8,7.0) {};
+\node[pthollow] at (5.0,7.3) {};
+\node[pthollow] at (6.3,7.0) {};
+\node[pthollow] at (7.6,6.6) {};
+\node[pthollow] at (5.6,8.3) {};
+
+% Middle hollow points
+\node[pthollow] at (4.4,5.9) {};
+\node[pthollow] at (5.2,5.2) {};
+\node[pthollow] at (6.6,5.4) {};
+\node[pthollow] at (7.8,4.9) {};
+\node[pthollow] at (5.0,4.1) {};
+
+% Lower hollow point
+\node[pthollow] at (7.0,3.2) {};
+
+% Filled points along the lower-left boundary (approx. Pareto set)
+\node[ptfilled] at (3.5,4.8) {};
+\node[ptfilled] at (4.6,3.8) {};
+\node[ptfilled] at (6.0,3.1) {};
+\node[ptfilled] at (8.6,1.8) {};
+
+\end{tikzpicture}
+
+\caption{\label{fig:pareto}Pareto optimality.}
+\end{figure}
 
 \begin{example}
 \label{ex:pareto}
-\begin{figure}[h]
-\centering\includegraphics[scale=0.3]{pareto.jpg}
-\caption{\label{fig:pareto}Pareto optimality.}
-\end{figure}
-{\color{red} TODO: Provide an example based on a multi-variable function.} In figure \ref{fig:pareto} we have depicted a sample of the objective region of a multiobjetive optimization problem composed by two real-valued objective functions $f_1$ and $f_2$ that we are interested in minimizing. White points are not weakly Pareto optimal since there exist points that improve both components at the same time (for example, point $\mathbf{B}$ improves point $\mathbf{C}$ in both functions). Black points are weakly Pareto optimal since there is no point that improves both components at the same time. Point $\mathbf{A}$ is not Pareto optimal since point $\mathbf{B}$ improves one component without deteriorating the other.
+In figure \ref{fig:pareto} we have depicted a sample of the objective region of a multiobjetive optimization problem composed by two real-valued objective functions $f_1$ and $f_2$ that we are interested in minimizing. White points are not weakly Pareto optimal since there exist points that improve both components at the same time (for example, point $\mathbf{B}$ improves point $\mathbf{C}$ in both functions). Black points are weakly Pareto optimal since there is no point that improves both components at the same time. Point $\mathbf{A}$ is not Pareto optimal since point $\mathbf{B}$ improves one component without deteriorating the other.
 \end{example}
 
-Mathematically speaking all the solutions that compose the Pareto optimal set are equally good. However, for the majority of the practical applications, it is highly desirable to have a single solution. Finding this solution requires additional information not included in the definition of the optimization problem. The relation of preference between objective function values is expresed using a \emph{decision maker}, that it is supposed to have additional insights about the problem to solve. In this sense, solving a multiobjective optimization problem would require to find those feasible decision vectors that it are Pareto optimal and that satisfy the additional requirements imposed by the decision maker.
+Mathematically speaking, all the solutions that compose the Pareto optimal set are equally good. However, for most practical applications, it is highly desirable to obtain a single solution. Finding this solution requires additional information not included in the definition of the optimization problem. The relation of preference between objective function values is expressed through a \emph{decision maker}, who is assumed to have additional insights about the problem to be solved. In this sense, solving a multiobjective optimization problem requires finding those feasible decision vectors that are Pareto optimal and that also satisfy the additional requirements imposed by the decision maker.
 
 In practice, we assume that the preferences of the decision maker can be expressed using a value function.
 
 \begin{definition}
-A \emph{value function} is a function $U : \mathbb{R}^k \rightarrow \mathbb{R}$ that assigns t each objective vector $\mathbf{z} = \left( z_1, \ldots, z_k \right)$ a single real value $U(\mathbf{z})$.
+A \emph{value function} is a function $U : \mathbb{R}^k \rightarrow \mathbb{R}$ that assigns to each objective vector $\mathbf{z} = \left( z_1, \ldots, z_k \right)$ a single real value $U(\mathbf{z})$.
 \end{definition}
 
-{\color{red} value functions are miximized}
+Value functions are maximized: among all the Pareto optimal objective vectors, the decision maker selects the one that achieves the largest value of $U(\mathbf{z})$. This reflects the idea that the decision maker aggregates multiple criteria into a single utility score and prefers the alternative that yields the highest overall satisfaction. In this way, a multiobjective optimization problem is converted into a single-objective problem over the Pareto frontier.
 
 Value functions allow us to order the vectors of the objective region $\mathbf{Z}$. We are interested in applying the value function to the Pareto optimal subset to find a unique solution to the multiobjective optimization problem.
 
@@ -1020,35 +1186,112 @@ Value functions allow us to order the vectors of the objective region $\mathbf{Z
 
 We are intersted in investigating the range of the solutions included in the Pareto optimal set. To do that, we have to find the lower and upper bounds of this set. In the rest of this section, we assume that the objective functions are bounded over the feasible region $\mathbf{S}$.
 
-{\color{red} TODO: rewrite the concepts of nadir and ideal vector using the supremum and infimum.}
-
-An objective vector that minimizes all objective functions is called an ideal objective vector.
+An objective vector that minimizes all objective functions is called an ideal objective vector, while an objective vector that maximizes (within the Pareto set) all objective functions is called a nadir objective vector. These two vectors can be formally defined using the notions of \emph{infimum} and \emph{supremum}.
 
 \begin{definition}
-A vector $\mathbf{z}^\star \in \mathbb{R}^k$ is called \emph{ideal} if each of its components $z_i$, minimizes the objective funcion $f_i \left( \mathbf{x} \right)$ subject that $\mathbf{x} \in \mathbf{S}$.
+The \emph{ideal objective vector} $\mathbf{z}^\star \in \mathbb{R}^k$ is defined componentwise as
+\[
+z^\star_i = \inf_{\mathbf{x} \in \mathbf{S}} f_i(\mathbf{x}), \qquad i = 1,\ldots,k.
+\]
 \end{definition}
 
-If there exits an ideal objective vector that belongs to the feasible region, that is $\mathbf{z}^\star \in \mathbf{Z}$, then that vector would be a solution of the optimization problem, and that solution would be unique. Ideal vectors are lower bounds to the Pareto set.
-
-The upper bound of the Pareto optimal set is given by the nadir objective vector. The nadir vector can be estimated using the decision vectors calculated when obtaining the objective ideal vector.
+If there exists an ideal objective vector that belongs to the objective region, that is $\mathbf{z}^\star \in \mathbf{Z}$, then that vector would be a solution of the optimization problem, and that solution would be unique. In general, the ideal vector is not feasible, but it constitutes a lower bound to the Pareto optimal set.
 
 \begin{definition}
-Let $\mathbf{z}^\star \in \mathbb{R}^k$ be an ideal objective vector. The set of decision vectors $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ used to compute $\mathbf{z}^\star$ is called the \emph{payoff table} for $\mathbf{z}^\star$. That is, if $\mathbf{z}^\star = \{ z^\star_1, \ldots, z^\star_k \}$, we have that $z^\star_i = f_i \left( \mathbf{x}^\star_i \right)$.
-\end{definition} 
-
-It turns out that $f_i \left( \mathbf{x}^\star_i \right)$ ($i = 1, \ldots, k$) is minimal for all for all the elements of the payoff table.
-
-Having the payoff table we can provide an estimation for the nadir vector. For simplicity, let's $f^\star_{ij}$ denote the value of the objective function $f_i$ computed over the vector $\mathbf{x}^\star_j$, where $i, j = 1, \ldots, k$.
-
-\begin{definition}
-Let $\mathbf{z}^\star \in \mathbb{R}^k$ be an ideal objective vector, and $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ its payoff table. The \emph{nadir} objective vector $\mathbf{z}^{nad} = \{ z^{nad}_1, \ldots, z^{nad}_k \}$ is given by $z^{nad}_i = \max_j f^\star_{ij}$.
+The \emph{nadir objective vector} $\mathbf{z}^{nad} \in \mathbb{R}^k$ is defined componentwise as
+\[
+z^{nad}_i = \sup_{\mathbf{z} \in \mathbf{P}_O} z_i, \qquad i = 1,\ldots,k,
+\]
+where $\mathbf{P}_O \subseteq \mathbf{Z}$ is the Pareto frontier.
 \end{definition}
 
-The ideal objective vector and the nadir objective vector may, or may not, be feasible. In figure \ref{fig:nadir} are depicted the ideal (vector $\mathbf{E}$) and nadir (vector $\mathbf{F}$) vectors of the multiobjective optimization problem of Example \ref{ex:pareto}.
+The nadir vector is the componentwise worst objective value among all Pareto optimal solutions, and it provides an upper bound to the Pareto set. However, unlike the ideal vector, it cannot usually be computed directly, because the full Pareto frontier is unknown. Instead, it is often estimated using the so-called \emph{payoff table}.
+
+\begin{definition}
+Let $\mathbf{z}^\star = \{ z^\star_1, \ldots, z^\star_k \}$ be the ideal objective vector, and let $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ be the decision vectors that individually minimize each objective function:
+\[
+z^\star_i = f_i(\mathbf{x}^\star_i), \qquad \text{with } \mathbf{x}^\star_i \in \arg\min_{\mathbf{x}\in\mathbf{S}} f_i(\mathbf{x}).
+\]
+This collection $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ is called the \emph{payoff table}.
+\end{definition}
+
+By construction, each $\mathbf{x}^\star_i$ minimizes $f_i$ over $\mathbf{S}$, but not necessarily the other objectives. Let $f^\star_{ij}$ denote the value of the objective function $f_i$ computed at $\mathbf{x}^\star_j$, that is, $f^\star_{ij} = f_i(\mathbf{x}^\star_j)$ for $i,j = 1,\ldots,k$. Using these values, we can estimate the nadir objective vector as follows.
+
+\begin{definition}
+Given the payoff table $\{\mathbf{x}^\star_1,\ldots,\mathbf{x}^\star_k\}$, the \emph{nadir objective vector} is approximated as
+\[
+z^{nad}_i = \max_{j} f^\star_{ij}, \qquad i = 1,\ldots,k.
+\]
+\end{definition}
+
+The ideal objective vector and the nadir objective vector may, or may not, be feasible. In Figure \ref{fig:nadir} are depicted the ideal (vector $\mathbf{E}$) and nadir (vector $\mathbf{F}$) vectors of the multiobjective optimization problem of Example \ref{ex:pareto}.
 
 \begin{figure}[h]
-\centering\includegraphics[scale=0.3]{nadir.jpg}
-\caption{\label{fig:nadir}Ideal and Nadir vectors.}
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.8cm,>=Latex]
+
+% ----- Axes -----
+\draw[line width=0.6pt] (0,0) -- (11,0);
+\draw[line width=0.6pt] (0,0) -- (0,9);
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (10.7,0) -- (11,0);
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (0,8.7) -- (0,9);
+\node[below] at (10.9,0) {$f1$};
+\node[left]  at (0,8.9) {$f2$};
+
+% ----- Styles -----
+\tikzset{
+  ptfilled/.style={circle,fill=black,draw=black,inner sep=1.8pt},
+  pthollow/.style={circle,fill=white,draw=black,inner sep=1.8pt},
+  ptgray/.style  ={circle,fill=gray!60,draw=black,inner sep=2.0pt}
+}
+
+% ----- Dashed rectangle (from ideal E to nadir F corners) -----
+% choose coordinates to match layout
+\coordinate (Lx) at (2.0,1.6);  % left x of box
+\coordinate (Rx) at (9.0,1.6);  % right x shares y for bottom
+\coordinate (TopY) at (2.0,5.5); % top y shares x for left
+\coordinate (TopR) at (9.0,5.5); % top-right
+
+\draw[dashed,line width=0.8pt]
+  (Lx) -- (TopY) -- (TopR) -- (Rx) -- cycle;
+
+% ----- Special corner points E, B, F, and bottom-right -----
+\node[ptgray,label=left:E] (Ept) at (Lx) {};
+\node[ptfilled,label=left:B] (Bpt) at (TopY) {};
+\node[ptgray,label=right:F]  (Fpt) at (TopR) {};
+\node[ptfilled]               at (Rx) {};
+
+% ----- Left-top cluster with A, B, C -----
+\node[ptfilled] (Apt) at (1.6,7.3) {}; \node[left] at (Apt) {A};
+% B already placed on the box’s top-left
+\node[pthollow] (Cpt) at (3.0,6.6) {}; \node[left] at (Cpt) {C};
+
+% ----- Hollow cloud (top area) -----
+\node[pthollow] at (3.8,7.0) {};
+\node[pthollow] at (5.0,7.3) {};
+\node[pthollow] at (6.3,7.0) {};
+\node[pthollow] at (7.6,6.6) {};
+\node[pthollow] at (5.6,8.3) {};
+
+% ----- Middle hollow points -----
+\node[pthollow] at (4.4,5.9) {};
+\node[pthollow] at (5.2,5.2) {};
+\node[pthollow] at (6.6,5.4) {};
+\node[pthollow] at (7.8,4.9) {};
+\node[pthollow] at (5.0,4.1) {};
+
+% ----- Hollow point on right dashed edge (as in the image) -----
+\node[pthollow] at (9.0,4.8) {};
+
+% ----- Lower region points (mixed) -----
+\node[ptfilled] at (3.5,4.8) {};
+\node[ptfilled] at (4.6,3.8) {};
+\node[ptfilled] at (6.0,3.1) {};
+\node[pthollow] at (7.0,3.2) {};
+
+\end{tikzpicture}
+\caption{Ideal and nadir bounds (dashed) over a schematic objective space.}
+\label{fig:nadir}
 \end{figure}
 
 For some applications, the range of values of the objective functions can differ by orders of magnitude. In those situations, it is advisable to normalize them, so the values are in the same scale. We can use the ideal and nadir vector for this normalization process, by replacing each objective function $f_i (\mathbf{x}) (i = 1, \ldots, k)$ by the normalized function
@@ -1061,7 +1304,7 @@ For some applications, the range of values of the objective functions can differ
 \subsection{Trade-offs}
 \label{sec:trade_offs}
 
-Since the functions we want to minimize are conflicting, sometimes we have to assume that the only way to gain a benefit in on aspect of the problem is to losse something in another aspect. How much we have to give up in one objective to improve a certain quantity in the other is called a trade-off.
+Since the functions we want to minimize are conflicting, we often have to assume that the only way to gain a benefit in one aspect of the problem is to lose something in another aspect. How much we have to give up in one objective to achieve a certain improvement in another is called a \emph{trade-off}.
 
 \begin{definition}
 Let $\mathbf{x}^1, \mathbf{x}^2 \in \mathbf{S}$ be two decision vectors. The \emph{ratio of change} between the functions $f_i$ and $f_j$ for the vectors $\mathbf{x}^1, \mathbf{x}^2$, denoted by $\Delta_{ij}$, is defined as:
@@ -1071,19 +1314,19 @@ Let $\mathbf{x}^1, \mathbf{x}^2 \in \mathbf{S}$ be two decision vectors. The \em
 for all $i, j = 1, \ldots, k$ such that $f_j(\mathbf{x}^1) - f_j(\mathbf{x}^2) \neq 0$.
 \end{definition}
 
-$\Delta_{ij}$ is called a \emph{partial trade-off}, involving $f_i$ and $f_j$ between $\mathbf{x}^1$ and $\mathbf{x}^2$ if $f_l(\mathbf{x}^1) = f_l(\mathbf{x}^2)$ for all $l = 1, \ldots, k$, $l \neq i, j$. If $f_l(\mathbf{x}^1) \neq f_l(\mathbf{x}^2)$ for at least one $l = 1, \ldots, k$, and $l \neq i, j$ then $\Delta_{ij}$ is called a \emph{total trade-off}.
+$\Delta_{ij}$ is called a \emph{partial trade-off} between $f_i$ and $f_j$ from $\mathbf{x}^1$ to $\mathbf{x}^2$ if $f_l(\mathbf{x}^1) = f_l(\mathbf{x}^2)$ for all $l = 1, \ldots, k$, $l \neq i, j$. If $f_l(\mathbf{x}^1) \neq f_l(\mathbf{x}^2)$ for at least one $l \neq i,j$, then $\Delta_{ij}$ is called a \emph{total trade-off}.
 
-If the trade-off between two objective functions is very small or very large, that is, if a small change in one aspect of the optimization problem has a significant impact in another aspect, we have a case that is similar to having a weakly Pareto solution that it is not Pareto optimal. In some practical applications is convenient to filter out those solutions that present this undesirable behaviour.
+If the trade-off between two objective functions is extremely small or extremely large (that is, if a small change in one aspect of the problem produces a disproportionately large change in another), then the solution behaves similarly to a weakly Pareto optimal solution that is not truly Pareto optimal. In some practical applications, it is convenient to filter out those solutions that exhibit this undesirable behavior. This leads to the concept of \emph{properly Pareto optimal} solutions, which impose a bound on the possible trade-offs between objectives.
 
 \begin{definition}
-A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{properly Pareto optimal} if it is Pareto optimal and if there exists a real number $M > 0$ such that for each $f_i$ and $\mathbf{y} \in \mathbf{S}$ satisfying $f_i ( \mathbf{y} ) < f_i ( \mathbf{x} )$, there exists at least one $f_j$ such that $f_j ( \mathbf{x} ) < f_j ( \mathbf{y} )$ and
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{properly Pareto optimal} if it is Pareto optimal and if there exists a real number $M > 0$ such that, for every $i = 1,\ldots,k$ and every $\mathbf{y} \in \mathbf{S}$ satisfying $f_i ( \mathbf{y} ) < f_i ( \mathbf{x} )$, there exists at least one $j \in \{1,\ldots,k\}$ such that $f_j ( \mathbf{x} ) < f_j ( \mathbf{y} )$ and
 \[
-\frac{f_i ( \mathbf{x} ) - f_i ( \mathbf{y} )}{f_j ( \mathbf{y} ) - f_j ( \mathbf{x} )} \leq M
+\frac{f_i ( \mathbf{x} ) - f_i ( \mathbf{y} )}{f_j ( \mathbf{y} ) - f_j ( \mathbf{x} )} \leq M.
 \]
 An objective vector $\mathbf{z} \in \mathbf{Z}$ is properly Pareto optimal if the decision vector corresponding to it is properly Pareto optimal.
 \end{definition}
 
-A solution is properly Pareto optimal if there is at least one pair of objectives functions for which a small decrement in one objective is possible only at the expense of a large increment in the other objective.
+Intuitively, a solution is properly Pareto optimal if improving one objective even slightly is possible only at the expense of worsening at least one other objective by a proportionally bounded amount. This rules out extreme cases where an infinitesimal improvement in one objective requires an arbitrarily large deterioration in another.
 
 Note that the properly Pareto optimal set is a subset of the Pareto optimal set, and the Pareto optimal set is a subset of the weakly Pareto optimal set.
 
@@ -1091,82 +1334,103 @@ Note that the properly Pareto optimal set is a subset of the Pareto optimal set,
 
 \subsection{Optimization Methods}
 
-{\color{red} Generating Pareto optimal solutions plays an important role in multiobjective optimizatoin, and mathematically the problem is considered to be solved when the Pareto optimal set is found [...] However, this is not always enough. We want to obtain only one solution. This means that we must find a way to put the Pareto optimal solutions in a comple order. This is why we need a decision maker an his preference structure.}
+Generating Pareto optimal solutions plays a central role in multiobjective optimization. From a mathematical perspective, the problem is considered to be solved when the entire Pareto optimal set has been identified. However, this is often not enough for practical decision-making. In real-world applications, we typically want to obtain a single solution. This means that once the Pareto optimal set is known, we must find a way to impose a complete order on its elements. This requires the participation of a decision maker who provides additional information in the form of a preference structure over the objective space.
 
-{\color{red} In general, multiobjective optimization problems are solved by scalarization [...] scalarization means converting the problem into a single or a family of single objective optimization problems with a real-valued objective function}
+A standard way to generate Pareto optimal solutions is through scalarization: converting the multiobjective optimization problem into a single-objective optimization problem, or into a family of such problems. In this approach, the original vector-valued objective function is replaced by a real-valued scalarization function that incorporates the original objectives. To be useful, a scalarization function is usually expected to satisfy the following conditions: i) for every Pareto optimal solution $\mathbf{x} \in \mathbf{P}_D$, there exists a choice of parameters of the scalarization function such that $\mathbf{x}$ is the unique optimal solution of the scalarized problem; ii) every solution produced by the scalarization function is Pareto optimal.
 
-{\color{red} three requirement are set for a scalarization function: 1)  It can cover any Pareto optimal solution. 2) Every solution is Pareto optimal.}
+Several scalarization-based methods exist, and they can be classified according to how the decision maker participates in the solution process:
 
-{\color{red} [...] classify the methods according to the participation of the decision maker in the solution process. The classes are: 1) methods where no articulation of preference information is used (no-preference methods) 2) methods where a posteriory articulation of preference is used (a posteriory methods) 3) methods whre a priori articulation of preference information is used (a priory methods), and 4) methods whre progressive articulation of preference information is used (interactive methods).}
+\begin{itemize}
+\item No-preference methods: no preference information from the decision maker is used.
+\item A posteriori methods: first a (possibly large) set of Pareto optimal solutions is generated; then the decision maker selects the preferred one among them.
+\item A priori methods: the decision maker specifies preference information before the optimization is carried out, and this information is used to generate a single preferred solution.
+\item Interactive methods: the decision maker provides preference information progressively during the optimization process, which iteratively guides the search toward a preferred solution.
+\end{itemize}
 
-In no-preference methods, the knowledge of the decision maker is not taken into account, and the optimization problem is solved using a relatively simple method. In a posteriory methods, the set (or part of it) of Pareto optimal points is identified and then the decision maker select the preferred solution among the alternatives.
+In no-preference methods, the knowledge of the decision maker is not taken into account, and the optimization problem is solved using a relatively simple method. In a posteriori methods, the Pareto optimal set (or part of it) is identified first, and then the decision maker selects the preferred solution among the alternatives. A priori methods and interactive methods incorporate preference information directly into the search, thereby producing solutions more tailored to the decision maker's values.
 
 \subsubsection{Global Criterion}
 \label{sub:multiobjective_global_criterion}
 
-The global criterion is a non-prefrence method in which the distance between some reference point and the fasible objective region is minimized. In this method, all the objective functions are considered to be equally important. As reference point it is usually used the ideal vector, and as metric it is common to use a $L_p$-metric. Under these assumptions, the goblal criterion method becomes the following minimization problem:
+The global criterion method is a no-preference method in which the distance between a given reference point and the feasible objective region is minimized. In this method, all the objective functions are considered equally important. The reference point is usually chosen as the ideal objective vector $\mathbf{z}^\star$, and a common distance metric is the $L_p$-norm. Under these assumptions, the global criterion method becomes the following minimization problem:
 \begin{align*}
      & \text{minimize}    \quad \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - z_i^\star \right)^p \right)^{\frac{1}{p}} \\
-     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}
+     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}.
 \end{align*}
-Different values for $p$ result in different solutions to the minimization problem. Common values for $p$ are $1$, $2$ or $\infty$. 
+Different values of $p$ produce different solutions to this minimization problem. Common choices are $p=1$, $p=2$, and $p=\infty$. 
 
 \begin{proposition}
 \label{prop:global_criterion_pareto_optimal}
-The solution of the $L_p$-based global criterion is Pareto optimal.
+The solution of the $L_p$-based global criterion problem is Pareto optimal.
 \end{proposition}
 \begin{proof}
-Let $\mathbf{x}$ be a solution of the $L_p$-based global criterion problem, with $1 \leq p < \infty$, and assume that $\mathbf{x}$ is not Pareto optimal. Then, according to Definition \ref{def:pareto_optimal} there must exists a point $\mathbf{y} \in \mathbf{S}$ such that $f_i( \mathbf{y} ) \leq f_i( \mathbf{x} )$ for all $i = 1, \ldots, k$, and $f_j( \mathbf{y} ) < f_j( \mathbf{x} )$ for at least one $j$. Then we have that $( f_i(\mathbf{y}) - z_i^\star )^p \leq ( f_i(\mathbf{x}) - z_i^\star )^p$ for all $i \neq j$ and $( f_j(\mathbf{y}) - z_j^\star )^p < ( f_j(\mathbf{x}) - z^\star )^p$. Adding all these terms and raising to the $1/p$ power, we obtain
+Let $\mathbf{x}$ be a solution of the $L_p$-based global criterion problem, with $1 \leq p < \infty$, and assume that $\mathbf{x}$ is not Pareto optimal. Then, by Definition \ref{def:pareto_optimal}, there must exist a point $\mathbf{y} \in \mathbf{S}$ such that $f_i( \mathbf{y} ) \leq f_i( \mathbf{x} )$ for all $i = 1, \ldots, k$, and $f_j( \mathbf{y} ) < f_j( \mathbf{x} )$ for at least one $j$. Then we have that $( f_i(\mathbf{y}) - z_i^\star )^p \leq ( f_i(\mathbf{x}) - z_i^\star )^p$ for all $i \neq j$ and $( f_j(\mathbf{y}) - z_j^\star )^p < ( f_j(\mathbf{x}) - z_j^\star )^p$. Adding all these terms and raising to the $1/p$ power gives
 \[
-\left( \sum_{i=1}^k \left( f_i(\mathbf{y}) - z_i^\star \right)^p \right)^{\frac{1}{p}} < \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - z_i^\star \right)^p \right)^{\frac{1}{p}} 
+\left( \sum_{i=1}^k \left( f_i(\mathbf{y}) - z_i^\star \right)^p \right)^{\frac{1}{p}} < \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - z_i^\star \right)^p \right)^{\frac{1}{p}},
 \]
-which is a contradiction with the fact that $\mathbf{x}$ is a solution to the minimization problem.
+which contradicts the assumption that $\mathbf{x}$ is a solution to the minimization problem.
 \end{proof}
 
-Although all the solutions selected by the $L_p$-based global criterion are Pareto optimal, as we have proved in previous proposition, there are solutions of the optimal Pareto set are that will never be selected by this method. In practice it is convenient to normalize the range of the objective values, so that those points closer to the ideal vector do not receives more importance. A common normalization term used in practice is $z_i^{nad} - z_i^\star$.
+Although all the solutions selected by the $L_p$-based global criterion are Pareto optimal, not all Pareto optimal solutions can be obtained by this method. In practice, it is often convenient to normalize the ranges of the objective functions, so that objectives with values closer to the ideal vector do not dominate the criterion. A common normalization factor used in practice is $z_i^{nad} - z_i^\star$.
 
 \subsubsection{Weighting Method}
 
-{\color{red} The weighting method is a simple way to generate different Pareto optimal solutions.}
-
-{\color{red} In the weighting method [...] the idea is to associate each objective function with a weighting coefficient and minimize the weighted sum of the objectives. In this way, the multiple objective functions are transformed into a single objective function. We suppose that the weighting coefficients $w_i$ are real numbers such that $w_i \geq 0$ for all $i = 1, \ldots, k$. It is also usually supposed that the weights are normalized, that is $\sum_{i=1}^k w_i = 1$.}
-
-{\color{red} The multiobjective optimization problem is modified into the following problem, to be called a weighting problem:}
+The weighting method is one of the simplest and most widely used techniques for generating different Pareto optimal solutions. The idea is to associate each objective function with a weighting coefficient and minimize the weighted sum of the objectives. In this way, the multiple objective functions are transformed into a single objective function. We suppose that the weighting coefficients $w_i$ are real numbers such that $w_i \geq 0$ for all $i = 1, \ldots, k$, and that they are normalized so that $\sum_{i=1}^k w_i = 1$. The multiobjective optimization problem is then transformed into the following \emph{weighting problem}:
 \begin{align*}
      & \text{minimize}    \quad \sum_{i=1}^k  w_i  f_i(\mathbf{x}) \\
-     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}
+     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S},
 \end{align*}
-{\color{red} where $w_i \geq 0$ for all $i = 1, \ldots, k$ and $\sum_{i=1}^k w_i = 1$.}
+where $w_i \geq 0$ for all $i = 1, \ldots, k$ and $\sum_{i=1}^k w_i = 1$.
 
-{\color{red} [...] weighting coefficient zero makes no sense. It means that we hae included in the problem some objective function that has no significance at all.}
-
-{\color{red} The objective functions should be normalized or scaled so that their objective values are approximately of the same magnitude [...] Only in this way can one control and manoeuvre the method to produce solutions of a desirable nature in proportion to the ranges of the objective functions. Otherwise the role of the weighting coefficients may be greatly misleading.}
+Weighting coefficients equal to zero should generally be avoided, because they effectively remove an objective from consideration. Furthermore, the objective functions should be normalized or scaled so that their values are approximately of the same order of magnitude; otherwise, the effect of the weights can be misleading and difficult to control. Only when the objectives are scaled comparably can one steer the search toward desirable solutions by adjusting the weights.
 
 \begin{proposition}
 \label{prop:weighted_method_pareto_optimal}
-{\color{red} The solution of weighting problem is Pareto optimal i the weighting coefficients are positive, that is $w_i > 0$ for all $i = 1, \ldots, k$.}
+If all weighting coefficients are strictly positive ($w_i > 0$ for all $i = 1,\ldots,k$), then any solution of the weighting problem is Pareto optimal.
 \end{proposition}
 \begin{proof}
-{\color{red} TODO}
+Assume that $\mathbf{x}^\star$ solves the weighting problem but is not Pareto optimal. Then there exists a $\mathbf{y} \in \mathbf{S}$ such that $f_i(\mathbf{y}) \le f_i(\mathbf{x}^\star)$ for all $i$ and $f_j(\mathbf{y}) < f_j(\mathbf{x}^\star)$ for some $j$. Since $w_i>0$, multiplying by the weights gives
+\[
+\sum_{i=1}^k w_i f_i(\mathbf{y}) < \sum_{i=1}^k w_i f_i(\mathbf{x}^\star),
+\]
+contradicting the optimality of $\mathbf{x}^\star$. Therefore, $\mathbf{x}^\star$ must be Pareto optimal.
 \end{proof}
 
-{\color{red} the solution of the weighting method is always Pareto optimal if the weighting coefficients are all positie or if the solution is unique [...] The weakness of the weighting method is that not all of the Pareto optimal solutions can be found.}
+If the solution of the weighting problem is unique, it is Pareto optimal even if some weights are zero. However, not all Pareto optimal solutions can be found using the weighting method: it only generates solutions lying on the convex hull of the Pareto frontier. In practice, the condition $w_i \geq \varepsilon$ with some small $\varepsilon > 0$ is often used instead of strict positivity, which requires a careful choice of $\varepsilon$.
 
-{\color{red} the weighting method is used to generate Pareto optimal solutions}
+The weighting method can also be used as an a priori method by letting the decision maker specify a weighting vector representing their preferences. In this case, the weighting problem can be viewed as maximizing (the negative of) a linear \emph{value function}. However, it must be noted that changing the weighting coefficients linearly does not imply that the values of the objective functions will change linearly. In particular, if some of the objective functions are correlated, then seemingly “good” weighting vectors may produce poor results, and seemingly “bad” weighting vectors may produce useful results. Furthermore, weighting coefficients are often hard to interpret and understand for average decision makers. 
 
-{\color{red} in practical calculations the contion $w_i \geq \varepsilon$, where $\varepsilon > 0$, must be used instead of the condition $w_i > 0$ for all $i = 1, \ldots, k$. This necessitates a correct choice as to the value of $\varepsilon$.}
+When the weighting method is used as an a priori method, it is sometimes said that the weights reflect the \emph{relative importance} of the objective functions. However, it is more accurate to interpret them as representing the \emph{rates at which the decision maker is willing to trade off} values of the objective functions. This interpretation better captures their intended role.
 
-{\color{red} The weighting method can be used so that the decision maker specifies a weighting vector representing his preference information [...] In this case, the weighting problem can be considered (a negative of) a value function (remember that value functions are maximized.}
+Finally, using the weighting method as an a priori method implicitly assumes that the decision maker’s underlying value function is (or can be approximated by) a linear function of the objectives. This assumption may be unrealistic in many cases, and it explains why the weighting method can be difficult to control in practice.
 
-{\color{red} If the weighting method is used as an a prioriy method one can ask what the weighting coefficients in fact represent. Ofthen, they are said to reflect the relative importance of the objective functions. However, it is not all clear what underlies this notion [... ] instead of relative importance, the weighting coefficients should represent the rate at which the decision maker is willing to trade off values of the objective functions}
+\subsubsection{\texorpdfstring{$\epsilon$}{epsilon}-Constraint Method}
+\label{sub:epsilon_constraint_method}
 
-{\color{red} if some of the objective functions correlate with each other, then seemingly "good" weighting vectors may produce poor results and seemingly "bad" weighting vectors may produce useful results}
+The $\epsilon$-constraint method is another classical scalarization technique for generating Pareto optimal solutions. Unlike the weighting method, which combines all objective functions into a single weighted sum, the $\epsilon$-constraint method selects one of the objective functions to optimize and converts the remaining objectives into inequality constraints bounded by user-specified thresholds (the $\epsilon$ values).
 
-{\color{red} Weighting coefficients are not easy to interpret and understand for average decision makers.}
+Let us assume without loss of generality that $f_1$ is the chosen primary objective function to be minimized. Then the multiobjective optimization problem is transformed into the following \emph{$\epsilon$-constraint problem}:
+\begin{align*}
+     & \text{minimize}    \quad f_1(\mathbf{x}) \\
+     & \text{subject\;to} \quad f_i(\mathbf{x}) \le \epsilon_i, \quad i = 2, \ldots, k, \\
+     & \phantom{\text{subject\;to}}\quad \mathbf{x} \in \mathbf{S}.
+\end{align*}
 
-{\color{red} Employing the weighting method as an a priori method presumes that the decision maker's unerlying value function is or can be approximated by a linear function [...] it must be noted that altering the weighting vectors linearly does not have to mean that the values of the objective functions also change linearly. It is difficult to control the direction of the solutions by the weighting coefficients}
+Different choices of the bounds $\epsilon_2,\ldots,\epsilon_k$ produce different solutions. By systematically varying these values, one can generate a set of Pareto optimal solutions.
 
-{\color{red} Shall I explain the $\varepsilon$-Constraint method?}
+\begin{proposition}
+\label{prop:epsilon_constraint_pareto_optimal}
+Any optimal solution of the $\epsilon$-constraint problem is Pareto optimal, provided that all the constraints $f_i(\mathbf{x}) \le \epsilon_i$ are active or at least binding for some feasible choice of $\epsilon_i$.
+\end{proposition}
+\begin{proof}
+Suppose $\mathbf{x}^\star$ solves the $\epsilon$-constraint problem and is not Pareto optimal. Then there exists $\mathbf{y} \in \mathbf{S}$ such that $f_i(\mathbf{y}) \le f_i(\mathbf{x}^\star)$ for all $i$, and $f_j(\mathbf{y}) < f_j(\mathbf{x}^\star)$ for at least one $j$. In particular, $f_1(\mathbf{y}) < f_1(\mathbf{x}^\star)$ and $f_i(\mathbf{y}) \le \epsilon_i$ for $i\ge2$, meaning that $\mathbf{y}$ is also feasible and strictly improves the objective. This contradicts the optimality of $\mathbf{x}^\star$.
+\end{proof}
+
+A key advantage of the $\epsilon$-constraint method is that, unlike the weighting method, it can generate Pareto optimal solutions lying in the non-convex parts of the Pareto frontier. This makes it particularly suitable for problems where the Pareto set is not convex.
+
+In practice, choosing suitable $\epsilon_i$ values can be challenging. If they are too restrictive, the problem becomes infeasible; if they are too loose, the solution will simply minimize $f_1$ with little regard to the other objectives. A common strategy is to estimate lower and upper bounds for each $f_i$ (for example, the ideal and nadir values defined in Section~\ref{sec:range_solutions}) and then sample values of $\epsilon_i$ within these ranges. This allows the decision maker to explore different trade-offs between objectives systematically.
+
+The $\epsilon$-constraint method can be used as a posteriori method (by generating many solutions for different $\epsilon$ values and letting the decision maker choose) or as an interactive method (by progressively adjusting the $\epsilon_i$ values based on the decision maker’s feedback).
 
 %
 % Section: References
@@ -1174,9 +1438,18 @@ Although all the solutions selected by the $L_p$-based global criterion are Pare
 
 \section*{References}
 
- {\color{red} TODO: Add paper of Turing about AI.}
+Core references for the chapter "Learning"
 
-The minimum message length principle was developed by Chris Wallace, published for first time in 1968 in \cite{wallace1968information}. The book \cite{wallace2005statistical}, written by the same author, contains a detailed description of the principle.
+\cite{james2013introduction}: This book introduces modern statistical learning methods with a focus on practical applications. It bridges classical statistical inference and machine learning, making it ideal as an entry point for the chapter’s first sections.
 
-A good introduction to the discipline of non-linear multiobjective optimization can be found in \cite{miettinen2012nonlinear}; Section \ref{sec:multiobjective_optimization} is largely based on this book.
+\cite{scikit-learn}: Scikit-learn is one of the most widely used open-source machine learning libraries. Citing it highlights the connection between theoretical principles and modern implementations  that readers can experiment with.
 
+\cite{grunwald2007minimum}: Grunwald's book is the definitive reference on the MDL principle. It formalizes the idea of balancing model complexity and data fit and provides both theoretical results and practical applications.
+
+\cite{quinlan1989inferring}: This classic paper shows how MDL can be applied to decision tree induction, providing a concrete and accessible example of the principle in action.
+
+\cite{wallace1968information}: The foundational paper introducing the Minimum Message Length (MML) principle. It frames model selection as an optimal coding problem, balancing hypothesis description and data encoding.
+
+\cite{wallace2005statistical}: Wallace’s comprehensive monograph on MML presents the full theoretical development and applications of the principle, making it the standard reference.
+
+\cite{miettinen2012nonlinear}: Miettinen’s book is a standard reference on multiobjective optimization. It introduces Pareto optimality, scalarization methods, and decision-making frameworks, providing the mathematical basis for the chapter’s last section.

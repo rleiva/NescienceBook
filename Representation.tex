@@ -1,0 +1,1484 @@
+%
+% CHAPTER: Representations
+%
+
+\chapterimage{owl.pdf} % Chapter heading image
+
+\chapter{Representations}
+\label{cha:representations}
+
+\begin{quote}
+\begin{flushright}
+\emph{We are all agreed that your theory is crazy. \\
+The question which divides us is whether it is crazy enough.} \\
+Niels Bohr
+\end{flushright}
+\end{quote}
+\bigskip
+
+Scientific inquiry is typically organized around research entities that serve as the objects of investigation. In the theory of nescience, these entities are collected into a set $\mathcal{E}$ whose elements may be physical, abstract, or even hypothetical. Within this framework, representations provide a means to reconstruct, compare, and combine such entities. However, this task is inherently challenging: entities may possess infinite structure, be empirically inaccessible, or remain only partially understood.
+
+To address this difficulty, we decompose the representation problem into two complementary components. The first concerns the representation of entities. In particular, we study the conditions under which a finite string $r \in \mathcal{B}^\ast$ represents an entity $e \in \mathcal{E}$, the circumstances under which the entity can be reconstructed from such a string, and the relations that may exist between distinct representations of the same entity. These issues constitute the subject of the present chapter. The second component concerns the description of representations. In this case, the objective is to extract from a given representation a concise model or law capable of supporting human reasoning and prediction. This complementary problem will be examined in Chapter \ref{chap:Descriptions}.
+
+The analysis developed here relies on the notion of a \emph{representation oracle}. The oracle establishes the semantic relation between strings and entities by specifying, through an internal reconstruction function, which strings encode elements of $\mathcal{E}$. This abstraction separates the syntactic domain $\mathcal{B}^\ast$ from the ontological domain $\mathcal{E}$ while making explicit the assumptions required for reconstruction.
+
+Within this framework we study structural properties of representation oracles, including minimality and comparability, and examine the extent to which background knowledge may be internalized by the oracle. These properties determine how much information must be carried explicitly by the representation and how much may be supplied by the oracle.
+
+Finally, we classify representations according to their formal and epistemic properties. In particular, we distinguish perfect, extended, compact, and effective representations, and analyze how these categories arise in scientific practice. This classification reflects the progressive refinement of knowledge: early stages of inquiry rely on fragmentary and imperfect encodings, whereas mature theories tend to produce increasingly accurate and structured representations. In this way, the theory of nescience places representation at the center of scientific development while clarifying its formal constraints and epistemic limits.
+
+%
+% Section: Representation Oracle
+%
+\section{Representation Oracle}
+
+The representation of the entities composing the set $\mathcal{E}$, which may be not be effectively definable or enumerable, raises significant challenges (see Section~\ref{sec:scientific_representation}\index{Scientific representation} for an overview of proposed solutions in the scientific literature, and their limitations). This book presents a particular approach to this problem by dividing scientific representation into two closely related subproblems: the encoding of entities by means of representations, and the modeling of these representations by means of descriptions. From this perspective, scientific models do not explain entities directly, but rather explain them through their representations (see Figure~\ref{fig:representationProblem} in the Introduction reproduced here for ease of reference). In this section we focus on encoding; the role of descriptions is addressed in Chapter \ref{chap:Descriptions}.
+
+% A4
+% \begin{figure}[t]
+% \centering
+% \begin{tikzpicture}
+%     \node[draw, ellipse, minimum width=3cm] (entities) at (0,0) {Entities};
+%     \node[draw, ellipse, minimum width=3cm] (representations) at (5,0) {Representations};
+%     \node[draw, ellipse, minimum width=3cm] (descriptions) at (10,0) {Descriptions};
+% 
+%     \draw[-{Latex[length=3mm]}] (representations) -- node[above,midway] {encode} (entities);
+%     \draw[-{Latex[length=3mm]}] (descriptions) -- node[above,midway] {model} (representations);
+%     \draw[dashed,-{Latex[length=3mm]}] (descriptions) to [bend right=45] node[above,midway] {explain?} (entities);
+% \end{tikzpicture}
+% \caption{\label{fig:representationProblem}The Problem of Understanding}
+% \end{figure}
+
+% Octavo
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+    \node[draw, ellipse, minimum width=1.5cm] (entities) at (0,0) {Entities};
+    \node[draw, ellipse, minimum width=1.5cm] (representations) at (4.25,0) {Representations};
+    \node[draw, ellipse, minimum width=1.5cm] (descriptions) at (9,0) {Descriptions};
+
+    \draw[-{Latex[length=3mm]}] (representations) -- node[above,midway] {encode} (entities);
+    \draw[-{Latex[length=3mm]}] (descriptions) -- node[above,midway] {model} (representations);
+    \draw[dashed,-{Latex[length=3mm]}] (descriptions) to [bend right=45] node[above,midway] {explain?} (entities);
+\end{tikzpicture}
+\caption{The Problem of Understanding}
+\end{figure}
+
+In Kolmogorov complexity\index{Kolmogorov complexity}, the representation problem is usually approached by assuming that the set $\mathcal{E}$ is well defined and countable, and that a total encoding function $f : \mathcal{E} \rightarrow \mathbb{N}$ exists, analogous to a Gödel numbering\index{Gödel numbering}. The theory of nescience similarly adopts the idea that entities can be encoded as numbers, or equivalently as finite strings. Our approach, however, departs from this tradition by dropping the requirement that $\mathcal{E}$ be explicitly definable or enumerable.
+
+Rather than postulating an encoding function with domain $\mathcal{E}$, we take as primitive the well-defined set of finite strings and assume the existence of an abstract oracle that internally associates certain strings with entities. More precisely, we introduce an oracle $\mathcal{O}_\mathcal{E}$ that acts as an abstract decision device: given a string $r$, determines whether $r$ contains sufficient information to reconstruct an entity.
+
+For the purposes of this book, and without loss of generality, we restrict attention to binary strings as the medium of representation.
+
+\begin{definition}
+\label{def:descriptions_topic}
+Given a set of entities \(\mathcal{E}\), a \emph{representation oracle}\index{Representation oracle}
+is a total decision oracle
+\[
+\mathcal{O}_{\mathcal{E}} : \mathcal{B}^\ast \longrightarrow \{\mathrm{true},\mathrm{false}\}
+\]
+with the following semantics: there exists an oracle-internal partial \emph{reconstruction function}\index{Reconstruction function}
+\[
+\delta_{\mathcal{O}} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}
+\]
+whose domain coincides with the set of strings accepted by the oracle, that is,
+\[
+\operatorname{dom}(\delta_{\mathcal{O}})
+=
+\{\, r \in \mathcal{B}^\ast : \mathcal{O}_{\mathcal{E}}(r)=\mathrm{true} \,\}.
+\]
+\end{definition}
+
+\noindent
+Equivalently, for every \(r \in \mathcal{B}^\ast\),
+\[
+\mathcal{O}_{\mathcal{E}}(r)=\mathrm{true} \, \Longleftrightarrow \, \delta_{\mathcal{O}}(r)\ \text{is defined}.
+\]
+When defined, $\delta_{\mathcal{O}}(r)$ yields a unique entity of $\mathcal{E}$ reconstructed from $r$ without any additional information. The function $\delta_{\mathcal{O}}$ is not assumed to be computable or explicitly characterizable, and serves only to fix the semantic interpretation of the oracle.
+
+The oracle $\mathcal{O}_{\mathcal{E}}$ is an idealized construct. For most collections of entities, it cannot be realized in practice, and no explicit decoding procedure associated with it can be provided. The role of $\mathcal{O}_{\mathcal{E}}$ is purely formal: it serves as a reference device for delimiting what representations of entities are in principle obtainable within the framework. Accordingly, $\mathcal{O}_{\mathcal{E}}$ is treated as a black box and is defined only through its input-output behavior. In this respect, $\mathcal{O}_{\mathcal{E}}$ is analogous to the oracle in an oracle Turing machine\index{Oracle Turing machine}\index{Oracle Turing machine} (see Definition~\ref{def:Oracle-Turing-Machine}).
+
+Within this framework, only elements of $\mathcal{B}^\ast$, that is, finite binary strings, are eligible to serve as representations of entities (see the discussion of the ontology problem\index{Problem of ontology} in Section~\ref{sec:scientific_representation}). Other forms of representation (such as physical models, diagrams, or verbal descriptions) are admissible only insofar as they can be transcribed into binary strings. No distinction is drawn between scientific representations and other types of representations (see the discussion of representational demarcation\index{Representational demarcation} in Section~\ref{sec:scientific_representation}). Finally, it is essential to note that $\delta_{\mathcal{O}}$ is a partial function: not every binary string represents an entity.
+
+In general, the internal oracle need not be unique for a given collection of entities, reflecting the plurality and ambiguity inherent in real-world scientific representation.
+
+\begin{proposition}
+\label{prop:reconstruction_bijection}
+Let $\mathcal{E}$ be a set of entities, let $\delta_\mathcal{O}$ be a reconstruction function for an oracle $\mathcal{O}_\mathcal{E}$, and let $\pi : \mathcal{B}^\ast \to \mathcal{B}^\ast$ be a bijection. Define the partial function $\delta_\pi : \mathcal{B}^\ast \rightharpoonup \mathcal{E}$ by $\delta_\pi(x)=\delta_\mathcal{O}(\pi(x))$ for every $x \in \mathcal{B}^\ast$ such that $\delta_\mathcal{O}(\pi(x))$ is defined. Then $\delta_\pi$ is also a reconstruction function for $\mathcal{E}$.
+\end{proposition}
+\begin{proof}
+Since $\pi : \mathcal{B}^\ast \to \mathcal{B}^\ast$ is a total bijection and $\delta_\mathcal{O} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}$ is a partial function, the composition $\delta_\pi = \delta_\mathcal{O} \circ \pi$ is again a partial function from $\mathcal{B}^\ast$ to $\mathcal{E}$.
+
+More explicitly, for each $x \in \mathcal{B}^\ast$, the value $\delta_\pi(x)$ is defined if and only if $\pi(x)$ lies in the domain of $\delta_\mathcal{O}$. Hence
+\[
+\operatorname{dom}(\delta_\pi) = \{x \in \mathcal{B}^\ast : \pi(x)\in\operatorname{dom}(\delta_\mathcal{O})\} = \pi^{-1}(\operatorname{dom}(\delta_\mathcal{O})).
+\]
+Whenever $\delta_\pi(x)$ is defined, we have
+\[
+\delta_\pi(x)=\delta(\pi(x))\in\mathcal{E},
+\]
+so \(\delta_\pi\) associates binary strings with entities of \(\mathcal{E}\). Therefore \(\delta_\pi\) is also a valid reconstruction function for \(\mathcal{E}\).
+\end{proof}
+
+If $\pi$ is not the identity, then in general $\delta_\pi$ differs from $\delta_\mathcal{O}$, because it decodes strings after systematically transforming them by $\pi$. Thus a given set of entities may admit multiple reconstruction functions.
+
+Rather than deploying individual oracles for each set $\mathcal{E}$, we could have employed a universal decision device. This is a machine $\mathcal{U}_\mathcal{O}$ that, given the encoding of an oracle $\mathcal{O}_\mathcal{E}$ and a string $r$ as input, computes $\mathcal{U}_\mathcal{O} \left( \langle \mathcal{O}_\mathcal{E}, r \rangle \right) = \mathcal{O}_\mathcal{E} \left( r \right)$. Universal machines are particularly applicable to the universal set $\xi$, encompassing all entities (see Section \ref{sec:descriptions_entities}). However, the theory of nescience is explicitly domain-relative: the choice of $\mathcal{E}$ determines which entities are under investigation and the oracle $\mathcal{O}_\mathcal{E}$ fixes the admissible style in which the the entities are encoded. We work with entity sets $\mathcal{E}$ corresponding to different areas of knowledge, each associated with a single oracle $\mathcal{O}_\mathcal{E}$ that is most suitable to our current knowledge and practical needs.
+
+\begin{example}
+\label{ex:description_dna}
+Consider the case when the subjects of study are animals. Initially, one might use detailed physical descriptions of animals as encodings. In this scenario, the internal reconstruction function would be a hypothetical machine capable of reconstructing the original animal from its description. As our understanding of biology advances, we might instead adopt an alternative encoding based on the animals' DNA\index{DNA}. Both of these encodings serve as valid representations of the entities.
+\end{example}
+
+As illustrated in Proposition \ref{prop:reconstruction_bijection} and Example \ref{ex:description_dna}, the entities in $\mathcal{E}$ can be encoded in multiple ways (see the problem of style\index{Problem of style} in Section \ref{sec:scientific_representation}). Different oracles accommodate different encoding schemes. In practical terms, some strings provide more adequate representations of an entity than others (see the standard of accuracy\index{Standard of accuracy} in Section \ref{sec:scientific_representation}). The optimal representation style depends on the type of questions we aim to answer.
+
+\begin{notation}
+We denote by $\mathfrak{O}_{\mathcal{E}}$ the class of all representation oracles over the set of entities $\mathcal{E}$.
+\end{notation}
+
+Representations must not only correspond to entities but must also be relevant to them (see the requirement of directionality\index{Requirement of directionality} below in this section, in Chapter \ref{chap:Miscoding}, and in Section \ref{sec:scientific_representation}).
+
+We employ an oracle function rather than an oracle relation $\mathcal{R}_\mathcal{O} \subseteq \mathcal{B}^\ast \times \mathcal{E}$, not merely to associate strings with their corresponding entities, but to reconstruct an entity from its representation. The internal oracle's ability to recover original entities underpins our capacity to make hypotheses about entities based on their representations (see surrogative reasoning\index{Surrogative reasoning} in Section \ref{sec:scientific_representation}). According to the theory of nescience, scientific inquiry involves not only learning how to encode entities properly but also understanding the mechanisms by which internal reconstruction functions decode them. In this sense, the purpose of encoding entities in the theory of nescience differs fundamentally from that in Shannon's information theory (see Appendix \ref{chap:Coding}), as illustrated in Example \ref{ex:shannon_encoding}.
+
+\begin{example}
+\label{ex:shannon_encoding}
+Take, for instance, a set $\mathcal{E}$ consisting of two books: "The Ingenious Gentleman Don Quixote of La Mancha" and "The Tragedy of Romeo and Juliet". We might encode the first book with the string "0" and the second with the string "1". While these strings allow us to uniquely identify each book within the set, they do not qualify as valid encodings within the theory of nescience. In information theory, the goal is to uniquely identify an object based on a reference, assuming mutual agreement between the sender and the receiver about the mapping from references to objects. In contrast, the theory of nescience seeks representations that preserve the richness and detail of the original entities. For example, it would be impossible to hypothesize about Cervantes'\index{Cervantes} influence on Shakespeare\index{Shakespeare} using only the strings "0" and "1".
+\end{example}
+
+One possible response to the limitation discussed in Example \ref{ex:shannon_encoding}, where entities are encoded using overly simplistic strings that fail to capture their internal structure, would be to require the set $\mathcal{E}$ to be infinite, as is done in Kolmogorov complexity. However, while requiring $\mathcal{E}$ to be infinite prevents all entities from being encoded using uniformly short strings, it does not prevent the use of representations that, although longer, remain arbitrary and devoid of semantic content. That is, they do not allow us to make meaningful inferences about the original entities based solely on their representations. To enable such reasoning, the encoding must preserve essential structural and semantic features of the entities, not just their identity.
+
+%
+% Section: Decodable Representations
+%
+
+\section{Decodable Representations}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[line width=1pt, >=Stealth]
+
+%--- left outer ellipse -------------------------------------------
+\draw[fill=gray!25] (-3,0) ellipse (1.5 and 2);          % 𝔅* (grey background)
+\node at (-4.2,-2.4) {$\mathcal{B}^{*}$};
+
+%--- left inner region R_{e1} -------------------------------------
+\draw (-3,1) ellipse (1 and 0.7);                      % 𝑅_{e1}
+\node[anchor=east] at (-2.8,1) {$r_{1}$};
+\fill (-2.7,1) circle (5pt);                           % black dot r1
+% \node at (-3.2,0) {$\mathcal{R}_{e_1}$};
+
+%--- right outer ellipse ------------------------------------------
+\draw (3,0) ellipse (1.5 and 2);                         % ℰ (white background)
+\node at (4.4,-2.4) {$\mathcal{E}$};
+
+%--- right inner grey region --------------------------------------
+\draw[fill=gray!25] (3,0.25) ellipse (1.3 and 1.5);
+
+%--- entities e1 and e2 -------------------------------------------
+\fill (3.1,1.3) circle (5pt);                          % e1 dot
+\node[anchor=west] at (3.3,1.3) {$e_{1}$};
+
+\fill (3.2,-1.5) circle (5pt);                         % e2 dot
+\node[anchor=west] at (3.4,-1.5) {$e_{2}$};
+
+%--- oracle barrier -----------------------------------------------
+\draw (0,-2.4) -- (0,2.4);
+\node[below=2pt] at (0,-2.4) {oracle};
+
+%--- curved two-piece arrow (solid then dashed) -------------------
+\path
+  (-2.2,1)                                     % start at r1
+  .. controls (-1,2.2) and (-0.4,2) .. (0,2)   % solid part up to barrier
+  node[pos=0.55]{};                            % (dummy to split the path)
+
+\draw[line width=1pt] (-2.7,1) .. controls (-1.5,2) and (-0.4,2) .. (0,2);
+
+\draw[line width=1pt,dashed,-Stealth]
+      (0,2) .. controls (1.3,2.1) and (2.4,1.9) .. (3.05,1.3);
+
+\end{tikzpicture}
+\caption{\label{fig:entities_topics_1}Encodings and Entities}
+\end{figure}
+
+% \begin{figure}[h]
+% \centering\includegraphics[scale=0.5]{entities_topics_1}
+% \caption{\label{fig:entities_topics_1}Encodings and Entities.}
+% \end{figure}
+
+Given a finite string $r$, the oracle determines whether $r$ contains sufficient information to reconstruct a unique entity without additional input. If so, the oracle internally associates $r$ with that entity; otherwise, the string is deemed non-representational.
+
+
+\begin{definition}
+Let \(\mathcal{O}_{\mathcal{E}}\) be a representation oracle over the set of entities \(\mathcal{E}\), with reconstruction function
+\(\delta_{\mathcal O} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}\).
+We define the set of \emph{decodable representations}\index{Decodable representations} of the oracle as
+\[
+\mathcal{R}_{\mathcal{O}_{\mathcal{E}}}^{\top}
+=
+\{\, r \in \mathcal{B}^\ast \mid \mathcal{O}_{\mathcal{E}}(r)=\mathrm{true} \,\}.
+\]
+We say the finite binary string $r \in \mathcal{B}^\ast$ is a \emph{decodable representation}\index{Decodable representation} if $r \in \mathcal{R}_{\mathcal{O}_{\mathcal{E}}}^{\top}$.
+\end{definition}
+
+\noindent
+Equivalently, we have that
+\[
+\mathcal{R}_{\mathcal{O}_{\mathcal{E}}}^{\top}
+=
+\operatorname{dom}(\delta_{\mathcal O}).
+\]
+Within the theory of nescience, decodable representations constitute the primary formal point of access to entities, since representations are the only mechanism at our disposal for accessing the entities under investigation.
+
+\begin{notation}
+When the set of entities \(\mathcal{E}\) and the oracle are clear from the context, we may write
+\(\mathcal{R}_{\mathcal O}^{\top}\) or simply \(\mathcal{R}^{\top}\).
+\end{notation}
+
+The subset $\mathcal{R}^{\top}$ of representations an oracle can decode depends on the reconstruction function implemented by the oracle, and therefore on the representation style associated with that function.
+
+\begin{example}
+\label{ex:formal_languages_oracles}
+Let $\mathcal{E}$ be the set of formal languages over a fixed alphabet (see Section \ref{sec:strings}). A representation of a language is a finite string describing a rule or mechanism that generates or recognizes that language. Different representation styles correspond to different classes of computational models, and therefore to different reconstruction capabilities for the oracle.
+
+For example, a \emph{finite-automaton style}, in which representations describe finite automata\index{finite automaton}. The oracle reconstructs the language recognized by the automaton. In this case, the decodable representations correspond to the class of \emph{regular languages}\index{Regular languages}. A \emph{pushdown-automaton style}, in which representations describe pushdown automata\index{Pushdown automaton} or context-free grammars\index{Context-free grammar}. The oracle reconstructs the language generated by the grammar. 
+This representation style can decode all context-free languages, which strictly include the regular languages.
+And a \emph{Turing-machine style}, in which representations describe Turing machines\index{Turing machine}. 
+The oracle reconstructs the language recognized by the machine.  This representation style can decode any recursively enumerable language.
+
+Each representation style corresponds to a different oracle and therefore to a different subset of knowable entities. Since regular languages are strictly contained in the context-free languages, which in turn are contained in the recursively enumerable languages, the associated oracles have strictly increasing reconstructive power.
+\end{example}
+
+An entity may admit more than one decodable representation under a given oracle. It is therefore useful to isolate, for each entity \(e \in \mathcal{E}\), the subset of decodable representations that reconstruct exactly that entity.
+
+\begin{definition}
+Let \(\mathcal{O}_{\mathcal{E}}\) be a representation oracle with reconstruction function
+\(\delta_{\mathcal O} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}\).
+For any entity \(e \in \mathcal{E}\), we define the set of \emph{decodable representations} of \(e\)\index{Decodable representations} as
+\[
+\mathcal{R}_{\mathcal{O}, e}^{\top}
+=
+\{\, r \in \mathcal{R}_{\mathcal O}^{\top} \mid \delta_{\mathcal O}(r)=e \,\}.
+\]
+\end{definition}
+
+The set \(\mathcal{R}_{\mathcal{O}, e}^{\top}\) collects all the oracle-accepted strings that have the same semantic target. In this way, it makes explicit that the relation between entities and representations is generally one-to-many: a single entity may be reconstructed from several distinct strings, reflecting redundancy, variation in encoding, or differences in descriptive detail within a fixed representation style.
+
+\begin{notation}
+When the oracle is clear from the context, we may write \(\mathcal{R}_{e}^{\top}\) instead of \(\mathcal{R}_{\mathcal{O}, e}^{\top}\).
+\end{notation}
+
+We distinguish between \emph{knowable} and \emph{unknowable} entities (see the gray areas in Figure~\ref{fig:entities_topics_1}; for example, the entity $e_2$ is not encoded by any string). An entity is said to be knowable if the oracle can reconstruct it from at least one decodable representation string. Knowability is therefore always relative to the particular oracle under consideration.
+
+\begin{definition}
+\label{def:knowable_entity}
+We say that an entity $e \in \mathcal{E}$ is \emph{oracle knowable}\index{Oracle knowable} with respect to the oracle $\mathcal{O}_{\mathcal{E}}$ if there exists at least one $r \in \mathcal{R}_{\mathcal{O}_{\mathcal{E}}}^{\top}$ such that $\delta_\mathcal{O}(r) = e$. An entity $e \in \mathcal{E}$ is \emph{oracle unknowable}\index{Oracle unknowable} if it is not oracle knowable with respect to $\mathcal{O}_{\mathcal{E}}$.
+\end{definition}
+
+An entity that is unknowable with respect to one oracle, for example because that oracle's internal reconstruction mechanism or representation style is too weak, may become knowable with respect to another oracle that adopts a different style or has greater reconstructive capacity.
+
+\begin{example}
+Consider Example~\ref{ex:formal_languages_oracles}. The language
+\[
+L_1 = \{\, a^n b^n \mid n \ge 0 \,\}
+\]
+cannot be recognized by any finite automaton, and therefore it is not decodable under the finite-automaton representation style. However, it can be generated by a context-free grammar, and thus becomes decodable under the pushdown-automaton style.
+
+Similarly, the language
+\[
+L_2 = \{\, a^n b^n c^n \mid n \ge 0 \,\}
+\]
+is not context-free and therefore cannot be decoded under the pushdown-automaton style, but it can be recognized by a Turing machine. Consequently, it becomes decodable under the Turing-machine representation style.
+\end{example}
+
+We are interested in the set of all those entities that are knowable, that is, there exist at least one representation that decodes it.
+
+\begin{definition}
+Given a representation oracle $\mathcal{O}_{\mathcal{E}}$ over the set of entities $\mathcal{E}$, we define the set of \emph{oracle-knowable entities} by
+\[
+\mathcal{E}_{\mathcal{O}}^{\top} = \left\{e\in\mathcal{E} \mid
+\exists r\in\mathcal{R}_{\mathcal{O}}^{\top}
+\text{ such that }
+\delta_{\mathcal{O}}(r)=e
+\right\}.
+\]
+\end{definition}
+
+The fact that representations are finite binary strings imposes an immediate cardinality constraint on oracle-mediated knowledge. Even if the oracle is idealized and non-computable, it can only decode countably many representations, and therefore can make at most countably many entities knowable.
+
+\begin{proposition}
+\label{prop:countable_oracle_knowable}
+For any oracle \(\mathcal{O}_{\mathcal E}\), the set of oracle-knowable entities \(\mathcal{E}_{\mathcal O}^{\top}\) is countable.
+\end{proposition}
+\begin{proof}
+By definition,
+\[
+\mathcal{E}_{\mathcal O}^{\top}
+=
+\{\delta_{\mathcal O}(r)\mid r\in\mathcal{R}_{\mathcal O}^{\top}\}.
+\]
+Since \(\mathcal{R}_{\mathcal O}^{\top}\subseteq\mathcal{B}^\ast\) and \(\mathcal{B}^\ast\) is countable, the set \(\mathcal{R}_{\mathcal O}^{\top}\) is countable. The image of a countable set under a function is countable. Therefore \(\mathcal{E}_{\mathcal O}^{\top}\) is countable.
+\end{proof}
+
+This limitation has an immediate consequence for sufficiently large domains of inquiry. If the set of entities under consideration is uncountable, then no oracle based on finite representations can make all of them knowable.
+
+\begin{proposition}
+\label{prop:uncountable_entities_unknowable}
+If the set of entities \(\mathcal{E}\) is uncountable, then for any oracle \(\mathcal{O}_{\mathcal E}\),
+\[
+\mathcal E\setminus \mathcal{E}_{\mathcal O}^{\top}\neq\varnothing.
+\]
+\end{proposition}
+\begin{proof}
+By Proposition~\ref{prop:countable_oracle_knowable}, the set \(\mathcal{E}_{\mathcal O}^{\top}\) is countable. Since \(\mathcal E\) is uncountable, \(\mathcal{E}_{\mathcal O}^{\top}\) cannot exhaust \(\mathcal E\). Hence
+\[
+\mathcal E\setminus \mathcal{E}_{\mathcal O}^{\top}\neq\varnothing.
+\]
+\end{proof}
+
+\begin{example}
+\label{ex:unknowability_real_numbers}
+Consider the case in which the entities under study are real numbers, so that \(\mathcal{E}=\mathbb{R}\).
+Since the set of finite binary strings \(\mathcal{B}^\ast\) is countable, any oracle \(\mathcal{O}_{\mathcal{E}}\) can decode at most countably many representations. Consequently, the set of oracle-knowable real numbers
+\[
+\mathcal{E}_{\mathcal{O}}^{\top}
+=
+\{\,\delta_{\mathcal O}(r)\mid r\in\mathcal{R}_{\mathcal O}^{\top}\,\}
+\]
+is countable. Because the set of real numbers \(\mathbb{R}\) is uncountable, there must exist real numbers that cannot be reconstructed from any finite binary representation under the oracle.
+\end{example}
+
+Example~\ref{ex:unknowability_real_numbers} illustrates a fundamental limitation of representation-based knowledge. In domains where the set of possible entities is uncountable, the space of entities necessarily exceeds the space of finite representations available to us. As a consequence, even an idealized oracle cannot make all entities knowable through finite descriptions.
+
+%
+% Section: Relevant Representations
+%
+
+\section{Relevant Representations}
+\label{sec:relevant_representations}
+
+In the previous we formulated the scientific representation problem by introducing an abstract oracle $\mathcal{O}_{\mathcal{E}}$, which evaluates finite binary strings and determines whether a given string contains sufficient information to reconstruct a unique entity in $\mathcal{E}$. A decodable representation, however, may also contain information that is irrelevant; in such cases, the oracle would simply disregard that content during reconstruction. From a practical standpoint, though, working with representations contaminated by irrelevant information can hinder analysis and obscure what is actually being encoded. For this reason, we are particularly interested in representations that contain only relevant information; these strings constitute the set of relevant representations.\footnote{Recall that $s \sqsubset r$ denotes a substring of $r$, and $r\setminus s$ denotes the string obtained from $r$ by removing all occurrences of $s$ (see Section~\ref{sec:strings}).}
+
+
+
+
+
+\begin{definition}
+\label{def:set_relevant_representations_generic}
+Let $\mathcal{E}$ be a collection of entities, and let
+$\mathcal{O}_{\mathcal{E}}$ be a representation oracle with oracle-internal
+reconstruction function
+$\delta_{\mathcal{O}} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}$.
+
+A decodable representation $r \in \mathcal{R}^{\top}$ is said to be
+\emph{relevant}\index{Relevant representation} if there exists no total
+computable function $g : \mathcal{B}^\ast \to \mathcal{B}^\ast$ such that
+\[
+\delta_{\mathcal{O}}(g(r)) = \delta_{\mathcal{O}}(r)
+\quad\text{and}\quad
+K(g(r)) < K(r) - O(1).
+\]
+
+The set of such strings is called the set of relevant representations and is
+denoted $\tilde{\mathcal{R}}_{\mathcal{O}_{\mathcal{E}}}$.
+\end{definition}
+
+
+
+
+\begin{definition}
+Let $\mathcal{E}$ be a collection of entities and let
+$\mathcal{O}_{\mathcal{E}}$ be a representation oracle with reconstruction
+function
+$\delta_{\mathcal O} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}$.
+
+A decodable representation $r \in \mathcal{R}^{\top}$ is said to be
+\emph{relevant} if there exists no total computable function
+$g:\mathcal{B}^\ast \to \mathcal{B}^\ast$ such that
+\[
+\delta_{\mathcal O}(g(r))=\delta_{\mathcal O}(r)
+\quad\text{and}\quad
+K(r\mid g(r))>O(1).
+\]
+
+The set of such strings is denoted $\tilde{\mathcal R}_{\mathcal O}$.
+\end{definition}
+
+
+
+\begin{definition}
+Let $\mathcal{E}$ be a collection of entities and let
+$\mathcal{O}_{\mathcal{E}}$ be a representation oracle with reconstruction
+function
+\[
+\delta_{\mathcal O} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}.
+\]
+
+A decodable representation $r \in \mathcal{R}^{\top}$ is said to be
+\emph{relevant} if there do not exist total computable functions
+$g,h : \mathcal{B}^\ast \to \mathcal{B}^\ast$ such that
+
+\[
+\delta_{\mathcal O}(g(r)) = \delta_{\mathcal O}(r),
+\]
+
+\[
+K(h(r)\mid g(r)) > O(1),
+\]
+
+and
+
+\[
+K(r \mid g(r),h(r)) = O(1).
+\]
+
+The set of such strings is denoted $\tilde{\mathcal R}_{\mathcal O}$.
+\end{definition}
+
+
+
+
+
+
+
+
+\begin{proposition}
+\label{prop:substring_case}
+Let $r = r_1 s r_2$ be a representation of an entity $e$, and let
+$r' = r_1 r_2$ be the reduced representation obtained by removing the substring
+$s$. Define the computable function
+\[
+g(x) =
+\begin{cases}
+r_1 r_2 & \text{if } x = r_1 s r_2, \\
+x & \text{otherwise}.
+\end{cases}
+\]
+
+If
+\[
+K(s \mid r_1 r_2) > O(1)
+\quad\text{and}\quad
+\delta_{\mathcal{O}}(r_1 r_2) = \delta_{\mathcal{O}}(r),
+\]
+then $r$ is not a relevant representation according to
+Definition~\ref{def:set_relevant_representations_generic}.
+\end{proposition}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{definition}
+\label{def:set_relevant_representations}
+Let $\mathcal{E}$ be a collection of entities, and let $\mathcal{O}_{\mathcal{E}}$ be a representation oracle with oracle-internal reconstruction function $\delta_{\mathcal{O}} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}$. We define the set of \emph{relevant representations}\index{Relevant representation} for $\mathcal{E}$ with respect to $\mathcal{O}_{\mathcal{E}}$ as:
+\begin{equation*}
+\begin{split}
+\tilde{\mathcal{R}}_{\mathcal{O}_{\mathcal{E}}} = \{
+  & r \in \mathcal{R}^\top \mid \neg \exists s \sqsubset r : \\
+  & \left( K(s \mid r \setminus s) > O(1) \land \delta_{\mathcal{O}}(r \setminus s)=\delta_{\mathcal{O}}(r) \right)\}.
+\end{split}
+\end{equation*}
+\end{definition}
+
+The set $\mathcal{R}^\star_{\mathcal{O}_{\mathcal{E}}}$ is generally unknown, since its definition depends on the behavior of an abstract and typically inaccessible oracle.
+
+Definition \ref{def:set_relevant_representations} allows \emph{redundant}\index{Redundant string} information within a perfect representation, but excludes \emph{irrelevant} information. Intuitively, redundancy corresponds to information that is already implicit in the remaining part of the representation: if a substring $s$ can be reconstructed from the rest of the string $r\setminus s$ by a program of constant size, that is, if $K(s\mid r\setminus s)=O(1)$, then $s$ introduces no essentially new information about the entity beyond what is already contained in $r\setminus s$. Such redundant content does not threaten perfectness and may legitimately remain in the representation. In fact, redundancy is often desirable in scientific and engineering practice, because it can facilitate the construction of usable descriptions or models: for instance, training modern machine learning systems (such as neural networks) typically requires very large datasets, which contain extensive redundancy in the form of repeated patterns, or multiple observations that jointly support the same underlying structure.
+
+By contrast, an \emph{irrelevant}\index{Irrelevant string} substring is one that is both dispensable for reconstruction of the entity (i.e., removing it does not change the reconstructability of the entity, $\delta_{\mathcal{O}}(r\setminus s)=\delta_{\mathcal{O}}(r)$) and non-redundant (i.e., it is not determined by the rest of the representation, $K(s\mid r\setminus s)>O(1)$). Such a substring contains independent information that is not related to the entity being represented, and therefore must be removed. Otherwise, any description or model derived from the representation would be forced to account for this extraneous content, increasing complexity without improving our ability to explain or predict properties of the original entity. As a result, irrelevant information can obscure the structure that truly matters and make scientific inference more difficult.
+
+The notion of irrelevance employed here should be understood as irrelevance relative to both the entity and the representation style. A representation is assumed to belong to a particular representational style given by the oracle (for instance, a dataset, an image, an equation, or a text description), and perfectness requires that the representation does not contain independent information that falls outside that style while leaving the reconstructed entity unchanged.
+
+\begin{example}
+Consider an entity \(e\) representing the data-generating mechanism behind a controlled experiment, and suppose that a dataset \(D\) of measured variables is already sufficient for the oracle to reconstruct \(e\). If we concatenate to \(D\) a photograph taken in the laboratory, the resulting string still contains valid information about the experiment, but this additional content is not part of the dataset-style encoding of the entity and can be removed without changing \(\delta_{\mathcal{O}}\). Since the imange is not determined by the remaining dataset, it has high conditional complexity and is classified as irrelevant by the definition.
+\end{example}
+
+A relevant representation may still contain incorrect or noisy information. The notion of relevance only excludes independent information that is not related to the entity being represented; it does not guarantee that all the information present in the representation is accurate. In many scientific contexts, measurement errors are distributed throughout the representation itself. For instance, a dataset obtained from repeated measurements of a physical system may contain small observational errors in each recorded value. Although these errors do not belong to the true structure of the entity, they are interwoven with the measurements and cannot typically be removed by deleting a single substring of the representation. As a result, a representation may be relevant in the sense defined above while still containing inaccurate information that the oracle must tolerate or compensate for during reconstruction.
+
+\begin{notation}
+When the choice of oracle is clear from context, we denote the set of perfect representations simply by $\mathcal{R}^\star_{\mathcal{E}}$. If the set of entities is also clear from the context, we denote the set of perfect representations by $\mathcal{R}^\star$.
+\end{notation}
+
+An entity may admit more than one perfect representation, even when the oracle is restricted to a particular representational style.
+
+\begin{definition}
+\label{def:Re}
+Given an entity $e \in \mathcal{E}$, we define the set of \emph{perfect representations of $e$} as
+\[
+\mathcal{R}^\star_e = \{  r \in \mathcal{R}^\star_{\mathcal{O}_{\mathcal{E}}} | \delta_{\mathcal{O}}(r) = e \}.
+\]
+\end{definition}
+
+The set $\mathcal{R}^\star_e$ is oracle-relative, generally unknown, and need not be decidable.
+
+\begin{example}
+Given a DNA-based\index{DNA} encoding scheme (see Example~\ref{ex:description_dna}), an individual animal may admit multiple valid representations. Owing to the degeneracy of the genetic code, distinct DNA sequences can encode the same proteins through synonymous codons. These alternative sequences differ at the nucleotide level but preserve the information required to reconstruct the same biological entity, as they give rise to identical functional outcomes.
+\end{example}
+
+\begin{notation}
+We write $r^\star_e \in \mathcal{R}^\star_e$ to indicate that the string $r^\star_e$ is a perfect representation of the entity $e$, whenever such a string is known.
+\end{notation}
+
+The sets of perfect representations associated with different entities must be disjoint.
+
+\begin{proposition}
+For any two entities \(e_1,e_2 \in \mathcal{E}\) with \(e_1 \neq e_2\) we have that $\mathcal{R}^\star_{e_1} \cap \mathcal{R}^\star_{e_2} = \varnothing$.
+\end{proposition}
+\begin{proof}
+Suppose, for contradiction, that there exists a string \(r \in \mathcal{R}^\star_{e_1} \cap \mathcal{R}^\star_{e_2}\).
+By definition of \(\mathcal{R}^\star_{e_1}\), we have \(\delta_{\mathcal{O}}(r)=e_1\). Likewise, by definition of
+\(\mathcal{R}^\star_{e_2}\), we have \(\delta_{\mathcal{O}}(r)=e_2\). Since \(\delta_{\mathcal{O}}\) is a function on its domain, it assigns a unique value to each \(r \in \mathcal{R}^\star_{\mathcal{O}_{\mathcal{E}}}\), and therefore \(e_1=e_2\), contradicting the assumption that \(e_1 \neq e_2\). Hence no such \(r\) exists and
+\(\mathcal{R}^\star_{e_1} \cap \mathcal{R}^\star_{e_2} = \varnothing\).
+\end{proof}
+
+Since perfectness is a property of a representation with respect to the entity it reconstructs, it is convenient to define the global set of perfect representations by aggregating the perfect representations of each individual entity.
+
+\begin{definition}
+Let $\mathcal{E}$ be a set of entities. We define the set of \emph{perfect representations}\index{Perfect representation} of $\mathcal{E}$ as
+\[
+\mathcal{R}_\mathcal{E}^{\star} = \bigcup_{e\in\mathcal{E}} \mathcal{R}_{e}^{\star}.
+\]
+\end{definition}
+
+Perfectness is a property evaluated locally at the level of individual entities. Consequently, the set of perfect representations is not determined solely by the representation style induced by the oracle, but also by the structural characteristics of the individual entities. The global set $\mathcal{R}_\mathcal{E}^{\star}$ therefore reflects the diversity of the entities under investigation: different entities may admit very different families of perfect representations, depending both on the information needed to reconstruct them and on the representation style adopted by the oracle. Perfect representations are constrained by the structure of reality itself, not only by the representation language.
+
+\begin{example}
+Consider the case where the entities under investigation are biological organisms and the oracle adopts as representation style the use of DNA sequences. In this style, a representation is a finite string over the alphabet $\{A,C,G,T\}$ encoding measurements of the organism's genome obtained through DNA sequencing.
+
+Although all representations share the same representation style (a nucleotide sequence), the requirements for a perfect representation depend on the characteristics of the particular organism being represented.
+
+For example, the genome of a simple virus can often be perfectly represented by a single contiguous sequence of nucleotides, since the genome is short and contains few repeated regions. In contrast, the genome of many higher organisms contains long repetitive segments and complex structural variations. In these cases, a perfect representation may require additional sequencing coverage, longer reads, or multiple overlapping fragments in order to resolve the repeated regions and reconstruct the genome unambiguously.
+
+Thus, even though the oracle fixes a common representation style based on DNA sequences, the structure and amount of information required for a perfect representation depend on the intrinsic properties of the individual organism. This illustrates that the set of perfect representations is determined not only by the representation style induced by the oracle but also by the structural characteristics of the entities themselves.
+\end{example}
+
+Perfectness is invariant (up to constant additive terms in Kolmogorov complexity) under computable recodings that admit a computable inverse. Given a total computable bijection $f:\mathcal{B}^\ast \to \mathcal{B}^\ast$ whose inverse $f^{-1}$ is also total and computable, we can define the transported reconstruction function $\delta'_{\mathcal{E}} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}$ by $\delta'_{\mathcal{E}}(x) \;:=\; \delta_{\mathcal{O}}\!\bigl(f^{-1}(x)\bigr)$.
+
+\begin{proposition}
+Let $\mathcal{O}_{\mathcal{E}}$ be a representation oracle with reconstruction function $\delta_{\mathcal{O}}$, and let $f:\mathcal{B}^\ast \to \mathcal{B}^\ast$ be a total computable bijection with transported reconstruction function $\delta'_{\mathcal{E}}(x)$.
+
+Let $\mathcal{R}^{\star}_{\mathcal{O}_{\mathcal{E}}}$ be the set of perfect representations induced by $\delta_{\mathcal{O}}$, and let $\mathcal{R}^{\star}_{\mathcal{O}'_{\mathcal{E}}}$ be the corresponding set induced by $\delta'_{\mathcal{E}}$. Then, for every $r \in \mathcal{B}^\ast$,
+\[
+r \in \mathcal{R}^{\star}_{\mathcal{O}_{\mathcal{E}}}
+\quad\Longleftrightarrow\quad
+f(r) \in \mathcal{R}^{\star}_{\mathcal{O}'_{\mathcal{E}}}.
+\]
+\end{proposition}
+
+\begin{proof}
+Fix $r\in\mathcal{B}^\ast$. Since $f$ is a total computable bijection with total computable inverse,
+there exists a constant $c\in\mathbb{N}$ such that for all $x,y\in\mathcal{B}^\ast$,
+\begin{equation}
+\label{eq:K_invariance_bijection}
+K\!\bigl(f(x)\mid f(y)\bigr) \;=\; K(x\mid y) \pm O(1),
+\end{equation}
+where the hidden constant depends only on $f$ and the choice of reference universal machine.
+
+We first show that dispensability is preserved. Let $s \sqsubset r$ be any substring, and set
+\[
+r' := r\setminus s,
+\qquad
+\tilde r := f(r),
+\qquad
+\tilde r' := f(r').
+\]
+By definition of $\delta'_{\mathcal{E}}$,
+\[
+\delta'_{\mathcal{E}}(\tilde r) = \delta_{\mathcal{O}}(r),
+\qquad
+\delta'_{\mathcal{E}}(\tilde r') = \delta_{\mathcal{O}}(r').
+\]
+Hence,
+\begin{equation}
+\label{eq:disp_preserved}
+\delta_{\mathcal{O}}(r')=\delta_{\mathcal{O}}(r)
+\quad\Longleftrightarrow\quad
+\delta'_{\mathcal{E}}(\tilde r')=\delta'_{\mathcal{E}}(\tilde r).
+\end{equation}
+
+Next, by~\eqref{eq:K_invariance_bijection} applied to $(x,y)=(s,r')$,
+\begin{equation}
+\label{eq:K_cond_preserved}
+K\!\bigl(f(s)\mid f(r')\bigr) \;>\; O(1)
+\quad\Longleftrightarrow\quad
+K(s\mid r') \;>\; O(1),
+\end{equation}
+where the $O(1)$ terms may change but remain bounded by a constant independent of $r$ and $s$.
+
+Combining~\eqref{eq:disp_preserved} and~\eqref{eq:K_cond_preserved}, we obtain that $s$ witnesses the existence of an irrelevant
+substring for $r$ (with respect to $\delta_{\mathcal{O}}$) if and only if $f(s)$ witnesses the existence of an irrelevant substring
+for $f(r)$ (with respect to $\delta'_{\mathcal{E}}$), up to the constant slack inherent in the $O(1)$ thresholds.
+Therefore, $r$ has no irrelevant substring if and only if $f(r)$ has no irrelevant substring, i.e.,
+\[
+r \in \mathcal{R}^{\star}_{\mathcal{O}_{\mathcal{E}}}
+\quad\Longleftrightarrow\quad
+f(r) \in \mathcal{R}^{\star}_{\mathcal{O}'_{\mathcal{E}}}.
+\]
+\end{proof}
+
+%
+% Compact Representations
+%
+
+\section{Compact Representations}
+
+Within the theory of nescience, representations are not required to be minimal. Their primary requirement is correctness: a representation must contain information that is relevant for the oracle to reconstruct the corresponding entity. We therefore allow, and in some applications prefer, representations that include more information than is strictly necessary for reconstruction, provided that this additional information is correct. In this sense, representations are typically redundant.
+
+Nevertheless, the notion of non-redundant representations plays an important theoretical role, because it provides a principled way to compare oracles and, in particular, to identify those that are most suitable for research (see the definition of minimal oracle below). Intuitively, a representation is redundant if there exists another representation of the same entity that uses fewer symbols; it is non-redundant, or  ompact, if no such shorter representation exists.
+
+\begin{definition}
+\label{def:nonredundant_description}
+Let $\mathcal{O}$ be an oracle with representation function $\delta$, and let $r \in \mathcal{R}^\ast$ a perfect representation. We say that $r$ is a \emph{compact}\index{Compact representation} representation if there is no perfect representation $s\in\mathcal{R}^\ast$ such that
+\[
+l(s) < l(r) \wedge\ \delta(s) = \delta(r)
+\]
+\end{definition}
+
+Because the oracle's internal reconstruction mechanism is abstract and generally inaccessible, it is natural to treat the oracle as a black box and characterize it only through its observable input-output behaviour. In this setting, the set of compact representations provides a particularly informative external signature of the oracle: it is a minimal subset of the decodable representations that captures which entities the oracle can reconstruct and from which shortest forms. Thus, this minimal set of representations can be used as a characterization of the oracle's decoding relation.
+
+\begin{notation}
+We denote by $\bar{\mathcal{R}}_{\mathcal{O}_\mathcal{E}}$ (simplified as $\bar{\mathcal{R}}_{\mathcal{O}}$ if $\mathcal{E}$ is clear from the context or simply $\bar{\mathcal{R}}$ if the oracle is clear from the context) the set of all compact representations.
+\end{notation}
+
+{\color{red} TODO: Set of compact representations $\bar{\mathcal{R}}_{e}=\bigl\{ r\in\mathcal{\bar{R}}\big|\delta(r)=e\bigr\}$}
+
+Every decodable entity has at least one compact representation.
+
+\begin{proposition}
+Let $\mathcal{O}$ be and oracle, and $e \in \mathcal{E}$ a decodable entity. Then there exists at least one compact representation $r \in \mathcal{R}^\ast$ such that $\delta(r)=e$.
+\end{proposition}
+\begin{proof}
+Let $A_e = \{l(r) : r\in\mathcal{B}^\ast, \delta(r)=e \} \subseteq\mathbb{N}$. By assumption $e$ is decodable, and so $R^\top_e \neq \varnothing$. Since $\mathbb{N}$ is a well-ordered set, $A_e$ has a minimum $m$. Choose $r \in \mathcal{B}^\ast$ with $\delta(r)=e$ and $l(r)=m$. By construction, there is no shorter $s \in \mathcal{B}^\ast$ with $\delta(s)=e$, hence $r \in \mathcal{R}^\top_e$.
+\end{proof}
+
+{\color{red} TODO: Prove that removing a redundant substring from a representation still represent the same entity. Conclude that compactness is achieved by removing redundancy.}
+
+{\color{red} TODO: Prove that $\hat{mathcal{R}} = \cup \hat{mathcal{R}}_{e}$ for the knowable entities.}
+
+{\color{red} TODO: Compact does not mean unique. And on the contraty of the case of perfect representations, the orther in which we remove redundant information leads to different compact representations.}
+
+{\color{red} TODO: Study the property preservation under computable biyections between compact representations.}
+
+%
+% Section: Minimal Oracles
+%
+
+\section{Minimal Oracles}
+
+Ideally, representation oracles should be minimal in size, meaning that all information needed to reconstruct an entity is carried by the representation string rather than being hard-wired into the oracle. A non-minimal oracle\index{Non-minimal oracle} can simplify the representation problem by offloading complexity to its internal representation function, but it also forces researchers to understand not only the representation itself but the oracle's internal reconstruction process, something that, given the abstract nature of oracles, is generally not accessible in practice.
+
+\begin{definition}
+Let $\mathcal{O}_A$ and $\mathcal{O}_B$ be two oracles defined over the set of entities $\mathcal{E}$. We say are said that the oracles $\mathcal{O}_A$ and $\mathcal{O}_B$ are \emph{comparable}\index{Comparable oracle}, denoted by $\mathcal O_A \sim \mathcal O_B$, if
+\[
+\mathcal{E}_{\mathcal{O}_{A}}^{\top} = \mathcal{E}_{\mathcal{O}_{B}}^{\top}.
+\]
+\end{definition}
+
+The comparability relation defined above does more than merely identify pairs of oracles with the same knowable-entity set: it partitions the entire class $\mathfrak O_{\mathcal E}$ into structurally homogeneous blocks. Within each block, all oracles agree on which entities are knowable, and differ only in how those entities are represented or reconstructed.
+
+\begin{proposition}
+The relation \(\sim\) is an equivalence relation on \(\mathfrak O_{\mathcal E}\).
+\end{proposition}
+\begin{proof}
+Reflexivity is immediate since \(\mathcal E^{\top}_{\mathcal O}=\mathcal E^{\top}_{\mathcal O}\).
+Symmetry holds because equality is symmetric.
+Transitivity holds because if \(\mathcal E^{\top}_{\mathcal O_A}=\mathcal E^{\top}_{\mathcal O_B}\) and
+\(\mathcal E^{\top}_{\mathcal O_B}=\mathcal E^{\top}_{\mathcal O_C}\), then
+\(\mathcal E^{\top}_{\mathcal O_A}=\mathcal E^{\top}_{\mathcal O_C}\).
+\end{proof}
+
+The equivalence relation $\sim$ partitions the space of oracles into disjoint classes, each class collecting all oracles that make exactly the same entities knowable. The comparability class of an oracle thus isolates differences in representation mechanisms and internal structure while holding fixed the underlying set of decodable entities. 
+
+\begin{definition}
+Let $\mathcal O \in \mathfrak O_{\mathcal E}$ be an oracle. We define the comparability class of $\mathcal O$, denoted by $[\mathcal{O}]$, as follows:
+\[
+[\mathcal O] = \{\mathcal O'\in\mathfrak O_{\mathcal E}\mid \mathcal O'\sim \mathcal O\}
+\]
+\end{definition}
+
+When an oracle contains hard-wired information, it can reconstruct an entity from a representation that leaves part of that information implicit, representations that an oracle without that hard-wired knowledge would be unable to decode. This property provides a natural basis for ordering oracles: we compare the sets of distinct non-redundant representations they accept, since an oracle with more hard-wired information admits a larger set of non-redundant decodable representations.
+
+\begin{definition}
+Let $\mathcal{O}_A$ and $\mathcal{O}_B$ two comparable oracles. We say that $\mathcal{O}_A$ \emph{reduces}\index{Oracle reduction} to $\mathcal{O}_B$, denoted by $\mathcal{O}_A \triangleright \mathcal{O}_B$, if
+\[
+\bar{\mathcal{R}}_{\mathcal{O}_B} \subsetneq \bar{\mathcal{R}}_{\mathcal{O}_A}.
+\]
+\end{definition}
+
+\noindent
+We may regard $\mathcal{O}_B$ as a simplification of $\mathcal{O}_A$, in the sense that it contains less hard-wired information while still decoding the same subset of entities in $\mathcal{E}$.
+
+\begin{example}
+Consider representations of chemical compounds. A non-minimal oracle may incorporate extensive background chemical knowledge (e.g., periodic table, standard valences, and common structures). Under such an oracle, a compound could be represented by a short string such as its common name (e.g., \emph{water}, \emph{ethanol}), from which the oracle reconstructs the full molecular structure. In this case, most of the information required for reconstruction is implicit in the oracle rather than explicit in the representation. By contrast, a more minimal oracle requires the representation to encode the relevant structure directly, for instance by specifying atoms and bonds.
+\end{example}
+
+The binary relation of reduction defines a non-strict partial order over the sets of all comparble oracles as next proposition shows.
+
+\begin{proposition}
+Let $\mathfrak{O}_{\mathcal{E}}$ be the set of comparable oracles over the set of entities $\mathcal{E}$. We have that the reduction relation $\triangleright$ is:
+\begin{enumerate}
+\item \emph{irreflexive}: $\neg(\mathcal{O} \triangleright \mathcal{O})$ for all $\mathcal{O} \in \mathfrak{O}_{\mathcal{E}}$,
+\item \emph{transitive}: if $\mathcal{O}_A \triangleright \mathcal{O}_B$ and $\mathcal{O}_B \triangleright \mathcal{O}_C$, then $\mathcal{O}_A \triangleright \mathcal{O}_C$, for all $\mathcal{O}_A, \mathcal{O}_B, \mathcal{O}_C \in \mathfrak{O}_{\mathcal{E}}$
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+Irreflexivity follows from the fact that no set is a strict subset of itself. Transitivity follows from transitivity of strict set inclusion.
+\end{proof}
+
+While the relation $\triangleright$ is transitive and irreflexive, it is natural to ask whether it induces a total ordering on the class of comparable oracles. The following proposition shows that this is not the case: even when two oracles decode exactly the same entities, they may embody different and incomparable forms of hard-wired information.
+
+\begin{proposition}
+It is not the case that the reduction relation \(\triangleright\) is total on
+\(\mathfrak{O}_{\mathcal{E}}\).
+That is, there exist comparable oracles
+\(\mathcal{O}_A,\mathcal{O}_B\in\mathfrak{O}_{\mathcal{E}}\) such that neither
+\(\mathcal{O}_A \triangleright \mathcal{O}_B\) nor
+\(\mathcal{O}_B \triangleright \mathcal{O}_A\) holds.
+\end{proposition}
+\begin{proof}
+We exhibit two comparable oracles whose sets of non-redundant representations are
+incomparable under strict inclusion.
+
+Let \(\mathcal{E}=\{e_0,e_1,e_2\}\) and fix an alphabet \(\mathcal{B}\) containing distinct symbols
+\(a,b,c\).
+Define two reconstruction functions
+\(\delta_A,\delta_B:\mathcal{B}^\ast\rightharpoonup\mathcal{E}\) by specifying their
+(non-redundant) decodable representations as follows:
+\[
+\delta_A(a)=e_0,\quad \delta_A(b)=e_1,\quad \delta_A(cc)=e_2,
+\]
+\[
+\delta_B(aa)=e_0,\quad \delta_B(b)=e_1,\quad \delta_B(c)=e_2,
+\]
+and leave both functions undefined on all other strings.
+Let \(\mathcal{O}_A\) and \(\mathcal{O}_B\) be the corresponding representation oracles.
+
+By construction, both oracles decode exactly the same set of entities \(\mathcal{E}\), and hence
+\(\mathcal{O}_A,\mathcal{O}_B\in\mathfrak{O}_{\mathcal{E}}\).
+Moreover, their sets of non-redundant representations are
+\[
+\mathcal{R}^{\star,0}_{\mathcal{O}_A}=\{a,b,cc\},
+\qquad
+\mathcal{R}^{\star,0}_{\mathcal{O}_B}=\{aa,b,c\}.
+\]
+
+These two sets are incomparable under strict inclusion: we have
+\(cc\in\mathcal{R}^{\star,0}_{\mathcal{O}_A}\) but
+\(cc\notin\mathcal{R}^{\star,0}_{\mathcal{O}_B}\), and also
+\(c\in\mathcal{R}^{\star,0}_{\mathcal{O}_B}\) but
+\(c\notin\mathcal{R}^{\star,0}_{\mathcal{O}_A}\).
+Therefore neither
+\(\mathcal{R}^{\star,0}_{\mathcal{O}_B}\subsetneq \mathcal{R}^{\star,0}_{\mathcal{O}_A}\) nor
+\(\mathcal{R}^{\star,0}_{\mathcal{O}_A}\subsetneq \mathcal{R}^{\star,0}_{\mathcal{O}_B}\) holds.
+
+By definition of the reduction relation \(\triangleright\), this implies that neither
+\(\mathcal{O}_A \triangleright \mathcal{O}_B\) nor
+\(\mathcal{O}_B \triangleright \mathcal{O}_A\) holds.
+Hence \(\triangleright\) is not a total relation on \(\mathfrak{O}_{\mathcal{E}}\).
+\end{proof}
+
+This proposition shows that even when the set of knowable entities is held fixed, there may be multiple, genuinely different ways of distributing information between representations and the oracle.
+Different oracles may hard-wire different aspects of the same entities, leading to incomparable non-redundant representation sets. As a consequence, simplification with respect to \(\triangleright\) is not a linear process but a partial ordering, and minimal oracles—when they exist—need not be unique.
+
+The ordering introduced by the reduction relation allow us to formally introduce the concept of minimality: an oracle is minimal if it cannot be reduced to any other comparable oracle.
+
+\begin{definition}
+\label{def:minimal_oracle}
+Let $\mathcal{O} \in \mathfrak{O}_{\mathcal{E}}$ be an oracle. We say that $\mathcal{O}$ is \emph{minimal}\index{Minimal oracle} if
+\[
+\nexists \mathcal{O}' \in [\mathcal{O}] : \mathcal{O} \triangleright \mathcal{O}'.
+\]
+\end{definition}
+
+\noindent
+Equivalently, the oracle $\mathcal{O}$ is minimal if there is no $\mathcal{O}' \in [\mathcal{O}] $ with
+\[
+\bar{\mathcal{R}}_{\mathcal{O}'}\subsetneq\bar{\mathcal{R}}_{\mathcal{O}}
+\]
+
+{\color{red} Todo: Introduce the class of minimal oracles.}
+
+The notion of minimal oracle formalizes the idea of an oracle that contains no \emph{unnecessary} hard-wired information relative to a fixed representation style and a fixed set of knowable entities.
+Recall that a reduction $\mathcal{O}\triangleright\mathcal{O}'$ corresponds to eliminating part of the oracle’s internalized assumptions while preserving the same epistemic reach, a change that is reflected in a strict reduction of the set of non-redundant decodable representations.
+An oracle is therefore minimal precisely when no further such elimination is possible within its comparability class.
+
+This does not mean that a minimal oracle is devoid of internal structure or background knowledge; rather, it means that any remaining hard-wired information is irreducible given the chosen representation style.
+In this sense, minimal oracles capture the simplest reconstruction mechanisms compatible with that style, and they formalize the intuition of oracles that do not rely on avoidable internalized assumptions.
+
+The following proposition provides an alternative characterization of the concept of minimal oracle, based on minimal elements under set inclusion.
+
+\begin{proposition}
+\label{prop:characterization_minimality}
+Fix \((\sigma,S)\).
+An oracle \(\mathcal{O}\in\mathfrak{O}_{\sigma,S}\) is minimal if and only if
+\(\mathcal{R}^{\star,0}_{\mathcal{O}}\) is a minimal element (under set inclusion) among the family
+\(\{\mathcal{R}^{\star,0}_{\mathcal{O}'} : \mathcal{O}'\in\mathfrak{O}_{\sigma,S}\}\).
+\end{proposition}
+\begin{proof}
+This is immediate from Definition~\ref{def:minimal_oracle} and Definition~\ref{def:oracle_reduction}:
+\(\mathcal{O}\) is minimal precisely when there is no \(\mathcal{O}'\) with a strictly smaller non-redundant core.
+\end{proof}
+
+Minimal oracles need not be unique. It may happen that two distinct oracles $\mathcal{O}_A, \mathcal{O}_B \in \mathfrak{O}_{\mathcal{E}}$ are both minimal, while their sets of non-redundant representations $\bar{\mathcal{R}}_{\mathcal{O}_A}$ and $\bar{\mathcal{R}}_{\mathcal{O}_B}$ are incomparable under set inclusion. In such a case, neither oracle can be reduced to the other, and both appear as minimal elements of the partial order induced by the reduction relation.
+
+The existence of minimal oracles depends on the size of the subset of decodable entities and on the amount of freedom allowed in the representation mechanism.
+
+\begin{proposition}
+\label{prop:existence_minimal_finite}
+Let $S \subseteq \mathcal{E}$ be a finite set of decodable entities, and let $\mathfrak{O}_{S}$ be the class of comparable oracles that decode $S$. Then there exists at least one minimal oracle in $\mathfrak{O}_{S}$ with respect to the reduction relation $\triangleright$.
+\end{proposition}
+\begin{proof}
+Fix $\mathcal{O}\in\mathfrak{O}_{S}$ and $e\in S$.
+By definition, $\bar{\mathcal{R}}_{\mathcal{O}}$ contains precisely the decodable representations of $e$ having minimal length among those $r$ with $\delta(r)=e$.
+Let
+\[
+\bar{\mathcal{R}}_{\mathcal{O}}(e)
+\;:=\;
+\{\, r\in\bar{\mathcal{R}}_{\mathcal{O}} : \delta(r)=e\,\}.
+\]
+If $L_{\mathcal{O}}(e)=\min\{\,l(r): \delta(r)=e\,\}$ denotes the minimal length of a decodable representation of $e$ under $\mathcal{O}$, then
+$\bar{\mathcal{R}}_{\mathcal{O}}(e)\subseteq\{0,1\}^{L_{\mathcal{O}}(e)}$, hence $\bar{\mathcal{R}}_{\mathcal{O}}(e)$ is finite.
+Since $S$ is finite,
+\[
+\bar{\mathcal{R}}_{\mathcal{O}}
+=
+\bigcup_{e\in S}\bar{\mathcal{R}}_{\mathcal{O}}(e)
+\]
+is a finite union of finite sets, and therefore $\bar{\mathcal{R}}_{\mathcal{O}}$ is finite for every $\mathcal{O}\in\mathfrak{O}_{S}$.
+
+Consider now the family $\mathcal{F}:=\{\bar{\mathcal{R}}_{\mathcal{O}}:\mathcal{O}\in\mathfrak{O}_{S}\}$ ordered by strict inclusion $\subsetneq$.
+Because every element of $\mathcal{F}$ is finite, there cannot exist an infinite strictly descending chain
+$A_1 \supsetneq A_2 \supsetneq A_3 \supsetneq \cdots$ within $\mathcal{F}$: at each strict inclusion step the cardinality decreases by at least one, which cannot happen indefinitely for finite sets.
+Hence every nonempty subfamily of $\mathcal{F}$ contains an inclusion-minimal element.
+In particular, $\mathcal{F}$ contains at least one minimal element $\bar{\mathcal{R}}_{\mathcal{O}^\ast}$.
+By definition of $\triangleright$, this means there is an oracle $\mathcal{O}^\ast\in\mathfrak{O}_{S}$ such that no $\mathcal{O}'\in\mathfrak{O}_{S}$ satisfies
+$\bar{\mathcal{R}}_{\mathcal{O}'}\subsetneq\bar{\mathcal{R}}_{\mathcal{O}^\ast}$, i.e.\ $\mathcal{O}^\ast$ is minimal.
+\end{proof}
+
+When the set of decodable entities $S$ is infinite, minimality is no longer guaranteed. Even though each individual entity $e\in S$ still has (at least one) non-redundant representation of minimal length, an oracle may allow \emph{multiple} minimal-length representations for infinitely many entities. In that situation one can construct an infinite strictly descending chain of oracles by successively removing some of these additional non-redundant representations while preserving at least one minimal representation for every entity in $S$.
+
+\begin{proposition}
+It is not the case that, for every infinite set \(S\subseteq \mathcal{E}\), the class \(\mathfrak{O}_{S}\) of comparable oracles that decode \(S\) contains a \(\triangleright\)-minimal oracle.
+\end{proposition}
+\begin{proof}
+Let $S=\{e_1, e_2, e_3, \dots\}$ be an infinite set of entities. For each $n \ge 1$, define an oracle $\mathcal{O}_n$ with representation function $\delta_n:\mathcal{B}^\ast\rightharpoonup S$ by setting, for every $k \ge 1$,
+\[
+\delta_n(1^k)=e_k,
+\qquad
+\delta_n(0^{k-1}1)=e_k \quad \text{for all } k\ge n,
+\]
+and leaving \(\delta_n(r)\) undefined for all other strings \(r\).
+
+By construction, each oracle \(\mathcal{O}_n\) decodes exactly the entity set \(S\), and therefore
+\(\mathcal{O}_n\in\mathfrak{O}_{S}\) for all \(n\ge 1\).
+For any fixed \(k\ge 1\), the shortest length of a decodable representation of \(e_k\) under \(\delta_n\) is \(k\),
+since \(\delta_n(1^k)=e_k\) and no string of smaller length decodes to \(e_k\).
+Moreover, for \(k\ge n\) there are two distinct representations of this minimal length, namely
+\(1^k\) and \(0^{k-1}1\).
+By Definition~\ref{def:nonredundant_description}, both strings are non-redundant representations of \(e_k\).
+
+It follows that the set of non-redundant representations of \(\mathcal{O}_n\) is
+\[
+\bar{\mathcal{R}}_{\mathcal{O}_n}
+=
+\{\,1^k : k\ge 1\,\}
+\ \cup\
+\{\,0^{k-1}1 : k\ge n\,\}.
+\]
+Consequently,
+\[
+\bar{\mathcal{R}}_{\mathcal{O}_1}
+\supsetneq
+\bar{\mathcal{R}}_{\mathcal{O}_2}
+\supsetneq
+\bar{\mathcal{R}}_{\mathcal{O}_3}
+\supsetneq \cdots,
+\]
+since each step from \(n\) to \(n+1\) removes exactly one non-redundant representation while preserving at least one
+non-redundant representation for every entity in \(S\).
+By definition of the reduction relation \(\triangleright\), this yields
+\[
+\mathcal{O}_1 \triangleright \mathcal{O}_2 \triangleright \mathcal{O}_3 \triangleright \cdots,
+\]
+an infinite strictly descending chain in \(\mathfrak{O}_{S}\).
+
+Therefore, no oracle in this family is minimal with respect to \(\triangleright\).
+\end{proof}
+
+In some domains with composed by an infinite collection of entities, such as mathematics, scientific knowledge can exhibit a form of unbounded refinement. As inquiry progresses and finer distinctions become relevant, representations may need to become increasingly detailed (and thus longer), while at the same time the set of admissible minimal representations becomes more constrained. In such settings there may be no final, irreducible level of representation, so minimality should be understood as a limiting ideal rather than a reachable endpoint.
+
+\begin{example}
+A paradigmatic example of an entity that requires infinite refinement of its representations is
+Chaitin’s halting probability \(\Omega\).
+Fix a universal prefix-free Turing machine \(U\), and define
+\[
+\Omega \;=\; \sum_{p \text{ halts}} 2^{-|p|},
+\]
+where the sum ranges over all binary programs \(p\) that halt on \(U\).
+The number \(\Omega\) is a well-defined real number in \((0,1)\), but it is known to be non-computable and algorithmically random.
+In the present framework, \(\Omega\) may be included as an entity \(e_\Omega \in \mathcal{E}\), but its reconstruction places extreme demands on representations.
+
+Consider a representation style in which representations are finite binary strings encoding partial information about \(\Omega\), for example its first \(n\) binary digits.
+A minimal oracle \(\mathcal{O}_{\mathcal{E}}\) operating under this style does not contain any hard-wired information about the halting behavior of programs; it can only reconstruct what is explicitly provided by the string.
+For each \(n\), there exist representations \(r_n \in \mathcal{B}^\ast\) such that \(\delta_{\mathcal{O}}(r_n)\) corresponds to an \(n\)-bit approximation of \(\Omega\), but no finite string \(r\) allows the oracle to reconstruct \(\Omega\) exactly.
+Any improvement in accuracy requires a strictly longer representation, yielding an infinite chain
+\[
+r_1 \prec r_2 \prec r_3 \prec \cdots
+\]
+of non-redundant representations, with no maximal element.
+
+The case of \(\Omega\) illustrates a situation in which an entity is, in principle, part of scientific or mathematical discourse, yet resists complete reconstruction under any minimal oracle constrained to finite representations.
+Knowledge of \(\Omega\) advances only through unbounded refinement: each additional bit of information requires new, irreducible representational content.
+In this sense, \(\Omega\) exemplifies an entity for which minimality is attainable only as a limiting ideal, not as a concrete endpoint, and it sharply delineates the boundary between infinite refinement of representations and full oracle-relative knowability.
+\end{example}
+
+The non-existence of minimal oracles in open-ended domains should not be interpreted as a limitation of scientific inquiry, but as an expression of its inherently exploratory character: progress consists in successive local refinements rather than in convergence to a final, irreducible description.
+
+A natural question is whether there exists a single best oracle, in the sense of decoding every entity that is decodable under some oracle. If such an oracle existed, one could fix that oracle once and for all and declare an entity knowable precisely when it is knowable with respect to it. The next proposition shows that this is not the case in general.
+
+\begin{theorem}
+Let \(\mathcal{E}\) be a set of entities and let \(\mathfrak{O}_{\mathcal{E}}\) be the class of representation oracles over \(\mathcal{E}\).
+Then it is not the case that \(\mathfrak{O}_{\mathcal{E}}\) always contains an oracle \(\mathcal{O}^{\max}\) such that
+\[
+\mathcal{E}_{\mathcal{O}}^{\top} \subseteq \mathcal{E}_{\mathcal{O}^{\max}}^{\top}
+\qquad \forall \mathcal{O}\in\mathfrak{O}_{\mathcal{E}},
+\]
+and \(\mathcal{O}^{\max}\) is minimal in its comparability class \([\mathcal{O}^{\max}]\).
+\end{theorem}
+\begin{proof}
+Consider the preorder $\preceq$ on $\mathfrak{O}_{\mathcal{E}}$ given by
+\[
+\mathcal{O}_1 \preceq \mathcal{O}_2
+\quad\Longleftrightarrow\quad
+K(\mathcal{O}_1)\subseteq K(\mathcal{O}_2).
+\]
+If $\mathfrak{O}_{\mathcal{E}}$ contains an infinite family $\{\mathcal{O}_i\}_{i\in I}$ such that
+\[
+\forall i\neq j:\quad K(\mathcal{O}_i)\not\subseteq K(\mathcal{O}_j)
+\ \ \text{and}\ \ 
+K(\mathcal{O}_j)\not\subseteq K(\mathcal{O}_i)
+\qquad\text{(an infinite antichain),}
+\]
+The displayed condition says that the family $\{\mathcal{O}_i\}_{i\in I}$ is an antichain under $\preceq$:
+no $\mathcal{O}_i$ dominates any other.
+Assume toward a contradiction that there exists $\mathcal{O}^{\max}\in\mathfrak{O}_{\mathcal{E}}$ such that
+$K(\mathcal{O})\subseteq K(\mathcal{O}^{\max})$ for all $\mathcal{O}\in\mathfrak{O}_{\mathcal{E}}$.
+In particular, $K(\mathcal{O}_i)\subseteq K(\mathcal{O}^{\max})$ for every $i\in I$.
+
+If $\mathcal{O}^{\max}$ were itself one of the antichain elements, say $\mathcal{O}^{\max}=\mathcal{O}_{i_0}$,
+then for any $j\neq i_0$ we would have $K(\mathcal{O}_j)\subseteq K(\mathcal{O}_{i_0})$,
+contradicting the antichain property.
+Hence no such $\mathcal{O}^{\max}$ exists within $\mathfrak{O}_{\mathcal{E}}$ in general.
+
+Therefore, even if many entities are oracle-knowable relative to some oracle in $\mathfrak{O}_{\mathcal{E}}$,
+a single oracle that dominates all others (with respect to oracle-knowability) need not exist.
+\end{proof}
+
+Proposition~\ref{prop:no_maximal_oracle_relative_knowability} formalizes the fact that oracle knowability cannot, in general, be reduced to knowability with respect to a single privileged oracle. The reason is not computational weakness but representational incompatibility: different oracles may adopt different encoding conventions (representation styles), and an oracle that is highly expressive in its own style need not decode representations written in another. Accordingly, ``more powerful'' reconstruction mechanisms do not automatically yield a maximal set of knowable entities unless one also fixes a universal representation style.
+
+{\color{red} TODO: We can define the length of an entity e as the length of a compact representation. Then we can compare the length of e given different oracles, and prove that it is maximal given a minimal oracle.}
+
+{\color{red} TODO: Prove that O1 reduced O2 iff lo1(e) leq l02(e) for all e.}
+
+
+
+
+%
+% Section: Unknowable Entities
+%
+
+\section{Unknowable Entities}
+
+In the previous section we introduced the notion of an \emph{oracle-knowable entity}. 
+Given a representation oracle $\mathcal{O}_{\mathcal{E}}$, an entity 
+$e \in \mathcal{E}$ is said to be oracle knowable if there exists a decodable 
+representation $r$ such that $\delta_{\mathcal O}(r)=e$. In other words, the 
+oracle is capable of reconstructing the entity from at least one finite binary 
+representation. Oracle knowability is therefore always relative to a specific 
+oracle and to the representation style that the oracle implements.
+
+In many situations, however, we are interested in a broader question: whether an 
+entity is knowable in principle, independently of any particular oracle. 
+A natural first idea would be to say that an entity is knowable if there exists 
+\emph{some} oracle capable of reconstructing it. However, if we allow arbitrary 
+oracles, this notion becomes too permissive. An oracle could trivially encode 
+large amounts of information internally and reconstruct entities without the 
+representation itself containing the necessary information. In such cases, the 
+representation would merely act as an index into the oracle's internal 
+knowledge, rather than as a genuine encoding of the entity.
+
+To avoid this trivialization, we restrict attention to the class of 
+\emph{minimal representation oracles} introduced earlier. Minimal oracles ensure 
+that the information required to reconstruct an entity must be contained in the 
+representation itself, rather than being implicitly supplied by the oracle. 
+This restriction reflects the epistemological principle that scientific 
+knowledge should reside in explicit representations rather than in hidden 
+assumptions.
+
+We may now generalize the notion of oracle knowability.
+
+\begin{definition}
+Let $\mathfrak{O}_{\mathcal{E}}^{\min}$ denote the class of minimal 
+representation oracles over the set of entities $\mathcal{E}$. 
+An entity $e \in \mathcal{E}$ is said to be \emph{knowable}\index{Knowable entity}
+if there exists a minimal oracle 
+$\mathcal{O}_{\mathcal{E}} \in \mathfrak{O}_{\mathcal{E}}^{\min}$ such that
+\[
+\exists r \in \mathcal{R}_{\mathcal{O}_{\mathcal{E}}}^{\top}
+\quad\text{with}\quad
+\delta_{\mathcal O}(r)=e.
+\]
+An entity $e \in \mathcal{E}$ is said to be \emph{unknowable}\index{Unknowable entity}
+if it is not knowable.
+\end{definition}
+
+Intuitively, knowable entities are those that admit at least one representation 
+containing sufficient information for their reconstruction under some 
+admissible representation style. Unknowable entities, by contrast, are those 
+for which no such representation exists. In this sense, knowable entities are 
+those that can, in principle, be brought within the scope of scientific inquiry 
+(see Section~\ref{sec:what-is-an-entity}), whereas unknowable entities lie beyond 
+the reach of representation-based knowledge.
+
+It is convenient to collect all knowable entities into a single set.
+
+\begin{definition}
+We define the set of \emph{knowable entities} as
+\[
+\mathcal{E}^{\top}
+=
+\bigcup_{\mathcal{O}\in\mathfrak{O}_{\mathcal{E}}^{\min}}
+\mathcal{E}_{\mathcal{O}}^{\top}.
+\]
+\end{definition}
+
+The complement of this set corresponds to the entities that remain beyond the 
+reach of all minimal representation oracles.
+
+\begin{definition}
+The set of \emph{unknowable entities} is defined as
+\[
+\mathcal{E}^{\bot}
+=
+\mathcal{E} \setminus \mathcal{E}^{\top}.
+\]
+\end{definition}
+
+By construction, the sets $\mathcal{E}^{\top}$ and $\mathcal{E}^{\bot}$ form a 
+partition of $\mathcal{E}$.
+
+\begin{proposition}
+\[
+\mathcal{E}^{\top} \cup \mathcal{E}^{\bot} = \mathcal{E},
+\qquad
+\mathcal{E}^{\top} \cap \mathcal{E}^{\bot} = \varnothing.
+\]
+\end{proposition}
+
+\begin{proof}
+The result follows immediately from the definition 
+$\mathcal{E}^{\bot}=\mathcal{E}\setminus\mathcal{E}^{\top}$.
+\end{proof}
+
+A further property follows from the cardinality constraints imposed by the use 
+of finite representations.
+
+\begin{proposition}
+If the set of entities $\mathcal{E}$ is uncountable, then the set of knowable 
+entities $\mathcal{E}^{\top}$ is countable.
+\end{proposition}
+
+\begin{proof}
+For any oracle $\mathcal{O}$, the set $\mathcal{E}_{\mathcal{O}}^{\top}$ is 
+countable because it is the image of the countable set 
+$\mathcal{R}_{\mathcal{O}}^{\top}\subseteq\mathcal{B}^\ast$. Since the class of 
+minimal oracles does not enlarge the domain of representations beyond finite 
+strings, the set of entities reconstructable from finite representations remains 
+countable.
+\end{proof}
+
+Finally, it is important to emphasize that the distinction between knowable and 
+unknowable entities is primarily conceptual. In practice, it is rarely possible 
+to determine in advance whether a given entity is knowable or unknowable. The 
+identification of suitable representations and reconstruction procedures is 
+typically a matter of progressive refinement and experimentation. For this 
+reason, scientific inquiry proceeds largely through the exploration of candidate 
+representations, gradually expanding the subset of entities that can be brought 
+within the domain of knowable knowledge.
+
+
+
+
+
+
+
+%
+% Section: Extended Set of Representations
+% 
+
+\section{Extended Set of Representations}
+
+Since the oracle defines an ideal notion of representation, the set of perfect representations $\mathcal{R}^\star_e$ of a given entity $e \in \mathcal{E}$ can be regarded as the long-term goal of scientific inquiry about that entity. In practice, however, scientific inquiry does not proceed by direct access to elements of $\mathcal{R}^\star_e$, but rather as a discovery process in which increasingly informative approximate representations of $e$ are gradually developed. These approximate representations may omit information required for complete reconstruction, include incorrect or misleading content, or contain symbols that are irrelevant to the representation of $e$.
+
+We say that a string represents a particular entity if it contains a non-trivial amount of algorithmic information about it. This is captured by requiring that conditioning on the string yields a reduction in the Kolmogorov complexity of a perfect representation of the entity.
+
+\begin{definition}
+\label{def:representations_of_entity}
+Let $e \in \mathcal{E}$ be an entity. We define the set of \emph{representations}\index{Representation} of $e$ as
+\[
+\mathcal{R}_e =
+\left\{
+r' \in \mathcal{B}^\ast \;\middle|\;
+\exists r^\star \in \mathcal{R}^\star_e \text{ such that }
+K(r^\star \mid r') \le K(r^\star) - O(1)
+\right\}.
+\]
+\end{definition}
+
+\noindent
+A representation $r'$ is associated with an entity whenever the reduction in the conditional Kolmogorov complexity of a perfect representation $r$ given $r'$, relative to the unconditional complexity of $r$, cannot be attributed solely to technical artifacts such as encoding conventions or machine-dependent implementation details.
+
+\begin{example}
+The astronomical records used in the time of Ptolemy\index{Ptolemy} to describe the positions of celestial bodies throughout the year constituted an imperfect encoding of the entity "positions of celestial bodies," due to systematic observational inaccuracies. More accurate encodings were later obtained through the improved observations of Tycho Brahe, and modern astronomy provides even higher-precision representations.
+\end{example}
+
+We accept as representations strings that may be extremely poor encodings of the entities under study, and may not support even rudimentary inferences. This reflects early stages of scientific inquiry, where representations are often fragmentary, speculative, or weakly informative, yet still guide exploration and motivate further investigation. The theory of nescience accommodates the progressive refinement of such representations, from highly imperfect encodings to increasingly accurate ones as knowledge advances (see Chapter~\ref{chap:Miscoding}).
+
+Unlike the case of perfect representations, the sets \(\mathcal{R}_e\) associated with different entities need not be disjoint, since a single imperfect representation may contain minimal but genuine information about more than one entity.
+
+\begin{example}
+\label{ex:infectious_agents}
+Consider the early study of infectious agents, before the distinction between viruses and bacteria was clearly established. At that stage, representations such as "a microscopic agent that causes disease and reproduces inside a host" captured minimal but genuine information about both entities. Such a representation reduces the descriptive complexity of perfect representations of viruses as well as of bacteria, without providing enough information to discriminate between them. This string would therefore be accepted as a representation of both entities, and would belong simultaneously to the sets $\mathcal{R}_{\text{virus}}$ and $\mathcal{R}_{\text{bacterium}}$.
+\end{example}
+
+We are interested in the set composed of all possible representations of all knowable entities in $\mathcal{E}$.
+
+\begin{definition}
+Let $\mathcal{E}$ be a collection of entities, and for each $e \in \mathcal{E}$ let $\mathcal{R}_e \subseteq \mathcal{B}^\ast$ be the set of representations of $e$. We define the set of \emph{representations}\index{Representation} for $\mathcal{E}$ as
+\[
+\mathcal{R}_{\mathcal{E}} = \bigcup_{e \in \mathcal{E}} \mathcal{R}_e.
+\]
+\end{definition}
+
+As in the case of the set of perfect representations $\mathcal{R}^\star_{\mathcal{E}}$, the set $\mathcal{R}_{\mathcal{E}}$ is generally unknown in practice. Although its definition is explicit, it depends on the true structure of the entities under investigation and on the existence of perfect representations, both of which are inaccessible in real scientific contexts, and so, it can't be enumerated or computed in practice.
+
+\begin{notation}
+When the set of entities is clear from the context, we denote the set of representations simply by $\mathcal{R}$.
+\end{notation}
+
+Strings that do not belong to $\mathcal{R}_{\mathcal{E}}$, that is, strings that do not contain information about any entity in $\mathcal{E}$, correspond to targetless representations\index{Targetless representations}, which are explicitly allowed within the theory of nescience (see Sections~\ref{sec:targetless_representations} and~\ref{sec:scientific_representation}).
+
+{\color{red} TODO: Perfect representations and compact representations are extended representations.}
+
+%
+% Section: Effective Representations
+%
+
+\section{Effective Representations}
+
+The set of representations $\mathcal{R}$ is not accessible in practice, since it depends both on the true structure of the entities under investigation and on the unknown internal representation function. For this reason, scientific work cannot proceed directly with $\mathcal{R}$, but instead relies on a further level of approximation. We therefore introduce the set $\hat{\mathcal{R}} \subseteq \mathcal{B}^\ast$, consisting of candidate strings that constitute the representations currently available within scientific practice. The elements of $\hat{\mathcal{R}}$ are called \emph{effective representations}: finite descriptions that can be formulated, communicated, and manipulated within existing scientific frameworks, without any guarantee of correctness or completeness. Scientific progress can then be understood as the ongoing evolution of the set of effective representations $\hat{\mathcal{R}}$, which progressively approximates $\mathcal{R}$ and, in an idealized sense, approaches toward $\mathcal{R}^\star$.
+
+\begin{definition}
+Let $\mathcal{E}$ be a set of entities. For each entity $e \in \mathcal{E}$, we denote by
+\[
+\hat{\mathcal{R}}_{e} \subseteq \mathcal{B}^\ast
+\]
+the set of \emph{effective representations}\index{Effective representation} of $e$, that is, the finite binary strings that are currently taken, within a given scientific context, to represent or approximate the entity $e$.
+\end{definition}
+
+The notion of effective representations allows us to distinguish between known and unknown entities, in a representational or effective sense.
+
+\begin{definition}
+\label{def:unknown_entity}
+An entity $e \in \mathcal{E}$ is said to be \emph{effectively known}\index{Effectively known} if $\hat{\mathcal{R}}_e \ne \varnothing$, and \emph{effectively unknown}\index{Effectively unknown} otherwise.
+\end{definition}
+
+In the theory of nescience, the notions of \emph{effective knowledge} and \emph{knowability} refer to two distinct and independent concepts. An entity is said to be \emph{effectively known} if at least one effective representation is available, that is, if $\hat{\mathcal{R}}_e \neq \varnothing$, whereas it is said to be \emph{knowable} if a perfect representation exists, i.e., if $\mathcal{R}^\star_e \neq \varnothing$ (see Definition~\ref{def:knowable_entity}). Effective knowledge therefore concerns what is currently represented and manipulated within scientific practice, while knowability concerns what can, in principle, be fully and correctly represented.
+
+The typical situation in science is one in which an entity is knowable but still effectively unknown. In such cases, a perfect representation exists in principle, yet no effective representation has been discovered or constructed so far. This situation is not exceptional; on the contrary, it characterizes the overwhelming majority of entities in most scientific domains and reflects the open-ended, exploratory nature of scientific inquiry. By contrast, a far more problematic situation arises when an entity is unknowable, yet effectively known. In this case, scientists develop and refine representations of something that, in practice, does not correspond to any real or well-defined entity, as the following example illustrates.
+
+\begin{example}
+\label{ex:luminiferous_ether}
+The luminiferous ether\index{Luminiferous ether} was a hypothetical medium postulated to explain the propagation of light as a wave. The Michelson--Morley experiment\index{Michelson-Morley experiment} provided strong empirical evidence against the existence of such a medium, and Einstein's theory of special relativity\index{Theory of relativity} later rendered the ether concept unnecessary by postulating the invariance of the speed of light in vacuum. As a result, the ether was abandoned as a physical entity.
+\end{example}
+
+The luminiferous ether is an example of effectively known entity that is unknowable, because no perfect representation corresponds to it. In such cases, scientists may develop and refine representations of an entity that ultimately does not exist. Scientific effort is then directed toward something that cannot, even in principle, be reconstructed by the oracle. Unfortunately, there is no practical way to identify such situations in advance using only finite and imperfect representations.
+
+\begin{definition}
+Let $\mathcal{E}$ be a set of entities. We define the set of \emph{effectively known representations} for $\mathcal{E}$ as
+\[
+\hat{\mathcal{R}}_{\mathcal{E}} = \bigcup_{e \in \mathcal{E}} \hat{\mathcal{R}}_{e}.
+\]
+\end{definition}
+
+\noindent
+The set $\mathcal{R}_{\mathcal{E}}$ characterizes the space of all representations that are possible in principle for the entities in $\mathcal{E}$, independently of whether they are currently available or known. By contrast, the set $\hat{\mathcal{R}}_{\mathcal{E}}$ consists only of those effective representations that have actually been discovered, constructed, or adopted within scientific practice at a given time. Thus, $\hat{\mathcal{R}}_{\mathcal{E}}$ should be understood as a time-dependent, practically accessible subset of $\mathcal{R}_{\mathcal{E}}$, whereas $\mathcal{R}_{\mathcal{E}}$ itself remains a conceptual and generally inaccessible object.
+
+\begin{notation}
+When the set of entities is clear from the context, we denote the set of effective representations simply by $\hat{\mathcal{R}}$.
+\end{notation}
+
+We can also define the set of effectively known entities, that is, the set of those entities for which at least one effective representation exists.
+
+\begin{definition}
+Given a set of entities $\mathcal{E}$ and the family of sets of effective representations $\{\hat{\mathcal{R}}_e\}_{e \in \mathcal{E}}$, we define the set of \emph{effectively known entities} as
+\[
+\hat{\mathcal{E}} = \{ e \in \mathcal{E} \mid \hat{\mathcal{R}}_e \neq \varnothing \}.
+\]
+\end{definition}
+
+The set $\hat{\mathcal{E}}$ corresponds to entities for which representational activity exists or has existed within scientific practice. This includes entities that are currently under active investigation (e.g., artificial intelligence), entities that were investigated in the past but are no longer central to ongoing research (e.g., the aerodynamics of zeppelins), and entities that were once investigated but later rejected as non-existent or false (e.g., the luminiferous ether).
+
+A further consequence of working with approximate, or effective, representations is that some candidate strings may, unbeknownst to us, fail to encode the entity we intend to study; membership in $\hat{\mathcal{R}}_e$ reflects contextual assignment rather than guaranteed correctness.
+
+\begin{example}
+In the late Eighteenth Century, chemist Joseph Priestley believed he was studying a substance called "phlogiston"\index{Phlogiston}, which was thought to be a fire-like element released during combustion. All of his experiments and representations were constructed around this idea. However, in reality, Priestley was observing the properties of a completely different entity: oxygen. Though his descriptions were coherent and reproducible, they were ultimately anchored to the wrong entity.
+\end{example}
+
+Effective representations are monotonic over time, in the sense that the set of representations associated with an entity grows as new representations are discovered; representations that are later discarded, rejected, or superseded are not removed from the set.
+
+\begin{notation}
+We denote by $\hat{\mathcal{R}}_e^t$ the set of effective representations for an entity $e \in \mathcal{E}$ available at time $t$, and by $\hat{\mathcal{E}}^t$ the set of effectively known entities at time $t$.
+\end{notation}
+
+Next proposition proves the monotonicity property of effective representations over time.
+
+\begin{proposition}
+Let $\hat{\mathcal{R}}_e^{t_1}$ and $\hat{\mathcal{R}}_e^{t_2}$ denote the set of effective representations associated with an entity $e \in \mathcal{E}$ at times $t_1$ and $t_2$ respectively. Then
+\[
+\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}
+\quad \text{for all} \quad t_1 < t_2.
+\]
+\end{proposition}
+\begin{proof}
+By assumption, representations discovered at time $t_1$ are retained at all later times, even if they are discarded or superseded, and additional representations may be introduced. Therefore, any effective representation available at time $t_1$ is also available at time $t_2 > t_1$, which implies $\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}$.
+\end{proof}
+
+As a direct consequence, the set of effectively known entities is itself monotonic over time.
+
+\begin{proposition}
+Let $\hat{\mathcal{E}}^{t_1}$ and $\hat{\mathcal{E}}^{t_2}$ denote the set of effectively known entities at times $t_1$ and $t_2$ respectively. Then
+\[
+\hat{\mathcal{E}}^{t_1} \subseteq \hat{\mathcal{E}}^{t_2}
+\quad \text{for all} \quad t_1 < t_2.
+\]
+\end{proposition}
+\begin{proof}
+By definition $\hat{\mathcal{E}}^t = \{ e \in \mathcal{E} \mid \hat{\mathcal{R}}_e^t \neq \varnothing \}$. If $e \in \hat{\mathcal{E}}^{t_1}$, then $\hat{\mathcal{R}}_e^{t_1} \neq \varnothing$. By the previous proposition, this implies $\hat{\mathcal{R}}_e^{t_2} \neq \varnothing$ for all $t_2 > t_1$, and therefore $e \in \hat{\mathcal{E}}^{t_2}$.
+\end{proof}
+
+The set of effectively known entities $\hat{\mathcal{E}}$ is thus not fixed by $\mathcal{E}$, but by the interaction between entities, representational practices, and available inferential tools. In this sense, scientific progress can be understood as the progressive expansion and refinement of the known subset $\hat{\mathcal{E}}$, together with a gradual reduction of representational ambiguity.
+
+Finally, as in the case of representations themselves, the sets of effective representations associated with different entities need not be disjoint. In particular, for two distinct entities $e_1, e_2 \in \hat{\mathcal{E}}$, it is possible that $\hat{\mathcal{R}}_{e_1} \cap \hat{\mathcal{R}}_{e_2} \neq \varnothing$, reflecting the ambiguity of some effective representations (see Example~\ref{ex:infectious_agents}).
+
+%
+% Section: Joint Representations
+%
+
+\section{Joint Representations}
+\label{sec:joint_representations}
+
+
+Ideally, scientific work would proceed by using a perfect representation of the entity $e$ under study, that is, an element of the set of perfect representations $\mathcal{R}_{e}^{\star}$. However, since such perfect representations are not accessible in practice, we must instead rely on the approximate representations in $\mathcal{R}_e$. Certain representations are of high quality, in the sense that they encode substantial information about $e$. Yet, $\mathcal{R}_e$ also includes low-quality representations, which convey only limited information about $e$. Moreover, $\mathcal{R}_e$ may include representations that contain incorrect or misleading symbols: fragments that do not correspond to the entity and do not contribute to obtaining a perfect representation. Such errors may mislead us during inquiry if we treat them as valid information.
+
+If we want to increase our knowledge about an entity, we must use representations that are as complete and correct as possible, that is, as close as possible to a perfect representation. One way to achieve this is to try different strings until we discover a high-quality representation. However, this method can be extremely time-consuming and impractical. A more efficient approach is to improve a poor representation by adding missing symbols, removing unnecessary symbols, or combining known representations, each of which contains partial information.
+
+% Subsection: Extended Representations
+
+\subsection*{Operation of Augmentation}
+
+One natural way to improve a representation consists of adding symbols that encode information that is missing with respect to the entity being represented. We call this operation \emph{augmentation}. It models the gradual enrichment of representations as additional relevant information is incorporated.
+
+\begin{definition}
+Let $r, s, t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be an entity. Suppose that the concatenated string $rt$ is an effective representation of $e$, that is, $rt \in \hat{\mathcal{R}}_{e}$. We call the concatenation $rst$ an \emph{augmentation}\index{Augmentation of representations} of the representation $rt$, and we call $s$ an \emph{augmentation string}\index{Augmentation string}.
+\end{definition}
+
+An augmentation may occur at any position within a representation, and both $r$ and $t$ are allowed to be empty. In particular, the common case of appending new information at the end of a representation corresponds to $t=\lambda$.
+
+Intuitively, an augmentation is intended to reduce the deficiency of a representation by incorporating additional information about the entity. The following proposition shows that augmentation preserves extendedness.
+
+\begin{proposition}
+Let $r, s, t \in \mathcal{B}^*$ be arbitrary binary strings such that $rt \in \mathcal{R}_{e}$. Then $rst \in \mathcal{R}_{e}$.
+\end{proposition}
+
+\begin{proof}
+Assume $rt \in \mathcal{R}_{e}$. By definition of $\mathcal{R}_{e}$, there exists a perfect representation
+$r^{\star}\in\mathcal{R}_{e}^{\star}$ such that
+\begin{equation}
+\label{eq:rt_rep_aug}
+K(r^{\star}\mid rt)\le K(r^{\star})-O(1).
+\end{equation}
+
+Let $g:\mathcal{B}^*\to \mathcal{B}^*$ be the computable function that, on input the concatenation
+$rst$, outputs $rt$ (i.e., discards the middle component $s$ and concatenates the first and third components).
+
+By monotonicity of conditional Kolmogorov complexity under computable transformations,
+\begin{equation}
+\label{eq:mono_aug}
+K(x\mid y)\le K(x\mid g(y)) + O(1)
+\end{equation}
+for every computable function $g$.
+
+Applying \eqref{eq:mono_aug} with $x=r^{\star}$ and $y=rst$, we obtain
+\[
+K(r^{\star}\mid rst)
+\le
+K(r^{\star}\mid g(rst)) + O(1)
+=
+K(r^{\star}\mid rt) + O(1).
+\]
+Combining this with \eqref{eq:rt_rep_aug}, we conclude that
+\[
+K(r^{\star}\mid rst)
+\le
+K(r^{\star}) - O(1).
+\]
+
+Therefore, there exists $r^{\star}\in\mathcal{R}_{e}^{\star}$ such that
+$K(r^{\star}\mid rst)\le K(r^{\star})-O(1)$, and hence $rst\in\mathcal{R}_{e}$.
+\end{proof}
+
+The previous proposition formalizes the intended role of augmentation: adding information cannot destroy the property of containing sufficient information about the entity. In particular, augmentation cannot increase deficiency beyond a constant term.
+
+As a direct consequence we obtain:
+
+\begin{corollary}
+Let $rt \in \mathcal{R}_{e}$ be an extended representation of an entity $e \in \mathcal{E}$, and let $rst$ be an augmentation of $rt$. Then $rst \in \mathcal{R}_{\mathcal{E}}$.
+\end{corollary}
+
+\begin{proof}
+Since $rt \in \mathcal{R}_{e}$, we have $rst \in \mathcal{R}_{e} \subseteq \mathcal{R}_{\mathcal{E}}$.
+\end{proof}
+
+Augmentation does not guarantee uniqueness of reference, as the following example illustrates.
+
+\begin{example}
+Consider an entity $e$ corresponding to a physical system described by classical mechanics, and let $rt$ be a representation encoding its mass, position, and velocity. Suppose that the augmentation string $s$ adds information about relativistic corrections. The augmented representation $rst$ still contains all the information required to reconstruct the original classical model, but it may also correspond, for the oracle, to a distinct entity $e'$ representing a relativistic model. In this case, $rst$ may simultaneously belong to $\mathcal{R}_e$ and to $\mathcal{R}_{e'}$.
+\end{example}
+
+This example highlights an important subtlety: while augmentation reduces deficiency relative to the original entity, it may introduce additional structure that enables the oracle to associate the resulting representation with another entity as well. Augmented representations therefore increase informational content and expressive power, but may also increase the potential for ambiguity in reference.
+
+% Subsection: Reduced Representations
+
+\subsection*{Operation of Reduction}
+
+An alternative strategy for improving a representation consists of simplifying it by removing symbols that are believed to be incorrect, irrelevant, or superfluous. We refer to this operation as \emph{reduction}. Unlike augmentation, which targets deficiency, reduction targets surplus and therefore requires greater care: removing symbols may improve a representation, but it may also destroy essential information.
+
+\begin{definition}
+Let $r, s, t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be an entity. Suppose that the concatenated string $rst$ is a representation of $e$, that is, $rst \in \mathcal{R}_{e}$. We call the string $rt$, obtained by removing the substring $s$, a \emph{reduced representation}\index{Reduced representation} of $rst$.
+\end{definition}
+
+As with augmentation, reduction may remove symbols from any position within a representation, and the removed substring $s$ may encode information of any kind.
+
+\paragraph{Disposability.}
+The crucial question is whether the removed substring $s$ is \emph{disposable}. Intuitively, a substring is disposable with respect to $e$ if eliminating it does not increase the deficiency of the representation. In other words, $s$ is disposable if the reduced representation $rt$ still contains sufficient information to reconstruct a perfect representation of $e$.
+
+Formally, a substring $s$ of $rst$ is disposable (with respect to $e$) if
+\[
+rst \in \mathcal{R}_e
+\quad\text{and}\quad
+rt \in \mathcal{R}_e.
+\]
+In this case, reduction preserves representationality and strictly decreases surplus by eliminating information that is not required for reconstructing the entity.
+
+However, not every substring is disposable. Reduction may eliminate symbols that are essential for the oracle to reconstruct the entity. In general, reduced representations are not guaranteed to remain representations.
+
+\begin{example}
+Let $r$ and $t$ be the empty strings $\lambda$, and let $s \in \mathcal{B}^*$ be such that $rst = s \in \mathcal{R}_{e}$. Then the reduced representation $rt = \lambda$ is the empty string. Since $K(r^{\star} \mid \lambda) = K(r^{\star})$ for all $r^{\star} \in \mathcal{R}^\ast$, the empty string does not belong to $\mathcal{R}_e$. In this case, the removed substring $s$ was not disposable.
+\end{example}
+
+Even when a reduced string remains a valid representation, reduction does not guarantee preservation of the represented entity.
+
+\begin{example}
+Consider an entity $e$ corresponding to a specific chemical compound, and suppose that $rst$ encodes its full molecular structure, including stereochemical information. Let the substring $s$ encode the spatial configuration of a chiral center. The reduced representation $rt$, which omits this information, may still correspond to a valid chemical compound, but one that is chemically distinct: a different stereoisomer. In this case, $rt$ represents a different entity $e'$, even though it was obtained by reducing a representation of $e$.
+\end{example}
+
+These examples illustrate an important asymmetry between augmentation and reduction. While augmentation cannot destroy extendedness—since adding information cannot increase deficiency beyond a constant—reduction may remove essential information. Only when the removed substring is disposable does reduction genuinely improve a representation by decreasing surplus without increasing deficiency.
+
+In practical contexts, such as the curation of datasets in machine learning, disposability corresponds to identifying and removing mislabeled samples, corrupted entries, or irrelevant features. These elements contribute surplus information that does not assist in reconstructing the underlying data-generating entity. Eliminating them refines the representation, but only when their removal does not eliminate essential structure.
+
+% Subsection: Joint Representations
+
+\subsection*{Joint Representations}
+
+A third, and particularly powerful, operation on representations consists of combining two existing representations into a single one. This operation, which we call \emph{joint representation}, plays a central role in the theory of nescience, as it provides a systematic mechanism for both refining existing knowledge and discovering new entities.
+
+\begin{definition}
+Let $r,s \in \mathcal{R}_{\mathcal{e}}$ be two representations of an entity $e \in \mathcal{E}$. We define the  \emph{joint representation}\index{Joint representation} of $r$ and $s$ as the concatenated string $rs$.
+\end{definition}
+
+Joint representations serve two distinct goals. When $r$ and $s$ represent the same entity, their joint representation may yield a more complete or less biased representation of that entity by aggregating complementary information. When $r$ and $s$ represent different entities, their joint representation may correspond to a new entity not previously represented.
+
+\begin{example}
+\label{ex:lung_cancer_joint}
+Let $e$ be the entity corresponding to the set of causes of lung cancer. Suppose that $r$ is a dataset obtained from a population sample consisting exclusively of male subjects, and that $s$ is a dataset obtained from a population sample consisting exclusively of female subjects. Both $r$ and $s$ belong to $\mathcal{R}_e$, but each constitutes a biased and incomplete representation of the entity. The joint representation $rs$ combines both datasets and yields a more informative and less biased representation of $e$.
+\end{example}
+
+With the following propostions we formally study the properties of the concept of joint representations.
+
+\begin{proposition}
+Joint representation is associative. That is, for all $r,s,t \in \mathcal{R}_{\mathcal{E}}$, we have
+\[
+(rs)t = r(st).
+\]
+\end{proposition}
+\begin{proof}
+Joint representation is defined as string concatenation. Since string concatenation is associative, the equality $(rs)t = r(st)$ holds for all binary strings, and therefore for all representations.
+\end{proof}
+
+Despite its associativity, joint representation is not commutative. A concrete counterexample arises when $r$ encodes a theoretical model and $s$ encodes experimental constraints. The order in which these components are presented may affect how the oracle reconstructs the entity, leading to different outcomes.
+
+Joint representation also satisfies an idempotence property.
+
+\begin{proposition}
+For any representation $r \in \mathcal{R}_{\mathcal{E}}$, the joint representation $rr$ represents the same entity as $r$.
+\end{proposition}
+\begin{proof}
+The concatenated string $rr$ contains no information that is not already present in $r$. While redundancy may increase, the oracle can ignore duplicated symbols during reconstruction. Consequently, $rr \in \mathcal{R}_{\mathcal{E}}$ and $\mathcal{O}_{\mathcal{E}}(rr) = \mathcal{O}_{\mathcal{E}}(r)$.
+\end{proof}
+
+We now turn to closure properties.
+
+\begin{proposition}
+If $r,s \in \mathcal{R}_{\mathcal{E}}$ and $rs \in \mathcal{R}_{\mathcal{E}}$, then $rs$ is a representation.
+\end{proposition}
+\begin{proof}
+This follows directly from the definition of $\mathcal{R}_{\mathcal{E}}$ as the domain of the oracle. Whenever $rs$ belongs to $\mathcal{R}_{\mathcal{E}}$, it is, by definition, a valid representation.
+\end{proof}
+
+Although syntactically well defined, joint representation is not guaranteed to preserve entity identity.
+
+\begin{proposition}
+Let $r,s \in \mathcal{R}_e$ be representations of the same entity $e$. Then the joint representation $rs$ does not necessarily belong to $\mathcal{R}_e$.
+\end{proposition}
+
+\begin{proof}
+The joint representation $rs$ may introduce interactions between symbols in $r$ and $s$ that the oracle interprets as defining a different entity. Even if $r$ and $s$ individually encode correct and complementary information about $e$, their combination may cross a representational threshold that leads the oracle to reconstruct a distinct entity $e' \neq e$. Hence, $rs \in \mathcal{R}_{e'}$.
+\end{proof}
+
+This phenomenon is not a defect but a defining feature of joint representations.
+
+\begin{example}
+Consider a domain in which entities are chemical compounds and representations encode molecular descriptors. Let $r$ represent a compound with anti-inflammatory properties and let $s$ represent a structurally related compound with antiviral properties. While both $r$ and $s$ individually correspond to known compounds, the joint representation $rs$ may encode a novel molecular structure. If the oracle associates $rs$ with a previously uncharacterized compound, then $rs$ represents a new entity.
+\end{example}
+
+The concept of joint representation can be extended to any arbitrary, but finite, collection of representations. This allows us to incorporate multiple partial representations into our research or to use them in the process of discovering new entities.
+
+\begin{definition}
+Let $r_1, r_2, \ldots, r_n \in \mathcal{R}_\mathcal{E}$ be a finite collection of representations. The \emph{joint representation} of $r_1, r_2, \ldots, r_n$ is defined as the concatenated string $r_1 r_2 \ldots r_n$.
+\end{definition}
+
+The possibility that joint representations of known entities give rise to representations of new entities is a critical element of the theory of nescience. It provides a formal mechanism for the discovery of previously unknown entities through the systematic combination of existing knowledge, without requiring access to representations that lie outside the current epistemic horizon.
+
+%
+% Section: References
+%
+
+\section{References}
+
+For more information about Russell's paradox, Cantor's theorem, and universal sets, refer, for example, to \cite{jech2013set}. This book also covers the Zermelo–Fraenkel system of axioms, including the Axiom of Choice. The idea of using a function to assign to each symbol and well-formed formula of a formal language a unique natural number (called a Gödel number) was introduced by Kurt Gödel in his proof of the incompleteness theorems \cite{godel1931formal}. A detailed discussion of the Berry paradox from the perspective of computability can be found in \cite{chaitin1995berry}. For a review of the problem of representation in Kolmogorov complexity, as well as a detailed account of the implications of Kolmogorov complexity being defined only up to an additive constant, see \cite{li2013introduction}. That oracle machines are not mechanical was originally stated by Turing when he introduced the concept of the oracle machine in \cite{turing1939systems}. For a comprehensive review of oracle Turing machines, refer to \cite{robivc2015foundations}.

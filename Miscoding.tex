@@ -17,274 +17,1773 @@
 \end{quote}
 \bigskip
 
-In many areas of science, the entities we aim to study (the set $\mathcal{E}$) often include abstract concepts or complex phenomena that are difficult to investigate directly. These may be ideas or processes that resist straightforward description or modeling. To gain insight into such entities, we must often rely on indirect methods. As discussed in the previous chapter, the theory of nescience suggests using representations, that is, sequences of symbols, rather than attempting to interact directly with the entities themselves.
+In many areas of science, the entities we aim to study (the set $\mathcal{E}$) often include abstract concepts or complex phenomena that are difficult to investigate directly. These may be ideas or processes that resist straightforward description or modeling. To gain insight into such entities, we must often rely on indirect methods. As discussed in Chapter \ref{cha:representations}, the theory of nescience suggests using representations, that is, sequences of symbols, rather than attempting to interact directly with the entities themselves.
 
 However, this approach introduces its own challenges. Because our understanding of the elements in $\mathcal{E}$ is incomplete (otherwise, further research would be unnecessary), the representations we construct are typically imperfect, they lack the completeness and precision we would ideally desire. These imperfections can lead to significant problems: inaccuracies in representation can propagate into the models derived from them, potentially distorting our interpretation and understanding. It is therefore essential to recognize this source of error and to carefully consider its implications.
 
-To address this issue, we introduce the concept of \emph{miscoding}, a measure used to quantify the error that arises from misrepresenting or inaccurately encoding entities. Miscoding is defined in terms of the length of the shortest computer program capable of transforming an incorrect representation into a correct one. In essence, it measures the amount of effort, as reflected by the program's length, required to correct a faulty representation.
+To address this issue, we introduce the concept of \emph{miscoding}, a measure used to quantify the error that arises from misrepresenting or inaccurately encoding entities. Miscoding is defined in terms of the length of the shortest computer program capable of transforming an incorrect representation into an admissible one. In essence, it measures the amount of effort, as reflected by the program's length, required to correct a faulty representation.
 
-However, there is a significant complication: applying this idea in practice is not straightforward, since the perfect representations of entities are unknown. As a result, we cannot directly measure the gap between a given representation and an ideal one. Nevertheless, we propose a theoretical framework based on the oracle machine (an abstract construct) used to define the set $\mathcal{E}$. This oracle machine is assumed to be capable of recognizing valid representations for all entities in the set. It is important to note, however, the limitations of this approach; for instance, we cannot query the oracle about a specific entity unless we already possess a valid representation of it.
-
-Getting a better grasp on scientific representation and the challenges in reducing miscoding could really push forward scientific research, helping us create better, more thorough models of the natural world. In this chapter, we are going to properly introduce the idea of miscoding and look into its various characteristics. We will examine how miscoding behaves when it comes to combined representations and discuss methods to reduce miscoding. We will delve into the idea that there are strings that do not represent any entity. And we will dig into why miscoding is important in different research areas and talk about its potential to open up new lines of inquiry.
+However, there is a significant complication: applying this idea in practice is not straightforward, since the admissible representations of entities are unknown. As a result, we cannot directly measure the gap between a given representation and an ideal one. Nevertheless, we propose a theoretical framework based on the oracle machine (an abstract construct) used to define the set $\mathcal{E}$. This oracle machine is assumed to be capable of recognizing valid representations for all entities in the set. It is important to note, however, the limitations of this approach; for instance, we cannot query the oracle about a specific entity unless we already possess a valid representation of it.
 
 Gaining a deeper understanding of scientific representation and the difficulties involved in reducing miscoding can significantly advance scientific research, enabling the development of more accurate and comprehensive models of the natural world. In this chapter, we formally introduce the concept of \emph{miscoding} and explore its key properties. We will analyze how miscoding behaves in the context of combined representations and consider strategies for reducing it. We will also examine the notion that some strings fail to represent any entity and investigate the implications of this idea. Finally, we will highlight the relevance of miscoding across various research domains and discuss its potential to inspire new lines of inquiry.
 
 %
+% Section: Deficiency of a Representation
+%
+\section{Deficiency of a Representation}
+\label{sec:deficiency}
+
+An effective representation $r$ of an entity $e$ may be incomplete, in the sense that it may fail to contain some of the information required to reconstruct the entity by the underlying representation oracle. In scientific practice, such incompleteness appears whenever the available observations, measurements, or descriptions do not yet fully constrain the phenomenon under study. We formalize this notion by quantifying how much additional algorithmic information is needed to recover an admissible representation of $e$ from the given effective representation $r$. We call this quantity the \emph{deficiency} of $r$ (with respect to $e$).
+
+\begin{definition}
+\label{def:deficiency}
+Let $e\in\mathcal E$ be a knowable entity, so that $\bar{\mathcal R}_e\neq\varnothing$, and let $r\in\hat{\mathcal R}_e$ be an effective representation of $e$. We define the \emph{deficiency}\index{Deficiency of a representation} of $r$ (relative to $e$) as
+\[
+d_e(r) = \min_{r' \in \bar{\mathcal R}_e} K(r' \mid r).
+\]
+\end{definition}
+
+\noindent
+Since $\bar{\mathcal R}_e\neq\varnothing$ and conditional Kolmogorov complexity takes values in $\mathbb N$, the minimum is well defined.
+
+The quantity $K(r' \mid r)$ measures the length of the shortest computer program that, given $r$, outputs an admissible representation $r'$ of $e$. Minimizing over $r' \in \bar{\mathcal R}_e$ selects the admissible representation that is easiest to recover from $r$. Hence $d_e(r)$ can be interpreted as the minimal amount of algorithmic information that must be supplied, in addition to $r$, in order to recover some admissible representation of $e$, measured up to the usual additive constant.
+
+\begin{example}
+Let $e$ be an entity corresponding to a particular finite undirected graph, for example a molecular interaction network or a transportation network. An admissible representation $r' \in \bar{\mathcal R}_e$ may be taken to encode the complete adjacency list of the graph, so that the full structure of the network can be reconstructed unambiguously. In practice, however, one often works with only partial information. For instance, an effective representation $r \in \hat{\mathcal R}_e$ may consist of a subgraph obtained from incomplete measurements, missing edges, or partially observed nodes. Such a representation may already reveal some structural features of the network, but it does not yet determine the whole graph. The deficiency $d_e(r)$ measures, in algorithmic terms, how much additional information must be supplied in order to recover an admissible representation of the complete network from this partial one.
+\end{example}
+
+Before studying further properties of deficiency, it is useful to record that, like Kolmogorov complexity itself, it depends on the choice of reference universal machine only up to an additive constant. Thus deficiency is not an absolute numerical invariant, but it is stable under the standard machine-independence convention of algorithmic information theory.
+
+\begin{proposition}
+Let $U$ and $V$ be two reference universal prefix-free machines, and let $d_e^{\,U}(r)$ and $d_e^{\,V}(r)$ denote the deficiency of $r$ computed using the corresponding conditional Kolmogorov complexities $K_U(\cdot\mid\cdot)$ and $K_V(\cdot\mid\cdot)$. Then, for every knowable entity $e\in\mathcal E$ and every effective representation $r\in\hat{\mathcal R}_e$,
+\[
+d_e^{\,U}(r)=d_e^{\,V}(r)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+By the invariance theorem for conditional Kolmogorov complexity, for every pair of strings $x,y\in\mathcal B^\ast$,
+\[
+K_U(x\mid y)\le K_V(x\mid y)+c_{UV},
+\qquad
+K_V(x\mid y)\le K_U(x\mid y)+c_{VU},
+\]
+where $c_{UV}$ and $c_{VU}$ are constants depending only on $U$ and $V$. Applying the first inequality to each $r' \in \bar{\mathcal R}_e$ gives
+\[
+K_U(r'\mid r)\le K_V(r'\mid r)+c_{UV}.
+\]
+Taking minima over $r' \in \bar{\mathcal R}_e$, we obtain
+\[
+d_e^{\,U}(r)
+=
+\min_{r' \in \bar{\mathcal R}_e} K_U(r'\mid r)
+\le
+\min_{r' \in \bar{\mathcal R}_e} \bigl(K_V(r'\mid r)+c_{UV}\bigr)
+=
+d_e^{\,V}(r)+c_{UV}.
+\]
+By symmetry,
+\[
+d_e^{\,V}(r)\le d_e^{\,U}(r)+c_{VU}.
+\]
+Combining both inequalities yields
+\[
+d_e^{\,U}(r)=d_e^{\,V}(r)+O(1).
+\]
+\end{proof}
+
+This proposition shows that deficiency is robust under the choice of universal machine in exactly the same sense as Kolmogorov complexity itself. Consequently, statements such as $d_e(r)=O(1)$ or comparisons between deficiencies remain meaningful independently of the particular coding convention used to define the complexity measure.
+
+The following proposition establishes a basic structural property of deficiency: since it is defined in terms of program lengths, it cannot take negative values.
+
+\begin{proposition}
+For every effective representation $r\in\hat{\mathcal R}_e$, we have that $d_e(r)\ge 0$.
+\end{proposition}
+\begin{proof}
+For any $r' \in \bar{\mathcal R}_e$, the conditional complexity $K(r' \mid r)$ is the length of a computer program and therefore is non-negative. The minimum of non-negative quantities is non-negative.
+\end{proof}
+
+This result confirms that deficiency is a non-negative quantity, as expected for a measure of missing information. In particular, $d_e(r) = O(1)$ corresponds to the situation in which no additional information is required to recover an admissible representation of the entity.
+
+Next proposition shows that admissible representations are, in a precise sense, essentially complete: they require no additional information to reconstruct the entity beyond a constant overhead.
+
+\begin{proposition}
+Let $r \in \bar{\mathcal R}_e$ be an admissible representation. Then we have that $d_e(r)=O(1)$.
+\end{proposition}
+\begin{proof}
+Choose $r'=r$ in Definition \ref{def:deficiency}. Then $d_e(r) \le K(r\mid r)$. Since a constant length program can output its conditional input, $K(r \mid r)=O(1)$, and hence $d_e(r)=O(1)$.
+\end{proof}
+
+This proposition formalizes the intuition that admissible representations already contain all the information needed to reconstruct the entity. The residual $O(1)$ term reflects only the fixed overhead associated with the choice of universal machine.
+
+An important property of deficiency is its monotonic behavior under computable enrichment. Informally, if one replaces a representation by another from which the original can be effectively recovered, then the deficiency cannot increase by more than a constant. This captures the idea that adding accessible information should not make the task of reconstructing an admissible representation substantially harder.
+
+\begin{proposition}
+Let $e\in\mathcal E$ be a knowable entity, and let $r,s\in\hat{\mathcal R}_e$ be effective representations of $e$. Suppose that there exists a total computable function $g:\mathcal B^\ast\to\mathcal B^\ast$ such that $g(s)=r$. Then
+\[
+d_e(s)\le d_e(r)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+Let $r' \in \bar{\mathcal R}_e$ be arbitrary. Since $g$ is total and computable, from $s$ one can compute $g(s)=r$ with constant overhead and then simulate an optimal program witnessing $K(r'\mid r)$. Hence
+\[
+K(r'\mid s)\le K(r'\mid g(s))+O(1)=K(r'\mid r)+O(1).
+\]
+Taking minima over $r' \in \bar{\mathcal R}_e$, we obtain
+\[
+d_e(s)
+=
+\min_{r' \in \bar{\mathcal R}_e} K(r'\mid s)
+\le
+\min_{r' \in \bar{\mathcal R}_e}\bigl(K(r'\mid r)+O(1)\bigr)
+=
+d_e(r)+O(1).
+\]
+\end{proof}
+
+This proposition expresses a basic monotonicity principle: computably enriching a representation cannot substantially worsen its deficiency. In scientific terms, if a new representation preserves the old one in an effectively recoverable way while adding further accessible information, then it cannot increase the amount of genuinely missing information by more than a constant.
+
+The case of augmentation by concatenation is an immediate instance of the previous proposition. It models the situation in which extra information is inserted into a representation while the original content remains computably retrievable.
+
+\begin{corollary}
+Let $r,s,t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be a knowable entity. Suppose that both $rt \in \hat{\mathcal R}_e$ and $rst \in \hat{\mathcal R}_e$ are effective representations of $e$. Then
+\[
+d_e(rst) \; \le \; d_e(rt) + O(1).
+\]
+\end{corollary}
+\begin{proof}
+Define a total computable function $g:\mathcal B^\ast\to\mathcal B^\ast$ by letting $g(rst)=rt$, that is, $g$ discards the middle block $s$. Since $g(rst)=rt$, the conclusion follows directly from the previous proposition with $s:=rst$ and $r:=rt$.
+\end{proof}
+
+
+
+
+
+
+The next proposition identifies a simple condition under which reducing a representation does not change its deficiency beyond the usual additive constant. Intuitively, if the discarded part can be reconstructed from what remains at constant cost, then no genuinely missing information has been introduced by removing it.
+
+\begin{proposition}
+Let $e\in\mathcal E$ be a knowable entity, and let $x,y\in\mathcal B^\ast$ be such that both $xy\in\hat{\mathcal R}_e$ and $x\in\hat{\mathcal R}_e$ are effective representations of $e$. If
+\[
+K(y\mid x)=O(1),
+\]
+then
+\[
+d_e(x)=d_e(xy)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+Since $x$ is computable from $xy$ by deleting the suffix $y$, the previous proposition gives
+\[
+d_e(xy)\le d_e(x)+O(1).
+\]
+On the other hand, the condition $K(y\mid x)=O(1)$ implies that there is a constant-length program that reconstructs $y$ from $x$. Hence from $x$ one can compute $xy$ with constant overhead. By the monotonicity of deficiency under computable enrichment,
+\[
+d_e(x)\le d_e(xy)+O(1).
+\]
+Combining both inequalities yields
+\[
+d_e(x)=d_e(xy)+O(1).
+\]
+\end{proof}
+
+This proposition formalizes the idea of a safe reduction: removing information that is already recoverable from the retained part does not make the representation meaningfully more incomplete. In practice, it justifies discarding predictable or duplicative components of a representation without affecting, except up to a constant, the amount of genuinely missing information needed to recover an admissible representation.
+
+
+
+
+
+
+
+Finally, we derive a simple but useful upper bound on deficiency in terms of the admissible complexity floor $\kappa_e$ of the entity. This bound follows from the previous monotonicity principle by observing that any effective representation can be computably enriched into a form from which a fixed minimal admissible representation can be recovered by simply ignoring the original input and outputting that representation.
+
+\begin{corollary}
+For every effective representation $r \in \hat{\mathcal R}_e$, we have that
+\[
+d_e(r)\le \kappa_e + O(1).
+\]
+\end{corollary}
+\begin{proof}
+Let $r_0 \in \bar{\mathcal R}_e$ be such that
+\[
+K(r_0)=\kappa_e.
+\]
+Consider the constant function $g:\mathcal B^\ast\to\mathcal B^\ast$ defined by $g(x)=r_0$ for all $x\in\mathcal B^\ast$. Since $g$ is total and computable, from any effective representation $r$ one can computably recover $r_0$ with an additive constant overhead. Therefore, by the previous proposition with $s:=r$ and $r:=r_0$,
+\[
+d_e(r)\le d_e(r_0)+O(1).
+\]
+Since $r_0\in\bar{\mathcal R}_e$, the previous corollary gives
+\[
+d_e(r_0)=O(1).
+\]
+More directly, one may write
+\[
+d_e(r)
+=
+\min_{r' \in \bar{\mathcal R}_e}K(r'\mid r)
+\le
+K(r_0\mid r)
+\le
+K(r_0)+O(1)
+=
+\kappa_e+O(1),
+\]
+where the second inequality follows because a program can ignore $r$ and output $r_0$ at an additive constant overhead. Hence
+\[
+d_e(r)\le \kappa_e+O(1).
+\]
+\end{proof}
+
+This bound shows that deficiency is always finite and is controlled by the admissible complexity floor of the entity relative to a fixed representation oracle. Even a completely uninformative representation can be supplemented, at worst, by providing a minimal admissible encoding from scratch.
+
+%
+% Section: Surplus of a Representation
+%
+
+\section{Surplus of a Representation}
+\label{sec:surplus}
+
+An effective representation $r$ of an entity $e$ may contain more information than is actually needed to represent $e$. Some of this additional content may be redundant, that is, information that is not essential to reconstruct the entity, but that may still be useful for identifying models. However, this additional information may also be extraneous, misleading, or entirely unrelated to the entity, which is undesirable because it can make the modeling task more difficult. It is this latter component that we call \emph{surplus}, a part that needs to be identified and measured. We formalize this idea by quantifying how much algorithmic information must be added to an admissible representation in order to recover the effective representation $r$.
+
+\begin{definition}
+\index{Surplus}
+\label{def:surplus}
+Let $e \in \mathcal E$ be a knowable entity, so that $\bar{\mathcal R}_e\neq\varnothing$, and let $r \in \hat{\mathcal R}_e$ be an effective representation of $e$. We define the \emph{surplus}\index{Surplus of a representation} of $r$ relative to $e$ as
+\[
+s_e(r) \; = \; \min_{r' \in \bar{\mathcal R}_e} K(r \mid r').
+\]
+\end{definition}
+
+\noindent
+Since $\bar{\mathcal R}_e\neq\varnothing$ and conditional Kolmogorov complexity takes values in $\mathbb N$, the minimum is well defined.
+
+The quantity $K(r \mid r')$ measures the length of the shortest program that, given an admissible representation $r'$ of $e$, outputs the effective representation $r$. Minimizing over $r' \in \bar{\mathcal R}_e$ selects the admissible representation that renders $r$ easiest to generate. Hence $s_e(r)$ measures the minimal amount of additional algorithmic content in $r$ beyond what is needed to encode $e$. When $s_e(r)$ is large, the representation contains substantial extraneous information relative to the entity.
+
+\begin{example}
+\label{ex:surplus_irrelevant_variable}
+Consider an entity $e$ corresponding to the relationship between a collection of biological features of plants and their species identity. An admissible representation $r' \in \bar{\mathcal R}_e$ may encode only those variables needed to characterize the plants for this purpose, such as leaf shape, petal length, stem height, and similar morphological attributes. In practice, however, a dataset $r \in \hat{\mathcal R}_e$ may also include columns such as greenhouse bench number, sensor serial number, or the identifier of the technician who recorded the sample. These additional variables may be present in the effective representation even though they do not belong to the entity being represented. Given an admissible representation $r'$ of the biological features, generating the full dataset $r$ still requires specifying those extra fields. The surplus $s_e(r)$ quantifies, in algorithmic terms, how much such unrelated information has been incorporated into the representation.
+\end{example}
+
+As in the case of deficiency, surplus depends on the choice of reference universal machine only up to an additive constant. The argument is entirely analogous, but with the roles of the conditioned and conditioning strings reversed.
+
+\begin{proposition}
+Let $U$ and $V$ be two reference universal prefix-free machines, and let $s_e^{\,U}(r)$ and $s_e^{\,V}(r)$ denote the surplus of $r$ computed using the corresponding conditional Kolmogorov complexities $K_U(\cdot\mid\cdot)$ and $K_V(\cdot\mid\cdot)$. Then, for every knowable entity $e\in\mathcal E$ and every effective representation $r\in\hat{\mathcal R}_e$,
+\[
+s_e^{\,U}(r)=s_e^{\,V}(r)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+By the invariance theorem for conditional Kolmogorov complexity, for every pair of strings $x,y\in\mathcal B^\ast$,
+\[
+K_U(x\mid y)\le K_V(x\mid y)+c_{UV},
+\qquad
+K_V(x\mid y)\le K_U(x\mid y)+c_{VU},
+\]
+where $c_{UV}$ and $c_{VU}$ are constants depending only on $U$ and $V$. Applying the first inequality to each $r' \in \bar{\mathcal R}_e$ gives
+\[
+K_U(r\mid r')\le K_V(r\mid r')+c_{UV}.
+\]
+Taking minima over $r' \in \bar{\mathcal R}_e$, we obtain
+\[
+s_e^{\,U}(r)
+=
+\min_{r' \in \bar{\mathcal R}_e} K_U(r\mid r')
+\le
+\min_{r' \in \bar{\mathcal R}_e} \bigl(K_V(r\mid r')+c_{UV}\bigr)
+=
+s_e^{\,V}(r)+c_{UV}.
+\]
+By symmetry,
+\[
+s_e^{\,V}(r)\le s_e^{\,U}(r)+c_{VU}.
+\]
+Combining both inequalities yields
+\[
+s_e^{\,U}(r)=s_e^{\,V}(r)+O(1).
+\]
+\end{proof}
+
+Thus surplus is machine-invariant in exactly the same sense as deficiency and Kolmogorov complexity itself. In particular, qualitative statements such as $s_e(r)=O(1)$ or comparisons between surpluses remain meaningful independently of the specific universal machine chosen.
+
+The following proposition establishes the most basic structural property of surplus: like deficiency, it is always non-negative, since it is defined as a minimum over program lengths.
+
+\begin{proposition}
+For every effective representation $r \in \hat{\mathcal R}_e$, we have that $s_e(r)\ge 0$.
+\end{proposition}
+\begin{proof}
+For any $r' \in \bar{\mathcal R}_e$, the conditional complexity $K(r \mid r')$ is the length of a computer program and is therefore non-negative. The minimum of non-negative quantities is non-negative.
+\end{proof}
+
+This confirms that surplus is a non-negative quantity, as expected for a measure of extraneous information. In particular, $s_e(r)=O(1)$ corresponds to the situation in which the effective representation differs from some admissible representation by at most a constant amount of additional algorithmic content.
+
+The next proposition is the direct counterpart, for surplus, of the analogous result previously established for deficiency. It shows that admissible representations have negligible surplus, since they contain no non-trivial additional information beyond what is needed to represent the entity.
+
+\begin{proposition}
+For every admissible representation $r \in \bar{\mathcal R}_e$, we have that
+\[
+s_e(r) = O(1).
+\]
+\end{proposition}
+\begin{proof}
+Choose $r'=r$ in Definition~\ref{def:surplus}. Then
+\[
+s_e(r) \le K(r \mid r).
+\]
+Since a constant-length program can output its conditional input, $K(r \mid r) = O(1)$, and hence $s_e(r) = O(1)$.
+\end{proof}
+
+This proposition formalizes the intuition that admissible representations do not contain substantial extraneous information relative to the entity. The residual $O(1)$ term again reflects only the fixed overhead associated with the choice of universal machine.
+
+For surplus, the natural monotonicity principle concerns computable reduction rather than enrichment. Intuitively, if one passes from a representation to a computable simplification of it, then surplus cannot increase by more than a constant, because extraneous information may be discarded but cannot be created by a reduction.
+
+\begin{proposition}
+Let $e\in\mathcal E$ be a knowable entity, and let $r,s\in\hat{\mathcal R}_e$ be effective representations of $e$. Suppose that there exists a total computable function
+\[
+g:\mathcal B^\ast\to\mathcal B^\ast
+\]
+such that
+\[
+g(s)=r.
+\]
+Then
+\[
+s_e(r)\le s_e(s)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+Let $r' \in \bar{\mathcal R}_e$ be arbitrary. Since $g$ is total and computable, from any program witnessing $K(s\mid r')$ one can compute $s$ from $r'$ and then apply $g$ with constant overhead to obtain $r=g(s)$. Hence
+\[
+K(r\mid r')\le K(s\mid r')+O(1).
+\]
+Taking minima over $r' \in \bar{\mathcal R}_e$, we obtain
+\[
+s_e(r)
+=
+\min_{r' \in \bar{\mathcal R}_e} K(r\mid r')
+\le
+\min_{r' \in \bar{\mathcal R}_e}\bigl(K(s\mid r')+O(1)\bigr)
+=
+s_e(s)+O(1).
+\]
+\end{proof}
+
+This proposition is the surplus-dual of the monotonicity of deficiency under computable enrichment. Scientifically, it captures the idea that simplifying a representation in a computable way cannot substantially worsen its surplus; if anything, reduction tends to remove content that is not genuinely required to encode the entity.
+
+The case of deleting a contiguous block is an immediate instance of the previous proposition. It corresponds to a direct reduction operation in which part of the representation is discarded while the remainder is kept unchanged.
+
+\begin{corollary}
+Let $r,s,t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be a knowable entity. Suppose that both $rst \in \hat{\mathcal R}_e$ and $rt \in \hat{\mathcal R}_e$ are effective representations of $e$. Then
+\[
+s_e(rt) \; \le \; s_e(rst) + O(1).
+\]
+\end{corollary}
+\begin{proof}
+Define a total computable function $g:\mathcal B^\ast\to\mathcal B^\ast$ by letting $g(rst)=rt$, that is, $g$ discards the middle block $s$. Since $g(rst)=rt$, the conclusion follows directly from the previous proposition with $s:=rst$ and $r:=rt$.
+\end{proof}
+
+Thus, removing a block from a representation cannot substantially increase its surplus, provided that the reduced string still qualifies as an effective representation of the same entity. This is the natural counterpart, for surplus, of the augmentation corollary established earlier for deficiency.
+
+The next proposition identifies a simple condition under which extending a representation does not change its surplus beyond the usual additive constant. This is the dual counterpart of the analogous result for deficiency under safe reduction: if the appended part is already recoverable from the original representation at constant cost, then its presence does not introduce any substantial extra content.
+
+\begin{proposition}
+Let $e\in\mathcal E$ be a knowable entity, and let $x,y\in\mathcal B^\ast$ be such that both $xy\in\hat{\mathcal R}_e$ and $x\in\hat{\mathcal R}_e$ are effective representations of $e$. If
+\[
+K(y\mid x)=O(1),
+\]
+then
+\[
+s_e(xy)=s_e(x)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+Since $x$ is computable from $xy$ by deleting the suffix $y$, the previous proposition gives
+\[
+s_e(x)\le s_e(xy)+O(1).
+\]
+On the other hand, the condition $K(y\mid x)=O(1)$ implies that there is a constant-length program that reconstructs $y$ from $x$. Hence from $x$ one can compute $xy$ with constant overhead. Applying the previous proposition again, now with $s:=x$ and $r:=xy$, gives
+\[
+s_e(xy)\le s_e(x)+O(1).
+\]
+Combining both inequalities yields
+\[
+s_e(xy)=s_e(x)+O(1).
+\]
+\end{proof}
+
+This proposition formalizes the idea of a safe extension: appending information that is already computably recoverable from the original representation does not substantially increase surplus. In practice, it justifies adding predictable or duplicative fields without changing, except up to a constant, the amount of genuinely extraneous information present in the representation.
+
+Finally, we derive a simple but useful upper bound on surplus. In contrast with the deficiency bound, which is controlled by the admissible complexity floor of the entity, the most immediate general bound for surplus is controlled by the complexity of the representation itself.
+
+\begin{proposition}
+\label{prop:surplus_upper_bound}
+For every effective representation \(r\in\hat{\mathcal R}_e\),
+\[
+s_e(r)\le K(r)+O(1)\le \ell(r)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+Fix any \(r' \in \bar{\mathcal R}_e\). Then
+\[
+s_e(r)=\min_{u \in \bar{\mathcal R}_e}K(r\mid u)\le K(r\mid r')\le K(r)+O(1),
+\]
+because a program can ignore \(r'\) and simply output \(r\), incurring only constant overhead. Finally, \(K(r)\le \ell(r)+O(1)\) yields the length bound.
+\end{proof}
+
+This bound shows that surplus is always finite and, in the worst case, is controlled by the descriptive complexity of the representation itself. Even if the representation contains a large amount of irrelevant material, that excess cannot exceed, up to a constant, the total amount of information present in the representation.
+
+%
 % Section: Miscoding
 %
+
 \section{Miscoding}
 \label{sec:miscoding}
 
-In an ideal scenario, we would ask the oracle to determine how far a particular string $r$ is from perfectly encoding an entity $e$. This, however, presents a complication: we can only refer to entity $e$ through a perfect representation from the set $\mathcal{R}^\star_e$. Unfortunately, we typically do not have access to these perfect representations and, therefore, cannot use them in our query.
+The concepts of deficiency and surplus capture two fundamentally different ways in which a representation may fail. Deficiency measures how much information about the entity is still missing, whereas surplus measures how much information in the representation is not genuinely attributable to the entity. Since these two quantities need not decrease simultaneously, the analysis of miscoding is naturally formulated as a multiobjective optimization problem (see Section \ref{sec:multiobjective_optimization}) rather than as a single objective one.
 
-To overcome this limitation, we propose an alternative approach. Rather than asking the oracle to assess the discrepancy between our current representation $r$ and a valid representation of the specific entity $e$, we instead we identify the smallest distance between $r$ and all valid representations of all entities in the set $\mathcal{E}$, that is, the elements of $\mathcal{R}^\star_\mathcal{E}$. 
+% Pareto optimality
 
-\begin{definition} [Miscoding]\index{Miscoding}
-\label{def:miscoding}
-Let $r \in \mathcal{B}^\ast$ be a representation. We define the \emph{miscoding} of $r$, denoted by $\mu(r)$, as:
+\subsection*{Pareto optimality}
+
+Before introducing a scalar measure of miscoding, it is useful to make explicit that representation refinement involves two competing objectives.
+
+\begin{definition}
+Let $e \in \mathcal{E}$ be an entity. We define the \emph{miscoding problem}\index{Miscoding problem} for the entity $e$ as the following multiobjective optimization problem
 \[
-\mu(r) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} } { \max\{ K \left( r \right), K \left( r^\star_e \right) \} }
+\min_{r \in \hat{\mathcal R}_e} \bigl(d_e(r),\, s_e(r)\bigr).
 \]
-where $\overset{o}{\min}$ indicates that the minimum is to be computed by an oracle.
 \end{definition}
 
-Intuitively, our lack of knowledge about an entity is reflected in a higher miscoding value of its current representation. Conversely, a deeper understanding of the entity should lead to an encoding that is closer to a valid representation, and thus exhibits lower miscoding.
+This formulation emphasizes that miscoding is not, at its core, a single number but a trade-off between two distinct desiderata: informational completeness and absence of irrelevant content. In scientific practice, some refinements decrease deficiency at the cost of increasing surplus, while others remove surplus but also discard useful information.
 
-Miscoding is computed using a bidirectional approach: we require the oracle to determine both the length of the shortest computer program that can generate the valid representation $r^\star_e$ from our current representation $r$ (i.e., $K \left( r^\star_e \mid r \right)$), and the length of the shortest program that can generate $r$ from $r^\star_e$ (i.e., $K \left( r \mid r^\star_e \right)$). This bidirectionality captures the maximum difficulty of transforming one representation into the other. A high-quality representation should allow for an easy reconstruction of the correct representation and vice versa, implying that both of these conditional complexities are low. In other words, an ideal representation contains all the information needed to recover the correct encoding of the entity, without introducing any erroneous or irrelevant symbols.
+The natural comparison relation for the problem of miscoding is dominance (see Defintion \ref{def:multiobjective_dominance}). Before defining optimal representations, we introduce the usual notion of
+dominance in the context of representations.
 
-While miscoding concerns whether the symbols in a representation are relevant, that is, whether they correctly refer to the intended entity, it is not concerned with how many symbols are used. In contrast, surfeit (as discussed in Chapter \ref{chap:Redundancy}) focuses on whether the symbols are essential, aiming to minimize the number of unnecessary or redundant symbols. In this sense, miscoding relates to the correctness of the content, while surfeit relates to the efficiency of its expression. Although both concepts address flaws in representation, they capture fundamentally different types of representational inefficiency.
+\begin{definition}
+\label{def:dominance_miscoding}
+Let $r,r' \in \hat{\mathcal R}_e$ be two effective representation. We say that $r'$ \emph{dominates}\index{Representation dominance} $r$, denoted by $r' \prec_e r$, if
+\[
+d_e(r') \le d_e(r), \qquad s_e(r') \le s_e(r),
+\]
+and at least one of these inequalities is strict.
+\end{definition}
 
-Our definition of miscoding is formulated as a relative measure rather than an absolute one. Instead of providing an isolated score for a single representation, it quantifies how far a representation is from the nearest valid representation, normalized by their respective lengths. This relative formulation allows us to meaningfully compare the miscoding of different representations of the same entity, and also to compare the miscoding values across representations of different entities, regardless of their size or complexity.
+A dominating representation is at least as good in both components and strictly better in one. Thus, a dominated representation is scientifically suboptimal in a very strong sense: there is another available representation that improves one source of miscoding without worsening the other.
 
-The miscoding value of a representation $r$ always lies within the interval $[0, 1]$.
+The appropriate notion of optimality for a multiobjective problem is Pareto optimality (see Definition \ref{def:pareto_optimal}). We are intersted in those representations for which no simultaneous improvement
+is possible.
+
+\begin{definition}
+\label{def:pareto_miscoding}
+Let $e \in \mathcal{E}$. A representation $r \in \hat{\mathcal R}_e$ is said to be \emph{Pareto optimal}\index{Pareto optimal representation} (with respect to deficiency and surplus) if there does not exist any $r' \in \hat{\mathcal R}_e$ such that $r' \prec_e r$.
+
+The set of all Pareto-optimal representations of $e$ is denoted by
+\[
+\mathcal{P}_e
+=
+\bigl\{
+r \in \hat{\mathcal R}_e : \nexists r' \in \hat{\mathcal R}_e \text{ such that } r' \prec_e r
+\bigr\},
+\]
+and is called the \emph{Pareto frontier}\index{Miscoding Pareto frontier} of the miscoding problem.
+\end{definition}
+
+The Pareto frontier collects precisely those effective representations for which any further improvement in one component requires a deterioration in the other. In this sense, it plays the role of a representation-level knowledge frontier: beyond it, refinement becomes a matter of trade-offs rather than unambiguous progress.
+
+An inmediate property, but important, is that admissible representations lie on the Pareto frontier.
 
 \begin{proposition}
-\label{prop:range_miscoding}
-For all $r \in \mathcal{B}^\ast$, it holds that $0 \leq \mu(r) \leq 1$.
+If $r \in \bar{\mathcal{R}}_e$, then $r \in \mathcal{P}_e$.
 \end{proposition}
 \begin{proof}
-This follows directly from the inequality $0 \leq \frac{ \max\{ K(x \mid y), K(y \mid x) \} }{ \max\{ K(x), K(y) \} } \leq 1$ which holds for all $x, y \in \mathcal{B}^\ast$, as stated in Proposition \ref{prop:ncd_between_zero_and_one}.
+Let $r \in \bar{\mathcal{R}}_e$. By the basic properties of deficiency and surplus, we have
+\[
+d_e(r)=O(1), \qquad s_e(r)=O(1).
+\]
+Suppose, for contradiction, that $r \notin \mathcal{P}_e$. Then there exists $r' \in \hat{\mathcal R}_e$ such that
+\[
+d_e(r') \le d_e(r), \qquad s_e(r') \le s_e(r),
+\]
+with at least one strict inequality. Since both $d_e(r)$ and $s_e(r)$ are already minimal up to additive constants, this is impossible. Hence no such $r'$ exists, and therefore $r \in \mathcal{P}_e$.
 \end{proof}
 
-Miscoding is zero if, and only if, the representation $r$ is a valid representation of some entity $e$.
+This proposition shows that admissible representations are never dominated. More generally, the Pareto frontier should be understood as the set of the best currently available approximations to such ideal encodings.
+
+The next property clarifies why dominated representations can be safely discarded.
 
 \begin{proposition}
-\label{prop:perfect_encoding}
-Given a representation $r \in \mathcal{B}^\ast$, we have $\mu(r) = 0$ if, and only if, $r \in \mathcal{R}^\star_\mathcal{E}$.
+\label{prop:dominated_not_minimal_increasing_scalarization}
+Let $\phi:\mathbb{R}_{\ge 0}^2 \to \mathbb{R}_{\ge 0}$ be strictly increasing in
+each argument. If $r \in \hat{\mathcal R}_e$ is dominated, then $r$ cannot
+minimize $\phi(d_e(r),s_e(r))$ over $\hat{\mathcal R}_e$.
 \end{proposition}
-\begin{proof}
-If $r \in \mathcal{R}^\star_\mathcal{E}$, then there exists an entity $e \in \mathcal{E}$ such that $r = r^\star_e$. In this case, $K \left( r \mid r^\star_e \right) = 0$, and thus $\mu(r) = 0$.
 
-Conversely, if $\mu(r) = 0$, then there must exist some $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$ such that $K \left( r \mid r^\star_e \right) = 0$ and $K \left( r^\star_e \mid r \right) = 0$, which implies that $r = r^\star_e$, and hence $r \in \mathcal{R}^\star_\mathcal{E}$.
+\begin{proof}
+Assume that $r$ is dominated. Then there exists $r' \in \hat{\mathcal R}_e$
+such that
+\[
+d_e(r') \le d_e(r), \qquad s_e(r') \le s_e(r),
+\]
+and at least one inequality is strict. Since $\phi$ is strictly increasing in
+each argument, it follows that
+\[
+\phi(d_e(r'),s_e(r')) < \phi(d_e(r),s_e(r)).
+\]
+Therefore $r$ cannot be a minimizer of $\phi$.
 \end{proof}
 
-According to Proposition \ref{prop:perfect_encoding}, a miscoding value of zero implies that $r$ perfectly encodes some entity $e$. However, identifying the exact entity that $r$ represents remains a challenge. While scientific intuition may offer plausible hypotheses about the encoded entity, such guesses cannot be confirmed mathematically. Moreover, as scientific understanding evolves, our interpretation of what $r$ encodes may also change over time (see Example \ref{ex:polywater}).
+This result formalizes an important elimination principle: any representation that is dominated is suboptimal for every sensible scalar criterion that penalizes both deficiency and surplus. Consequently, once the Pareto frontier has been identified, all remaining scalarizations are selection rules \emph{on} that frontier.
 
-It has been observed that an entity $e \in \mathcal{E}$ may possess multiple valid representations, as captured by the set $\mathcal{R}^\star_e$. Fortunately, the value of miscoding is invariant under the choice of valid representation (see the discussion on style in Section \ref{sec:scientific_representation}).
+To ensure that the optimization problem is well posed in practical finite settings, it is useful to note that Pareto-optimal representations always exist.
 
 \begin{proposition}
-For any valid representation $r^\ast_e \in \mathcal{R}^\star_\mathcal{E}$, it holds that $\mu\left( r^\star_e \right) \leq \mu\left( r \right)$ for all $r \in \mathcal{B}^\star$.
+\label{prop:pareto_nonempty_finite}
+If $\hat{\mathcal R}_e$ is finite and non-empty, then $\mathcal{P}_e$ is
+non-empty.
 \end{proposition}
+
 \begin{proof}
-This follows from the fact that $\mu\left( r^\star_e \right) = 0$ and $\mu\left( r \right) \geq 0$ for all $r \in \mathcal{B}^\star$.
+Consider the finite set
+\[
+S=\bigl\{(d_e(r),s_e(r)) : r \in \hat{\mathcal R}_e\bigr\}
+\subseteq \mathbb{R}_{\ge 0}^2.
+\]
+Since $S$ is finite and non-empty, it contains at least one minimal element
+with respect to the product order
+\[
+(a',b') \preceq (a,b)
+\quad \Longleftrightarrow \quad
+a' \le a \text{ and } b' \le b.
+\]
+Let $(d_e(r),s_e(r))$ be such a minimal element. Then no
+$r' \in \hat{\mathcal R}_e$ can dominate $r$, since that would contradict
+minimality. Hence $r \in \mathcal{P}_e$.
 \end{proof}
 
-For a given entity $e$, all valid representations in the set $\mathcal{R}^\star_e$ are equally adequate with respect to miscoding, as each yields a miscoding value of $0$. From a practical standpoint, however, the most suitable representation is the one that best facilitates the discovery of new knowledge about the entity—specifically, the representation that most effectively supports the construction of explanatory models.
+This proposition guarantees that in any finite scientific comparison there is always at least one non-dominated representation. The real difficulty is therefore not existence but selection among the competing Pareto-optimal
+alternatives.
+
+% Chebyshev miscoding
+
+\subsection*{Chebyshev miscoding}
+
+Although the Pareto frontier captures the full trade-off structure, in many applications one still wishes to assign a single miscoding value to each representation. A natural scalarization is to minimize the worst of the two
+components.
+
+We now introduce the canonical scalar score used in this book for the concept of miscoding.
+
+\begin{definition}
+\label{def:chebyshev_miscoding}
+Let $r \in \hat{\mathcal R}_e$. The \emph{miscoding}\index{Miscoding} of $r$ is defined by
+\[
+\mu_e(r) := \max\bigl\{d_e(r),\, s_e(r)\bigr\}.
+\]
+\end{definition}
+
+This defintion correspond to the Chebyshev scalarization of a bi-objective problem (see {\color{red}XXX}). It assigns to each representation the magnitude of its dominant defect, and therefore penalizes imbalance between the two components.
+
+A justification for this definition is that any minimizer of $\mu_e$ must lie on the Pareto frontier.
+
+\begin{proposition}
+\label{prop:chebyshev_minimizer_pareto}
+If $r \in \hat{\mathcal R}_e$ minimizes $\mu_e$ over $\hat{\mathcal R}_e$,
+then $r \in \mathcal{P}_e$.
+\end{proposition}
+\begin{proof}
+Suppose, for contradiction, that $r$ minimizes $\mu_e$ but
+$r \notin \mathcal{P}_e$. Then there exists $r' \in \hat{\mathcal R}_e$ such
+that
+\[
+d_e(r') \le d_e(r), \qquad s_e(r') \le s_e(r),
+\]
+and at least one inequality is strict. Therefore,
+\[
+\max\{d_e(r'),s_e(r')\} < \max\{d_e(r),s_e(r)\},
+\]
+that is,
+\[
+\mu_e(r') < \mu_e(r),
+\]
+contradicting the minimality of $r$. Hence $r \in \mathcal{P}_e$.
+\end{proof}
+
+Thus, Chebyshev miscoding does not ignore the Pareto structure; it selects one of its best-balanced points. In this way, the scalar score remains compatible with the underlying multiobjective formulation.
+
+A useful property of the Chebyshev scalarization is that it provides a uniform upper bound on both deficiency and surplus.
+
+\begin{proposition}
+\label{prop:chebyshev_sublevel_sets}
+For every $r \in \hat{\mathcal R}_e$ and every $t \ge 0$,
+\[
+\mu_e(r) \le t
+\quad \Longleftrightarrow \quad
+d_e(r) \le t \text{ and } s_e(r) \le t.
+\]
+\end{proposition}
+\begin{proof}
+By definition,
+\[
+\mu_e(r)=\max\{d_e(r),s_e(r)\}.
+\]
+Hence $\mu_e(r)\le t$ if and only if the maximum of the two quantities is at
+most $t$, which happens if and only if each quantity is at most $t$.
+\end{proof}
+
+This equivalence is one of the main reasons to prefer the maximum. It says that minimizing miscoding is exactly the same as pushing both components below the smallest possible common threshold.
+
+The maximum also identifies which of the two components is currently the main obstacle to improvement.
+
+\begin{proposition}
+\label{prop:bottleneck_principle_section}
+Let $r \in \hat{\mathcal R}_e$.
+\begin{enumerate}
+    \item If $d_e(r) > s_e(r)$, then any refinement $r'$ such that
+    \[
+    d_e(r') < d_e(r)
+    \qquad \text{and} \qquad
+    s_e(r') \le d_e(r')
+    \]
+    necessarily satisfies $\mu_e(r') < \mu_e(r)$.
+
+    \item If $s_e(r) > d_e(r)$, then any refinement $r'$ such that
+    \[
+    s_e(r') < s_e(r)
+    \qquad \text{and} \qquad
+    d_e(r') \le s_e(r')
+    \]
+    necessarily satisfies $\mu_e(r') < \mu_e(r)$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Assume first that $d_e(r)>s_e(r)$. Then
+\[
+\mu_e(r)=d_e(r).
+\]
+If $r'$ satisfies
+\[
+d_e(r')<d_e(r), \qquad s_e(r') \le d_e(r'),
+\]
+then
+\[
+\mu_e(r')
+=
+\max\{d_e(r'),s_e(r')\}
+=
+d_e(r')
+<
+d_e(r)
+=
+\mu_e(r).
+\]
+
+The second part is symmetric. If $s_e(r)>d_e(r)$, then
+\[
+\mu_e(r)=s_e(r),
+\]
+and if
+\[
+s_e(r')<s_e(r), \qquad d_e(r') \le s_e(r'),
+\]
+then
+\[
+\mu_e(r')
+=
+\max\{d_e(r'),s_e(r')\}
+=
+s_e(r')
+<
+s_e(r)
+=
+\mu_e(r).
+\]
+\end{proof}
+
+This proposition has a clear methodological interpretation. When deficiency dominates, the natural priority is augmentation; when surplus dominates, the natural priority is reduction or cleaning.
+
+The main advantage of the Chebyshev scalarization is that it enforces balance between the two types of representational error. The next proposition formalizes the sense in which minimizing the maximum
+avoids extreme solutions.
+
+\begin{proposition}
+\label{prop:max_avoids_extremes}
+Let $r_1,r_2 \in \hat{\mathcal R}_e$. Suppose that
+\[
+d_e(r_1)+s_e(r_1)=d_e(r_2)+s_e(r_2)=C
+\]
+for some constant $C$, and assume moreover that
+\[
+|d_e(r_1)-s_e(r_1)| \le |d_e(r_2)-s_e(r_2)|.
+\]
+Then
+\[
+\mu_e(r_1) \le \mu_e(r_2).
+\]
+\end{proposition}
+
+\begin{proof}
+For any nonnegative numbers $a,b$ with $a+b=C$, one has
+\[
+\max\{a,b\} = \frac{C+|a-b|}{2}.
+\]
+Applying this identity to the pairs
+\[
+(a,b)=(d_e(r_1),s_e(r_1))
+\qquad \text{and} \qquad
+(a,b)=(d_e(r_2),s_e(r_2)),
+\]
+we obtain
+\[
+\mu_e(r_1)
+=
+\frac{C+|d_e(r_1)-s_e(r_1)|}{2},
+\]
+and
+\[
+\mu_e(r_2)
+=
+\frac{C+|d_e(r_2)-s_e(r_2)|}{2}.
+\]
+Since
+\[
+|d_e(r_1)-s_e(r_1)| \le |d_e(r_2)-s_e(r_2)|,
+\]
+it follows that
+\[
+\mu_e(r_1) \le \mu_e(r_2).
+\]
+\end{proof}
+
+Among representations with the same total burden, the maximum prefers the more balanced one. This is precisely the desired behavior when miscoding is meant to identify representations that are not only good on average, but also
+free from a dominant unresolved defect.
+
+A final basic property is that the Chebyshev scalarization is the smallest uniform upper bound on the two error components.
+
+\begin{proposition}
+\label{prop:max_smallest_common_bound}
+For every $r \in \hat{\mathcal R}_e$, $\mu_e(r)$ is the smallest number
+$t \ge 0$ such that
+\[
+d_e(r) \le t
+\qquad \text{and} \qquad
+s_e(r) \le t.
+\]
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:chebyshev_sublevel_sets},
+\[
+\mu_e(r) \le t
+\quad \Longleftrightarrow \quad
+d_e(r) \le t \text{ and } s_e(r) \le t.
+\]
+Taking $t=\mu_e(r)$ shows that $\mu_e(r)$ is a common upper bound.
+If $t<\mu_e(r)$, then the equivalence above implies that at least one of
+$d_e(r)$ or $s_e(r)$ is greater than $t$. Hence no smaller common upper
+bound exists.
+\end{proof}
+
+This characterization gives the maximum a clear operational meaning. It measures the least tolerance level under which both kinds of representational error can simultaneously be regarded as acceptable.
+
+% Subsection: Alternative scalarizations
+
+\subsection*{Comparison with alternative scalarizations}
+
+The maximum is not the only possible way to extract a scalar score from the pair $(d_e(r),s_e(r))$. Nevertheless, alternative scalarizations embody different epistemic priorities and have different advantages and drawbacks.
+
+A first possibility is sum scalarization
+\[
+\mu^{\Sigma}_e(r) := d_e(r)+s_e(r).
+\]
+This criterion measures total representational burden. It is simple, symmetric, and often convenient analytically, but it allows compensation: a large value of one component may be offset by a small value of the other.
+
+The following observation makes this drawback precise.
+
+\begin{proposition}
+\label{prop:sum_allows_compensation}
+There exist representations $r_1,r_2 \in \hat{\mathcal R}_e$ such that
+\[
+\mu^\Sigma_e(r_1)=\mu^\Sigma_e(r_2)
+\]
+but
+\[
+\mu_e(r_1) > \mu_e(r_2).
+\]
+\end{proposition}
+
+\begin{proof}
+It suffices to consider two hypothetical pairs of values:
+\[
+(d_e(r_1),s_e(r_1))=(C,0),
+\qquad
+(d_e(r_2),s_e(r_2))=\left(\frac{C}{2},\frac{C}{2}\right),
+\]
+with $C>0$. Then
+\[
+\mu^\Sigma_e(r_1)=C=\mu^\Sigma_e(r_2),
+\]
+but
+\[
+\mu_e(r_1)=\max\{C,0\}=C
+\]
+whereas
+\[
+\mu_e(r_2)=\max\left\{\frac{C}{2},\frac{C}{2}\right\}=\frac{C}{2}.
+\]
+Hence the sum treats the two representations as equivalent, while the
+Chebyshev scalarization strictly prefers the more balanced one.
+\end{proof}
+
+The sum is therefore useful when one cares about aggregate burden, but less appropriate when one wants to prevent a single severe defect from being masked by good performance elsewhere. For miscoding, this masking effect
+is often undesirable.
+
+A second possibility is to introduce asymmetric penalties, that is, a weighted Chebyshev scalarization:
+\[
+\mu^{(\lambda)}_e(r)
+:=
+\max\{\lambda\, d_e(r),\, (1-\lambda)\, s_e(r)\},
+\qquad 0<\lambda<1.
+\]
+This criterion is useful when one source of error is judged more serious than the other in a given application. For example, in some empirical settings it may be preferable to tolerate moderate surplus in order to avoid missing rare but important phenomena.
+
+Its advantage is flexibility, but that flexibility is also its weakness: the choice of $\lambda$ is external to the formal theory and must be justified by domain-specific considerations. Accordingly, the weighted maximum is best understood as an application-dependent refinement of the unweighted definition rather than as the canonical notion of miscoding itself.
+
+A third possibility is lexicographic ordering. For example, one may declare that
+\[
+r_1 \prec_{\mathrm{lex}} r_2
+\]
+whenever
+\[
+d_e(r_1) < d_e(r_2),
+\]
+or
+\[
+d_e(r_1)=d_e(r_2) \text{ and } s_e(r_1)<s_e(r_2).
+\]
+This corresponds to an absolute priority on reducing deficiency, with surplus considered only as a secondary criterion.
+
+Lexicographic rules are appropriate when one objective is genuinely primary. However, they are too rigid for a general theory of miscoding, since an arbitrarily small improvement in the primary objective can justify an arbitrarily large deterioration in the secondary one.
+
+A simple example shows this clearly.
+
+\begin{proposition}
+\label{prop:lexicographic_extreme}
+For every $\varepsilon>0$ and every $M>0$, there exist two pairs
+$(a_1,b_1)$ and $(a_2,b_2)$ in $\mathbb{R}_{\ge 0}^2$ such that
+\[
+a_1 < a_2 < a_1+\varepsilon,
+\]
+\[
+b_2+M < b_1,
+\]
+and yet the lexicographic order prioritizing the first coordinate strictly
+prefers $(a_1,b_1)$ to $(a_2,b_2)$.
+\end{proposition}
+
+\begin{proof}
+Take
+\[
+(a_1,b_1)=(0,\,M+1),
+\qquad
+(a_2,b_2)=\left(\frac{\varepsilon}{2},\,0\right).
+\]
+Then
+\[
+a_1=0 < \frac{\varepsilon}{2}=a_2 < \varepsilon=a_1+\varepsilon,
+\]
+and
+\[
+0+M < M+1.
+\]
+Thus the second pair is better by more than $M$ in the second coordinate,
+but lexicographic order prioritizing the first coordinate still prefers the first
+pair, since $a_1<a_2$.
+\end{proof}
+
+This illustrates the main drawback of lexicographic scalarization: it can force highly unbalanced choices. Such a policy may be appropriate in narrow applications, but it is not a good default for a theory intended to capture the
+overall quality of a representation.
+
+Negligible miscoding characterizes algorithmic equivalence to perfection.
+
+\begin{proposition}
+\label{prop:miscoding_equiv}
+For \(r\in\hat{\mathcal R}_e\), the following are equivalent:
+\begin{enumerate}[label=(\roman*)]
+\item \(\mu(r)=O(1)\).
+\item There exist \(r^\star_d,r^\star_s\in\mathcal R^\star_e\) such that \(K(r^\star_d\mid r)=O(1)\) and \(K(r\mid r^\star_s)=O(1)\).
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(\(i\Rightarrow ii\)) If \(\mu(r)=O(1)\), then \(d_e(r)\le \mu(r)=O(1)\) and \(s_e(r)\le \mu(r)=O(1)\).
+By definition of the minima in \(d_e(r)\) and \(s_e(r)\), there exist \(r^\star_d,r^\star_s\in\mathcal R^\star_e\) such that
+\(K(r^\star_d\mid r)=d_e(r)=O(1)\) and \(K(r\mid r^\star_s)=s_e(r)=O(1)\).
+
+(\(ii\Rightarrow i\)) If such \(r^\star_d,r^\star_s\) exist, then \(d_e(r)\le K(r^\star_d\mid r)=O(1)\) and \(s_e(r)\le K(r\mid r^\star_s)=O(1)\).
+Therefore \(\mu(r)=\max\{d_e(r),s_e(r)\}=O(1)\).
+\end{proof}
 
 %
-% Section: Miscoding of Joint Representations
+% Section: Relative Miscoding
 %
 
-\section{Joint Miscoding}
-\label{sec:joint_miscoding}
+\section{Relative miscoding}
+\label{sec:relative_miscoding}
 
-Section \ref{sec:descriptions_joint_topic} introduced the notion of a \emph{joint representation}\index{Joint representation}, which arises when two representations $s, t \in \mathcal{B}^\ast$ are concatenated to form a new string $st$. This section explores the properties of miscoding as they apply to such joint representations.
-
-Since the concatenated string $st$ is itself a valid representation, it is not necessary to introduce a separate
-definition of miscoding for joint representations. The miscoding of the joint representation is given by:
+The quantity
 \[
-\mu(st) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( st \mid r^\star_e \right), K \left( r^\star_e \mid st \right) \} } { \max\{ K \left( st \right), K \left( r^\star_e \right) \} }
+\mu_e(r)=\max\{d_e(r),\,s_e(r)\}
 \]
-Consistent with Proposition \ref{prop:range_miscoding}, the miscoding of a joint representation is a value between $0$ and $1$, i.e., $0 \leq \mu(st) \leq 1$.
+measures the miscoding of an effective representation \(r\in\hat{\mathcal R}_e\)
+in absolute terms, that is, in bits. This absolute measure is the appropriate
+one for the structural theory developed in the previous sections. In practice,
+however, one often wishes to compare the miscoding of representations of
+different sizes, or even of representations associated with different entities.
+For this purpose, it is useful to introduce a normalized, dimensionless
+version of miscoding.
 
-It is important to note that supplementing an incomplete representation, that is, one with a positive miscoding value, with additional symbols does not necessarily lead to a reduction in miscoding. This is because the added symbols may introduce irrelevant or incorrect information. Conversely, miscoding does not necessarily increase either, since incorporating relevant and accurate symbols can reduce the miscoding of an incomplete representation.
+The idea is simple: we divide the absolute miscoding by a complexity scale
+that is intrinsic both to the representation and to the entity being represented.
+This yields a relative score that is less sensitive to scale effects and therefore
+better suited for practical comparison.
 
-From a formal perspective, given two arbitrary representations $s, t \in \mathcal{B}^\ast$, there is no guarantee that any of the following inequalities will always hold: $\mu(ts) \geq \mu(t)$, $\mu(ts) \leq \mu(t)$, $\mu(ts) \geq \mu(s)$, or $\mu(ts) \leq \mu(s)$.
-
-\begin{example}
-Consider the text $r$ of a biology research article that succinctly and accurately describes a newly discovered specimen, resulting in a low miscoding value $\mu(r)$. However, when additional text $s$, taken from a completely unrelated article about a second specimen from a different species, is appended, the resulting concatenated representation $rs$ muddles the original focus. This inclusion of unrelated content increases the miscoding value to $\mu(rs)$, illustrating a case in which $\mu(rs) \geq \mu(r)$. Although the added text is scientifically valid on its own, it dilutes the clarity and precision of the original article, thereby increasing its miscoding.
-
-Conversely, in a second scenario, consider another research article $r'$ that exhibits a relatively high miscoding value $\mu(r')$, due to an incomplete description of the specimen. If this article is supplemented with additional text $s'$, containing essential information previously omitted, the resulting concatenated representation $r's'$ becomes significantly more informative and coherent. As a result, the miscoding value decreases, demonstrating a case where $\mu(r's') \leq \mu(r')$. This highlights that enriching an incomplete representation with relevant and focused content can yield a more accurate and lower-miscoding representation.
-\end{example}
-
-Furthermore, it should not be assumed that the miscoding of a joint representation is less than or equal to the sum of the miscodings of the individual representations, i.e., $\mu(st) \leq \mu(s) + \mu(t)$. This inequality does not necessarily hold, even when both $s$ and $t$ encode the same entity. The reason is that the joint representation \$st\$ may end up encoding an entirely different entity from those represented by $s$ and $t$ individually.
-
-\begin{example}
-In a medical research context, representation $r$ describes a new drug compound $A$ for treating a specific type of cancer, while representation $s$ outlines a genetic mutation $B$ associated with that cancer type. Both $r$ and $s$ have low miscoding values, denoting accurate, focused content. However, when concatenated, the combined representation $rs$ unintentionally suggests a third entity $C$, implying a causal relationship between $A$ and $B$. This unintended implication stems from the mixture of distinct information, leading to a higher miscoding value. In this instance, each of $r$, $s$, and $rs$ essentially represents different research entities. $r$ and $s$ are clear in their individual contexts, but $rs$ is ambiguous, exemplifying a case where concatenated information can inadvertently create a representation of an entirely different, unintended entity, thus increasing miscoding.
-\end{example}
-
-Given the non-commutative nature of joining two representations, it is not guaranteed that $\mu(ts) = \mu(st)$. This is because the composite strings $ts$ and $st$ may encode entirely different entities. This property holds true even when we restrict our attention to valid representations of a specific entity $e$. For example, if $r^\star_e, s^\star_e \in \mathcal{R}^\star_{e}$ are two valid representations of the entity $e$, there is no assurance that the concatenated string $r^\star_e s^\star_e$ will itself be a valid representation of $e$.
-
-\begin{example}
-In environmental science, representation $r$ thoroughly examines microplastics, their nature and harmful impacts on marine ecosystems, while representation $s$ focuses on specific technologies and methodologies for detecting these pollutants in water. The concatenation $rs$ presents a logical progression: first describing the pollutant and its effects, then outlining detection methods. This creates a coherent representation of a broader entity, one concerned with the pollutant, its impact, and how to detect it, an entity which may not yet be fully understood, hence yielding a higher miscoding value.
-
-Conversely, the concatenation $sr$ begins with technical methodologies for detection and then provides the contextual background on microplastics and their environmental effects. This ordering may be more familiar within a methodological framework and results in a more coherent and well-understood entity, yielding a lower miscoding value.
-
-In this particular case, we observe that $\mu(rs) > \mu(sr)$.
-\end{example}
-
-The concept of miscoding can be naturally extended to joint representations formed from any finite collection of representations. Let $r_1, r_2, \ldots, r_n \in \mathcal{B}^\ast$ be a finite collection of representations. The miscoding of their concatenation, denoted by $r_1 r_2 \ldots r_n$, is defined as:
+\begin{definition}
+\index{Relative miscoding}
+\label{def:relative_miscoding}
+Let \(e\in\mathcal E\) and let \(r\in\hat{\mathcal R}_e\) be an effective
+representation of \(e\). We define the \emph{relative miscoding} of \(r\)
+with respect to \(e\) as
 \[
-\mu(r_1 r_2 \ldots r_n) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r_1 r_2 \ldots r_n \mid r^\star_e \right), K \left( r^\star_e \mid r_1 r_2 \ldots r_n \right) \} } { \max\{ K \left( r_1 r_2 \ldots r_n \right), K \left( r^\star_e \right) \} }
+\mu^{\mathrm{rel}}_e(r)
+\;:=\;
+\frac{\mu_e(r)}{\max\{K(r),\,\kappa_e\}}
+\;=\;
+\frac{\max\{d_e(r),\,s_e(r)\}}
+{\max\{K(r),\,\kappa_e\}},
 \]
-As in the case of concatenating two representations, the miscoding of a joint representation composed of \$n\$ elements remains bounded within the unit interval $0 \leq \mu(r_1 r_2 \ldots r_n) \leq 1$. However, several caveats must be noted. There is no guarantee that $\mu(r_1 r_2 \ldots r_n) \leq \mu(r_i) \quad \text{or} \quad \mu(r_1 r_2 \ldots r_n) \geq \mu(r_i)$ for any $i = 1, \ldots, n$. Moreover, the miscoding of the joint representation is not necessarily less than or equal to the sum of the individual miscodings $\mu(r_1 r_2 \ldots r_n) \nleq \mu(r_1) + \mu(r_2) + \cdots + \mu(r_n)$. Finally, no general conclusions can be drawn regarding how the miscoding of a joint representation is affected by permutations of its components. That is, reordering the representations may increase, decrease, or leave unchanged the overall miscoding.
+where
+\[
+\kappa_e
+:=
+\min_{r^\star\in\mathcal R^\star_e} K(r^\star)
+\]
+is the perfect complexity floor of \(e\).
+\end{definition}
+
+The denominator \(\max\{K(r),\kappa_e\}\) provides a stable intrinsic scale.
+It avoids degenerate normalizations when \(K(r)\) is unusually small, while
+ensuring that the normalization remains tied to the minimum algorithmic
+information required to represent \(e\) accurately. In this way, relative
+miscoding preserves the meaning of absolute miscoding while making its
+magnitude comparable across representations of different sizes.
+
+The first result shows that relative miscoding is essentially bounded between
+\(0\) and \(1\), up to the usual additive constants of Kolmogorov complexity.
+
+\begin{proposition}
+\label{prop:range_rel_miscoding}
+For every \(r\in\hat{\mathcal R}_e\), it holds that
+\[
+0 \;\le\; \mu^{\mathrm{rel}}_e(r) \;\le\; 1+o(1),
+\]
+where the \(o(1)\) term denotes a quantity of the form
+\[
+\frac{O(1)}{\max\{K(r),\kappa_e\}},
+\]
+which vanishes for sufficiently complex representations or entities.
+\end{proposition}
+
+\begin{proof}
+Non-negativity is immediate, since \(d_e(r)\ge 0\) and \(s_e(r)\ge 0\), hence
+\[
+\mu_e(r)=\max\{d_e(r),s_e(r)\}\ge 0.
+\]
+Therefore \(\mu^{\mathrm{rel}}_e(r)\ge 0\).
+
+For the upper bound, recall first that
+\[
+s_e(r)\le K(r)+O(1),
+\]
+since for any \(r^\star\in\mathcal R^\star_e\), a program can ignore
+\(r^\star\) and output \(r\), and taking the minimum over
+\(r^\star\in\mathcal R^\star_e\) preserves this bound.
+
+Second,
+\[
+d_e(r)\le \kappa_e+O(1),
+\]
+because if \(r^\star_0\in\mathcal R^\star_e\) satisfies
+\(K(r^\star_0)=\kappa_e\), then
+\[
+K(r^\star_0\mid r)\le K(r^\star_0)+O(1)=\kappa_e+O(1),
+\]
+and taking the minimum over all perfect representations yields the claim.
+
+Hence
+\[
+\mu_e(r)=\max\{d_e(r),s_e(r)\}
+\le
+\max\{\kappa_e,K(r)\}+O(1).
+\]
+Dividing by \(\max\{K(r),\kappa_e\}\) gives
+\[
+\mu^{\mathrm{rel}}_e(r)
+\le
+1+\frac{O(1)}{\max\{K(r),\kappa_e\}}
+=
+1+o(1).
+\]
+\end{proof}
+
+This proposition shows that relative miscoding behaves as a normalized error
+score. In particular, values close to \(0\) indicate low miscoding relative to
+the intrinsic size of the problem, whereas values close to \(1\) indicate that
+the dominant representational defect is of the same order as the
+representation itself or the entity's perfect complexity floor.
+
+The next proposition connects the normalized notion with the ideal case of
+admissible representations.
+
+\begin{proposition}
+\label{prop:perfect_rel_miscoding}
+If \(r\in\mathcal R^\star_e\), then
+\[
+\mu^{\mathrm{rel}}_e(r)=o(1).
+\]
+In particular, for sufficiently complex entities or representations,
+\(\mu^{\mathrm{rel}}_e(r)\approx 0\).
+\end{proposition}
+
+\begin{proof}
+If \(r\in\mathcal R^\star_e\), then
+\[
+d_e(r)=O(1)
+\qquad\text{and}\qquad
+s_e(r)=O(1),
+\]
+hence
+\[
+\mu_e(r)=\max\{d_e(r),s_e(r)\}=O(1).
+\]
+Therefore
+\[
+\mu^{\mathrm{rel}}_e(r)
+=
+\frac{O(1)}{\max\{K(r),\kappa_e\}}
+=
+o(1).
+\]
+\end{proof}
+
+This is the normalized analogue of the fact that perfect representations have
+negligible absolute miscoding. It confirms that relative miscoding is fully
+compatible with the theoretical ideal: once the intrinsic complexity scale is
+large, the residual \(O(1)\) ambiguity becomes asymptotically negligible.
+
+The following result shows that negligible absolute miscoding always implies
+negligible relative miscoding.
+
+\begin{proposition}
+\label{prop:small_abs_implies_small_rel}
+Let \(r\in\hat{\mathcal R}_e\). If
+\[
+\mu_e(r)=O(1),
+\]
+then
+\[
+\mu^{\mathrm{rel}}_e(r)=o(1).
+\]
+\end{proposition}
+
+\begin{proof}
+If \(\mu_e(r)=O(1)\), then by Definition~\ref{def:relative_miscoding},
+\[
+\mu^{\mathrm{rel}}_e(r)
+=
+\frac{\mu_e(r)}{\max\{K(r),\kappa_e\}}
+=
+\frac{O(1)}{\max\{K(r),\kappa_e\}}
+=
+o(1).
+\]
+\end{proof}
+
+This property makes explicit that relative miscoding is a genuine
+normalization of absolute miscoding. Whenever the absolute representational
+error is negligible, the normalized version is negligible as well, and hence no
+spurious inflation is introduced by passing to the relative scale.
+
+The converse direction does not hold in general. A representation may have
+large absolute miscoding and still small relative miscoding if its overall
+complexity is even larger.
+
+\begin{proposition}
+\label{prop:small_rel_not_small_abs}
+In general, \(\mu^{\mathrm{rel}}_e(r)=o(1)\) does not imply \(\mu_e(r)=O(1)\).
+\end{proposition}
+
+\begin{proof}
+Fix any perfect representation \(r^\star\in\mathcal R^\star_e\), and let
+\(z\) be an incompressible string independent of \(r^\star\). Define \(r\) as a
+lossless encoding of the pair \((r^\star,z)\). Then \(r^\star\) is computable
+from \(r\), so
+\[
+d_e(r)=O(1).
+\]
+On the other hand,
+\[
+K(r\mid r^\star)\ge K(z)-O(1),
+\]
+so \(s_e(r)\) can be made arbitrarily large by increasing \(\ell(z)\). Hence
+\[
+\mu_e(r)=\max\{d_e(r),s_e(r)\}\approx \ell(z),
+\]
+which is unbounded.
+
+At the same time,
+\[
+K(r)\approx K(r^\star)+K(z),
+\]
+so
+\[
+\mu^{\mathrm{rel}}_e(r)
+=
+\frac{\mu_e(r)}{\max\{K(r),\kappa_e\}}
+\approx
+\frac{\ell(z)}{K(r^\star)+\ell(z)}.
+\]
+Now modify the construction by replacing \(z\) with a string \(z_n\) whose
+length tends to infinity while ensuring that the surplus grows sublinearly
+with \(K(r)\), for instance by encoding \(r\) as a lossless extension in which
+the additional information increases more slowly than the total complexity.
+Then \(\mu_e(r_n)\to\infty\) while
+\[
+\mu^{\mathrm{rel}}_e(r_n)\to 0.
+\]
+Thus small relative miscoding does not force small absolute miscoding.
+\end{proof}
+
+This proposition shows that relative miscoding and absolute miscoding serve
+different purposes. Absolute miscoding captures the actual algorithmic cost
+of repair, whereas relative miscoding measures that cost only in proportion
+to the intrinsic scale of the representation.
+
+The next property shows that relative miscoding is stable under bounded
+effective recodings.
+
+\begin{proposition}
+\label{prop:rel_miscoding_recoding}
+Let \(f:\mathcal B^\ast\to\mathcal B^\ast\) be a total computable bijection
+with computable inverse and descriptional complexity \(K(f)=O(1)\).
+Then for every \(r\in\hat{\mathcal R}_e\),
+\[
+\mu^{\mathrm{rel}}_e(f(r))
+=
+\mu^{\mathrm{rel}}_e(r)+o(1).
+\]
+\end{proposition}
+
+\begin{proof}
+For every \(r^\star\in\mathcal R^\star_e\), standard invariance properties of
+Kolmogorov complexity under computable bijections yield
+\[
+K(f(r^\star)\mid f(r)) = K(r^\star\mid r)+O(1),
+\]
+and
+\[
+K(f(r)\mid f(r^\star)) = K(r\mid r^\star)+O(1).
+\]
+Assuming the representation framework is transported coherently under
+\(f\), taking minima over \(r^\star\in\mathcal R^\star_e\) gives
+\[
+d_e(f(r))=d_e(r)+O(1)
+\qquad\text{and}\qquad
+s_e(f(r))=s_e(r)+O(1).
+\]
+Hence
+\[
+\mu_e(f(r))=\mu_e(r)+O(1).
+\]
+
+Moreover,
+\[
+K(f(r))=K(r)+O(1),
+\]
+again by invariance under total computable bijections with computable
+inverse. Therefore
+\[
+\max\{K(f(r)),\kappa_e\}
+=
+\max\{K(r),\kappa_e\}+O(1).
+\]
+Substituting into Definition~\ref{def:relative_miscoding}, we obtain
+\[
+\mu^{\mathrm{rel}}_e(f(r))
+=
+\frac{\mu_e(r)+O(1)}{\max\{K(r),\kappa_e\}+O(1)}
+=
+\mu^{\mathrm{rel}}_e(r)+
+\frac{O(1)}{\max\{K(r),\kappa_e\}}
+=
+\mu^{\mathrm{rel}}_e(r)+o(1).
+\]
+\end{proof}
+
+This result shows that relative miscoding does not depend substantially on
+the accidental details of a reasonable encoding convention. Up to
+asymptotically negligible terms, bounded effective recodings preserve the
+normalized amount of representational error.
+
+It is also useful to make explicit the relation between absolute and relative
+ordering when the compared representations have the same intrinsic scale.
+
+\begin{proposition}
+\label{prop:relative_order_same_scale}
+Let \(r_1,r_2\in\hat{\mathcal R}_e\) satisfy
+\[
+\max\{K(r_1),\kappa_e\}
+=
+\max\{K(r_2),\kappa_e\}.
+\]
+Then
+\[
+\mu_e(r_1)\le \mu_e(r_2)
+\quad\Longleftrightarrow\quad
+\mu^{\mathrm{rel}}_e(r_1)\le \mu^{\mathrm{rel}}_e(r_2).
+\]
+\end{proposition}
+
+\begin{proof}
+If the denominators coincide, say both equal \(C>0\), then
+\[
+\mu^{\mathrm{rel}}_e(r_i)=\frac{\mu_e(r_i)}{C}
+\qquad (i=1,2).
+\]
+Division by the same positive constant preserves order, so
+\[
+\mu_e(r_1)\le \mu_e(r_2)
+\quad\Longleftrightarrow\quad
+\frac{\mu_e(r_1)}{C}\le \frac{\mu_e(r_2)}{C},
+\]
+which is exactly
+\[
+\mu^{\mathrm{rel}}_e(r_1)\le \mu^{\mathrm{rel}}_e(r_2).
+\]
+\end{proof}
+
+This proposition clarifies the practical meaning of the normalization. When
+the compared representations have the same intrinsic scale, relative
+miscoding does not change the ranking; it simply rescales the absolute
+values. The normalization matters only when the underlying scales differ.
+
+Finally, relative miscoding preserves the bottleneck interpretation of the
+absolute miscoding, since the denominator is common to both deficiency and
+surplus.
+
+\begin{proposition}
+\label{prop:relative_bottleneck}
+Let \(r\in\hat{\mathcal R}_e\).
+\begin{enumerate}
+\item If \(d_e(r)>s_e(r)\), then
+\[
+\mu^{\mathrm{rel}}_e(r)
+=
+\frac{d_e(r)}{\max\{K(r),\kappa_e\}}.
+\]
+\item If \(s_e(r)>d_e(r)\), then
+\[
+\mu^{\mathrm{rel}}_e(r)
+=
+\frac{s_e(r)}{\max\{K(r),\kappa_e\}}.
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\mu^{\mathrm{rel}}_e(r)
+=
+\frac{\max\{d_e(r),s_e(r)\}}{\max\{K(r),\kappa_e\}}.
+\]
+If \(d_e(r)>s_e(r)\), then the numerator equals \(d_e(r)\). If
+\(s_e(r)>d_e(r)\), then the numerator equals \(s_e(r)\). The stated
+equalities follow immediately.
+\end{proof}
+
+Thus, relative miscoding inherits the same diagnostic value as absolute
+miscoding: it identifies the currently dominant representational defect. The
+only difference is that this defect is now expressed relative to the intrinsic
+scale of the representation and the entity.
+
+\paragraph{Interpretation.}
+A value \(\mu^{\mathrm{rel}}_e(r)\approx 0\) indicates that, relative to its
+overall information content, the representation has both low deficiency and
+low surplus; it is therefore close to perfect for \(e\) in a scale-free sense.
+Values close to \(1\) indicate that either deficiency or surplus is of the same
+order as the representation's intrinsic scale \(\max\{K(r),\kappa_e\}\), meaning
+that the representation is highly incomplete, highly contaminated, or both.
+
+Relative miscoding is therefore best understood as a practical comparison
+tool rather than as a replacement for absolute miscoding. The latter remains
+the primary structural notion, whereas the former provides a normalized view
+better suited for comparing representations of different sizes.
+
+Finally, one should keep in mind that the interpretation of
+\(\mu^{\mathrm{rel}}_e(r)\) still presupposes that the target entity \(e\) has been
+fixed. Determining which entity a given string \(r\) actually represents
+remains a separate problem. In scientific practice, hypotheses about
+reference may change over time, and thus the interpretation of a fixed string
+may shift as knowledge evolves.
 
 %
 % Section: Decreasing Miscoding
 %
 
 \section{Decreasing Miscoding}
+\label{sec:decreasing_miscoding}
 
-A valid representation of an entity is a string that contains all the essential information required by the oracle to reproduce the entity, no more, no less. In contrast, an invalid representation, indicated by a miscoding value greater than zero, may result from missing critical information, the inclusion of incorrect symbols, or the presence of irrelevant symbols. To reduce the miscoding of a representation, one may attempt to supply the missing information or remove erroneous or non-pertinent symbols. However, it is generally not possible to determine in advance which of these actions will be effective. Nevertheless, as the following theorem shows, at least one of these approaches must be applicable.
+For a fixed entity \(e\), miscoding measures how far an effective representation \(r\in\hat{\mathcal R}_e\) is from being simultaneously informationally complete and free of extraneous content. In the theory of nescience these two requirements are measured separately by the metrics of deficiency and surplus. Thus, decreasing miscoding is intrinsically a two-objective refinement problem: one aims to reduce missing information about $e$ (deficiency) while also removing information that is not attributable to $e$ (surplus).
 
-\begin{theorem}
-\label{th:reduce_miscoding}
-Let $r \in \mathcal{B}^\ast$ be a representation such that $\mu(r) >0$, then one or both of the following conditions must hold:
-\begin{enumerate}[label=(\roman*)]
-\item There exists a $s \in \mathcal{B}^\ast$ such that $\mu(rs) < \mu(r)$ or $\mu(sr) < \mu(r)$,
-\item There exists an $s \in \mathcal{B}^\ast$ in the form $r = \alpha s \beta$ with $\alpha, \beta \in \mathcal{B}^\ast$ such that $\mu(s) < \mu(r)$.
-\end{enumerate}
-\end{theorem}
+In scientific practice these correspond to two complementary modes of improvement: augmentation (adding information) is typically aimed at reducing deficiency, whereas reduction (removing information) is typically aimed at reducing surplus.
+
+% Augmentation
+
+\subsection*{Decreasing Deficiency via Augmentation}
+
+A natural way to reduce the deficiency of a representation is to augment it with additional information. In scientific practice, this corresponds to collecting new observations, increasing measurement resolution, adding missing variables, or incorporating contextual metadata. Intuitively, if the added material is relevant, the resulting representation should be closer to an admissible representation of the entity, and therefore require less additional information to complete it.
+
+Within a fixed representation framework, augmenting an effective representation with additional information cannot increase its deficiency by more than an additive constant.
+
+\begin{proposition}
+Let $r,s,t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be a knowable entity. Suppose that both $rt \in \hat{\mathcal{R}}_{e}$ and $rst \in \hat{\mathcal{R}}_{e}$ are effective representations of $e$. Then
+\[
+d_e(rst) \; \le \; d_e(rt) + O(1).
+\]
+\end{proposition}
 \begin{proof}
-Let $r\in\mathcal B^{\ast}$ be a representation with
+Let $g:\mathcal B^\ast\to\mathcal B^\ast$ be a computable function that maps $rst$ to $rt$ by discarding the middle block $s$. For any $r' \in \bar{\mathcal R}_e$, monotonicity of conditional Kolmogorov complexity under computable transformations yields
 \[
-\mu(r)=
-\min_{r_{e}^{\star}\in\mathcal R^{\star}_{\mathcal E}}
-\frac{\max\{K(r\mid r_{e}^{\star}),\,K(r_{e}^{\star}\mid r)\}}
-     {\max\{K(r),\,K(r_{e}^{\star})\}}
->0 .
+K(r' \mid rst)\le K(r' \mid g(rst)) + O(1) = K(r' \mid rt) + O(1),
 \]
-Fix one valid representation
-$r^{\star}\in\mathcal R^{\star}_{\mathcal E}$ at which the minimum is attained, and write
+since from $rst$ one can compute $g(rst)=rt$ with constant overhead and then simulate an optimal program for $K(r'\mid rt)$. Taking the minimum over $r' \in \bar{\mathcal R}_e$ gives
 \[
-A:=K(r\mid r^{\star}),\qquad
-B:=K(r^{\star}\mid r),\qquad
-L:=\max\{K(r),K(r^{\star})\},
+d_e(rst) = \min_{r' \in \bar{\mathcal R}_e} K(r' \mid rst)
+\le
+\min_{r' \in \bar{\mathcal R}_e} \bigl( K(r' \mid rt) + O(1) \bigr)
+=
+d_e(rt) + O(1).
 \]
-so that $\mu(r)=\frac{\max\{A,B\}}{L}$.
-
-We distinguish two (exhaustive) cases. Case i).  $B>0$, that is, some information is missing in $r$. Because $B>0$, a shortest self-delimiting program $p$ of length $B$ exists that, given $r$, outputs $r^{\star}$.
-Set $s:=p$ and consider the concatenation $r':=rs$. Because $s$ already is the program that converts $r$ into $r^{\star}$,
-\[
-K(r^{\star}\mid r')=O(1),\qquad
-K(r'\mid r^{\star})\le A+B+O(1).
-\]
-Hence
-\[
-\max\{K(r^{\star}\mid r'),K(r'\mid r^{\star})\}\le A+B+O(1)<A+L .
-\]
-The description length of $r'$ satisfies $K(r')\le K(r)+B+O(\log B)$, so
-\[
-\max\{K(r'),K(r^{\star})\}\ge
-\max\{K(r),K(r^{\star})\}=L .
-\]
-Thus
-\[
-\mu(r')\;=\;
-\frac{\max\{K(r^{\star}\mid r'),\,K(r'\mid r^{\star})\}}
-     {\max\{K(r'),\,K(r^{\star})\}}
-\;<\;
-\frac{A+B+O(1)}{L}
-\;\le\;
-\frac{\max\{A,B\}}{L}
-=\mu(r),
-\]
-so either $\mu(rs)<\mu(r)$ (if we append) or, by symmetric reasoning, $\mu(sr)<\mu(r)$ (if we prepend).
-Hence condition (i) is satisfied.
-
-Case ii). $B=0$, that is, all information needed to produce $r^{\star}$ is contained in $r$; extra symbols remain. Now $A>0$ because $\mu(r)>0$. Since $K(r^{\star}\mid r)=0$, a deterministic algorithm can scan $r$ from left to right and halt as soon as it has seen a **shortest prefix** that already allows it to output $r^{\star}$.
-Let $s$ be that prefix and write $r=\alpha s\beta$ with $\beta\ne\lambda$ (otherwise $r=s$ and $A=0$, contradicting $\mu(r)>0$).
-\[
-K(r^{\star}\mid s)=0,\qquad
-K(s\mid r^{\star})\le K(r\mid r^{\star})=A .
-\]
-Because $s$ is a proper prefix of $r$, $K(s)\le K(r)$ (up to an $O(\log K(r))$ term). Therefore
-\[
-\mu(s)\;=\;
-\frac{\max\{K(s\mid r^{\star}),K(r^{\star}\mid s)\}}
-     {\max\{K(s),K(r^{\star})\}}
-\;\le\;
-\frac{A}{\max\{K(s),K(r^{\star})\}}
-<
-\frac{\max\{A,B\}}{L}
-=\mu(r),
-\]
-so condition (ii) holds with that substring $s$.
 \end{proof}
 
-Refer to Example \ref{ex:lung_cancer} for a case in which appending additional information to a representation improves its quality, that is, reduces its miscoding. Also, the following example illustrates the opposite situation: a case in which removing certain symbols from a representation can lead to a decrease in miscoding.
+This proposition captures a basic monotonicity principle: once additional information has been incorporated into a representation, recovering an admissible representation of the entity cannot become substantially harder. Of course, the result does not guarantee that every augmentation is useful in practice. Some added information may be redundant, irrelevant, or even misleading. What matters scientifically is not augmentation per se, but augmentation that reduces deficiency by supplying information that was genuinely missing.
 
-\begin{example}
-A historian compiles a representation $r$ intended to narrate the events surrounding the signing of a pivotal treaty. However, the inclusion of speculative statements and personal interpretations about the intentions of the involved parties, statements not supported by primary sources, results in a high miscoding value. Although the document is rich in content, it is contaminated by erroneous or unverifiable information, rendering it an invalid representation of the historical event.
-
-By removing these speculative and unsubstantiated segments, a revised version $r'$ is produced. This refined representation presents a concise and factual account based solely on verifiable data and primary sources. The removal of misleading content reduces the miscoding value, making $r'$ a more valid representation that more accurately reflects the historical event without the noise of uncorroborated interpretations.
-\end{example}
-
-%
-% Section: Targetless Representations
-%
-
-\section{Targetless Representations}
-\label{sec:targetless_representations}
-
-In the most extreme scenario, the miscoding value can reach its upper bound of 1. This occurs when the current representation $r$ does not contain a single symbol that contributes to the encoding of any entity in the set $\mathcal{E}$. In such a case, $r$ is said to be a targetless representation, an abstract string with no concrete or meaningful interpretation.
+To make this idea explicit, it is useful to measure how much deficiency is reduced by adding a given block of information.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation. If $\mu(r) = 1$ we say that $r$ is a \emph{targetless}\index{Targetless representation} representation.
-\end{definition} 
-
-Although one could, in principle, assign a targetless representation to an arbitrary entity, doing so would violate the essential requirement of surrogative reasoning\index{Surrogative reasoning} (see Section \ref{sec:scientific_representation}). The following proposition formalizes this idea.
-
-\begin{proposition}
-\label{prop:miscoding_upper_bound}
-Given a representation $r \in \mathcal{B}^\ast$, the miscoding $\mu(r)$ reaches its maximum value of 1 if and only if no symbol in $r$ contributes to the encoding of any entity in $\mathcal{E}$.
-\end{proposition}
-\begin{proof}
-Assume that $r$ contains no symbol that contributes to the encoding of any entity $e \in \mathcal{E}$. Let $r^\star_e$ be a valid representation of some $e \in \mathcal{E}$. Then, the shortest program capable of generating $r^\star_e$ from $r$ must encode the entirety of $r^\star_e$ without reuse of any symbols from $r$. Thus, $K(r^\star_e \mid r) = K(r^\star_e)$. Similarly, since no symbol in $r^\star_e$ contributes to the generation of $r$, we have $K(r \mid r^\star_e) = K(r)$. Substituting into the definition of miscoding:
+Let $e \in \mathcal E$ be a knowable entity, let $r \in \hat{\mathcal R}_e$ be an effective representation of $e$, and let $a \in \mathcal B^\ast$ be such that $ra \in \hat{\mathcal R}_e$. We define the \emph{marginal deficiency reduction} of $a$ relative to $r$ by
 \[
-\mu(r) = \frac{ \max\{ K(r \mid r^\star_e), K(r^\star_e \mid r) \} }{ \max\{ K(r), K(r^\star_e) \} } = \frac{ \max\{ K(r), K(r^\star_e) \} }{ \max\{ K(r), K(r^\star_e) \} } = 1
+\Delta_d(a \mid r,e) \;=\; d_e(r) - d_e(ra).
 \]
-assuming $K(r) \neq 0$ and $K(r^\star_e) \neq 0$. Conversely, suppose that $\mu(r) = 1$. Then:
-\[
-\max\{ K(r \mid r^\star_e), K(r^\star_e \mid r) \} = \max\{ K(r), K(r^\star_e) \}
-\]
-which implies that neither $r$ can help generate $r^\star_e$ nor $r^\star_e$ can help generate $r$. Therefore, there is no overlap in information, and $r$ contains no symbol that contributes to the encoding of any entity in $\mathcal{E}$.
-\end{proof}
+\end{definition}
 
-For every finite or countably infinite set of entities $\mathcal{E}$, there exists an infinite number of targetless representations. We will prove this result constructively by showing that at least one targetless representation exists and then defining a method to generate infinitely many more from it.
+The quantity $\Delta_d(a \mid r,e)$ measures how much the additional information $a$ reduces the amount of missing algorithmic information needed to recover an admissible representation of $e$. If $\Delta_d(a \mid r,e)$ is large, then $a$ supplies information that was highly relevant and previously absent from $r$. If it is close to zero, then the augmentation contributes little toward completing the representation.
 
-\begin{proposition}
-For every finite or countably infinite set of entities $\mathcal{E}$, there exists an uncountably infinite set of targetless representations.
-\end{proposition}
-\begin{proof}
-Let $\mathcal{R}$ denote the set of all valid representations of entities in $\mathcal{E}$, such that for each entity $e \in \mathcal{E}$, there exists a representation $r \in \mathcal{R}$ and vice versa. Since $\mathcal{E}$ is finite or countably infinite, $\mathcal{R}$ is also countable.
-
-Now consider the set $\mathcal{B}^\ast$ of all finite binary strings. This set is countably infinite, as it includes all possible finite sequences over the alphabet ${0,1}$. Because $\mathcal{R}$ is a subset of $\mathcal{B}^\ast$ and is countable, and $\mathcal{B}^\ast \setminus \mathcal{R}$ is non-empty and infinite, there must exist binary strings that are not valid representations of any entity in $\mathcal{E}$.
-
-Let $r_0 \in \mathcal{B}^\ast \setminus \mathcal{R}$ be any such string. By definition, $r_0$ is a targetless representation.
-
-Given any targetless representation $r_i$, we can construct a new targetless representation $r_{i+1}$ by appending a symbol (either '0' or '1') to $r_i$. Since $r_i$ does not encode any entity in $\mathcal{E}$, and $\mathcal{R}$ is prefix-free with respect to targetless extensions (i.e., extending a non-representation cannot turn it into a valid one), the new string $r_{i+1}$ also does not correspond to any entity. Therefore, $r_{i+1}$ is also targetless.
-
-By iterating this process, we generate an infinite sequence of distinct targetless representations ${r_0, r_1, r_2, \ldots} \subset \mathcal{B}^\ast \setminus \mathcal{R}$. This proves that there exists a countably infinite set of targetless representations corresponding to any finite or countably infinite set of entities $\mathcal{E}$.
-\end{proof}
-
-What constitutes a targetless representation for one oracle may not necessarily be targetless for another, as the following example illustrates.
+This notion suggests a practical decision principle for scientific inquiry: among several possible augmentations, a good next observation is one that is expected to produce the largest reduction in posterior deficiency. In other words, one should prefer the experiment, measurement, or data collection step that is expected to bring the current representation closest to an admissible one.
 
 \begin{example}
-Imagine two machines, A and B, each controlling a robotic arm capable of manufacturing nuts and bolts. Machine A operates using a low-level assembly language, whereas Machine B uses a more sophisticated high-level programming language. As a result, a particular set of instructions that fails to produce a valid output on Machine A—thus being considered a targetless representation—could be perfectly interpretable by Machine B, successfully yielding a finished bolt.
+Suppose that the entity $e$ is the complete interaction network of a biological signaling pathway. The current effective representation $r$ may include only a subset of the relevant molecular interactions, obtained from existing experiments. Researchers now face a choice between two possible next observations.
+
+The first option, $a_1$, is to repeat an already well-characterized assay at slightly higher precision. This may improve confidence in edges that are already known, but it is unlikely to reveal fundamentally new parts of the network. The second option, $a_2$, is to measure interactions involving a poorly understood regulatory protein that has not yet been incorporated into the current representation. If that protein is in fact central to the pathway, then observing its interactions may fill a major structural gap in the network.
+
+In the language of deficiency, the scientifically preferable choice is the one expected to minimize the posterior deficiency, that is, the one expected to make $d_e(ra)$ as small as possible. In this scenario, $a_2$ is likely to be the better next observation, because it has greater potential to reduce the missing information required to recover an admissible representation of the full signaling network. By contrast, $a_1$ may add useful detail, but only a small amount of genuinely new information. Thus, a good next observation is not necessarily the one that produces the most data, but the one that is expected to reduce deficiency the most.
 \end{example}
 
-The normalized compression distance between a targetless representation and the closest valid (non-targetless) representation may be less than one. This indicates that the targetless representation shares some information with a valid one. However, this is not sufficient to ensure scientific progress, as the computational effort, reflected in the size or complexity of the Turing machine required to extract useful knowledge, may be larger.
+The concept of marginal deficiency reduction turns deficiency into a prescriptive tool. Rather than merely quantifying how incomplete a representation currently is, it provides a way to evaluate candidate augmentations according to how much they are expected to reduce that incompleteness. In this sense, deficiency does not only measure what is missing; it also helps guide the choice of what should be observed next.
+
+% Reduction
+
+\subsection*{Decreasing Surplus via Reduction}
+
+A natural way to reduce the surplus of a representation is to remove information that is not genuinely needed to encode the entity. In scientific practice, this corresponds to discarding irrelevant variables, removing administrative metadata, filtering spurious attributes, or simplifying a representation by deleting content that does not contribute to the representation of the entity itself. Intuitively, if the removed material is truly extraneous, the resulting representation should be closer to an admissible representation of the entity, and therefore contain less additional algorithmic content beyond what is needed to encode it.
+
+Within a fixed representation framework, reducing an effective representation by deleting information cannot increase its surplus by more than an additive constant.
+
+\begin{proposition}
+Let $r,s,t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be a knowable entity. Suppose that both $rst \in \hat{\mathcal{R}}_{e}$ and $rt \in \hat{\mathcal{R}}_{e}$ are effective representations of $e$. Then
+\[
+s_e(rt) \; \le \; s_e(rst) + O(1).
+\]
+\end{proposition}
+\begin{proof}
+Let $g:\mathcal B^\ast\to\mathcal B^\ast$ be a computable function that maps $rst$ to $rt$ by discarding the middle block $s$. For any $r' \in \bar{\mathcal R}_e$, monotonicity of conditional Kolmogorov complexity under computable transformations yields
+\[
+K(rt \mid r')\le K(g(rst) \mid r') + O(1) \le K(rst \mid r') + O(1),
+\]
+since from any program that outputs $rst$ given $r'$ one can compute $g(rst)=rt$ with constant overhead. Taking the minimum over $r' \in \bar{\mathcal R}_e$ gives
+\[
+s_e(rt) = \min_{r' \in \bar{\mathcal R}_e} K(rt \mid r')
+\le
+\min_{r' \in \bar{\mathcal R}_e} \bigl( K(rst \mid r') + O(1) \bigr)
+=
+s_e(rst) + O(1).
+\]
+\end{proof}
+
+This proposition captures the basic monotonicity principle for surplus: once part of a representation has been removed, generating the reduced representation from an admissible one cannot become substantially harder. Of course, the result does not guarantee that every reduction is scientifically desirable. Some deleted material may be essential for representing the entity, in which case the reduced string may cease to be a good representation altogether. What matters scientifically is not reduction per se, but reduction that decreases surplus by removing content that is genuinely extraneous.
+
+To make this idea explicit, it is useful to measure how much surplus is reduced by deleting a given block of information.
+
+\begin{definition}
+Let $e \in \mathcal E$ be a knowable entity, let $r \in \hat{\mathcal R}_e$ be an effective representation of $e$, and let $a \in \mathcal B^\ast$ be such that the reduced string $r\setminus a \in \hat{\mathcal R}_e$ is still an effective representation of $e$. We define the \emph{marginal surplus reduction} of removing $a$ from $r$ by
+\[
+\Delta_s(a \mid r,e) \;=\; s_e(r) - s_e(r\setminus a).
+\]
+\end{definition}
+
+The quantity $\Delta_s(a \mid r,e)$ measures how much the deleted information $a$ reduces the amount of additional algorithmic content present in the representation relative to the entity. If $\Delta_s(a \mid r,e)$ is large, then the removed block was highly extraneous. If it is close to zero, then deleting $a$ contributes little toward eliminating surplus.
+
+This notion suggests a practical decision principle for scientific inquiry: among several possible reductions, a good next simplification is one that is expected to produce the largest reduction in posterior surplus. In other words, one should prefer the filtering, variable-removal, or simplification step that is expected to make the resulting representation contain as little extraneous information as possible while still representing the same entity.
+
+\begin{example}
+Suppose that the entity $e$ is a dataset intended to represent the biological characteristics of a collection of plant samples for species identification. The current effective representation $r$ contains the relevant morphological variables, but it also includes several additional columns that are not part of the entity itself.
+
+One option, $a_1$, is to remove a column containing the greenhouse bench number where each sample was stored. This information may be useful for logistics, but it is not part of the biological entity being represented. A second option, $a_2$, is to remove the column giving petal length, which is one of the variables actually needed to characterize the plants.
+
+In the language of surplus, the scientifically preferable choice is the one expected to minimize the posterior surplus, that is, the one expected to make $s_e(r\setminus a)$ as small as possible while preserving an effective representation of the same entity. In this scenario, removing $a_1$ is likely to be the better reduction step, because it discards information unrelated to the biological characteristics of the plants. By contrast, removing $a_2$ may simplify the dataset, but it risks deleting information that is genuinely relevant to the entity. Thus, a good reduction is not simply the one that removes the most data, but the one that is expected to reduce surplus the most.
+\end{example}
+
+The concept of marginal surplus reduction turns surplus into a prescriptive tool. Rather than merely quantifying how much extraneous information is currently present in a representation, it provides a way to evaluate candidate reductions according to how much they are expected to eliminate that excess. In this sense, surplus does not only measure what should be removed; it also helps guide the choice of what should be filtered out next.
+
+\subsection*{Strict decrease of miscoding}
+
+The previous propositions provide one-sided guarantees: augmentation controls deficiency, and reduction controls surplus. A strict decrease of miscoding requires that the quantity
+\[
+\mu(r)=\max\{d_e(r),s_e(r)\}
+\]
+actually becomes smaller. In particular, decreasing only one component is not always sufficient, since the other component may remain dominant. The following results make this point explicit and record some simple sufficient conditions for strict improvement.
+
+Before giving such conditions, it is useful to note that a strict decrease in only one of the two components does not, in general, imply a strict decrease in miscoding.
+
+\begin{proposition}
+A strict decrease in deficiency alone, or in surplus alone, does not in general imply a strict decrease in miscoding.
+\end{proposition}
+
+\begin{proof}
+We prove the first claim by counterexample. Suppose that
+\[
+d_e(r)=10,\qquad s_e(r)=100,
+\]
+and that, after some modification of the representation, we obtain \(r'\) such that
+\[
+d_e(r')=9,\qquad s_e(r')=100.
+\]
+Then deficiency has decreased strictly, but
+\[
+\mu(r)=\max\{10,100\}=100,
+\qquad
+\mu(r')=\max\{9,100\}=100.
+\]
+Hence \(\mu(r')=\mu(r)\), so miscoding does not decrease strictly.
+
+The argument for surplus is symmetric. For example, if
+\[
+d_e(r)=100,\qquad s_e(r)=10,
+\]
+and
+\[
+d_e(r')=100,\qquad s_e(r')=9,
+\]
+then surplus decreases strictly, but
+\[
+\mu(r)=\max\{100,10\}=100,
+\qquad
+\mu(r')=\max\{100,9\}=100.
+\]
+Again, miscoding does not decrease strictly.
+\end{proof}
+
+This proposition shows why one-sided control results are not enough on their own to guarantee improvement in miscoding. What matters is not only whether one component decreases, but whether the dominant component is reduced below the previous miscoding level.
+
+The strongest simple sufficient condition is the following: if both deficiency and surplus decrease strictly, then miscoding must also decrease strictly.
+
+\begin{proposition}[Simultaneous improvement]
+\label{prop:simultaneous_improvement_miscoding}
+Let \(r,r'\in\hat{\mathcal R}_e\) be effective representations of the same knowable entity \(e\). If
+\[
+d_e(r')<d_e(r)
+\qquad\text{and}\qquad
+s_e(r')<s_e(r),
+\]
+then
+\[
+\mu(r')<\mu(r).
+\]
+\end{proposition}
+
+\begin{proof}
+Since both components decrease strictly, we have
+\[
+\max\{d_e(r'),s_e(r')\}<\max\{d_e(r),s_e(r)\}.
+\]
+That is,
+\[
+\mu(r')<\mu(r).
+\]
+\end{proof}
+
+This proposition captures the ideal situation in which a representational intervention simultaneously removes missing information and extraneous information. In practice, however, augmentation and reduction often act asymmetrically, so it is useful to have more targeted sufficient conditions based on whichever component is currently dominant.
+
+To state these conditions clearly, recall that miscoding is controlled by the larger of the two quantities \(d_e(r)\) and \(s_e(r)\). Thus, when deficiency is dominant, the most effective interventions are typically those that reduce deficiency without allowing surplus to remain at or above the previous miscoding level. The symmetric principle holds when surplus is dominant.
+
+\begin{proposition}[Simple sufficient conditions for strict decrease of miscoding]
+\label{prop:sufficient_decrease_miscoding}
+Let \(r\in\hat{\mathcal R}_e\) be an effective representation and let \(r'\in\hat{\mathcal R}_e\) be obtained from \(r\) by either augmentation or reduction.
+\begin{enumerate}[label=(\roman*)]
+\item If \(d_e(r)=\mu(r)\), \(d_e(r')<d_e(r)\), and \(s_e(r')<d_e(r)\), then \(\mu(r')<\mu(r)\).
+\item If \(s_e(r)=\mu(r)\), \(s_e(r')<s_e(r)\), and \(d_e(r')<s_e(r)\), then \(\mu(r')<\mu(r)\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) Since \(d_e(r)=\mu(r)\), we have
+\[
+\mu(r)=d_e(r).
+\]
+By assumption,
+\[
+d_e(r')<d_e(r)=\mu(r)
+\qquad\text{and}\qquad
+s_e(r')<d_e(r)=\mu(r).
+\]
+Hence both arguments in the maximum defining \(\mu(r')\) are strictly smaller than \(\mu(r)\), so
+\[
+\mu(r')=\max\{d_e(r'),s_e(r')\}<\mu(r).
+\]
+
+(ii) The proof is symmetric. Since \(s_e(r)=\mu(r)\), we have
+\[
+\mu(r)=s_e(r).
+\]
+By assumption,
+\[
+s_e(r')<s_e(r)=\mu(r)
+\qquad\text{and}\qquad
+d_e(r')<s_e(r)=\mu(r).
+\]
+Therefore,
+\[
+\mu(r')=\max\{d_e(r'),s_e(r')\}<\mu(r).
+\]
+\end{proof}
+
+This proposition makes explicit a basic decision rule for representational refinement: one should focus on reducing the component that currently determines miscoding, while keeping the other below the previous threshold. In this sense, augmentation is most naturally useful when deficiency is dominant, whereas reduction is most naturally useful when surplus is dominant.
+
+A particularly informative case occurs when the two components are exactly balanced. Then neither deficiency nor surplus alone determines miscoding; both jointly determine the threshold that must be crossed for strict improvement.
+
+\begin{corollary}[Balanced case]
+\label{cor:balanced_case_miscoding}
+If
+\[
+d_e(r)=s_e(r)=\mu(r),
+\]
+then
+\[
+\mu(r')<\mu(r)
+\quad\Longleftrightarrow\quad
+d_e(r')<\mu(r)
+\ \text{ and }\
+s_e(r')<\mu(r).
+\]
+\end{corollary}
+
+\begin{proof}
+Assume first that \(\mu(r')<\mu(r)\). Since
+\[
+\mu(r')=\max\{d_e(r'),s_e(r')\},
+\]
+both \(d_e(r')\) and \(s_e(r')\) must be strictly smaller than \(\mu(r)\); otherwise the maximum would be at least \(\mu(r)\).
+
+Conversely, if
+\[
+d_e(r')<\mu(r)
+\qquad\text{and}\qquad
+s_e(r')<\mu(r),
+\]
+then
+\[
+\mu(r')=\max\{d_e(r'),s_e(r')\}<\mu(r).
+\]
+\end{proof}
+
+The balanced case shows that when deficiency and surplus are tied, improving only one of them is not enough to decrease miscoding strictly. Both must fall below the previous common level. This explains why, in some stages of scientific refinement, isolated edits may fail to improve representational quality and a combined intervention may be required.
+
+In practical terms, these results suggest a simple strategy. If deficiency is much larger than surplus, one should prioritize augmentation steps expected to reduce missing information while keeping surplus under control. If surplus is much larger than deficiency, one should prioritize reduction steps expected to eliminate extraneous content without making the representation substantially more incomplete. When the two components are of comparable size, the best intervention may need to combine both types of refinement.
+
+% Subsection: Decreasing Miscoding via Joint Representations
+
+\subsection*{Decreasing Miscoding via Joint Representations}
+
+A third way to reduce miscoding is to combine two effective representations into a single joint representation. In scientific practice, this occurs whenever complementary sources of evidence are merged into a common representation: for example, when observational data are combined with metadata, when molecular measurements are combined with imaging data, or when two partial descriptions of the same system are brought together. Intuitively, if the two components are genuinely complementary and concern the same entity, their joint representation may reduce deficiency by supplying missing information. At the same time, if the added component introduces little extraneous content, the resulting miscoding may decrease.
+
+Let \(s,t \in \mathcal B^\ast\) be two binary strings. Their \emph{joint representation} is the concatenated string \(st\). No new definition of miscoding is required: once \(st\) is regarded as an effective representation of an entity \(e\), its miscoding is simply \(\mu(st)\).
+
+The first basic observation is that jointing cannot worsen deficiency, up to an additive constant, relative to either of its components taken separately. This is just the monotonicity of deficiency under computable enrichment applied to the projections from \(st\) onto \(s\) and \(t\).
+
+\begin{proposition}
+Let \(e\in\mathcal E\) be a knowable entity, and let \(s,t\in\hat{\mathcal R}_e\) be effective representations of \(e\). Suppose that the concatenated string \(st\in\hat{\mathcal R}_e\) is also an effective representation of \(e\). Then
+\[
+d_e(st)\le d_e(s)+O(1)
+\qquad\text{and}\qquad
+d_e(st)\le d_e(t)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Define total computable projection functions \(g_1,g_2:\mathcal B^\ast\to\mathcal B^\ast\) by \(g_1(st)=s\) and \(g_2(st)=t\). Since both \(g_1\) and \(g_2\) are total and computable, the monotonicity of deficiency under computable enrichment yields
+\[
+d_e(st)\le d_e(g_1(st))+O(1)=d_e(s)+O(1),
+\]
+and similarly,
+\[
+d_e(st)\le d_e(g_2(st))+O(1)=d_e(t)+O(1).
+\]
+\end{proof}
+
+This proposition expresses the most basic epistemic advantage of joint representations: once two representations have been combined, the missing information needed to recover an admissible representation cannot be substantially larger than for either component alone. In particular, jointing is a natural way to reduce deficiency when the two components contain complementary information about the same entity.
+
+A useful special case is when one of the two components is already admissible.
+
+\begin{corollary}
+Let \(e\in\mathcal E\) be a knowable entity, and let \(s\in\bar{\mathcal R}_e\), \(t\in\hat{\mathcal R}_e\). Suppose that \(st\in\hat{\mathcal R}_e\). Then
+\[
+d_e(st)=O(1).
+\]
+\end{corollary}
+
+\begin{proof}
+By the previous proposition,
+\[
+d_e(st)\le d_e(s)+O(1).
+\]
+Since \(s\in\bar{\mathcal R}_e\), admissible representations have deficiency \(O(1)\). Hence
+\[
+d_e(st)=O(1).
+\]
+\end{proof}
+
+Thus, once an admissible representation is present as one component of the joint representation, the missing-information part of miscoding becomes negligible. Whether miscoding itself decreases then depends on how much surplus is introduced by the additional component.
+
+For surplus, the relevant question is different. The joint representation \(st\) may contain additional content not needed to encode the entity, even if both components are individually meaningful. The next proposition gives a simple upper bound on this effect.
+
+\begin{proposition}
+Let \(e\in\mathcal E\) be a knowable entity, and let \(s,t\in\hat{\mathcal R}_e\) be such that \(st\in\hat{\mathcal R}_e\). Then
+\[
+s_e(st)\le s_e(s)+K(t\mid s)+O(1).
+\]
+Symmetrically,
+\[
+s_e(st)\le s_e(t)+K(s\mid t)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Let \(r'\in\bar{\mathcal R}_e\) be arbitrary. From \(r'\), an optimal program of length \(K(s\mid r')\) outputs \(s\). Then, given \(s\), an optimal program of length \(K(t\mid s)\) outputs \(t\). By concatenating these two procedures and adding constant overhead, one obtains a program that outputs \(st\) from \(r'\). Therefore,
+\[
+K(st\mid r')\le K(s\mid r')+K(t\mid s)+O(1).
+\]
+Taking the minimum over \(r'\in\bar{\mathcal R}_e\) yields
+\[
+s_e(st)=\min_{r'\in\bar{\mathcal R}_e}K(st\mid r')
+\le
+\min_{r'\in\bar{\mathcal R}_e}\bigl(K(s\mid r')+K(t\mid s)+O(1)\bigr)
+=
+s_e(s)+K(t\mid s)+O(1).
+\]
+The symmetric inequality is proved in the same way.
+\end{proof}
+
+This bound shows that the surplus of a joint representation is controlled by two terms: the surplus already present in one component, and the additional information needed to specify the other component once the first is known. In practice, this means that jointing is most favorable when the second component is highly informative about the same entity but adds little extraneous or independent content beyond what is already implicit in the first.
+
+An important special case occurs when the second component is computably recoverable from the first up to a constant.
+
+\begin{corollary}
+Let \(e\in\mathcal E\) be a knowable entity, and let \(s,t\in\hat{\mathcal R}_e\) be such that \(st\in\hat{\mathcal R}_e\). If
+\[
+K(t\mid s)=O(1),
+\]
+then
+\[
+s_e(st)\le s_e(s)+O(1).
+\]
+If, in addition, \(s\) can be computed from \(st\) by a total computable projection, then
+\[
+s_e(st)=s_e(s)+O(1).
+\]
+\end{corollary}
+
+\begin{proof}
+The first claim follows immediately from the previous proposition. For the second, note that \(s\) is computable from \(st\) by deleting the suffix \(t\), so by the monotonicity of surplus under computable reduction,
+\[
+s_e(s)\le s_e(st)+O(1).
+\]
+Combining this with \(s_e(st)\le s_e(s)+O(1)\) yields
+\[
+s_e(st)=s_e(s)+O(1).
+\]
+\end{proof}
+
+This corollary formalizes the idea of a safe jointing: if one component adds only computably recoverable content, then passing from \(s\) to \(st\) does not substantially increase surplus. In that case, jointing can improve miscoding only through the deficiency term, without paying a significant cost in extraneous information.
+
+To make the effect of jointing explicit, it is useful to quantify how much miscoding is reduced by adding a second representation.
+
+\begin{definition}
+Let \(e\in\mathcal E\) be a knowable entity, let \(s\in\hat{\mathcal R}_e\) be an effective representation of \(e\), and let \(t\in\mathcal B^\ast\) be such that \(st\in\hat{\mathcal R}_e\). We define the \emph{marginal miscoding reduction} of \(t\) relative to \(s\) by
+\[
+\Delta_\mu(t\mid s,e)=\mu(s)-\mu(st).
+\]
+\end{definition}
+
+The quantity \(\Delta_\mu(t\mid s,e)\) measures the gain obtained by joining \(t\) to the current representation \(s\). If \(\Delta_\mu(t\mid s,e)\) is positive and large, then the second component substantially improves representational quality. If it is close to zero, then the joint representation offers little benefit. If it is negative, the added component has worsened miscoding, typically by introducing surplus or by changing the effective target of the representation.
+
+The propositions above show that joint miscoding is governed by a trade-off: jointing can reduce deficiency, but it may also increase surplus. The following proposition gives a practical sufficient condition for strict improvement.
+
+\begin{proposition}
+\label{prop:joint_strict_decrease_miscoding}
+Let \(e\in\mathcal E\) be a knowable entity, let \(s,t\in\hat{\mathcal R}_e\), and suppose that \(st\in\hat{\mathcal R}_e\). If
+\[
+d_e(st)<d_e(s)
+\qquad\text{and}\qquad
+s_e(st)\le s_e(s),
+\]
+then
+\[
+\mu(st)<\mu(s).
+\]
+The symmetric statement holds with \(s\) replaced by \(t\).
+\end{proposition}
+
+\begin{proof}
+If both
+\[
+d_e(st)<d_e(s)
+\qquad\text{and}\qquad
+s_e(st)\le s_e(s)
+\]
+hold, then by the sufficient conditions for strict decrease of miscoding established earlier,
+\[
+\mu(st)<\mu(s).
+\]
+The symmetric statement is identical.
+\end{proof}
+
+This proposition identifies the ideal situation in which jointing improves representational quality: the second component supplies genuinely missing information without increasing the amount of extraneous content. In practice, this is what one hopes for when combining complementary datasets or different measurement modalities.
+
+\begin{example}
+Suppose that the entity \(e\) is the complete interaction network of a biological signaling pathway. A first effective representation \(s\) is obtained from protein-binding assays and contains a number of experimentally verified interactions, but it misses some regulatory connections. A second effective representation \(t\) is obtained from perturbation experiments and encodes causal effects between pathway components. Each representation is partial, but both concern the same underlying entity.
+
+If the concatenated string \(st\) is taken as a joint representation of the pathway, then the deficiency of \(st\) may be substantially smaller than that of either \(s\) or \(t\) alone, because the two sources of evidence fill different structural gaps in the network. If, moreover, the perturbation data do not introduce much irrelevant content beyond what is needed to represent the pathway, then the surplus of \(st\) need not increase substantially. In this situation, the joint representation has lower miscoding than either component alone.
+
+By contrast, if one appends to \(s\) a second representation \(t'\) that concerns a related but distinct pathway, then the deficiency of the joint string \(st'\) with respect to \(e\) may fail to decrease, while its surplus may increase due to the introduction of irrelevant material. In that case, miscoding may stay unchanged or even worsen. Thus, jointing helps only when the added representation is both relevant and complementary.
+\end{example}
+
+The same idea extends to any finite collection of representations. Given \(r_1,\dots,r_n\in\mathcal B^\ast\), one may form the joint representation \(r_1r_2\cdots r_n\) whenever the concatenated string is treated as an effective representation of the same entity. Repeated application of the previous propositions shows that the deficiency of the joint representation cannot be substantially larger than that of any one component, while its surplus is controlled by the cumulative additional information introduced by the remaining components. Thus, the jointing of multiple representations provides a third general strategy for reducing miscoding: unlike augmentation, which adds new symbols to a single representation, and reduction, which removes extraneous symbols, jointing combines complementary partial representations in the hope that their informational gains outweigh any surplus they introduce.
 
 %
 % Section: Miscoding of Areas

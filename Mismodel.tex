@@ -16,71 +16,2458 @@ Albert Einstein
 \end{quote}
 \bigskip
 
-{\color{red} TODO: Nice introduction}
+Even after a suitable representation of an entity has been chosen, the problem of understanding is far from solved. A representation is only the starting point: to reason about the entity, explain it, or make predictions, we still need a description, that is, a computable object capable of generating or reconstructing the representation. As discussed in Chapter~\ref{chap:Descriptions}, descriptions are the formal devices through which we attempt to capture the regularities present in a representation and separate them from what remains specific or accidental.
 
-Mismodel, being a non-computable quantity, has to be approximated in practice. We propose to approximate the concept of mismodel by splitting it into two complementary subconcepts: inaccuracy and surfeit. Inaccuracy compares the output of our description with the representation selected to encode the entity.
+However, this second step introduces its own source of error. Because our understanding of an entity is usually incomplete, the descriptions we construct are rarely optimal. Some omit information that would be needed to recover a minimal valid description of our current representation; others include algorithmic content that is not genuinely required for that purpose. In other words, even if the representation itself were admissç, our way of describing it may still be deficient, overly complicated, or both. Such imperfections can distort explanation, hinder prediction, and obscure the structure we are trying to uncover. It is therefore essential to identify this source of descriptive error and study it in a systematic way.
+
+To address this issue, we introduce the concept of \emph{mismodel}, a
+measure used to quantify the error that arises from describing a 
+representation poorly. At the descriptive level, there are two fundamental
+modes of failure. A description may be \emph{deficient}, in the sense that it
+still lacks information needed to recover a minimal description of the target
+representation. Or it may contain \emph{surplus}, that is, additional
+algorithmic structure beyond what is needed to obtain such a minimal
+description. Mismodel combines these two aspects into a single quantity by
+taking the larger of the two. In this way, it measures the dominant defect of a
+description relative to a fixed target representation.
+
+As in the case of miscoding, an important complication arises immediately:
+minimal descriptions are not available in practice. Because Kolmogorov
+complexity is not computable, we cannot in general determine the shortest
+description of a given representation, nor directly measure the exact gap
+between an available description and an ideal one. Nevertheless, the theory
+provides a rigorous conceptual framework for analyzing this gap in terms of
+algorithmic information. This allows us to define and compare descriptive
+errors even when the corresponding optimal descriptions remain unknown.
+
+A deeper understanding of mismodel and of the mechanisms by which it can
+be reduced is essential for improving scientific modeling. Better descriptions
+do not merely reproduce representations more efficiently; they also make the
+underlying structure of those representations more accessible to reasoning,
+comparison, and refinement. In this chapter, we formally introduce the
+concepts of deficiency and surplus of a description, and from them derive the
+notion of \emph{mismodel}. We study the main properties of these quantities,
+introduce a normalized notion of relative mismodel, and examine practical
+principles for decreasing mismodel through enrichment and simplification of
+descriptions. In this way, the chapter develops the descriptive counterpart of
+miscoding and clarifies how imperfect models can be systematically brought
+closer to descriptive optimality.
+
+%
+% Section: Deficiency of a Description
+%
+
+\section{Deficiency of a Description}
+\label{sec:deficiency_description}
+
+A description intended to support the study of a representation need not itself
+be optimal for that representation. Even when a valid description is available,
+it may fail to expose the shortest way of generating the target representation.
+Its program component may be unnecessarily complicated, its auxiliary input
+may contain avoidable detail, or it may simply be a description of some other
+string that is only indirectly useful for reaching the target. To quantify this
+phenomenon, we introduce the notion of \emph{deficiency of a description}.
+
+Intuitively, the deficiency of a valid description \(d\) with respect to a
+representation \(r\) measures the minimum amount of additional algorithmic
+information that must be supplied, beyond \(d\), in order to recover some
+minimal description of \(r\). Unlike the previous formulation, we do not
+require \(d\) itself to be a description of \(r\); it may be any valid description.
+Thus deficiency measures not whether \(d\) already describes \(r\), but how
+useful \(d\) is as a starting point for reaching a shortest description of \(r\).
+
+\begin{definition}
+\label{def:deficiency_description}
+Let \(r \in \mathcal{R}\) be a representation, and let \(d \in \mathcal{D}\) be a
+valid description. We define the \emph{deficiency of \(d\) as a description for
+\(r\)}\index{Deficiency of a description} as
+\[
+d_r(d)
+=
+\min_{d' \in \mathcal{D}_r^\ast} K(d' \mid d).
+\]
+\end{definition}
+
+Since \(\mathcal{D}_r^\ast \neq \varnothing\) by
+Proposition~\ref{prop:minimal_description_exists}, and conditional
+Kolmogorov complexity takes values in \(\mathbb{N}\), the minimum is
+well defined.
+
+The quantity \(K(d' \mid d)\) measures the length of the shortest program
+that, given the valid description \(d\), outputs a minimal description \(d'\)
+of the target representation \(r\). Minimizing over \(d' \in \mathcal{D}_r^\ast\)
+selects the minimal description of \(r\) that is easiest to recover from \(d\).
+Thus \(d_r(d)\) quantifies the least amount of additional algorithmic
+information that must be supplied, on top of \(d\), in order to reach some
+shortest valid description of \(r\).
+
+This interpretation covers two important cases. If \(d \in \mathcal{D}_r\), then
+\(d_r(d)\) measures how far the current description of \(r\) is from
+descriptive optimality. If \(d \notin \mathcal{D}_r\), then \(d_r(d)\) measures
+how useful \(d\) is as auxiliary information for obtaining a minimal
+description of \(r\).
+
+\begin{example}
+\label{ex:deficiency_description}
+Let \(r\) be a binary representation encoding the complete adjacency list of a
+finite graph. A valid description \(d \in \mathcal{D}\) might generate only a
+coarse summary of that graph, for example a string encoding its number of
+vertices, number of edges, and degree sequence. Such a description is valid,
+but it need not belong to \(\mathcal{D}_r\), since it may generate a summary
+string rather than the full representation \(r\).
+
+The deficiency \(d_r(d)\) measures, in algorithmic terms, how much
+additional information must be supplied, beyond this summary description,
+in order to recover some minimal description of the exact representation
+\(r\). If the summary already determines most of the structure of the graph,
+then the deficiency is small; if many nontrivial details are still missing, the
+deficiency is large.
+\end{example}
+
+As with Kolmogorov complexity itself, deficiency depends on the choice of
+reference universal machine only up to an additive constant. Thus deficiency
+is stable under the usual machine-independence convention of algorithmic
+information theory.
+
+\begin{proposition}
+\label{prop:deficiency_description_machine_invariance}
+Let \(U\) and \(V\) be two reference universal prefix-free machines, and let
+\(d_r^{\,U}(d)\) and \(d_r^{\,V}(d)\) denote the deficiency of \(d\) computed
+using the corresponding conditional Kolmogorov complexities
+\(K_U(\cdot \mid \cdot)\) and \(K_V(\cdot \mid \cdot)\). Then, for every
+representation \(r \in \mathcal{R}\) and every valid description
+\(d \in \mathcal{D}\),
+\[
+d_r^{\,U}(d)=d_r^{\,V}(d)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+By the invariance theorem for conditional Kolmogorov complexity, for every
+pair of strings \(x,y \in \mathcal{B}^\ast\),
+\[
+K_U(x \mid y)\leq K_V(x \mid y)+c_{UV},
+\qquad
+K_V(x \mid y)\leq K_U(x \mid y)+c_{VU},
+\]
+where \(c_{UV}\) and \(c_{VU}\) are constants depending only on \(U\) and
+\(V\). Applying the first inequality to each \(d' \in \mathcal{D}_r^\ast\), we
+obtain
+\[
+K_U(d' \mid d)\leq K_V(d' \mid d)+c_{UV}.
+\]
+Taking minima over \(d' \in \mathcal{D}_r^\ast\), we get
+\[
+d_r^{\,U}(d)
+=
+\min_{d' \in \mathcal{D}_r^\ast} K_U(d' \mid d)
+\leq
+\min_{d' \in \mathcal{D}_r^\ast}\bigl(K_V(d' \mid d)+c_{UV}\bigr)
+=
+d_r^{\,V}(d)+c_{UV}.
+\]
+By symmetry,
+\[
+d_r^{\,V}(d)\leq d_r^{\,U}(d)+c_{VU}.
+\]
+Combining both inequalities yields
+\[
+d_r^{\,U}(d)=d_r^{\,V}(d)+O(1).
+\]
+\end{proof}
+
+This proposition shows that deficiency is robust under the choice of universal
+machine in exactly the same sense as Kolmogorov complexity. Consequently,
+asymptotic statements such as \(d_r(d)=O(1)\) remain meaningful
+independently of the particular coding convention used to define complexity.
+
+A first basic property of deficiency is that it cannot be negative.
+
+\begin{proposition}
+\label{prop:deficiency_description_nonnegative}
+For every representation \(r \in \mathcal{R}\) and every valid description
+\(d \in \mathcal{D}\), we have
+\[
+d_r(d)\geq 0.
+\]
+\end{proposition}
+
+\begin{proof}
+For every \(d' \in \mathcal{D}_r^\ast\), the conditional complexity
+\(K(d' \mid d)\) is the length of a program and is therefore non-negative.
+The minimum of non-negative quantities is non-negative.
+\end{proof}
+
+Thus deficiency behaves as expected from a measure of missing algorithmic
+information. In particular, \(d_r(d)=O(1)\) corresponds to the situation in
+which some minimal description of \(r\) can be recovered from \(d\) with
+only constant overhead.
+
+Because the starting description \(d\) is allowed to be any valid description,
+it is important to note explicitly that deficiency is always finite.
+
+\begin{proposition}
+\label{prop:deficiency_description_finite}
+For every representation \(r \in \mathcal{R}\) and every valid description
+\(d \in \mathcal{D}\), we have
+\[
+d_r(d)<\infty.
+\]
+More precisely, if
+\[
+\ell_r^\ast = \min_{d' \in \mathcal{D}_r} l(d')
+\]
+denotes the length of a shortest description of \(r\), then
+\[
+d_r(d)\leq \ell_r^\ast + O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Let \(d^\ast \in \mathcal{D}_r^\ast\). Then \(l(d^\ast)=\ell_r^\ast\). By
+Definition~\ref{def:deficiency_description},
+\[
+d_r(d)\leq K(d^\ast \mid d).
+\]
+A program may ignore its conditional input \(d\) and output \(d^\ast\) from
+scratch. Therefore
+\[
+K(d^\ast \mid d)\leq K(d^\ast)+O(1)\leq l(d^\ast)+O(1)
+=
+\ell_r^\ast+O(1).
+\]
+Hence
+\[
+d_r(d)\leq \ell_r^\ast+O(1),
+\]
+and in particular \(d_r(d)\) is finite.
+\end{proof}
+
+This upper bound shows that deficiency never diverges. In the worst case,
+one can always disregard the given description altogether and output a
+minimal description of \(r\) from scratch.
+
+Minimal descriptions themselves have negligible deficiency.
+
+\begin{proposition}
+\label{prop:minimal_description_has_small_deficiency}
+Let \(r \in \mathcal{R}\) and let \(d \in \mathcal{D}_r^\ast\) be a minimal
+description of \(r\). Then
+\[
+d_r(d)=O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Choose \(d'=d\) in Definition~\ref{def:deficiency_description}. Then
+\[
+d_r(d)\leq K(d \mid d).
+\]
+Since a constant-length program can output its conditional input unchanged,
+we have
+\[
+K(d \mid d)=O(1).
+\]
+Therefore
+\[
+d_r(d)=O(1).
+\]
+\end{proof}
+
+This formalizes the intuition that a minimal description is already
+algorithmically complete with respect to descriptive optimality: recovering a
+shortest description of \(r\) from it requires no nontrivial extra information.
+
+Deficiency also satisfies a natural monotonicity property under computable
+enrichment. Informally, if one valid description can be effectively recovered
+from another, then the latter cannot have substantially larger deficiency with
+respect to the same target representation.
+
+\begin{proposition}
+\label{prop:deficiency_description_monotonicity}
+Let \(r \in \mathcal{R}\), and let \(d,s \in \mathcal{D}\). Suppose that there exists
+a total computable function \(g:\mathcal{B}^\ast \to \mathcal{B}^\ast\) such that
+\[
+g(s)=d.
+\]
+Then
+\[
+d_r(s)\leq d_r(d)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Let \(d^\ast \in \mathcal{D}_r^\ast\) be arbitrary. Since \(g\) is total and
+computable, from \(s\) one can compute \(g(s)=d\) with constant overhead
+and then simulate an optimal program witnessing \(K(d^\ast \mid d)\).
+Hence
+\[
+K(d^\ast \mid s)\leq K(d^\ast \mid g(s))+O(1)=K(d^\ast \mid d)+O(1).
+\]
+Taking minima over \(d^\ast \in \mathcal{D}_r^\ast\), we obtain
+\[
+d_r(s)
+=
+\min_{d^\ast \in \mathcal{D}_r^\ast} K(d^\ast \mid s)
+\leq
+\min_{d^\ast \in \mathcal{D}_r^\ast}\bigl(K(d^\ast \mid d)+O(1)\bigr)
+=
+d_r(d)+O(1).
+\]
+\end{proof}
+
+This proposition expresses a basic monotonicity principle: if a valid
+description \(s\) effectively contains enough information to recover another
+description \(d\), then \(s\) cannot be substantially farther from a minimal
+description of \(r\) than \(d\) is.
+
+As an immediate consequence, descriptions that are mutually recoverable at
+constant cost have the same deficiency up to an additive constant.
+
+\begin{corollary}
+\label{cor:deficiency_description_equivalent}
+Let \(r \in \mathcal{R}\), and let \(d,s \in \mathcal{D}\). If
+\[
+K(d \mid s)=O(1)
+\qquad \text{and} \qquad
+K(s \mid d)=O(1),
+\]
+then
+\[
+d_r(d)=d_r(s)+O(1).
+\]
+\end{corollary}
+
+\begin{proof}
+From \(K(d \mid s)=O(1)\), there exists a constant-length program that
+computes \(d\) from \(s\). Hence, by
+Proposition~\ref{prop:deficiency_description_monotonicity},
+\[
+d_r(s)\leq d_r(d)+O(1).
+\]
+Similarly, from \(K(s \mid d)=O(1)\) we obtain
+\[
+d_r(d)\leq d_r(s)+O(1).
+\]
+Combining both inequalities yields
+\[
+d_r(d)=d_r(s)+O(1).
+\]
+\end{proof}
+
+This shows that deficiency is determined by the algorithmic content of a
+description rather than by its superficial syntax. Valid descriptions that
+differ only by a reversible computable recoding are equivalent from the
+standpoint of deficiency.
+
+Finally, it is worth stressing that exact correctness and low deficiency are
+different notions. A valid description \(d\) may belong to \(\mathcal{D}_r\) and
+thus generate \(r\) exactly, yet still have positive deficiency if substantial
+additional algorithmic information is needed to recover a minimal description
+of \(r\) from \(d\). Conversely, a description \(d \notin \mathcal{D}_r\) may still
+have small deficiency if it already contains, in an implicit or indirect form,
+most of the information needed to reach a shortest description of \(r\).
+
+The deficiency of a description therefore measures something more subtle
+than mere validity or exactness. It quantifies the algorithmic distance from a
+given valid description to descriptive optimality with respect to a fixed target
+representation.
+
+%
+% Section: Surplus of a Description
+%
+
+\section{Surplus of a Description}
+\label{sec:surplus_description}
+
+A valid description used in the study of a representation need not be descriptionally economical. Even when a description is useful for reaching or understanding a target representation \(r\), it may contain additional algorithmic content that is not required by any shortest description of \(r\). This excess may arise from an unnecessarily complicated program, an over-specific auxiliary input, or from the fact that the description concerns a related but different string whose connection to \(r\) still has to be made explicit. To quantify this phenomenon, we introduce the notion of \emph{surplus of a description}.
+
+Intuitively, the surplus of a valid description \(d\) with respect to a representation \(r\) measures how much additional algorithmic information is present in \(d\) beyond what is needed to obtain a minimal description of \(r\). Formally, we measure this excess by asking how much information must be added to a minimal description of \(r\) in order to recover \(d\).
+
+\begin{definition}
+\label{def:surplus_description}
+Let \(r \in \mathcal{R}\) be a representation, and let \(d \in \mathcal{D}\) be a valid description. We define the \emph{surplus of \(d\) as a description for \(r\)}\index{Surplus of a description} as
+\[
+s_r(d)
+=
+\min_{d' \in \mathcal{D}_r^\ast} K(d \mid d').
+\]
+\end{definition}
+
+Since \(\mathcal{D}_r^\ast\neq\varnothing\) by Proposition~\ref{prop:minimal_description_exists_surplus}, and conditional Kolmogorov complexity takes values in \(\mathbb{N}\), the minimum is well defined.
+
+The quantity \(K(d\mid d')\) measures the length of the shortest program that, given a minimal description \(d'\) of \(r\), outputs the valid description \(d\). Minimizing over \(d' \in \mathcal{D}_r^\ast\) selects the minimal description of \(r\) from which \(d\) is easiest to generate. Hence \(s_r(d)\) quantifies the minimum amount of additional algorithmic content present in \(d\) beyond what is needed to achieve a shortest valid description of the representation \(r\).
+
+If \(d \in \mathcal{D}_r\), then \(s_r(d)\) measures the excess algorithmic content of the given description of \(r\) relative to a minimal one. If \(d \notin \mathcal{D}_r\), then \(s_r(d)\) measures how much additional information is needed to reconstruct that auxiliary valid description from a minimal description of \(r\).
+
+\begin{example}
+\label{ex:surplus_description}
+Let \(r\) be a binary string encoding a finite time series. A minimal description \(d' \in \mathcal{D}_r^\ast\) may exploit a compact regularity of the series together with a short residual input. By contrast, a valid description \(d \in \mathcal{D}_r\) may simply contain a longer program that prints the symbols of \(r\) one by one, without making the underlying regularity explicit. Both descriptions generate exactly the same representation \(r\), but the latter contains avoidable descriptive structure. The surplus \(s_r(d)\) measures, in algorithmic terms, how much additional information is needed to recover this more cumbersome description from some minimal description of \(r\).
+\end{example}
+
+As in the case of deficiency, surplus depends on the choice of reference universal machine only up to an additive constant. The argument is entirely analogous.
+
+\begin{proposition}
+\label{prop:surplus_description_machine_invariance}
+Let \(U\) and \(V\) be two reference universal prefix-free machines, and let \(s_r^{\,U}(d)\) and \(s_r^{\,V}(d)\) denote the surplus of \(d\) computed using the corresponding conditional Kolmogorov complexities \(K_U(\cdot\mid\cdot)\) and \(K_V(\cdot\mid\cdot)\). Then, for every representation \(r\in\mathcal{R}\) and every valid description \(d\in\mathcal{D}\),
+\[
+s_r^{\,U}(d)=s_r^{\,V}(d)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+By the invariance theorem for conditional Kolmogorov complexity, for every pair of strings \(x,y\in\mathcal{B}^\ast\),
+\[
+K_U(x\mid y)\le K_V(x\mid y)+c_{UV},
+\qquad
+K_V(x\mid y)\le K_U(x\mid y)+c_{VU},
+\]
+where \(c_{UV}\) and \(c_{VU}\) are constants depending only on \(U\) and \(V\). Applying the first inequality to each \(d' \in \mathcal{D}_r^\ast\), we obtain
+\[
+K_U(d\mid d')\le K_V(d\mid d')+c_{UV}.
+\]
+Taking minima over \(d' \in \mathcal{D}_r^\ast\), we get
+\[
+s_r^{\,U}(d)
+=
+\min_{d' \in \mathcal{D}_r^\ast} K_U(d\mid d')
+\le
+\min_{d' \in \mathcal{D}_r^\ast}\bigl(K_V(d\mid d')+c_{UV}\bigr)
+=
+s_r^{\,V}(d)+c_{UV}.
+\]
+By symmetry,
+\[
+s_r^{\,V}(d)\le s_r^{\,U}(d)+c_{VU}.
+\]
+Combining both inequalities yields
+\[
+s_r^{\,U}(d)=s_r^{\,V}(d)+O(1).
+\]
+\end{proof}
+
+Thus surplus is machine-invariant in exactly the same sense as deficiency and Kolmogorov complexity itself. In particular, qualitative statements such as \(s_r(d)=O(1)\) or comparisons between surpluses remain meaningful independently of the specific universal machine chosen.
+
+The following proposition records the most basic structural property of surplus.
+
+\begin{proposition}
+\label{prop:surplus_description_nonnegative}
+For every representation \(r \in \mathcal{R}\) and every valid description \(d \in \mathcal{D}\), we have
+\[
+s_r(d)\ge 0.
+\]
+\end{proposition}
+
+\begin{proof}
+For any \(d' \in \mathcal{D}_r^\ast\), the conditional complexity \(K(d \mid d')\) is the length of a computer program and is therefore non-negative. The minimum of non-negative quantities is non-negative.
+\end{proof}
+
+This confirms that surplus is a non-negative quantity, as expected for a measure of excess algorithmic content. In particular, \(s_r(d)=O(1)\) corresponds to the situation in which the valid description \(d\) differs from some minimal description of \(r\) by at most a constant amount of additional information.
+
+The next proposition shows that minimal descriptions have negligible surplus.
+
+\begin{proposition}
+\label{prop:surplus_minimal_description}
+For every minimal description \(d \in \mathcal{D}_r^\ast\), we have
+\[
+s_r(d)=O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Choose \(d'=d\) in Definition~\ref{def:surplus_description}. Then
+\[
+s_r(d)\le K(d\mid d).
+\]
+Since a constant-length program can output its conditional input, \(K(d\mid d)=O(1)\), and hence
+\[
+s_r(d)=O(1).
+\]
+\end{proof}
+
+This proposition formalizes the intuition that a minimal description contains no substantial algorithmic excess relative to the target representation. The residual \(O(1)\) term reflects only the fixed overhead associated with the choice of universal machine.
+
+For surplus, the natural monotonicity principle concerns computable reduction. Intuitively, if one valid description can be obtained from another by an effective simplification, then its surplus cannot be greater by more than a constant, since simplification may remove excess information but cannot create it.
+
+\begin{proposition}
+\label{prop:surplus_description_monotonicity}
+Let \(r\in\mathcal{R}\), and let \(d,s\in\mathcal{D}\) be valid descriptions. Suppose that there exists a total computable function
+\[
+g:\mathcal{B}^\ast\to\mathcal{B}^\ast
+\]
+such that
+\[
+g(s)=d.
+\]
+Then
+\[
+s_r(d)\le s_r(s)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Let \(d' \in \mathcal{D}_r^\ast\) be arbitrary. Since \(g\) is total and computable, from any program witnessing \(K(s\mid d')\) one can compute \(s\) from \(d'\) and then apply \(g\) with constant overhead to obtain \(d=g(s)\). Hence
+\[
+K(d\mid d')\le K(s\mid d')+O(1).
+\]
+Taking minima over \(d' \in \mathcal{D}_r^\ast\), we obtain
+\[
+s_r(d)
+=
+\min_{d' \in \mathcal{D}_r^\ast} K(d\mid d')
+\le
+\min_{d' \in \mathcal{D}_r^\ast}\bigl(K(s\mid d')+O(1)\bigr)
+=
+s_r(s)+O(1).
+\]
+\end{proof}
+
+This proposition is the direct dual, for descriptions, of the corresponding monotonicity principle for surplus of representations. Scientifically, it captures the idea that computably simplifying a description cannot substantially increase its surplus relative to a fixed target representation.
+
+As an immediate consequence, descriptions that are mutually recoverable at constant cost have the same surplus up to an additive constant.
+
+\begin{corollary}
+\label{cor:surplus_description_equivalent}
+Let \(r\in\mathcal{R}\), and let \(d,s\in\mathcal{D}\) be valid descriptions. If
+\[
+K(d\mid s)=O(1)
+\qquad\text{and}\qquad
+K(s\mid d)=O(1),
+\]
+then
+\[
+s_r(d)=s_r(s)+O(1).
+\]
+\end{corollary}
+
+\begin{proof}
+From \(K(d\mid s)=O(1)\), there exists a constant-length program that computes \(d\) from \(s\). Hence, by Proposition~\ref{prop:surplus_description_monotonicity},
+\[
+s_r(d)\le s_r(s)+O(1).
+\]
+Similarly, from \(K(s\mid d)=O(1)\), we obtain
+\[
+s_r(s)\le s_r(d)+O(1).
+\]
+Combining both inequalities yields
+\[
+s_r(d)=s_r(s)+O(1).
+\]
+\end{proof}
+
+This shows that surplus depends on the algorithmic content of a description rather than on its superficial syntax. Two valid descriptions that differ only by a reversible computable recoding have essentially the same surplus relative to \(r\).
+
+The next proposition identifies a simple condition under which extending a description does not change its surplus beyond the usual additive constant. Intuitively, if the appended part is already recoverable from the original description at constant cost, then it does not contribute substantial new surplus.
+
+\begin{proposition}
+\label{prop:surplus_description_safe_extension}
+Let \(r\in\mathcal{R}\), and let \(x,y\in\mathcal{B}^\ast\) be such that both \(x\in\mathcal{D}\) and \(xy\in\mathcal{D}\). If
+\[
+K(y\mid x)=O(1),
+\]
+then
+\[
+s_r(xy)=s_r(x)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(x\) is computable from \(xy\) by deleting the suffix \(y\), Proposition~\ref{prop:surplus_description_monotonicity} gives
+\[
+s_r(x)\le s_r(xy)+O(1).
+\]
+On the other hand, the condition \(K(y\mid x)=O(1)\) implies that there is a constant-length program that reconstructs \(y\) from \(x\). Hence from \(x\) one can compute \(xy\) with constant overhead. Applying Proposition~\ref{prop:surplus_description_monotonicity} again, now with \(s:=x\) and \(d:=xy\), we get
+\[
+s_r(xy)\le s_r(x)+O(1).
+\]
+Combining both inequalities yields
+\[
+s_r(xy)=s_r(x)+O(1).
+\]
+\end{proof}
+
+This proposition formalizes the idea of a safe extension: appending information that is already computably recoverable from the original description does not substantially increase surplus.
+
+Finally, we derive a simple upper bound on surplus. In contrast with the corresponding deficiency bound, the most immediate general bound here is controlled by the complexity of the description itself.
+
+\begin{proposition}
+\label{prop:surplus_description_upper_bound}
+For every valid description \(d\in\mathcal{D}\) and every representation \(r\in\mathcal{R}\),
+\[
+s_r(d)\le K(d)+O(1)\le l(d)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Fix any \(d' \in \mathcal{D}_r^\ast\). Then
+\[
+s_r(d)=\min_{u \in \mathcal{D}_r^\ast}K(d\mid u)\le K(d\mid d').
+\]
+A program can ignore the conditional input \(d'\) and simply output \(d\), incurring only constant overhead. Therefore
+\[
+K(d\mid d')\le K(d)+O(1).
+\]
+Hence
+\[
+s_r(d)\le K(d)+O(1).
+\]
+Finally, since Kolmogorov complexity is bounded by length up to an additive constant, we also have
+\[
+K(d)\le l(d)+O(1),
+\]
+and therefore
+\[
+s_r(d)\le l(d)+O(1).
+\]
+\end{proof}
+
+This bound shows that surplus is always finite and, in the worst case, is controlled by the descriptive complexity of the description itself. Even if a valid description contains a large amount of algorithmically extraneous material relative to the target representation \(r\), that excess cannot exceed, up to a constant, the total amount of information present in the description.
+
+The surplus of a description therefore measures something more subtle than mere length. A long description may still have small surplus if it is computably close to a minimal description of \(r\), whereas a shorter description may have larger surplus if it contains algorithmically irrelevant structure that is not needed to reach a shortest description of the target representation.
+
 
 %
 % Section: Mismodel
 %
 
-\section{Mismodel}
+\section{Mismodel of a Description}
+\label{sec:mismodel_description}
 
-In Section \ref{sec:descriptions_models} we defined the concept of description, or model, of an entity as a computer program that, when executed, recreates one of the representations that encode that entity. More specifically, a description $d$ of a representation $r$ encoding an entity $e$ is a Turing machine that, when interpreted by a universal Turing machine $\delta$, prints out the string $r$. We also saw that the objective of science is to find from the shortest desription $d^\star_r$ from the collection of perfect descriptions $\mathcal{D}^\star_r$ that model the representation $r$. This shortest desription $d^\star_r$ might not be unique.
+The concepts of deficiency and surplus capture two fundamentally different
+ways in which a valid description may fail with respect to a target
+representation \(r\). Deficiency measures how much algorithmic information
+is still missing in order to recover a minimal description of \(r\), whereas
+surplus measures how much algorithmic content in the given description goes
+beyond what is needed to obtain such a minimal description. Since these two
+quantities need not decrease simultaneously, the analysis of mismodel is most
+naturally formulated as a multiobjective optimization problem rather than as
+a single-objective one.
 
-Since our knowledge about the entity $e$ under study is incomplete, and in particular our knowledge about the representation $r$ of $e$ is incomplete, we will be usually working with a description $d$ that is, hopefully, colose to one of the shortest descriptions $d^\star_r$, but not necessarily equal. We are interested in to quantify the error due to the use of a description $d$ that is not perfect.
+\subsection*{Pareto optimality}
 
-We define the mismodel of a description for a representation as the normalized information distance between our description and all possible minimal descriptions of $r$.
+Before introducing a scalar measure of mismodel, it is useful to make explicit
+that description refinement involves two competing objectives.
 
-\begin{definition} [Mismodel]
-\label{def:mismodel}
-Let $r \in \mathcal{B}^\ast$ be a representation, and $d \in \mathcal{D}$ be a description. We define the \emph{mismodel} of the description $d$ for the representation $r$, denoted by $\sigma(d, r)$, as:
+\begin{definition}
+Let \(r \in \mathcal{R}\) be a representation. We define the \emph{mismodel
+problem}\index{Mismodel problem} for \(r\) as the following multiobjective
+optimization problem:
 \[
-\sigma (d, r) = { \underset{ d^\star \in d^\star_r } \min} \frac{ \max\{ K \left( d \mid d^\star \right), K \left( d^\star \mid d \right) \} } { \max\{ K \left( d \right), K \left( d^\star \right) \} }
+\min_{d \in \mathcal{D}} \bigl(d_r(d),\, s_r(d)\bigr).
 \]
 \end{definition}
 
-The description $d$ we are using not only it might not be one of the shortest possible models that print out $r$, but in fact, it might happen that what $d$ prints is not $r$.
+This formulation emphasizes that mismodel is not, at its core, a single
+number but a trade-off between two distinct desiderata: informational
+adequacy relative to \(r\), and absence of excess descriptive content. In
+practice, some refinements reduce deficiency at the cost of increasing
+surplus, while others simplify a description but also discard information that
+was useful for reaching a minimal description of the target representation.
 
-We cannot use the more ...
+The natural comparison relation for this problem is dominance.
 
-The mismodel of a description is, conveniently, a number between $0$ and $1$, as next proposition shows.
-
-\begin{proposition}
-We have that $0 \leq \sigma(d, r) \leq 1$ for all representations $r \in \mathcal{B}^\ast$ and all the descriptions $d \in \mathcal{D}$.
-\end{proposition}
-\begin{proof}
-Given that $0 \leq \frac{ \max\{ K(x \mid y), K(y \mid x) \} } { \max\{ K(x), K(y) \} } \leq 1$ for all $x, y \in \mathcal{B}^\ast$ according to Proposition \ref{prop:ncd_between_zero_and_one}.
-\end{proof}
-
-{\color{red} The above proposition holds for all possible descriptions $d$ and all possible representations $r$, even in the case that a description $d$ is not intended as a model for the representation $r$, in which case the inaccuracy would be close to one.}
-
-Mismodel is equal to zero if, and only if, the description $d$ is one of the possible valid descriptions of the representation $r$.
-
-\begin{proposition}
-Let $d \in \mathcal{D}$ be a description for a representation $r \in \mathcal{B}^\ast$, we have that $\iota(d, r) = 0$ if, and only if, $d \in \mathcal{D}_r$.
-\end{proposition}
-\begin{proof}
-If $d \in \mathcal{D}_r$ we have that $K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) = 0$ and that $\iota(d, r) = 0$. If $\iota(d, r) = 0$ we have that $\max\{ K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) \} = 0$, which implies that $K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) = 0$ and that $d \in \mathcal{D}_r$.
-\end{proof}
-
-%
-% Section: Mismodel of Joint Representations
-%
-
-\subsection{Mismodel of Joint Representations}
-
-{\color{red}
-
-Given two representations $r$ and $s$, we want to know the inaccuracy of the model $d$ when describing the joint representation $rs$. Since we require that $rs$ must be a valid representation, the formalization of the concept of inaccuracy applied to joint representation is straightforward, and it does not require a new definition:
+\begin{definition}
+\label{def:dominance_mismodel}
+Let \(r \in \mathcal{R}\), and let \(d,d' \in \mathcal{D}\) be two valid
+descriptions. We say that \(d'\) \emph{dominates}\index{Description dominance}
+\(d\), denoted by
 \[
-\iota(d, rs) = \frac{ \max\{ K \left(rs \mid \delta(d) \right), K \left( \delta(d) \mid rs \right) \} } { \max\{ K(rs), K \left(\Gamma(d) \right) \} }
+d' \prec_r d,
 \]
-As a direct consequence of Proposition \ref{prop:range_miscoding}, if $r, s \in \mathcal{B}^\ast$ are two arbitrary representations and $d \in \mathcal{D}$ is a description, we have that $0 \leq \iota(d, rs) \leq 1$.
+if
+\[
+d_r(d') \le d_r(d), \qquad s_r(d') \le s_r(d),
+\]
+and at least one of these inequalities is strict.
+\end{definition}
 
-{\color{red} TODO: Recall the properties of NID, and particularize for the case of inaccuracy of joint representations.}
+A dominating description is at least as good in both components and strictly
+better in one. Thus, a dominated description is suboptimal in a strong sense:
+there is another valid description that improves one source of mismodel
+without worsening the other.
 
-}
+The appropriate notion of optimality for a multiobjective problem is Pareto
+optimality.
+
+\begin{definition}
+\label{def:pareto_mismodel}
+Let \(r \in \mathcal{R}\). A valid description \(d \in \mathcal{D}\) is said to be
+\emph{Pareto optimal}\index{Pareto optimal description} (with respect to
+deficiency and surplus) if there does not exist any \(d' \in \mathcal{D}\) such
+that \(d' \prec_r d\).
+
+The set of all Pareto-optimal descriptions for \(r\) is denoted by
+\[
+\mathcal{P}_r
+=
+\bigl\{
+d \in \mathcal{D} : \nexists d' \in \mathcal{D} \text{ such that } d' \prec_r d
+\bigr\},
+\]
+and is called the \emph{Pareto frontier}\index{Mismodel Pareto frontier} of
+the mismodel problem.
+\end{definition}
+
+The Pareto frontier collects precisely those valid descriptions for which any
+further improvement in one component requires a deterioration in the other.
+In this sense, it plays the role of a description-level frontier: beyond it,
+refinement becomes a matter of trade-offs rather than unambiguous progress.
+
+The next proposition clarifies why dominated descriptions can be safely
+discarded.
+
+\begin{proposition}
+\label{prop:dominated_not_minimal_increasing_scalarization_mismodel}
+Let \(\phi:\mathbb{R}_{\ge 0}^2 \to \mathbb{R}_{\ge 0}\) be strictly increasing in
+each argument. If \(d \in \mathcal{D}\) is dominated, then \(d\) cannot
+minimize \(\phi(d_r(d),s_r(d))\) over \(\mathcal{D}\).
+\end{proposition}
+
+\begin{proof}
+Assume that \(d\) is dominated. Then there exists \(d' \in \mathcal{D}\) such
+that
+\[
+d_r(d') \le d_r(d), \qquad s_r(d') \le s_r(d),
+\]
+and at least one inequality is strict. Since \(\phi\) is strictly increasing in
+each argument, it follows that
+\[
+\phi(d_r(d'),s_r(d')) < \phi(d_r(d),s_r(d)).
+\]
+Therefore \(d\) cannot be a minimizer of \(\phi\).
+\end{proof}
+
+This result formalizes an important elimination principle: any description
+that is dominated is suboptimal for every sensible scalar criterion that
+penalizes both deficiency and surplus. Consequently, once the Pareto frontier
+has been identified, all remaining scalarizations are selection rules
+\emph{on} that frontier.
+
+Unlike the corresponding representation-level statement in finite settings, the
+Pareto frontier for descriptions is non-empty without any finiteness
+assumption, because both deficiency and surplus take values in
+\(\mathbb{N}\).
+
+\begin{proposition}
+\label{prop:pareto_nonempty_descriptions}
+For every representation \(r \in \mathcal{R}\), the Pareto frontier
+\(\mathcal{P}_r\) is non-empty.
+\end{proposition}
+
+\begin{proof}
+Since \(\mathcal{D}\neq\varnothing\), the set
+\[
+\{\, d_r(d) : d \in \mathcal{D}\,\}\subseteq \mathbb{N}
+\]
+is non-empty and therefore has a minimum. Let
+\[
+m=\min_{d\in\mathcal{D}} d_r(d),
+\]
+and consider the non-empty set
+\[
+\mathcal{D}_m=\{\, d\in\mathcal{D} : d_r(d)=m \,\}.
+\]
+Since
+\[
+\{\, s_r(d) : d \in \mathcal{D}_m \,\}\subseteq \mathbb{N}
+\]
+is again non-empty, it has a minimum. Choose \(d^\ast \in \mathcal{D}_m\)
+such that
+\[
+s_r(d^\ast)=\min_{d\in\mathcal{D}_m} s_r(d).
+\]
+
+We claim that \(d^\ast \in \mathcal{P}_r\). Suppose, for contradiction, that
+there exists \(u \in \mathcal{D}\) such that \(u \prec_r d^\ast\). Then
+\[
+d_r(u)\le d_r(d^\ast)=m, \qquad s_r(u)\le s_r(d^\ast),
+\]
+with at least one strict inequality. Since \(m\) is the minimum possible
+deficiency, we must have \(d_r(u)=m\), so \(u\in\mathcal{D}_m\). Hence
+\[
+s_r(u)<s_r(d^\ast),
+\]
+contradicting the choice of \(d^\ast\). Therefore \(d^\ast\in\mathcal{P}_r\).
+\end{proof}
+
+This proposition guarantees that there is always at least one non-dominated
+description. The real difficulty is therefore not existence but selection among
+the competing Pareto-optimal alternatives.
+
+Minimal descriptions provide natural ideal benchmarks for the biobjective
+problem.
+
+\begin{proposition}
+\label{prop:minimal_descriptions_ideal_benchmarks}
+For every minimal description \(d \in \mathcal{D}_r^\ast\), we have
+\[
+d_r(d)=O(1), \qquad s_r(d)=O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+The first statement follows from the basic property of deficiency of a
+description: if \(d \in \mathcal{D}_r^\ast\), then
+\[
+d_r(d)\le K(d\mid d)=O(1).
+\]
+Similarly, by the basic property of surplus of a description,
+\[
+s_r(d)\le K(d\mid d)=O(1).
+\]
+Hence both quantities are \(O(1)\).
+\end{proof}
+
+Thus minimal descriptions realize, up to the usual additive constant, the
+ideal situation in which nothing essential is missing and nothing substantial
+is superfluous. For this reason, the Pareto frontier should be understood as
+the set of the best available approximations to such ideal descriptions.
+
+\subsection*{Chebyshev mismodel}
+
+Although the Pareto frontier captures the full trade-off structure, in many
+applications one still wishes to assign a single mismodel value to each
+description. A natural scalarization is to penalize the worst of the two
+components.
+
+\begin{definition}
+\label{def:chebyshev_mismodel}
+Let \(r \in \mathcal{R}\) and \(d \in \mathcal{D}\). The \emph{mismodel}\index{Mismodel}
+of \(d\) with respect to \(r\) is defined by
+\[
+\nu_r(d):=\max\bigl\{d_r(d),\, s_r(d)\bigr\}.
+\]
+\end{definition}
+
+This definition corresponds to the Chebyshev scalarization of a bi-objective
+problem. It assigns to each description the magnitude of its dominant defect,
+and therefore penalizes imbalance between the two components.
+
+A first useful property is that Chebyshev mismodel provides a uniform upper
+bound on both deficiency and surplus.
+
+\begin{proposition}
+\label{prop:chebyshev_sublevel_sets_mismodel}
+For every \(r \in \mathcal{R}\), every \(d \in \mathcal{D}\), and every
+\(t \ge 0\),
+\[
+\nu_r(d) \le t
+\quad \Longleftrightarrow \quad
+d_r(d)\le t \text{ and } s_r(d)\le t.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\nu_r(d)=\max\{d_r(d),s_r(d)\}.
+\]
+Hence \(\nu_r(d)\le t\) if and only if the maximum of the two quantities is at
+most \(t\), which happens if and only if each quantity is at most \(t\).
+\end{proof}
+
+This equivalence is one of the main reasons to prefer the maximum. It says
+that minimizing mismodel is exactly the same as pushing both components
+below the smallest possible common threshold.
+
+Unlike strictly increasing scalarizations, the maximum does not force every
+one of its minimizers to lie on the Pareto frontier. A dominated description
+may still tie for the same maximal value. However, the minimum of
+\(\nu_r\) is always attained at some Pareto-optimal description.
+
+\begin{proposition}
+\label{prop:chebyshev_attains_min_on_pareto}
+For every representation \(r \in \mathcal{R}\), there exists
+\(d^\ast \in \mathcal{P}_r\) such that
+\[
+\nu_r(d^\ast)=\min_{d\in\mathcal{D}} \nu_r(d).
+\]
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+M=\min_{d\in\mathcal{D}} \nu_r(d),
+\]
+which exists because \(\{\,\nu_r(d):d\in\mathcal{D}\,\}\subseteq\mathbb{N}\)
+is non-empty. Consider the non-empty set of minimizers
+\[
+\mathcal{M}=\{\, d\in\mathcal{D}: \nu_r(d)=M \,\}.
+\]
+Among these, choose \(d^\ast\in\mathcal{M}\) with minimal deficiency, and
+among those with the same deficiency, choose one with minimal surplus.
+
+We claim that \(d^\ast\in\mathcal{P}_r\). Suppose, for contradiction, that
+there exists \(u\in\mathcal{D}\) such that \(u\prec_r d^\ast\). Then
+\[
+d_r(u)\le d_r(d^\ast), \qquad s_r(u)\le s_r(d^\ast),
+\]
+with at least one strict inequality. Hence
+\[
+\nu_r(u)=\max\{d_r(u),s_r(u)\}\le
+\max\{d_r(d^\ast),s_r(d^\ast)\}=\nu_r(d^\ast)=M.
+\]
+Since \(M\) is the minimum possible value, we must have \(\nu_r(u)=M\),
+so \(u\in\mathcal{M}\). But then either \(d_r(u)<d_r(d^\ast)\), contradicting
+the choice of \(d^\ast\), or \(d_r(u)=d_r(d^\ast)\) and
+\(s_r(u)<s_r(d^\ast)\), again contradicting the choice of \(d^\ast\).
+Therefore no such \(u\) exists, and \(d^\ast\in\mathcal{P}_r\).
+\end{proof}
+
+Thus, Chebyshev mismodel does not ignore the Pareto structure: even though
+not every minimizer need be Pareto-optimal, the scalar criterion always
+selects at least one best-balanced point on the frontier.
+
+The maximum also identifies which of the two components is currently the
+main obstacle to improvement.
+
+\begin{proposition}
+\label{prop:bottleneck_principle_mismodel}
+Let \(r \in \mathcal{R}\) and \(d \in \mathcal{D}\).
+\begin{enumerate}
+    \item If \(d_r(d)>s_r(d)\), then any valid description \(u\in\mathcal{D}\)
+    such that
+    \[
+    d_r(u)<d_r(d)
+    \qquad \text{and} \qquad
+    s_r(u)\le d_r(u)
+    \]
+    necessarily satisfies
+    \[
+    \nu_r(u)<\nu_r(d).
+    \]
+
+    \item If \(s_r(d)>d_r(d)\), then any valid description \(u\in\mathcal{D}\)
+    such that
+    \[
+    s_r(u)<s_r(d)
+    \qquad \text{and} \qquad
+    d_r(u)\le s_r(u)
+    \]
+    necessarily satisfies
+    \[
+    \nu_r(u)<\nu_r(d).
+    \]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Assume first that \(d_r(d)>s_r(d)\). Then
+\[
+\nu_r(d)=d_r(d).
+\]
+If \(u\) satisfies
+\[
+d_r(u)<d_r(d), \qquad s_r(u)\le d_r(u),
+\]
+then
+\[
+\nu_r(u)
+=
+\max\{d_r(u),s_r(u)\}
+=
+d_r(u)
+<
+d_r(d)
+=
+\nu_r(d).
+\]
+
+The second part is symmetric. If \(s_r(d)>d_r(d)\), then
+\[
+\nu_r(d)=s_r(d),
+\]
+and if
+\[
+s_r(u)<s_r(d), \qquad d_r(u)\le s_r(u),
+\]
+then
+\[
+\nu_r(u)
+=
+\max\{d_r(u),s_r(u)\}
+=
+s_r(u)
+<
+s_r(d)
+=
+\nu_r(d).
+\]
+\end{proof}
+
+This proposition has a clear methodological interpretation. When deficiency
+dominates, the natural priority is to enrich or redirect the description so that
+it better supports the recovery of a minimal description of \(r\). When
+surplus dominates, the natural priority is simplification, pruning, or
+re-expression.
+
+The main advantage of the Chebyshev scalarization is that it enforces
+balance between the two types of descriptive error.
+
+\begin{proposition}
+\label{prop:max_avoids_extremes_mismodel}
+Let \(d_1,d_2 \in \mathcal{D}\). Suppose that
+\[
+d_r(d_1)+s_r(d_1)=d_r(d_2)+s_r(d_2)=C
+\]
+for some constant \(C\), and assume moreover that
+\[
+|d_r(d_1)-s_r(d_1)| \le |d_r(d_2)-s_r(d_2)|.
+\]
+Then
+\[
+\nu_r(d_1)\le \nu_r(d_2).
+\]
+\end{proposition}
+
+\begin{proof}
+For any nonnegative numbers \(a,b\) with \(a+b=C\), one has
+\[
+\max\{a,b\}=\frac{C+|a-b|}{2}.
+\]
+Applying this identity to the pairs
+\[
+(a,b)=\bigl(d_r(d_1),s_r(d_1)\bigr)
+\qquad \text{and} \qquad
+(a,b)=\bigl(d_r(d_2),s_r(d_2)\bigr),
+\]
+we obtain
+\[
+\nu_r(d_1)
+=
+\frac{C+|d_r(d_1)-s_r(d_1)|}{2},
+\]
+and
+\[
+\nu_r(d_2)
+=
+\frac{C+|d_r(d_2)-s_r(d_2)|}{2}.
+\]
+Since
+\[
+|d_r(d_1)-s_r(d_1)| \le |d_r(d_2)-s_r(d_2)|,
+\]
+it follows that
+\[
+\nu_r(d_1)\le \nu_r(d_2).
+\]
+\end{proof}
+
+Among descriptions with the same total burden, the maximum prefers the
+more balanced one. This is precisely the desired behavior when mismodel is
+meant to identify descriptions that are not only good on average, but also
+free from a dominant unresolved defect.
+
+A final basic property is that the Chebyshev scalarization is the smallest
+uniform upper bound on the two error components.
+
+\begin{proposition}
+\label{prop:max_smallest_common_bound_mismodel}
+For every \(r \in \mathcal{R}\) and every \(d \in \mathcal{D}\), \(\nu_r(d)\) is the
+smallest number \(t \ge 0\) such that
+\[
+d_r(d)\le t
+\qquad \text{and} \qquad
+s_r(d)\le t.
+\]
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:chebyshev_sublevel_sets_mismodel},
+\[
+\nu_r(d)\le t
+\quad \Longleftrightarrow \quad
+d_r(d)\le t \text{ and } s_r(d)\le t.
+\]
+Taking \(t=\nu_r(d)\) shows that \(\nu_r(d)\) is a common upper bound. If
+\(t<\nu_r(d)\), then the same equivalence implies that at least one of
+\(d_r(d)\) or \(s_r(d)\) is greater than \(t\). Hence no smaller common
+upper bound exists.
+\end{proof}
+
+This characterization gives the maximum a clear operational meaning. It
+measures the least tolerance level under which both kinds of descriptive
+error can simultaneously be regarded as acceptable.
+
+\subsection*{Comparison with alternative scalarizations}
+
+The maximum is not the only possible way to extract a scalar score from the
+pair \((d_r(d),s_r(d))\). Nevertheless, alternative scalarizations embody
+different epistemic priorities and have different advantages and drawbacks.
+
+A first possibility is the sum scalarization
+\[
+\nu_r^{\Sigma}(d):=d_r(d)+s_r(d).
+\]
+This criterion measures total descriptive burden. It is simple, symmetric, and
+often convenient analytically, but it allows compensation: a large value of
+one component may be offset by a small value of the other.
+
+\begin{proposition}
+\label{prop:sum_allows_compensation_mismodel}
+There exist valid descriptions \(d_1,d_2 \in \mathcal{D}\) such that
+\[
+\nu_r^{\Sigma}(d_1)=\nu_r^{\Sigma}(d_2)
+\]
+but
+\[
+\nu_r(d_1)>\nu_r(d_2).
+\]
+\end{proposition}
+
+\begin{proof}
+It suffices to consider two hypothetical pairs of values:
+\[
+(d_r(d_1),s_r(d_1))=(C,0),
+\qquad
+(d_r(d_2),s_r(d_2))=\left(\frac{C}{2},\frac{C}{2}\right),
+\]
+with \(C>0\). Then
+\[
+\nu_r^{\Sigma}(d_1)=C=\nu_r^{\Sigma}(d_2),
+\]
+but
+\[
+\nu_r(d_1)=\max\{C,0\}=C,
+\]
+whereas
+\[
+\nu_r(d_2)=\max\left\{\frac{C}{2},\frac{C}{2}\right\}=\frac{C}{2}.
+\]
+Hence the sum treats the two descriptions as equivalent, while the
+Chebyshev scalarization strictly prefers the more balanced one.
+\end{proof}
+
+The sum is therefore useful when one cares about aggregate burden, but less
+appropriate when one wants to prevent a single severe defect from being
+masked by good performance elsewhere.
+
+A second possibility is a weighted Chebyshev scalarization:
+\[
+\nu_r^{(\lambda)}(d)
+:=
+\max\{\lambda\, d_r(d),\, (1-\lambda)\, s_r(d)\},
+\qquad 0<\lambda<1.
+\]
+This criterion is useful when one source of descriptive error is judged more
+serious than the other in a given application. Its advantage is flexibility, but
+that flexibility is also its weakness: the choice of \(\lambda\) is external to the
+formal theory and must be justified by domain-specific considerations.
+Accordingly, the weighted maximum is best understood as an
+application-dependent refinement of the unweighted definition rather than as
+the canonical notion of mismodel itself.
+
+A third possibility is lexicographic ordering. For example, one may declare
+that
+\[
+d_1 \prec_{\mathrm{lex}} d_2
+\]
+whenever
+\[
+d_r(d_1)<d_r(d_2),
+\]
+or
+\[
+d_r(d_1)=d_r(d_2) \text{ and } s_r(d_1)<s_r(d_2).
+\]
+This corresponds to an absolute priority on reducing deficiency, with surplus
+considered only as a secondary criterion.
+
+\begin{proposition}
+\label{prop:lexicographic_extreme_mismodel}
+For every \(\varepsilon>0\) and every \(M>0\), there exist two pairs
+\((a_1,b_1)\) and \((a_2,b_2)\) in \(\mathbb{R}_{\ge 0}^2\) such that
+\[
+a_1<a_2<a_1+\varepsilon,
+\]
+\[
+b_2+M<b_1,
+\]
+and yet the lexicographic order prioritizing the first coordinate strictly
+prefers \((a_1,b_1)\) to \((a_2,b_2)\).
+\end{proposition}
+
+\begin{proof}
+Take
+\[
+(a_1,b_1)=(0,M+1),
+\qquad
+(a_2,b_2)=\left(\frac{\varepsilon}{2},0\right).
+\]
+Then
+\[
+a_1=0<\frac{\varepsilon}{2}=a_2<\varepsilon=a_1+\varepsilon,
+\]
+and
+\[
+0+M<M+1.
+\]
+Thus the second pair is better by more than \(M\) in the second coordinate,
+but lexicographic order prioritizing the first coordinate still prefers the first
+pair, since \(a_1<a_2\).
+\end{proof}
+
+This illustrates the main drawback of lexicographic scalarization: it can
+force highly unbalanced choices. Such a policy may be appropriate in narrow
+applications, but it is not a good default for a theory intended to capture the
+overall quality of a description.
+
+Negligible mismodel characterizes algorithmic equivalence to minimality in
+both directions.
+
+\begin{proposition}
+\label{prop:mismodel_equiv_description}
+For \(r \in \mathcal{R}\) and \(d \in \mathcal{D}\), the following are equivalent:
+\begin{enumerate}
+\item \(\nu_r(d)=O(1)\).
+\item There exist \(d^\ast_1,d^\ast_2\in\mathcal{D}_r^\ast\) such that
+\[
+K(d^\ast_1\mid d)=O(1)
+\qquad \text{and} \qquad
+K(d\mid d^\ast_2)=O(1).
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\((1\Rightarrow 2)\) If \(\nu_r(d)=O(1)\), then
+\[
+d_r(d)\le \nu_r(d)=O(1), \qquad s_r(d)\le \nu_r(d)=O(1).
+\]
+By definition of the minima in \(d_r(d)\) and \(s_r(d)\), there exist
+\(d^\ast_1,d^\ast_2\in\mathcal{D}_r^\ast\) such that
+\[
+K(d^\ast_1\mid d)=d_r(d)=O(1),
+\qquad
+K(d\mid d^\ast_2)=s_r(d)=O(1).
+\]
+
+\((2\Rightarrow 1)\) If such \(d^\ast_1,d^\ast_2\) exist, then
+\[
+d_r(d)\le K(d^\ast_1\mid d)=O(1),
+\qquad
+s_r(d)\le K(d\mid d^\ast_2)=O(1).
+\]
+Therefore
+\[
+\nu_r(d)=\max\{d_r(d),s_r(d)\}=O(1).
+\]
+\end{proof}
+
+This equivalence gives the central operational meaning of mismodel. A valid
+description has negligible mismodel precisely when it is algorithmically close,
+in both directions, to the class of minimal descriptions of the target
+representation. In particular, when \(d\in\mathcal{D}_r\), negligible mismodel
+means that the current description of \(r\) is already optimal up to a constant
+amount of algorithmic information.
+
+
+\section{Relative mismodel}
+\label{sec:relative_mismodel}
+
+The quantity
+\[
+\nu_r(d)=\max\{d_r(d),\,s_r(d)\}
+\]
+measures the mismodel of a valid description \(d\in\mathcal D\) with respect
+to a target representation \(r\in\mathcal R\) in absolute terms, that is, in
+bits. This absolute measure is the appropriate one for the structural theory
+developed in the previous sections. In practice, however, one often wishes to
+compare the mismodel of descriptions of very different intrinsic complexity,
+or even descriptions associated with different target representations. For this
+purpose, it is useful to introduce a normalized, dimensionless version of
+mismodel.
+
+The idea is to divide the absolute mismodel by a complexity scale that is
+intrinsic both to the description under consideration and to the target
+representation. This yields a relative score that is less sensitive to scale
+effects and therefore better suited for practical comparison.
+
+We first introduce the descriptional complexity floor of the target
+representation.
+
+\begin{definition}
+\label{def:description_complexity_floor}
+Let \(r\in\mathcal R\). We define the \emph{minimal-description complexity
+floor}\index{Minimal-description complexity floor} of \(r\) by
+\[
+\kappa_r^{\mathcal D}
+:=
+\min_{d^\star\in\mathcal D_r^\ast} K(d^\star).
+\]
+\end{definition}
+
+The quantity \(\kappa_r^{\mathcal D}\) measures the least Kolmogorov
+complexity among all minimal descriptions of \(r\). It provides an intrinsic
+algorithmic scale for the target representation at the level of descriptions.
+
+\begin{definition}
+\index{Relative mismodel}
+\label{def:relative_mismodel}
+Let \(r\in\mathcal R\) and let \(d\in\mathcal D\) be a valid description. We
+define the \emph{relative mismodel} of \(d\) with respect to \(r\) as
+\[
+\nu_r^{\mathrm{rel}}(d)
+\;:=\;
+\frac{\nu_r(d)}{\max\{K(d),\,\kappa_r^{\mathcal D}\}}
+\;=\;
+\frac{\max\{d_r(d),\,s_r(d)\}}
+{\max\{K(d),\,\kappa_r^{\mathcal D}\}}.
+\]
+\end{definition}
+
+The denominator \(\max\{K(d),\kappa_r^{\mathcal D}\}\) provides a stable
+intrinsic scale. It avoids degenerate normalizations when \(K(d)\) is
+unusually small, while ensuring that the normalization remains tied to the
+minimum algorithmic information required to describe \(r\) optimally. In this
+way, relative mismodel preserves the meaning of absolute mismodel while
+making its magnitude more comparable across descriptions of different
+complexities.
+
+The first result shows that relative mismodel is essentially bounded between
+\(0\) and \(1\), up to the usual additive constants of Kolmogorov complexity.
+
+\begin{proposition}
+\label{prop:range_rel_mismodel}
+For every \(r\in\mathcal R\) and every \(d\in\mathcal D\), it holds that
+\[
+0 \;\le\; \nu_r^{\mathrm{rel}}(d) \;\le\; 1+o(1),
+\]
+where the \(o(1)\) term denotes a quantity of the form
+\[
+\frac{O(1)}{\max\{K(d),\kappa_r^{\mathcal D}\}},
+\]
+which vanishes for sufficiently complex descriptions or targets.
+\end{proposition}
+
+\begin{proof}
+Non-negativity is immediate, since \(d_r(d)\ge 0\) and \(s_r(d)\ge 0\), hence
+\[
+\nu_r(d)=\max\{d_r(d),s_r(d)\}\ge 0.
+\]
+Therefore \(\nu_r^{\mathrm{rel}}(d)\ge 0\).
+
+For the upper bound, recall first that
+\[
+s_r(d)\le K(d)+O(1),
+\]
+since for any \(d^\star\in\mathcal D_r^\ast\), a program can ignore
+\(d^\star\) and output \(d\), and taking the minimum over
+\(d^\star\in\mathcal D_r^\ast\) preserves this bound.
+
+Second,
+\[
+d_r(d)\le \kappa_r^{\mathcal D}+O(1),
+\]
+because if \(d_0^\star\in\mathcal D_r^\ast\) satisfies
+\(K(d_0^\star)=\kappa_r^{\mathcal D}\), then
+\[
+K(d_0^\star\mid d)\le K(d_0^\star)+O(1)
+=
+\kappa_r^{\mathcal D}+O(1),
+\]
+and taking the minimum over all minimal descriptions yields the claim.
+
+Hence
+\[
+\nu_r(d)=\max\{d_r(d),s_r(d)\}
+\le
+\max\{\kappa_r^{\mathcal D},K(d)\}+O(1).
+\]
+Dividing by \(\max\{K(d),\kappa_r^{\mathcal D}\}\) gives
+\[
+\nu_r^{\mathrm{rel}}(d)
+\le
+1+\frac{O(1)}{\max\{K(d),\kappa_r^{\mathcal D}\}}
+=
+1+o(1).
+\]
+\end{proof}
+
+This proposition shows that relative mismodel behaves as a normalized error
+score. In particular, values close to \(0\) indicate low mismodel relative to
+the intrinsic descriptive scale of the problem, whereas values close to \(1\)
+indicate that the dominant descriptive defect is of the same order as the
+description itself or the target's minimal-description complexity floor.
+
+The next proposition connects the normalized notion with the ideal case of
+minimal descriptions.
+
+\begin{proposition}
+\label{prop:minimal_rel_mismodel}
+If \(d\in\mathcal D_r^\ast\), then
+\[
+\nu_r^{\mathrm{rel}}(d)=o(1).
+\]
+In particular, for sufficiently complex target representations or sufficiently
+complex minimal descriptions, \(\nu_r^{\mathrm{rel}}(d)\approx 0\).
+\end{proposition}
+
+\begin{proof}
+If \(d\in\mathcal D_r^\ast\), then
+\[
+d_r(d)=O(1)
+\qquad\text{and}\qquad
+s_r(d)=O(1),
+\]
+hence
+\[
+\nu_r(d)=\max\{d_r(d),s_r(d)\}=O(1).
+\]
+Therefore
+\[
+\nu_r^{\mathrm{rel}}(d)
+=
+\frac{O(1)}{\max\{K(d),\kappa_r^{\mathcal D}\}}
+=
+o(1).
+\]
+\end{proof}
+
+This is the normalized analogue of the fact that minimal descriptions have
+negligible absolute mismodel. It confirms that relative mismodel is fully
+compatible with the theoretical ideal: once the intrinsic complexity scale is
+large, the residual \(O(1)\) ambiguity becomes asymptotically negligible.
+
+The following result shows that negligible absolute mismodel always implies
+negligible relative mismodel.
+
+\begin{proposition}
+\label{prop:small_abs_implies_small_rel_mismodel}
+Let \(r\in\mathcal R\) and \(d\in\mathcal D\). If
+\[
+\nu_r(d)=O(1),
+\]
+then
+\[
+\nu_r^{\mathrm{rel}}(d)=o(1).
+\]
+\end{proposition}
+
+\begin{proof}
+If \(\nu_r(d)=O(1)\), then by Definition~\ref{def:relative_mismodel},
+\[
+\nu_r^{\mathrm{rel}}(d)
+=
+\frac{\nu_r(d)}{\max\{K(d),\kappa_r^{\mathcal D}\}}
+=
+\frac{O(1)}{\max\{K(d),\kappa_r^{\mathcal D}\}}
+=
+o(1).
+\]
+\end{proof}
+
+This makes explicit that relative mismodel is a genuine normalization of
+absolute mismodel. Whenever the absolute descriptive error is negligible, the
+normalized version is negligible as well, and hence no spurious inflation is
+introduced by passing to the relative scale.
+
+For a \emph{fixed} target representation \(r\), the converse behavior is much
+more rigid than in the case of representations. The next proposition shows
+that, once \(r\) is fixed, very large absolute mismodel forces relative
+mismodel to be close to \(1\).
+
+\begin{proposition}
+\label{prop:fixed_target_rigidity_rel_mismodel}
+Let \(r\in\mathcal R\) be fixed, and let \((d_n)_{n\ge 1}\) be a sequence of valid
+descriptions in \(\mathcal D\). If
+\[
+\nu_r(d_n)\to\infty,
+\]
+then
+\[
+\nu_r^{\mathrm{rel}}(d_n)\to 1.
+\]
+\end{proposition}
+
+\begin{proof}
+Fix \(r\), and let \(d^\star\in\mathcal D_r^\ast\) satisfy
+\(K(d^\star)=\kappa_r^{\mathcal D}\). Then, for every \(d\in\mathcal D\),
+\[
+K(d)\le K(d^\star)+K(d\mid d^\star)+O(1)
+\le
+\kappa_r^{\mathcal D}+s_r(d)+O(1)
+\le
+\kappa_r^{\mathcal D}+\nu_r(d)+O(1).
+\]
+Hence
+\[
+\max\{K(d),\kappa_r^{\mathcal D}\}
+\le
+\kappa_r^{\mathcal D}+\nu_r(d)+O(1).
+\]
+Therefore
+\[
+\nu_r^{\mathrm{rel}}(d)
+=
+\frac{\nu_r(d)}{\max\{K(d),\kappa_r^{\mathcal D}\}}
+\ge
+\frac{\nu_r(d)}{\kappa_r^{\mathcal D}+\nu_r(d)+O(1)}.
+\]
+Applying this to \(d=d_n\) and letting \(n\to\infty\), the right-hand side
+tends to \(1\). On the other hand, by
+Proposition~\ref{prop:range_rel_mismodel},
+\[
+\nu_r^{\mathrm{rel}}(d_n)\le 1+o(1).
+\]
+Combining both bounds yields
+\[
+\nu_r^{\mathrm{rel}}(d_n)\to 1.
+\]
+\end{proof}
+
+Thus, for a fixed target representation, relative mismodel cannot be made
+arbitrarily small while absolute mismodel grows without bound. In this
+sense, the normalization preserves much of the absolute information when the
+target is held fixed.
+
+The converse direction can nevertheless fail in general when the target
+representation is allowed to vary.
+
+\begin{proposition}
+\label{prop:small_rel_not_small_abs_mismodel}
+In general, \(\nu_r^{\mathrm{rel}}(d)=o(1)\) does not imply
+\(\nu_r(d)=O(1)\).
+\end{proposition}
+
+\begin{proof}
+We construct a sequence of pairs \((r_n,d_n)\) for which the absolute
+mismodel diverges while the relative mismodel tends to \(0\).
+
+Choose a sequence of target representations \((r_n)_{n\ge 1}\) such that
+their minimal-description complexity floors satisfy
+\[
+\kappa_{r_n}^{\mathcal D}\to\infty.
+\]
+For each \(n\), let \(d_n^\star\in\mathcal D_{r_n}^\ast\) satisfy
+\[
+K(d_n^\star)=\kappa_{r_n}^{\mathcal D}.
+\]
+Let \(z_n\) be an incompressible string independent of \(d_n^\star\) of length
+\[
+\ell(z_n)=\bigl\lfloor \log \kappa_{r_n}^{\mathcal D} \bigr\rfloor.
+\]
+
+Now define a valid description \(d_n\) as a fixed computable packaging of
+the pair \((d_n^\star,z_n)\) such that \(d_n^\star\) is uniformly recoverable
+from \(d_n\). For example, \(d_n\) may be taken to be a description that
+outputs the binary encoding of the pair \(\langle d_n^\star,z_n\rangle\). Then
+\[
+K(d_n^\star\mid d_n)=O(1),
+\]
+so
+\[
+d_{r_n}(d_n)=O(1).
+\]
+On the other hand, from \(d_n^\star\) one must essentially reconstruct the
+independent incompressible tag \(z_n\) in order to recover \(d_n\), so
+\[
+s_{r_n}(d_n)=\Theta(\ell(z_n))
+=
+\Theta\!\bigl(\log \kappa_{r_n}^{\mathcal D}\bigr).
+\]
+Hence
+\[
+\nu_{r_n}(d_n)
+=
+\max\{d_{r_n}(d_n),s_{r_n}(d_n)\}
+=
+\Theta\!\bigl(\log \kappa_{r_n}^{\mathcal D}\bigr)
+\to\infty.
+\]
+
+At the same time,
+\[
+K(d_n)
+\le
+K(d_n^\star)+K(z_n)+O(1)
+=
+\kappa_{r_n}^{\mathcal D}
++
+O\!\bigl(\log \kappa_{r_n}^{\mathcal D}\bigr),
+\]
+so
+\[
+\max\{K(d_n),\kappa_{r_n}^{\mathcal D}\}
+=
+\kappa_{r_n}^{\mathcal D}
++
+O\!\bigl(\log \kappa_{r_n}^{\mathcal D}\bigr).
+\]
+Therefore
+\[
+\nu_{r_n}^{\mathrm{rel}}(d_n)
+=
+\frac{\Theta(\log \kappa_{r_n}^{\mathcal D})}
+{\kappa_{r_n}^{\mathcal D}+O(\log \kappa_{r_n}^{\mathcal D})}
+\to 0.
+\]
+Thus small relative mismodel does not, in general, force small absolute
+mismodel.
+\end{proof}
+
+This proposition shows that relative mismodel and absolute mismodel serve
+different purposes. Absolute mismodel captures the actual algorithmic cost
+of repair, whereas relative mismodel measures that cost only in proportion to
+the intrinsic scale of the description and of the target representation.
+
+It is also useful to make explicit the relation between absolute and relative
+ordering when the compared descriptions have the same intrinsic scale.
+
+\begin{proposition}
+\label{prop:relative_order_same_scale_mismodel}
+Let \(r\in\mathcal R\), and let \(d_1,d_2\in\mathcal D\) satisfy
+\[
+\max\{K(d_1),\kappa_r^{\mathcal D}\}
+=
+\max\{K(d_2),\kappa_r^{\mathcal D}\}.
+\]
+Then
+\[
+\nu_r(d_1)\le \nu_r(d_2)
+\quad\Longleftrightarrow\quad
+\nu_r^{\mathrm{rel}}(d_1)\le \nu_r^{\mathrm{rel}}(d_2).
+\]
+\end{proposition}
+
+\begin{proof}
+If the denominators coincide, say both equal \(C>0\), then
+\[
+\nu_r^{\mathrm{rel}}(d_i)=\frac{\nu_r(d_i)}{C}
+\qquad (i=1,2).
+\]
+Division by the same positive constant preserves order, so
+\[
+\nu_r(d_1)\le \nu_r(d_2)
+\quad\Longleftrightarrow\quad
+\frac{\nu_r(d_1)}{C}\le \frac{\nu_r(d_2)}{C},
+\]
+which is exactly
+\[
+\nu_r^{\mathrm{rel}}(d_1)\le \nu_r^{\mathrm{rel}}(d_2).
+\]
+\end{proof}
+
+This proposition clarifies the practical meaning of the normalization. When
+the compared descriptions have the same intrinsic scale, relative mismodel
+does not change the ranking; it simply rescales the absolute values. The
+normalization matters only when the underlying scales differ.
+
+Finally, relative mismodel preserves the bottleneck interpretation of
+absolute mismodel, since the denominator is common to both deficiency and
+surplus.
+
+\begin{proposition}
+\label{prop:relative_bottleneck_mismodel}
+Let \(r\in\mathcal R\) and \(d\in\mathcal D\).
+\begin{enumerate}
+\item If \(d_r(d)>s_r(d)\), then
+\[
+\nu_r^{\mathrm{rel}}(d)
+=
+\frac{d_r(d)}{\max\{K(d),\kappa_r^{\mathcal D}\}}.
+\]
+
+\item If \(s_r(d)>d_r(d)\), then
+\[
+\nu_r^{\mathrm{rel}}(d)
+=
+\frac{s_r(d)}{\max\{K(d),\kappa_r^{\mathcal D}\}}.
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\nu_r^{\mathrm{rel}}(d)
+=
+\frac{\max\{d_r(d),s_r(d)\}}{\max\{K(d),\kappa_r^{\mathcal D}\}}.
+\]
+If \(d_r(d)>s_r(d)\), then the numerator equals \(d_r(d)\). If
+\(s_r(d)>d_r(d)\), then the numerator equals \(s_r(d)\). The stated
+equalities follow immediately.
+\end{proof}
+
+Thus, relative mismodel inherits the same diagnostic value as absolute
+mismodel: it identifies the currently dominant descriptive defect. The only
+difference is that this defect is now expressed relative to the intrinsic scale
+of the description and the target representation.
+
+\paragraph{Interpretation.}
+A value \(\nu_r^{\mathrm{rel}}(d)\approx 0\) indicates that, relative to its
+overall information content, the description has both low deficiency and low
+surplus with respect to \(r\); it is therefore close to optimal for that target in
+a scale-free sense. Values close to \(1\) indicate that either deficiency or
+surplus is of the same order as the intrinsic scale
+\(\max\{K(d),\kappa_r^{\mathcal D}\}\), meaning that the description is highly
+incomplete, highly contaminated, or both.
+
+Relative mismodel is therefore best understood as a practical comparison
+tool rather than as a replacement for absolute mismodel. The latter remains
+the primary structural notion, whereas the former provides a normalized view
+better suited for comparing descriptions of different scales or descriptions
+associated with different target representations.
+
+\section{Decreasing Mismodel}
+\label{sec:decreasing_mismodel}
+
+For a fixed target representation \(r\), mismodel measures how far a valid
+description \(d\in\mathcal D\) is from being algorithmically equivalent to a
+minimal description of \(r\). In the theory developed above, this discrepancy
+is decomposed into two components. The deficiency \(d_r(d)\) measures how
+much information is still missing in order to recover a minimal description of
+\(r\), whereas the surplus \(s_r(d)\) measures how much information in
+\(d\) goes beyond what is needed to obtain such a minimal description.
+
+Decreasing mismodel is therefore intrinsically a two-objective refinement
+problem: one aims to reduce missing descriptive information while also
+removing descriptively extraneous content. In practice, these two goals
+correspond to two complementary modes of improvement. Enrichment
+(adding information to a description) is typically aimed at reducing
+deficiency, whereas simplification (removing or normalizing parts of a
+description) is typically aimed at reducing surplus.
+
+A specific feature of the description setting is that not every raw edit of a
+binary string preserves validity. Accordingly, the practically relevant
+transformations considered below are computable operations that map valid
+descriptions to valid descriptions.
+
+\subsection*{Augmentation and Deficiency}
+
+We now examine how the deficiency of a description may be reduced through augmentation. Intuitively, when a description falls short of a minimal valid description of a target representation, it lacks some of the computable information needed to reconstruct that representation more effectively. In such cases, augmenting the description with a suitable auxiliary description may supply part of the missing information and thereby bring the resulting description closer to the target. The purpose of this section is to formalize that intuition and to identify conditions under which augmentation can contribute to decreasing deficiency.
+
+Since the augmented description contains the original description as a recoverable component, augmentation cannot increase deficiency by more than an additive constant.
+
+\begin{proposition}
+\label{prop:augmentation_deficiency_monotonic}
+Let $r \in \mathcal{R}$, let $d \in \mathcal{D}$, and let $d' \in \mathcal{D}$. Then
+\[
+d_r(\operatorname{aug}(d, d')) \leq d_r(d) + O(1).
+\]
+\end{proposition}
+\begin{proof}
+Let \(d^\star \in \mathcal{D}_r^\ast\) be any minimal description of \(r\). Since the first component \(d\) can be recovered computably from \(\operatorname{aug}(d,a)\), there exists a computable function \(p\) such that
+\[
+p(\operatorname{aug}(d,a))=d.
+\]
+By monotonicity of conditional Kolmogorov complexity under computable transformations,
+\[
+K(d^\star \mid \operatorname{aug}(d,a))
+\leq
+K(d^\star \mid p(\operatorname{aug}(d,a))) + O(1)
+=
+K(d^\star \mid d)+O(1).
+\]
+Since this holds for every \(d^\star \in \mathcal{D}_r^\ast\), we obtain
+\[
+\min_{d^\star \in \mathcal{D}_r^\ast}
+K(d^\star \mid \operatorname{aug}(d,a))
+\leq
+\min_{d^\star \in \mathcal{D}_r^\ast}
+K(d^\star \mid d)+O(1).
+\]
+Hence
+\[
+d_r(\operatorname{aug}(d,a))
+\leq
+d_r(d)+O(1).
+\]
+\end{proof}
+
+This proposition captures a basic monotonicity principle: once additional information has been incorporated into a valid description, recovering a minimal description of the target representation cannot become substantially harder. Of course, the result does not guarantee that every enrichment is useful in practice. Some added material may be redundant, irrelevant, or misleading. What matters scientifically is not enrichment per se, but enrichment that reduces deficiency by supplying information that was genuinely missing.
+
+The next proposition isolates a sufficient condition for such a reduction.
+
+\begin{proposition}
+\label{prop:augmentation_to_constant_deficiency}
+Let \(r \in \mathcal{R}\), let \(d \in \mathcal{D}_r\), and let \(a \in \mathcal{D}\). If there exists a minimal description \(d^\star \in \mathcal{D}_r^\ast\) such that
+\[
+K(d^\star \mid \operatorname{aug}(d,a)) = O(1),
+\]
+then
+\[
+d_r(\operatorname{aug}(d,a)) = O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+d_r(\operatorname{aug}(d,a))
+=
+\min_{d' \in \mathcal{D}_r^\ast}
+K(d' \mid \operatorname{aug}(d,a)).
+\]
+Since \(d^\star \in \mathcal{D}_r^\ast\), we have
+\[
+d_r(\operatorname{aug}(d,a))
+\leq
+K(d^\star \mid \operatorname{aug}(d,a))
+=
+O(1).
+\]
+\end{proof}
+
+This proposition captures the ideal case of augmentation: the auxiliary description \(a\) supplies essentially all the missing algorithmic information needed to recover a minimal description of the target representation.
+
+A particularly important special case occurs when the auxiliary description itself encodes the missing information needed to transform the current description into a minimal one.
+
+\begin{corollary}
+Let \(r \in \mathcal{R}\), let \(d \in \mathcal{D}_r\), and let \(a \in \mathcal{D}\). If there exists a computable function \(f\) and a minimal description \(d^\star \in \mathcal{D}_r^\ast\) such that
+\[
+f(\operatorname{aug}(d,a))=d^\star,
+\]
+then
+\[
+d_r(\operatorname{aug}(d,a))=O(1).
+\]
+\end{corollary}
+
+\begin{proof}
+If \(f(\operatorname{aug}(d,a))=d^\star\), then \(d^\star\) can be computed from \(\operatorname{aug}(d,a)\) by a program of constant length, so
+\[
+K(d^\star \mid \operatorname{aug}(d,a))=O(1).
+\]
+The result now follows from Proposition \ref{prop:augmentation_to_constant_deficiency}.
+\end{proof}
+
+This corollary formalizes the intuition that augmentation is useful precisely when the auxiliary description contributes information that was absent from the original one.
+
+Finally, augmentation need not be strictly improving. If the auxiliary description carries no relevant information about how to approach a minimal description, then the deficiency may remain unchanged up to an additive constant.
+
+\begin{example}
+Let \(r \in \mathcal{R}\) and let \(d \in \mathcal{D}_r\) be a non-minimal description of \(r\). Let \(a \in \mathcal{D}\) be any valid description whose information is unrelated to the structure of the minimal descriptions in \(\mathcal{D}_r^\ast\). Then the augmented description
+\[
+\operatorname{aug}(d,a)
+\]
+still belongs to \(\mathcal{D}_r\), but there need not be any strict decrease in deficiency:
+\[
+d_r(\operatorname{aug}(d,a))
+=
+d_r(d)+O(1)
+\]
+may still hold. Thus, augmentation preserves validity and target representation, but only relevant augmentation descriptions are expected to reduce deficiency.
+\end{example}
+
+The operation of augmentation therefore provides a mathematically well-defined mechanism for enriching descriptions by auxiliary computable information. It preserves both validity and target representation, and it can only decrease deficiency up to an additive constant. For this reason, augmentation is a natural operation in the analysis of description deficiency and, more generally, in the study of how scientific models are progressively refined.
+
+To make this idea explicit, it is useful to measure how much deficiency is
+reduced by a given enrichment step.
+
+\begin{definition}
+Let \(r\in\mathcal R\), let \(d\in\mathcal D\), and let \(a\in\mathcal B^\ast\) be
+such that \(da\in\mathcal D\). We define the \emph{marginal deficiency
+reduction}\index{Marginal deficiency reduction of a description} of \(a\)
+relative to \(d\) and \(r\) by
+\[
+\Delta_{\mathrm{def}}(a\mid d,r)
+=
+d_r(d)-d_r(da).
+\]
+\end{definition}
+
+The quantity \(\Delta_{\mathrm{def}}(a\mid d,r)\) measures how much the
+additional information \(a\) reduces the amount of missing algorithmic
+information needed to reach a minimal description of \(r\). If
+\(\Delta_{\mathrm{def}}(a\mid d,r)\) is large, then \(a\) supplies information
+that was highly relevant and previously absent from \(d\). If it is close to
+zero, then the enrichment contributes little toward completing the
+description.
+
+This notion suggests a practical decision principle: among several candidate
+augmentations, a good next addition is one that is expected to minimize the
+posterior deficiency \(d_r(da)\), or equivalently, to maximize the expected
+marginal deficiency reduction.
+
+\begin{example}
+Suppose that \(r\) is a representation encoding the full state trajectory of a
+dynamical system. A current valid description \(d\) may consist of a program
+that simulates the system together with a coarse set of parameters, but it may
+omit precise initial conditions or an explicit boundary constraint. A candidate
+augmentation \(a_1\) adds a verbose explanatory comment about the
+numerical solver, whereas a second augmentation \(a_2\) adds the missing
+initial condition.
+
+The scientifically preferable enrichment is the one expected to make
+\(d_r(da)\) as small as possible. In this situation, \(a_2\) is likely to be the
+better choice, because it supplies information that is directly relevant to
+recovering a minimal description of the target representation \(r\). By
+contrast, \(a_1\) may improve readability, but it is unlikely to reduce the
+missing information needed to reach a minimal description of \(r\).
+\end{example}
+
+
+
+\subsection*{Candidate Augmentations of a Description}
+
+The operation of augmentation introduced above provides a general mechanism for enriching a description by pairing it with an auxiliary valid description. In principle, one could consider augmenting a description by \emph{any} valid description. For the purposes of a nescience-reducing algorithm, however, such a search space is too broad to be useful. It is therefore convenient to distinguish between a theoretical notion of augmentation, whose role is to characterize ideal deficiency-reducing moves, and a practical notion of candidate augmentation, whose role is to generate a finite or otherwise restricted set of alternatives that can actually be explored.
+
+We begin with the theoretical notion. Since augmentation preserves the represented string, it is natural to focus on those augmentations that reduce the deficiency of the current description with respect to a fixed representation.
+
+\begin{definition}
+\label{def:deficiency_targeted_augmentation}
+Let \(r \in \mathcal{R}\) and let \(d \in \mathcal{D}_r\). We define the \emph{deficiency-targeted augmentation set}\index{Deficiency-targeted augmentation} of \(d\) with respect to \(r\) by
+\[
+\mathcal{A}^{d}_{r}(d)
+=
+\left\{
+\operatorname{aug}(d,a) \in \mathcal{D}_r
+\;:\;
+a \in \mathcal{D}
+\text{ and }
+d_r(\operatorname{aug}(d,a)) < d_r(d)
+\right\}.
+\]
+\end{definition}
+
+This set contains precisely those augmentations that strictly improve the deficiency of the current description. It therefore captures the ideal role of augmentation as a corrective operation directed at the defect measured by \(d_r(d)\).
+
+The previous definition is conceptually natural, but it is not suitable for direct algorithmic use. The difficulty is that it quantifies over the whole set \(\mathcal{D}\), which is recursively enumerable but unbounded, and it requires checking whether deficiency decreases, a condition that is typically not computable in full generality. For practical purposes, we therefore introduce a restricted set of admissible augmentation descriptions.
+
+\begin{definition}
+\label{def:admissible_augmentation_descriptions}
+Let \(d \in \mathcal{D}\). We call a set
+\[
+\mathcal{A}_d \subseteq \mathcal{D}
+\]
+a set of \emph{admissible augmentation descriptions}\index{Admissible augmentation descriptions} for \(d\) if it is chosen as the search space of auxiliary descriptions to be paired with \(d\) in the augmentation step.
+\end{definition}
+
+The choice of \(\mathcal{A}_d\) depends on the application. In principle, one may take \(\mathcal{A}_d=\mathcal{D}\), thereby recovering the unrestricted theoretical notion above. In practice, however, \(\mathcal{A}_d\) is usually chosen to satisfy additional constraints, such as bounded length, membership in a model class, or relevance to the active defect set.
+
+Once a family of admissible augmentation descriptions has been fixed, we can define the corresponding practical candidate set.
+
+\begin{definition}
+\label{def:algorithmic_augmentation_candidate_set}
+Let \(x=(r,d)\) be a hypothesis such that \(d \in \mathcal{D}_r\), and let \(\mathcal{A}_d \subseteq \mathcal{D}\) be a prescribed set of admissible augmentation descriptions. We define the \emph{algorithmic augmentation candidate set}\index{Algorithmic augmentation candidate set} of \(x\) by
+\[
+\mathcal{C}^{\mathrm{aug}}(x)
+=
+\left\{
+(r,\operatorname{aug}(d,a))
+\;:\;
+a \in \mathcal{A}_d
+\right\}.
+\]
+\end{definition}
+
+This is the set of hypotheses obtained by augmenting the current description \(d\) with auxiliary descriptions drawn from the chosen search space \(\mathcal{A}_d\). Unlike the deficiency-targeted augmentation set, the set \(\mathcal{C}^{\mathrm{aug}}(x)\) is intended for actual use in a search or descent algorithm.
+
+The first important property of the algorithmic augmentation candidate set is that it preserves the represented string.
+
+\begin{proposition}
+\label{prop:augmentation_candidates_preserve_representation}
+Let \(x=(r,d)\) be a hypothesis such that \(d\in\mathcal{D}_r\), and let \((r',d')\in\mathcal{C}^{\mathrm{aug}}(x)\). Then
+\[
+r'=r
+\qquad\text{and}\qquad
+d' \in \mathcal{D}_r.
+\]
+\end{proposition}
+
+\begin{proof}
+By Definition \ref{def:algorithmic_augmentation_candidate_set}, every element of \(\mathcal{C}^{\mathrm{aug}}(x)\) has the form
+\[
+(r',d')=(r,\operatorname{aug}(d,a))
+\]
+for some \(a\in\mathcal{A}_d\subseteq\mathcal{D}\). Hence \(r'=r\).
+
+Since \(d\in\mathcal{D}_r\), we have \(\gamma(d)=r\). By Proposition \ref{prop:augmentation_preserves_output},
+\[
+\gamma(\operatorname{aug}(d,a))=\gamma(d)=r.
+\]
+Therefore
+\[
+d'=\operatorname{aug}(d,a)\in\mathcal{D}_r.
+\]
+\end{proof}
+
+Thus, algorithmic augmentation operates entirely within the fiber \(\mathcal{D}_r\). The representation remains fixed, while only the description is modified.
+
+As in the unrestricted case, augmentation cannot increase deficiency beyond an additive constant.
+
+\begin{proposition}
+\label{prop:augmentation_candidates_deficiency_bound}
+Let \(x=(r,d)\) be a hypothesis such that \(d\in\mathcal{D}_r\), and let \((r,d')\in\mathcal{C}^{\mathrm{aug}}(x)\). Then
+\[
+d_r(d') \le d_r(d)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Since \((r,d')\in\mathcal{C}^{\mathrm{aug}}(x)\), there exists \(a\in\mathcal{A}_d\subseteq\mathcal{D}\) such that
+\[
+d'=\operatorname{aug}(d,a).
+\]
+The result then follows immediately from Proposition \ref{prop:augmentation_deficiency_monotonic}, which states that
+\[
+d_r(\operatorname{aug}(d,a)) \le d_r(d)+O(1).
+\]
+\end{proof}
+
+The previous proposition justifies the use of augmentation in a defect-guided search procedure: although augmentation need not strictly improve deficiency, it never moves the description far away from the class of minimal descriptions, up to an additive constant.
+
+A particularly natural way to restrict the set of admissible augmentation descriptions is by bounding their length.
+
+\begin{definition}
+\label{def:length_bounded_augmentation_set}
+Let \(d \in \mathcal{D}\), and let \(L:\mathbb{N}\to\mathbb{N}\) be a bound function. We define the \emph{length-bounded augmentation set}\index{Length-bounded augmentation set} associated with \(d\) by
+\[
+\mathcal{A}_d^{L}
+=
+\left\{
+a \in \mathcal{D}
+\;:\;
+\ell(a)\le L(\ell(d))
+\right\}.
+\]
+The corresponding \emph{length-bounded algorithmic augmentation candidate set}\index{Length-bounded algorithmic augmentation candidate set} is
+\[
+\mathcal{C}^{\mathrm{aug},L}(x)
+=
+\left\{
+(r,\operatorname{aug}(d,a))
+\;:\;
+a \in \mathcal{A}_d^{L}
+\right\},
+\]
+where \(x=(r,d)\).
+\end{definition}
+
+This restriction is useful in practice because it limits the search to auxiliary descriptions whose size is controlled relative to the current description. The bound function \(L\) may be chosen in several ways depending on the intended search strategy. For instance, one may take \(L(n)=n\), which allows only augmentation descriptions no longer than the current description itself, or \(L(n)=n+c\) for some fixed constant \(c\), which permits only moderate growth.
+
+Whenever the chosen bound yields a finite set of descriptions, the corresponding candidate set is finite as well.
+
+\begin{proposition}
+\label{prop:length_bounded_candidate_finite}
+Let \(x=(r,d)\) be a hypothesis. If the set \(\mathcal{A}_d^{L}\) is finite, then \(\mathcal{C}^{\mathrm{aug},L}(x)\) is finite.
+\end{proposition}
+
+\begin{proof}
+By Definition \ref{def:length_bounded_augmentation_set},
+\[
+\mathcal{C}^{\mathrm{aug},L}(x)
+=
+\left\{
+(r,\operatorname{aug}(d,a))
+\;:\;
+a \in \mathcal{A}_d^{L}
+\right\}.
+\]
+The mapping
+\[
+a \mapsto (r,\operatorname{aug}(d,a))
+\]
+associates one candidate hypothesis with each element of \(\mathcal{A}_d^{L}\). Hence \(\mathcal{C}^{\mathrm{aug},L}(x)\) has cardinality at most that of \(\mathcal{A}_d^{L}\). Therefore, if \(\mathcal{A}_d^{L}\) is finite, then \(\mathcal{C}^{\mathrm{aug},L}(x)\) is also finite.
+\end{proof}
+
+This proposition highlights the practical role of length-bounded augmentation: it converts the open-ended theoretical space of all augmentations into a candidate set that can, at least in principle, be explored by an algorithm.
+
+Finally, if one wishes to retain the practical candidate set while focusing only on genuine deficiency improvements, one may intersect the algorithmic candidate set with the deficiency-targeted one.
+
+\begin{definition}
+\label{def:practical_deficiency_reducing_augmentation_set}
+Let \(x=(r,d)\) be a hypothesis such that \(d\in\mathcal{D}_r\), and let \(\mathcal{A}_d\subseteq\mathcal{D}\) be a prescribed set of admissible augmentation descriptions. We define the \emph{practical deficiency-reducing augmentation set}\index{Practical deficiency-reducing augmentation set} of \(x\) by
+\[
+\mathcal{C}^{\mathrm{aug},d}(x)
+=
+\left\{
+(r,\operatorname{aug}(d,a)) \in \mathcal{C}^{\mathrm{aug}}(x)
+\;:\;
+d_r(\operatorname{aug}(d,a)) < d_r(d)
+\right\}.
+\]
+\end{definition}
+
+This set serves as a bridge between theory and practice. The deficiency-targeted augmentation set identifies the ideal augmentations from a purely theoretical standpoint, whereas the algorithmic augmentation candidate set specifies the bounded family of alternatives that the search procedure is willing to examine. Their intersection yields the candidate augmentations that are both practically admissible and theoretically beneficial.
+
+In summary, the operation of augmentation gives rise to two distinct but complementary notions. The deficiency-targeted augmentation set describes the ideal search direction for reducing deficiency, while the algorithmic augmentation candidate set provides the restricted family of augmentations that can be used in an effective nescience-reducing procedure. This distinction will be useful later when defining the full candidate set of operations for the descent algorithm.
+
+
+\subsection*{Decreasing surplus via simplification}
+
+A natural way to reduce the surplus of a description is to simplify it by
+removing or normalizing content that is not genuinely needed to reach a
+minimal description of the target representation. In scientific practice, this
+corresponds to removing dead code, duplicated routines, logging
+instructions, irrelevant comments, administrative metadata, plotting
+subroutines, or ad hoc branches that do not contribute to the description of
+\(r\) itself.
+
+The basic monotonicity principle is that computably simplifying a valid
+description cannot substantially increase its surplus.
+
+\begin{proposition}
+\label{prop:surplus_reduction_description}
+Let \(r\in\mathcal R\), let \(d,s\in\mathcal D\), and suppose that there exists a
+total computable function
+\[
+g:\mathcal B^\ast\to\mathcal B^\ast
+\]
+such that
+\[
+g(s)=d.
+\]
+Then
+\[
+s_r(d)\le s_r(s)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Let \(d^\star\in\mathcal D_r^\ast\) be arbitrary. From any program witnessing
+\(K(s\mid d^\star)\), one can compute \(s\) from \(d^\star\) and then apply
+\(g\) with constant overhead to obtain \(d=g(s)\). Hence
+\[
+K(d\mid d^\star)\le K(s\mid d^\star)+O(1).
+\]
+Taking minima over \(d^\star\in\mathcal D_r^\ast\), we obtain
+\[
+s_r(d)
+=
+\min_{d^\star\in\mathcal D_r^\ast}K(d\mid d^\star)
+\le
+\min_{d^\star\in\mathcal D_r^\ast}\bigl(K(s\mid d^\star)+O(1)\bigr)
+=
+s_r(s)+O(1).
+\]
+\end{proof}
+
+This proposition captures the basic monotonicity principle for surplus:
+computable simplification may remove extraneous descriptive content, but it
+cannot create it. Again, not every simplification is scientifically desirable:
+a simplification that removes relevant information may reduce surplus while
+making the description much more deficient. What matters scientifically is
+not simplification per se, but simplification that decreases surplus without
+substantially worsening deficiency.
+
+To evaluate such steps explicitly, it is useful to measure how much surplus
+is reduced by a given simplification operator.
+
+\begin{definition}
+Let \(r\in\mathcal R\), let \(d\in\mathcal D\), and let
+\(g:\mathcal B^\ast\to\mathcal B^\ast\) be a total computable function such
+that \(g(d)\in\mathcal D\). We define the \emph{marginal surplus
+reduction}\index{Marginal surplus reduction of a description} of \(g\)
+relative to \(d\) and \(r\) by
+\[
+\Delta_{\mathrm{sup}}(g\mid d,r)
+=
+s_r(d)-s_r(g(d)).
+\]
+\end{definition}
+
+The quantity \(\Delta_{\mathrm{sup}}(g\mid d,r)\) measures how much the
+simplification \(g\) reduces the amount of algorithmically extraneous content
+present in \(d\) relative to the target representation \(r\). If
+\(\Delta_{\mathrm{sup}}(g\mid d,r)\) is large, then the removed or normalized
+material was highly extraneous. If it is close to zero, then the simplification
+contributes little toward eliminating surplus.
+
+This notion suggests a practical decision principle: among several candidate
+simplifications, a good next reduction is one that is expected to minimize the
+posterior surplus \(s_r(g(d))\), or equivalently, to maximize the expected
+marginal surplus reduction.
+
+\begin{example}
+Suppose that \(d\) is a valid description consisting of a program that
+generates the target representation \(r\), but also includes extensive logging
+routines, benchmark code, plotting commands, and a historical record of
+intermediate failed attempts. A normalization operator \(g_1\) removes only
+the logging and plotting routines, whereas another operator \(g_2\) removes a
+core routine that is actually needed to generate the representation.
+
+The preferable simplification is the one expected to make \(s_r(g(d))\) as
+small as possible while keeping the resulting string a useful valid
+description. In this scenario, \(g_1\) is likely to be the better choice, because
+it removes content that is not genuinely needed to reach a minimal
+description of \(r\). By contrast, \(g_2\) may simplify the code syntactically,
+but it risks removing information that is structurally relevant to the target
+representation.
+\end{example}
+
+A particularly important case is when the removed material is fully
+recoverable from what remains. Then simplification does not substantially
+worsen deficiency.
+
+\begin{proposition}
+\label{prop:safe_simplification_description}
+Let \(r\in\mathcal R\), let \(d\in\mathcal D\), and let
+\(g:\mathcal B^\ast\to\mathcal B^\ast\) be a total computable function such
+that
+\[
+\tilde d:=g(d)\in\mathcal D.
+\]
+If
+\[
+K(d\mid \tilde d)=O(1),
+\]
+then
+\[
+d_r(\tilde d)=d_r(d)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(\tilde d\) is computable from \(d\) via \(g\), we have
+\[
+d_r(\tilde d)\le d_r(d)+O(1).
+\]
+On the other hand, the assumption \(K(d\mid \tilde d)=O(1)\) implies that
+\(d\) is computable from \(\tilde d\) with constant overhead. Therefore
+\[
+d_r(d)\le d_r(\tilde d)+O(1).
+\]
+Combining both inequalities yields
+\[
+d_r(\tilde d)=d_r(d)+O(1).
+\]
+\end{proof}
+
+This proposition formalizes the idea of a safe simplification: if the material
+that is removed can already be reconstructed from the simplified
+description, then no substantial increase in deficiency is incurred. In
+practice, this justifies removing duplications, macro expansions, boilerplate,
+or reversible syntactic sugar without materially worsening the amount of
+missing information.
+
+\subsection*{Strict decrease of mismodel}
+
+The previous propositions provide one-sided guarantees: enrichment controls
+deficiency, and simplification controls surplus. A strict decrease of mismodel
+requires that the quantity
+\[
+\nu_r(d)=\max\{d_r(d),s_r(d)\}
+\]
+actually becomes smaller. In particular, decreasing only one component is
+not always sufficient, since the other component may remain dominant.
+
+Before giving sufficient conditions for strict decrease, it is useful to note
+explicitly that a strict decrease in deficiency alone, or in surplus alone, does
+not in general imply a strict decrease in mismodel.
+
+\begin{proposition}
+A strict decrease in deficiency alone, or in surplus alone, does not in general
+imply a strict decrease in mismodel.
+\end{proposition}
+
+\begin{proof}
+For the first claim, suppose that
+\[
+d_r(d)=10,\qquad s_r(d)=100,
+\]
+and that after some modification we obtain a valid description \(d'\in\mathcal
+D\) such that
+\[
+d_r(d')=9,\qquad s_r(d')=100.
+\]
+Then deficiency has decreased strictly, but
+\[
+\nu_r(d)=\max\{10,100\}=100,
+\qquad
+\nu_r(d')=\max\{9,100\}=100.
+\]
+Hence \(\nu_r(d')=\nu_r(d)\), so mismodel does not decrease strictly.
+
+The argument for surplus is symmetric. If
+\[
+d_r(d)=100,\qquad s_r(d)=10,
+\]
+and
+\[
+d_r(d')=100,\qquad s_r(d')=9,
+\]
+then surplus decreases strictly, but
+\[
+\nu_r(d)=\max\{100,10\}=100,
+\qquad
+\nu_r(d')=\max\{100,9\}=100.
+\]
+Again, mismodel does not decrease strictly.
+\end{proof}
+
+This proposition shows why one-sided control results are not enough on
+their own to guarantee improvement in mismodel. What matters is not only
+whether one component decreases, but whether the dominant component is
+reduced below the previous mismodel level.
+
+The strongest simple sufficient condition is the following: if both deficiency
+and surplus decrease strictly, then mismodel must also decrease strictly.
+
+\begin{proposition}[Simultaneous improvement]
+\label{prop:simultaneous_improvement_mismodel}
+Let \(r\in\mathcal R\), and let \(d,d'\in\mathcal D\) be valid descriptions. If
+\[
+d_r(d')<d_r(d)
+\qquad\text{and}\qquad
+s_r(d')<s_r(d),
+\]
+then
+\[
+\nu_r(d')<\nu_r(d).
+\]
+\end{proposition}
+
+\begin{proof}
+Since both components decrease strictly, we have
+\[
+\max\{d_r(d'),s_r(d')\}
+<
+\max\{d_r(d),s_r(d)\}.
+\]
+That is,
+\[
+\nu_r(d')<\nu_r(d).
+\]
+\end{proof}
+
+This proposition captures the ideal situation in which a descriptive
+intervention simultaneously removes missing information and extraneous
+information. In practice, however, enrichment and simplification usually act
+asymmetrically, so it is useful to have more targeted sufficient conditions
+based on whichever component is currently dominant.
+
+\begin{proposition}[Simple sufficient conditions for strict decrease of mismodel]
+\label{prop:sufficient_decrease_mismodel}
+Let \(r\in\mathcal R\), let \(d\in\mathcal D\) be a valid description, and let
+\(d'\in\mathcal D\) be a revised valid description.
+\begin{enumerate}
+\item If \(d_r(d)=\nu_r(d)\), \(d_r(d')<d_r(d)\), and
+\[
+s_r(d')<d_r(d),
+\]
+then
+\[
+\nu_r(d')<\nu_r(d).
+\]
+
+\item If \(s_r(d)=\nu_r(d)\), \(s_r(d')<s_r(d)\), and
+\[
+d_r(d')<s_r(d),
+\]
+then
+\[
+\nu_r(d')<\nu_r(d).
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+For (1), since \(d_r(d)=\nu_r(d)\), we have
+\[
+\nu_r(d)=d_r(d).
+\]
+By assumption,
+\[
+d_r(d')<d_r(d)=\nu_r(d)
+\qquad\text{and}\qquad
+s_r(d')<d_r(d)=\nu_r(d).
+\]
+Hence both arguments in the maximum defining \(\nu_r(d')\) are strictly
+smaller than \(\nu_r(d)\), so
+\[
+\nu_r(d')=\max\{d_r(d'),s_r(d')\}<\nu_r(d).
+\]
+
+The proof of (2) is symmetric. Since \(s_r(d)=\nu_r(d)\), we have
+\[
+\nu_r(d)=s_r(d).
+\]
+By assumption,
+\[
+s_r(d')<s_r(d)=\nu_r(d)
+\qquad\text{and}\qquad
+d_r(d')<s_r(d)=\nu_r(d).
+\]
+Therefore
+\[
+\nu_r(d')=\max\{d_r(d'),s_r(d')\}<\nu_r(d).
+\]
+\end{proof}
+
+This proposition makes explicit a basic decision rule for description
+refinement: one should focus on reducing the component that currently
+determines mismodel, while keeping the other below the previous threshold.
+In this sense, enrichment is most naturally useful when deficiency is
+dominant, whereas simplification is most naturally useful when surplus is
+dominant.
+
+A particularly informative case occurs when the two components are exactly
+balanced. Then neither deficiency nor surplus alone determines mismodel;
+both jointly determine the threshold that must be crossed for strict
+improvement.
+
+\begin{corollary}[Balanced case]
+\label{cor:balanced_case_mismodel}
+If
+\[
+d_r(d)=s_r(d)=\nu_r(d),
+\]
+then
+\[
+\nu_r(d')<\nu_r(d)
+\quad\Longleftrightarrow\quad
+d_r(d')<\nu_r(d)
+\ \text{ and }\
+s_r(d')<\nu_r(d).
+\]
+\end{corollary}
+
+\begin{proof}
+Assume first that \(\nu_r(d')<\nu_r(d)\). Since
+\[
+\nu_r(d')=\max\{d_r(d'),s_r(d')\},
+\]
+both \(d_r(d')\) and \(s_r(d')\) must be strictly smaller than
+\(\nu_r(d)\); otherwise the maximum would be at least \(\nu_r(d)\).
+
+Conversely, if
+\[
+d_r(d')<\nu_r(d)
+\qquad\text{and}\qquad
+s_r(d')<\nu_r(d),
+\]
+then
+\[
+\nu_r(d')=\max\{d_r(d'),s_r(d')\}<\nu_r(d).
+\]
+\end{proof}
+
+The balanced case shows that when deficiency and surplus are tied, improving
+only one of them is not enough to decrease mismodel strictly. Both must fall
+below the previous common level. This explains why isolated edits may fail
+to improve descriptive quality and a combined intervention may be required.
+
+\subsection*{Practical strategy for decreasing mismodel}
+
+The previous results suggest a simple operational strategy for refining valid
+descriptions.
+
+If deficiency is much larger than surplus, one should prioritize enrichment
+steps expected to reduce missing information while keeping surplus under
+control. In practice, this means adding precisely the information that brings
+the current description closer to a minimal description of \(r\): missing
+constraints, definitions, initial conditions, causal mechanisms, latent states,
+or structural invariants.
+
+If surplus is much larger than deficiency, one should prioritize
+simplification steps expected to eliminate extraneous content without making
+the description substantially more deficient. In practice, this means removing
+dead code, duplicated derivations, reversible formatting layers, irrelevant
+comments, logging instructions, or ad hoc subroutines that do not help in
+reaching a minimal description of the target representation.
+
+When the two components are of comparable size, the best intervention may
+need to combine both types of refinement: enrich the description in the
+directions that reduce deficiency most, and simplify it in the directions that
+reduce surplus most. The goal is not merely to make the description longer
+or shorter, but to bring it algorithmically closer, in both directions, to the
+class of minimal descriptions of \(r\).
+
+In this way, mismodel becomes a prescriptive notion. It does not merely
+measure how far a current description is from descriptive optimality; it also
+suggests how that description should be revised next.
 
 %
 % Section: Mismodel of Conditional Descriptions
@@ -134,38 +2521,6 @@ As a direct consequence of Proposition \ref{prop:range_conditional_inaccuracy}, 
 
 }
 
-%
-% Section: Reducing Mismodel
-%
-
-\section{Reducing Mismodel}
-
-{\color{red}
-
-A valid representation of an entity is a string that contains all the necessary information required by the oracle to reconstruct that entity and only that information. If the representation is non-valid, meaning its miscoding exceeds zero, it may be because some crucial information is missing, some symbols are incorrect, or it contains irrelevant symbols. To reduce the miscoding of a representation, we can add the missing information, or remove the incorrect or irrelevant symbols. We cannot know in advance if any information is missing or some symbols need to be removed. Fortunately, as the next theorem illustrates, it must be one of these two cases.
-
-\begin{theorem}
-\label{th:reduce_mismodel}
-Let $r \in \mathcal{B}^\ast$ be a representation such that $\mu(r) >0$, then at least one of the following cases is true:
-\begin{enumerate}[label=(\roman*)]
-\item there exist a $s \in \mathcal{B}^\ast$ such that $\mu(rs) < \mu(r)$ or $\mu(sr) < \mu(r)$,
-\item there exists a $s \in \mathcal{B}^\ast$ in the form $r = \alpha s \beta$ with $\alpha, \beta \in \mathcal{B}^\ast$ such that $\mu(r) < \mu(s)$.
-\end{enumerate}
-\end{theorem}
-\begin{proof}
-{\color{red} Finish}
-Assume that $\mu(r) >0$. We have that
-\[
-\overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} } { \max\{ K \left( r \right), K \left( r^\star_e \right) \} } > 0
-\]
-Let $r^\star_e = arg\,min \left( \mu(r) \right)$. We have that $\max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} > 0$. If $K \left( r \mid r^\star_e \right) > 0$ we have that $r$ contains non-relevant symbols. If $K \left( r^\star_e \mid r \right) > 0$ we have that $r$ is missing some relevant symbols.
-\end{proof}
-
-\begin{example}
-{\color{red} TODO: Provide a practical example.}
-\end{example}
-
-}
 
 %
 % Section: Mismodel of Areas

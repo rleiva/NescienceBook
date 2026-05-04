@@ -725,6 +725,581 @@ Apply Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:j
 %
 
 \section{Conditional Descriptions}
+\label{sec:conditional_descriptions}
+
+It is often impractical to include all the information required to reconstruct a representation within a single description. Scientific descriptions are rarely constructed in isolation. They normally presuppose a considerable amount of background knowledge: mathematical tools, measurement conventions, auxiliary theories, previously established empirical facts, and accepted methods of inference. For example, a modern formulation of Newtonian mechanics may rely on the language of infinitesimal calculus without explicitly reconstructing calculus as part of the theory itself.
+
+This motivates the notion of a \emph{conditional description}. A conditional description is a description whose interpretation is made relative to some prior description. The prior description is not incorporated as a further part of the model; rather, it is treated as background knowledge that may be freely used when reconstructing the target representation.
+
+In this section we formalize conditioning as a computable operation on descriptions. Unlike augmentation, which combines two descriptions into a larger description, conditioning changes the context in which a description is
+evaluated.
+
+\begin{definition}
+We define a \emph{conditioning operator}\index{Conditioning operator} as a computable function
+\[
+\operatorname{cond}:\mathcal D\times \mathcal D\to \mathcal D
+\]
+such that, for every pair of descriptions
+\[
+d_1 = \langle TM_1, a_1 \rangle,
+\qquad
+d_2 = \langle TM_2, a_2 \rangle \in \mathcal D,
+\]
+we have
+\[
+\operatorname{cond}(d_1,d_2)=d_3,
+\]
+where
+\[
+d_3=\langle TM_3,\langle a_1,d_2\rangle\rangle \in \mathcal D,
+\]
+and \(TM_3\) is a Turing machine obtained computably from \(TM_1\) such that, on input
+\(\langle a_1,d_2\rangle\), it parses \(d_2=\langle TM_2,a_2\rangle\), computes the output
+\(TM_2(a_2)\), and uses that output as auxiliary computable information during the simulation of
+\(TM_1(a_1)\).
+\end{definition}
+
+More precisely, \(TM_3\) is allowed to parse \(d_2=\langle TM_2,a_2\rangle\),
+simulate the computation \(TM_2(a_2)\), and use its result as an auxiliary
+computable resource during the execution of \(TM_1(a_1)\).
+
+\begin{definition}
+We define a \emph{conditioning operator}\index{Conditioning operator} as a computable function
+\[
+\operatorname{cond}:\mathcal D\times \mathcal D\to \mathcal D
+\]
+given by
+\[
+\operatorname{cond}(d_1,d_2)
+=
+\langle U_{\mathrm{cond}},\langle d_1,d_2\rangle\rangle,
+\]
+where \(U_{\mathrm{cond}}\) is a fixed universal Turing machine that executes the
+computation encoded by \(d_1\) while using the computation encoded by \(d_2\)
+as background information.
+\end{definition}
+
+
+
+\begin{definition}
+We define a \emph{conditioning operator}\index{Conditioning operator} as a computable function
+\[
+\operatorname{cond}:\mathcal D\times \mathcal D\to \mathcal D
+\]
+such that, for every pair of descriptions \(d_1 = \langle TM_1, a_1 \rangle\) and
+\(d_2 = \langle TM_2, a_2 \rangle\ \in \mathcal D\), we have that
+\[
+\operatorname{cond}(d_1,d_2) = d_3
+\]
+where \(d_3=\langle TM_3, \langle a_1, TM_2\rangle \rangle \in \mathcal D\).
+\end{definition}
+
+
+The output of a description is the representation reconstructed by that
+description. This notation allows us to distinguish clearly between a
+description \(d\), which is a computational object, and the representation
+\(\operatorname{out}(d)\), which is the string produced by that object.
+
+\begin{definition}[Conditioning operator]
+\label{def:conditioning_operator}
+A \emph{conditioning operator}\index{Conditioning operator} is a computable
+function
+\[
+\operatorname{cond}:\mathcal D\times \mathcal D\to \mathcal D
+\]
+such that, for descriptions \(d=\langle TM,a\rangle\) and
+\(c\in\mathcal D\), the description
+\[
+\operatorname{cond}(d,c)
+\]
+is interpreted as the description obtained by evaluating \(d\) with free access
+to the background representation \(\operatorname{out}(c)\).
+
+Equivalently, \(\operatorname{cond}(d,c)\) is a description whose computation
+has the same effect, up to a fixed computable translation, as running \(TM\) on
+the pair
+\[
+\langle a,\operatorname{out}(c)\rangle .
+\]
+\end{definition}
+
+The second argument \(c\) plays a special role. It is not merged with \(d\) as
+an additional component of the description. Instead, \(c\) determines the
+background context relative to which \(d\) is evaluated. This is the essential
+difference between conditioning and augmentation. Augmentation adds content;
+conditioning reuses content that is assumed to be already available.
+
+For this reason, when measuring the size of a conditional description, the cost
+of the background description is not charged to the conditional description
+itself. The relevant cost is the additional information needed once the
+background has been fixed.
+
+\begin{definition}[Conditional description of a representation]
+\label{def:conditional_description}
+Let \(r\in\mathcal B^\ast\) be a representation, and let
+\(c\in\mathcal D\) be a background description. We say that
+\(d\in\mathcal D\) is a \emph{valid description of \(r\) conditional on \(c\)}
+\index{Conditional description} if
+\[
+\operatorname{out}(\operatorname{cond}(d,c))=r.
+\]
+The set of all descriptions of \(r\) conditional on \(c\) is denoted by
+\[
+\mathcal D_{r\mid c}
+=
+\left\{
+d\in\mathcal D :
+\operatorname{out}(\operatorname{cond}(d,c))=r
+\right\}.
+\]
+\end{definition}
+
+Thus, \(\mathcal D_{r\mid c}\) contains the descriptions that reconstruct
+\(r\) under the assumption that the background description \(c\) is already
+available. Notice that the conditioning object is now a description \(c\), not
+an arbitrary string \(s\). This better matches the intended interpretation:
+background knowledge is itself represented by a description.
+
+\begin{definition}[Minimal conditional description]
+\label{def:minimal_conditional_description}
+Let \(r\in\mathcal B^\ast\) be a representation, and let
+\(c\in\mathcal D\) be a background description. A description
+\(d^\star_{r\mid c}\in\mathcal D_{r\mid c}\) is called a
+\emph{minimal conditional description}\index{Minimal conditional description}
+of \(r\) given \(c\) if
+\[
+\ell(d^\star_{r\mid c})
+=
+\min\{\ell(d):d\in\mathcal D_{r\mid c}\}.
+\]
+\end{definition}
+
+The quantity \(\ell(d^\star_{r\mid c})\) measures the amount of additional
+descriptional information required to reconstruct \(r\) once the background
+description \(c\) is assumed to be available. It is the analogue, at the level
+of descriptions, of conditional Kolmogorov complexity.
+
+\begin{proposition}[Unconditional descriptions are conditional descriptions]
+\label{prop:description_implies_conditional}
+Let \(r\in\mathcal B^\ast\), and let \(c\in\mathcal D\) be any background
+description. If \(d\in\mathcal D_r\), then there exists a description
+\(\widetilde d\in\mathcal D_{r\mid c}\) such that
+\[
+\ell(\widetilde d)\leq \ell(d)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(d\in\mathcal D_r\), the description \(d=\langle TM,a\rangle\)
+satisfies \(TM(a)=r\). Construct a new machine \(TM'\) that, on input
+\(\langle a,\operatorname{out}(c)\rangle\), ignores the second component and
+simulates \(TM(a)\). The description
+\[
+\widetilde d=\langle TM',a\rangle
+\]
+therefore satisfies
+\[
+\operatorname{out}(\operatorname{cond}(\widetilde d,c))=r.
+\]
+The only additional cost is the fixed cost of replacing \(TM\) with a machine
+that ignores the background input. Hence
+\[
+\ell(\widetilde d)\leq \ell(d)+O(1).
+\]
+\end{proof}
+
+The converse does not hold in general. If \(d\in\mathcal D_{r\mid c}\), then
+\(d\) reconstructs \(r\) only with access to the background description \(c\).
+It need not reconstruct \(r\) without that background. In general,
+\[
+d\in\mathcal D_{r\mid c}
+\quad\not\Rightarrow\quad
+d\in\mathcal D_r.
+\]
+
+\begin{proposition}[Conditional descriptions are no longer than unconditional descriptions]
+\label{prop:description_conditional_inequality}
+Let \(r\in\mathcal B^\ast\), and let \(c\in\mathcal D\) be a background
+description. Then
+\[
+\ell(d^\star_{r\mid c})
+\leq
+\ell(d^\star_r)+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Apply Proposition~\ref{prop:description_implies_conditional} to a minimal
+description \(d^\star_r\in\mathcal D_r\). This yields a conditional description
+\(\widetilde d\in\mathcal D_{r\mid c}\) such that
+\[
+\ell(\widetilde d)\leq \ell(d^\star_r)+O(1).
+\]
+Since \(d^\star_{r\mid c}\) is minimal in \(\mathcal D_{r\mid c}\), we obtain
+\[
+\ell(d^\star_{r\mid c})
+\leq
+\ell(\widetilde d)
+\leq
+\ell(d^\star_r)+O(1).
+\]
+\end{proof}
+
+This proposition formalizes the intuitive idea that background knowledge cannot
+make the shortest description essentially longer. At worst, the description can
+ignore the background information.
+
+\begin{proposition}[Useful conditioning may strictly reduce description length]
+\label{prop:conditioning_can_reduce_length}
+There exist representations \(r\in\mathcal B^\ast\) and background descriptions
+\(c\in\mathcal D\) such that
+\[
+\ell(d^\star_{r\mid c})
+<
+\ell(d^\star_r)-O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+Let \(s\in\mathcal B^\ast\) be a string with high Kolmogorov complexity, and
+let \(c\in\mathcal D\) be a description such that \(\operatorname{out}(c)=s\).
+Take \(r=s\). Without access to \(c\), any description of \(r\) must contain
+essentially the information needed to reconstruct \(s\). However, conditional
+on \(c\), a fixed-size description can output the background string
+\(\operatorname{out}(c)\). Thus the conditional description length may be
+smaller than the unconditional description length by an unbounded amount.
+\end{proof}
+
+This proposition captures the role of background knowledge in scientific
+practice. A theory may become much shorter when expressed relative to a
+previously established theory, a mathematical framework, or a body of empirical
+knowledge.
+
+\begin{definition}[Conditional equivalence of descriptions]
+\label{def:conditional_equivalence}
+Let \(c\in\mathcal D\) be a background description. Two descriptions
+\(d_1,d_2\in\mathcal D\) are said to be \emph{equivalent conditional on \(c\)}
+\index{Conditional equivalence} if
+\[
+\operatorname{out}(\operatorname{cond}(d_1,c))
+=
+\operatorname{out}(\operatorname{cond}(d_2,c)).
+\]
+We write
+\[
+d_1\equiv_c d_2.
+\]
+If the two descriptions can be transformed into one another by fixed
+computable translators independent of the particular descriptions involved, we
+write
+\[
+d_1\equiv_c^{O(1)} d_2.
+\]
+\end{definition}
+
+The relation \(\equiv_c^{O(1)}\) is the appropriate notion of equality for
+conditional descriptions. Two descriptions may not be identical as strings, but
+they may have the same expressive content relative to a given background, up to
+a constant-size change of coding.
+
+We now relate conditioning to augmentation. Recall that augmentation is a
+computable operation
+\[
+\operatorname{aug}:\mathcal D\times\mathcal D\to\mathcal D
+\]
+that combines two descriptions into a joint description. Conditioning should
+distribute over augmentation when the same background knowledge is available to
+each component. This is the formal counterpart of the idea that using a common
+background theory after combining two descriptions is equivalent to using that
+background theory in each component before combining them.
+
+\begin{proposition}[Distributivity of conditioning over augmentation]
+\label{prop:conditioning_distributes_over_augmentation}
+Let \(d_1,d_2,c\in\mathcal D\). Suppose that augmentation is a structural
+combination operator, in the sense that
+\(\operatorname{aug}(d_1,d_2)\) reconstructs the joint output of \(d_1\) and
+\(d_2\) up to a fixed computable pairing convention. Then
+\[
+\operatorname{cond}(\operatorname{aug}(d_1,d_2),c)
+\equiv^{O(1)}
+\operatorname{aug}(\operatorname{cond}(d_1,c),\operatorname{cond}(d_2,c)).
+\]
+\end{proposition}
+
+\begin{proof}
+The left-hand side first forms a joint description from \(d_1\) and \(d_2\),
+and then evaluates that joint description relative to the background
+description \(c\). Its output is therefore the joint reconstruction obtained
+from \(d_1\) and \(d_2\) with access to \(\operatorname{out}(c)\).
+
+The right-hand side first evaluates \(d_1\) relative to \(c\), evaluates
+\(d_2\) relative to \(c\), and then structurally combines the two resulting
+conditional descriptions. Its output is therefore the same joint reconstruction.
+
+Since both procedures differ only in the order in which a fixed computable
+pairing and a fixed computable conditioning convention are applied, there are
+constant-size translators between the two descriptions. Hence the two sides are
+equivalent up to \(O(1)\).
+\end{proof}
+
+This distributive property is one of the main reasons to define conditioning as
+an operation on descriptions rather than as a raw pairing of strings. It makes
+conditioning behave like a change of context: the same background knowledge may
+be applied before or after a structural decomposition of the description.
+
+\begin{example}[Newtonian mechanics conditional on calculus]
+Let \(d_1\) be a description of Newton's first law, let \(d_2\) be a description
+of Newton's second law, and let \(c\) be a description of infinitesimal
+calculus. Then
+\[
+\operatorname{cond}(\operatorname{aug}(d_1,d_2),c)
+\]
+represents the joint theory consisting of the first and second laws, expressed
+under the assumption that calculus is already available. On the other hand,
+\[
+\operatorname{aug}(\operatorname{cond}(d_1,c),
+\operatorname{cond}(d_2,c))
+\]
+represents the combination of the first law expressed relative to calculus and
+the second law expressed relative to calculus. Proposition
+\ref{prop:conditioning_distributes_over_augmentation} states that these two
+ways of using the background theory are equivalent up to a constant-size
+translation.
+\end{example}
+
+The distributive property should not be confused with augmentation by the
+background theory itself. In general,
+\[
+\operatorname{cond}(d,c)
+\]
+is not the same as
+\[
+\operatorname{aug}(d,c).
+\]
+The former assumes \(c\) as background knowledge; the latter incorporates \(c\)
+as an additional component of the description.
+
+\begin{proposition}[Conditioning is not augmentation]
+\label{prop:conditioning_not_augmentation}
+In general,
+\[
+\operatorname{cond}(d,c)
+\not\equiv
+\operatorname{aug}(d,c).
+\]
+\end{proposition}
+
+\begin{proof}
+The description \(\operatorname{aug}(d,c)\) reconstructs a joint object
+containing the outputs of both \(d\) and \(c\). In contrast,
+\(\operatorname{cond}(d,c)\) reconstructs the target output of \(d\) using
+\(\operatorname{out}(c)\) only as background information. Thus the output of
+\(\operatorname{aug}(d,c)\) contains the contribution of \(c\) explicitly,
+whereas the output of \(\operatorname{cond}(d,c)\) need not contain it. Hence
+the two operations have different semantics and are not equivalent in general.
+\end{proof}
+
+This distinction is crucial. Augmentation expands the object being described;
+conditioning changes the informational context in which the description is
+evaluated.
+
+The relation between conditional descriptions and joint descriptions can now
+be stated in a way that mirrors the usual inequalities for Kolmogorov
+complexity.
+
+\begin{proposition}[Conditional, unconditional, and joint descriptions]
+\label{prop:description_conditional_joint}
+Let \(r\in\mathcal B^\ast\), and let \(c\in\mathcal D\) be a background
+description. Then
+\[
+\ell(d^\star_{r\mid c})
+\leq
+\ell(d^\star_r)+O(1)
+\leq
+\ell(d^\star_{r,\operatorname{out}(c)})+O(1),
+\]
+where \(d^\star_{r,\operatorname{out}(c)}\) denotes a minimal joint description
+of the pair \(\langle r,\operatorname{out}(c)\rangle\).
+\end{proposition}
+
+\begin{proof}
+The first inequality is Proposition
+\ref{prop:description_conditional_inequality}. For the second inequality, any
+description of the joint representation
+\(\langle r,\operatorname{out}(c)\rangle\) can be converted, by a fixed
+computable projection, into a description of \(r\). Therefore a minimal
+description of \(r\) cannot be longer than a minimal joint description of
+\(\langle r,\operatorname{out}(c)\rangle\), except for the constant cost of the
+projection.
+\end{proof}
+
+This proposition formalizes the basic asymmetry between conditioning and joint
+description. Describing \(r\) given \(c\) may be easier than describing \(r\)
+alone, while describing \(r\) together with the output of \(c\) is at least as
+demanding as describing \(r\) alone, up to a constant.
+
+Conditioning can also be iterated. In scientific practice, a model may rely on
+several layers of background knowledge: for example, a physical theory may
+presuppose calculus, geometry, measurement conventions, and numerical methods.
+
+\begin{definition}[Multiple conditioning]
+\label{def:multiple_conditioning}
+Let \(d,c_1,\ldots,c_n\in\mathcal D\). We define the iterated conditional
+description of \(d\) given \(c_1,\ldots,c_n\) recursively by
+\[
+\operatorname{cond}(d;c_1,\ldots,c_n)
+=
+\operatorname{cond}(
+\operatorname{cond}(d;c_1,\ldots,c_{n-1}),c_n),
+\]
+with
+\[
+\operatorname{cond}(d;c_1)=\operatorname{cond}(d,c_1).
+\]
+\end{definition}
+
+\begin{definition}[Conditional descriptions with multiple backgrounds]
+\label{def:conditional_description_multiple_backgrounds}
+Let \(r\in\mathcal B^\ast\), and let \(c_1,\ldots,c_n\in\mathcal D\). We define
+\[
+\mathcal D_{r\mid c_1,\ldots,c_n}
+=
+\left\{
+d\in\mathcal D:
+\operatorname{out}(\operatorname{cond}(d;c_1,\ldots,c_n))=r
+\right\}.
+\]
+A description
+\[
+d^\star_{r\mid c_1,\ldots,c_n}\in
+\mathcal D_{r\mid c_1,\ldots,c_n}
+\]
+is called a \emph{minimal conditional description} of \(r\) given
+\(c_1,\ldots,c_n\) if
+\[
+\ell(d^\star_{r\mid c_1,\ldots,c_n})
+=
+\min
+\{
+\ell(d):d\in\mathcal D_{r\mid c_1,\ldots,c_n}
+\}.
+\]
+\end{definition}
+
+\begin{proposition}[Monotonicity of conditional description length]
+\label{prop:conditional_monotonicity}
+Let \(r\in\mathcal B^\ast\), and let \(c_1,\ldots,c_n,c_{n+1}\in\mathcal D\).
+Then
+\[
+\ell(d^\star_{r\mid c_1,\ldots,c_n,c_{n+1}})
+\leq
+\ell(d^\star_{r\mid c_1,\ldots,c_n})+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+A description conditional on \(c_1,\ldots,c_n,c_{n+1}\) may ignore the
+additional background description \(c_{n+1}\). Therefore any description that
+reconstructs \(r\) from \(c_1,\ldots,c_n\) can be converted, at constant cost,
+into a description that reconstructs \(r\) from
+\(c_1,\ldots,c_n,c_{n+1}\). Taking minimal descriptions gives the result.
+\end{proof}
+
+Thus, adding background knowledge cannot essentially increase the length of a
+minimal conditional description. It may leave the length unchanged if the new
+background is irrelevant, or it may reduce the length if the new background
+contains information useful for reconstructing the representation.
+
+\begin{definition}[Relevance of a background description]
+\label{def:background_relevance}
+Let \(r\in\mathcal B^\ast\), and let \(c\in\mathcal D\). We define the
+\emph{descriptional relevance}\index{Descriptional relevance} of \(c\) for
+\(r\) as
+\[
+\Delta(r;c)
+=
+\ell(d^\star_r)-\ell(d^\star_{r\mid c}).
+\]
+\end{definition}
+
+The quantity \(\Delta(r;c)\) measures how much shorter the best description of
+\(r\) becomes when \(c\) is available as background knowledge. If
+\(\Delta(r;c)\) is large, then \(c\) contains information that is highly
+relevant to the reconstruction of \(r\). If \(\Delta(r;c)=O(1)\), then \(c\)
+does not significantly reduce the descriptional burden.
+
+\begin{proposition}[Irrelevant background descriptions]
+\label{prop:irrelevant_background}
+Let \(r\in\mathcal B^\ast\), and let \(c\in\mathcal D\). If
+\[
+\ell(d^\star_{r\mid c})
+=
+\ell(d^\star_r)+O(1),
+\]
+then \(c\) is descriptionally irrelevant to \(r\) up to a constant-size coding
+effect.
+\end{proposition}
+
+\begin{proof}
+By Definition~\ref{def:background_relevance},
+\[
+\Delta(r;c)
+=
+\ell(d^\star_r)-\ell(d^\star_{r\mid c}).
+\]
+If the two lengths differ only by \(O(1)\), then
+\[
+\Delta(r;c)=O(1).
+\]
+Thus \(c\) does not provide a non-constant reduction in the shortest
+description length of \(r\).
+\end{proof}
+
+This proposition gives an operational interpretation of relevance. A background
+description is relevant to a target representation precisely when it reduces
+the amount of additional information needed to reconstruct that representation.
+
+Finally, we record the corresponding chain rule. It connects conditional
+description length with joint description length and explains why conditioning
+is the correct formal tool for separating novel information from assumed
+background knowledge.
+
+\begin{proposition}[Descriptional chain rule]
+\label{prop:descriptional_chain_rule}
+Let \(r\in\mathcal B^\ast\), and let \(c\in\mathcal D\). Then, up to logarithmic
+or coding-dependent overheads,
+\[
+\ell(d^\star_{r,\operatorname{out}(c)})
+=
+\ell(d^\star_{\operatorname{out}(c)})
++
+\ell(d^\star_{r\mid c})
++
+O(1).
+\]
+\end{proposition}
+
+\begin{proof}
+A joint description of \(\langle \operatorname{out}(c),r\rangle\) may first
+describe \(\operatorname{out}(c)\) and then describe \(r\) conditional on that
+background. This gives the upper bound. Conversely, from any joint description
+of \(\langle \operatorname{out}(c),r\rangle\), one can recover both
+\(\operatorname{out}(c)\) and \(r\), and therefore separate the information
+needed for the background from the additional information needed for the target
+relative to that background, up to the fixed cost of the chosen coding
+convention. This yields the stated equivalence.
+\end{proof}
+
+The chain rule clarifies the conceptual role of conditional descriptions.
+Scientific knowledge grows not only by constructing larger joint descriptions,
+but also by changing what can be assumed as background. Once a description has
+become part of the accepted background, subsequent descriptions may become
+shorter, more modular, and easier to compare. Conditioning therefore provides a
+formal mechanism for representing cumulative scientific knowledge: new models
+are not evaluated in isolation, but relative to the knowledge already available.
+
+
+\section{Conditional Descriptions}
 
 It is often cumbersome to include all the information required to reconstruct an entity within a single description, as this would typically result in very long strings for most entities. A more practical approach is to assume the existence of some background knowledge and to quantify our lack of knowledge about an entity relative to that background. In this section, we study the concept of \emph{conditional descriptions}, that is, constructing a description given some prior description. Conditional descriptions also play a crucial role in the discovery of new knowledge: if conditioning a description on some prior knowledge significantly reduces the inaccuracy of a model, it indicates that this prior knowledge is relevant to understanding the entity.
 

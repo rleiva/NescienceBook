@@ -16,6 +16,659 @@ Albert Einstein
 \end{quote}
 \bigskip
 
+
+In Chapter \ref{chap:Mismodel} we introduced the concept of \emph{mismodel} as the discrepancy between a description currently available in scientific practice and the ideal class of minimal descriptions of a representation. If \(r\in\mathcal B^\ast\) is a representation and \(d\in\mathcal D\) is a valid description, then the mismodel of \(d\) with respect to \(r\) is determined by two components: the information still missing from \(d\), and the information contained in \(d\) that is not needed in any minimal description of \(r\).
+
+The theoretical definition of mismodel is useful because it identifies the two fundamental ways in which a description can fail. A description may be \emph{deficient}: it may not contain enough information to reconstruct the representation. Or it may be \emph{excessive}: it may contain unnecessary descriptive content. However, mismodel is not computable in general. The main reason is that minimal descriptions are not known in scientific practice. Moreover, even if a candidate minimal description were available, verifying its minimality would require solving problems related to Kolmogorov complexity, which is non-computable in general.
+
+For this reason, mismodel cannot usually be computed directly. Instead, it must be approximated through operational quantities. There are two natural ways to do this. The first one, studied in Chapter \ref{chap:Error}, is to evaluate how far the output produced by the current description is from the representation \(r\). This gives rise to the notion of \emph{inaccuracy}. Inaccuracy is therefore a practical approximation to the deficiency component of mismodel: it measures the extent to which the current model fails to reproduce the representation.
+
+The second approach, studied in the present chapter, is to evaluate how far the current description is from being minimal as a description. This gives rise to the notion of \emph{surfeit}. Surfeit is intended as a practical approximation to the surplus component of mismodel. Rather than comparing the description with an unknown minimal description of \(r\), it examines the internal compressibility of the description itself. A description with a large amount of removable structure, repeated content, avoidable parameters, or unnecessary algorithmic machinery is unlikely to be close to minimal. Conversely, a description that is hard to compress is a better candidate for being near minimal, although not necessarily an accurate one.
+
+This distinction is essential. Inaccuracy evaluates the relation between the description and the representation. Surfeit evaluates the description itself. A model may be concise but inaccurate; it may reproduce the representation well but be unnecessarily complicated; or it may be both accurate and concise. The theory of nescience requires these dimensions to be analyzed jointly.
+
+The central idea of this chapter is therefore modest but practical: since the surplus of a description cannot normally be computed, we approximate it by measuring how much the description can still be compressed. This approximation is not perfect. It detects syntactic and algorithmic redundancy, but it may fail to detect incompressible irrelevant information. Nevertheless, it captures an important and widely used principle of scientific practice: a better understanding of a phenomenon should allow us to replace unnecessarily complex models by simpler, more economical ones without increasing their inaccuracy.
+
+In this chapter we introduce surfeit formally, study its main properties, explain its relation to the theoretical surplus of descriptions, and discuss how it can be approximated in practice. We also examine how surfeit may be decreased, how it interacts with inaccuracy, and how the concept can be extended to research areas.
+
+%
+% Section: Surfeit
+%
+
+\section{Surfeit}
+\label{sec:Definition_surfeit}
+
+Let \(d\in\mathcal D\) be a valid description. Recall that a description is a finite string, usually interpreted as a pair \(\langle TM,a\rangle\), where \(TM\) is a Turing machine and \(a\) is an input such that \(TM(a)\) halts. The length \(l(d)\) measures the size of the description, while the Kolmogorov complexity \(K(d)\) measures the length of the shortest program capable of producing \(d\).
+
+If \(K(d)\) is much smaller than \(l(d)\), then \(d\) contains compressible structure. In practical terms, this means that some part of the description is not being expressed economically. This compressible excess may correspond to repeated assumptions, redundant parameters, unnecessarily verbose formalism, duplicated rules, or avoidable implementation details. We call this excess the \emph{surfeit} of the description.
+
+\begin{definition}[Absolute surfeit]
+Let \(d\in\mathcal D\) be a valid description. We define the \emph{absolute surfeit}\index{Absolute surfeit} of \(d\), denoted by \(\Sigma(d)\), as
+\[
+\Sigma(d)=l(d)-K(d).
+\]
+\end{definition}
+
+Absolute surfeit measures, in bits, how much longer the current description is than its shortest possible description. However, absolute values are difficult to compare across descriptions of very different sizes. For this reason, we introduce a relative version.
+
+\begin{definition}[Surfeit]
+Let \(d\in\mathcal D\) be a valid description. We define the \emph{surfeit}\index{Surfeit} of \(d\), denoted by \(\sigma(d)\), as
+\[
+\sigma(d)=1-\frac{K(d)}{l(d)}.
+\]
+\end{definition}
+
+The quantity \(\sigma(d)\) is a normalized measure of the internal compressibility of the description. If \(\sigma(d)\) is close to \(0\), then \(d\) is close to incompressible. If \(\sigma(d)\) is close to \(1\), then most of the symbols of \(d\) are algorithmically redundant.
+
+The definition deliberately does not include the representation \(r\). This is the crucial difference between surfeit and the theoretical surplus of a description. The surplus of \(d\) with respect to \(r\) compares \(d\) with unknown minimal descriptions of \(r\). Surfeit instead asks a weaker but more practical question: how far is \(d\), as a string, from being minimally expressed?
+
+\begin{example}
+Consider a model for classifying emails as spam or not spam. Suppose the model contains many duplicated rules, repeated feature transformations, unused parameters, and several branches of code that never affect the final prediction. Such a model may still achieve good classification accuracy, but its description is unnecessarily long. A compressed or simplified version of the same model could produce the same predictions with fewer symbols. In this case, the model has high surfeit.
+
+By contrast, a shorter decision tree that captures the relevant distinctions with few rules has lower surfeit. This does not imply that the decision tree is more accurate. It only means that, as a description, it contains less compressible excess.
+\end{example}
+
+The surfeit of a description is always a number between \(0\) and \(1\), up to the usual additive constants involved in Kolmogorov complexity.
+
+\begin{proposition}
+\label{prop:range_surfeit}
+For every non-empty description \(d\in\mathcal D\),
+\[
+0\leq \sigma(d)\leq 1.
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(K(d)\leq l(d)+O(1)\), and since \(K(d)\geq 0\), we have, ignoring the usual additive constant,
+\[
+0\leq \frac{K(d)}{l(d)}\leq 1.
+\]
+Therefore,
+\[
+0\leq 1-\frac{K(d)}{l(d)}\leq 1.
+\]
+Hence \(0\leq \sigma(d)\leq 1\).
+\end{proof}
+
+The lower endpoint corresponds to descriptions that cannot be compressed further.
+
+\begin{proposition}
+\label{prop:zero_surfeit}
+Let \(d\in\mathcal D\) be a valid description. Then
+\[
+\sigma(d)=0
+\]
+if and only if
+\[
+K(d)=l(d).
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\sigma(d)=1-\frac{K(d)}{l(d)}.
+\]
+Thus \(\sigma(d)=0\) if and only if
+\[
+1-\frac{K(d)}{l(d)}=0,
+\]
+which is equivalent to
+\[
+K(d)=l(d).
+\]
+\end{proof}
+
+A description with zero surfeit is incompressible. This does not mean that it is correct, useful, or accurate. It only means that the description itself contains no algorithmically detectable redundancy. A random string has zero surfeit, but it need not describe anything meaningful. For this reason, surfeit must always be interpreted together with inaccuracy.
+
+\begin{example}
+Suppose that \(d_1\) is a very short program that always outputs the same constant value, regardless of the input. The description may have very low surfeit because it is concise. However, if the representation \(r\) contains complex experimental data, the output of \(d_1\) may be far from \(r\), and therefore its inaccuracy may be high.
+
+Conversely, suppose that \(d_2\) is a large program that stores the entire dataset \(r\) explicitly and prints it verbatim. Then its inaccuracy may be zero, but its surfeit may be high if the dataset has a simpler generative structure that the program fails to capture.
+\end{example}
+
+This example shows why surfeit cannot replace inaccuracy. Surfeit measures whether the description is economical. Inaccuracy measures whether the description reconstructs the representation. A good scientific model should be evaluated with respect to both dimensions.
+
+%
+% Section: Surfeit as an approximation to surplus
+%
+
+\section{Surfeit as an Approximation to Description Surplus}
+\label{sec:surfeit_as_approximation}
+
+The theoretical surplus of a description was introduced in Chapter \ref{chap:Mismodel}. If \(r\in\mathcal B^\ast\) is a representation and \(\mathcal D_r^\ast\) denotes the set of minimal descriptions of \(r\), the surplus of \(d\) with respect to \(r\) measures the amount of information contained in \(d\) that is not needed once a minimal description of \(r\) is available. In its algorithmic form, it can be expressed as
+\[
+s_r(d)=\min_{d^\star\in\mathcal D_r^\ast} K(d\mid d^\star).
+\]
+
+This quantity is conceptually precise, but it is not operational in general. The set \(\mathcal D_r^\ast\) is usually unknown, because minimal descriptions of \(r\) are not available in scientific practice. Moreover, determining whether a description is minimal would require solving a Kolmogorov-complexity problem. Hence, \(s_r(d)\) is normally non-computable.
+
+Surfeit provides a weaker but computable-oriented proxy:
+\[
+s_r(d)
+\quad\text{is approximated by}\quad
+\sigma(d).
+\]
+The approximation is based on the following intuition. If a description contains avoidable descriptive material, this excess will often manifest itself as internal compressibility. In such cases, measuring how much \(d\) can be compressed gives information about how much unnecessary content the description contains.
+
+However, the approximation is not exact. The theoretical surplus \(s_r(d)\) is semantic and representation-relative: it depends on what is unnecessary for describing \(r\). Surfeit \(\sigma(d)\) is syntactic and description-internal: it depends only on the compressibility of \(d\). Therefore, surfeit can detect redundant structure, but it cannot detect all forms of irrelevant information.
+
+\begin{proposition}
+\label{prop:surfeit_weak_proxy}
+Let \(r\in\mathcal B^\ast\) be a representation and \(d\in\mathcal D\) a description. The value \(\sigma(d)\) depends only on \(d\), while \(s_r(d)\) depends on both \(d\) and \(r\). Hence, in general, surfeit cannot be an exact measure of description surplus.
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\sigma(d)=1-\frac{K(d)}{l(d)},
+\]
+which depends only on the string \(d\). On the other hand,
+\[
+s_r(d)=\min_{d^\star\in\mathcal D_r^\ast}K(d\mid d^\star),
+\]
+which depends on the set \(\mathcal D_r^\ast\), and therefore on the representation \(r\). Thus two different representations \(r_1\) and \(r_2\) may yield different values \(s_{r_1}(d)\) and \(s_{r_2}(d)\), while \(\sigma(d)\) remains unchanged. Consequently, surfeit cannot coincide with description surplus in general.
+\end{proof}
+
+The previous proposition clarifies the role of surfeit. It is not a replacement for the theoretical concept of surplus. It is a practical approximation that becomes informative under additional assumptions about the kind of unnecessary content present in the description.
+
+The approximation is most reliable when the superfluous part of the description is itself compressible or predictable from the rest of the description.
+
+\begin{proposition}
+\label{prop:compressible_appendix_increases_surfeit}
+Let \(d,u\in\mathcal B^\ast\) be strings, and suppose that \(u\) is computable from \(d\) up to an additive constant, that is,
+\[
+K(u\mid d)=O(1).
+\]
+Then
+\[
+K(du)\leq K(d)+O(1).
+\]
+Consequently,
+\[
+\sigma(du)\geq 1-\frac{K(d)+O(1)}{l(d)+l(u)}.
+\]
+\end{proposition}
+
+\begin{proof}
+If \(K(u\mid d)=O(1)\), then there exists a constant-size program that reconstructs \(u\) from \(d\). Therefore, to produce \(du\), it is enough to produce \(d\) and then apply this constant-size program to obtain \(u\). Hence
+\[
+K(du)\leq K(d)+O(1).
+\]
+Since \(l(du)=l(d)+l(u)\), we have
+\[
+\sigma(du)
+=
+1-\frac{K(du)}{l(du)}
+\geq
+1-\frac{K(d)+O(1)}{l(d)+l(u)}.
+\]
+\end{proof}
+
+This proposition formalizes a common situation: if a description contains a large block of information that can be generated from the rest of the description, then the description becomes more compressible and its surfeit increases. Repeated rules, duplicated assumptions, copied derivations, and predictable code fragments are typical examples.
+
+However, there are also cases where surplus is not detected by surfeit.
+
+\begin{proposition}
+\label{prop:incompressible_noise_limitation}
+Let \(d,u\in\mathcal B^\ast\) be strings such that \(u\) is incompressible and algorithmically independent of \(d\), that is,
+\[
+K(u)\geq l(u)-O(1)
+\]
+and
+\[
+K(u\mid d)\geq l(u)-O(1).
+\]
+Then
+\[
+K(du)\geq K(d)+l(u)-O(1).
+\]
+In particular, appending \(u\) to \(d\) need not increase the surfeit of the resulting description.
+\end{proposition}
+
+\begin{proof}
+Since \(u\) is algorithmically independent of \(d\), the information required to reconstruct \(u\) is not contained in \(d\). Therefore, any program that produces \(du\) must contain enough information to produce \(d\) and, in addition, enough information to produce \(u\) given \(d\). Hence
+\[
+K(du)\geq K(d)+K(u\mid d)-O(1).
+\]
+Using \(K(u\mid d)\geq l(u)-O(1)\), we obtain
+\[
+K(du)\geq K(d)+l(u)-O(1).
+\]
+Thus the appended string \(u\) may increase both the length and the Kolmogorov complexity of the description by approximately the same amount. In such a case, the ratio \(K(du)/l(du)\) need not decrease, and the surfeit need not increase.
+\end{proof}
+
+This limitation is important. A description may contain irrelevant information that is itself incompressible. Such information contributes to the theoretical surplus \(s_r(d)\), because it is not needed to describe \(r\), but it may not contribute to \(\sigma(d)\), because it is not compressible. Surfeit is therefore a detector of compressible excess, not a universal detector of semantic irrelevance.
+
+We can summarize the quality of the approximation as follows:
+
+\begin{itemize}
+    \item Surfeit is a good approximation to description surplus when unnecessary parts of the model are redundant, repeated, predictable, or compressible.
+    \item Surfeit is a weak approximation when unnecessary parts are incompressible but still irrelevant to the representation.
+    \item Surfeit must be interpreted together with inaccuracy, because a concise description may fail to reconstruct the representation.
+    \item Surfeit is useful in practice because it can be estimated with compression methods, whereas the theoretical surplus of descriptions cannot be computed in general.
+\end{itemize}
+
+%
+% Section: Practical Surfeit
+%
+
+\section{Practical Surfeit}
+\label{sec:practical_surfeit}
+
+The definition of surfeit still contains Kolmogorov complexity \(K(d)\), which is non-computable. Therefore, even the description-internal version of surfeit cannot be computed exactly. In practice, we approximate \(K(d)\) by the length of a compressed version of \(d\), using a fixed compression method.
+
+Let \(C\) be a compressor, and let \(C(d)\) denote the length of the compressed version of \(d\). We can then define a practical estimator of surfeit.
+
+\begin{definition}[Practical surfeit]
+Let \(C\) be a fixed compressor and let \(d\in\mathcal D\) be a valid description. We define the \emph{practical surfeit}\index{Practical surfeit} of \(d\) with respect to \(C\), denoted by \(\hat{\sigma}_C(d)\), as
+\[
+\hat{\sigma}_C(d)
+=
+1-\frac{C(d)}{l(d)}.
+\]
+When necessary, the value is truncated to the interval \([0,1]\).
+\end{definition}
+
+The compressor \(C\) acts as a computable approximation to Kolmogorov complexity. Different compressors may yield different values, because each compressor detects different kinds of regularity. For this reason, practical surfeit should not be interpreted as an absolute quantity independent of the chosen compression method. It is a model-selection heuristic relative to a fixed coding procedure.
+
+\begin{proposition}
+\label{prop:practical_surfeit_range}
+Let \(C\) be a compressor satisfying \(0\leq C(d)\leq l(d)\) for every \(d\in\mathcal D\). Then
+\[
+0\leq \hat{\sigma}_C(d)\leq 1.
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(0\leq C(d)\leq l(d)\), we have
+\[
+0\leq \frac{C(d)}{l(d)}\leq 1.
+\]
+Therefore,
+\[
+0\leq 1-\frac{C(d)}{l(d)}\leq 1.
+\]
+Hence \(0\leq \hat{\sigma}_C(d)\leq 1\).
+\end{proof}
+
+In applied contexts, \(d\) may be a computer program, a symbolic formula, a decision tree, a set of rules, a neural-network architecture together with its parameters, or a textual description of a scientific theory. The choice of compressor must be compatible with the representation of \(d\). For example, a compressor designed for natural language may be appropriate for scientific texts, while a structural encoding may be more appropriate for decision trees or algebraic expressions.
+
+\begin{example}
+In machine learning, a decision tree can be encoded as a finite string describing its internal nodes, thresholds, features, and leaf predictions. A tree with repeated subtrees, unnecessary branches, or unused tests will often be compressible. Its practical surfeit \(\hat{\sigma}_C(d)\) will therefore be high. Pruning the tree may reduce its length while preserving most of its predictive accuracy, thereby decreasing surfeit without significantly increasing inaccuracy.
+\end{example}
+
+Practical surfeit is therefore closely related to familiar principles such as pruning, model compression, regularization, and minimum-description-length methods. The difference is conceptual: in the theory of nescience, surfeit is not merely a preference for simplicity. It is an approximation to the surplus component of mismodel.
+
+%
+% Section: Conditional Surfeit
+%
+
+\section{Conditional Surfeit}
+\label{sec:conditional_surfeit}
+
+We are interested in studying how the surfeit of a description for a representation is affected when some background knowledge is assumed. In particular, we examine the case where a description is constructed under the assumption that some prior information is already known. The surfeit of such a description is referred to as the \emph{conditional surfeit}.
+
+\begin{definition}[Conditional surfeit]
+Let \(r\in\mathcal B^\ast\) be a representation, \(s\in\mathcal B^\ast\) a string, and \(d_{r\mid s}\in\mathcal D\) a description of \(r\) given \(s\). We define the \emph{conditional surfeit}\index{Conditional surfeit} of the conditional description \(d_{r\mid s}\), denoted by \(\sigma(d_{r\mid s})\), as
+\[
+\sigma(d_{r\mid s})
+=
+1-\frac{K(r\mid s)}{l(d_{r\mid s})}.
+\]
+\end{definition}
+
+This definition is primarily motivated by practical considerations. When we assume perfect knowledge of \(s\), we can isolate and study the informational content of \(r\) that is not already covered by \(s\), that is, the new knowledge introduced by \(r\) relative to \(s\). Conditional surfeit thus allows us to quantify the conciseness of a description in light of what is already known.
+
+Conditional surfeit, being a relative measure, is a number between \(0\) and \(1\), provided that \(d_{r\mid s}\) is a valid conditional description whose length is at least \(K(r\mid s)\).
+
+\begin{proposition}
+Let \(r\in\mathcal B^\ast\) be a representation, \(s\in\mathcal B^\ast\) be a string, and \(d_{r\mid s}\in\mathcal D\) be a description of \(r\) given \(s\). If
+\[
+l(d_{r\mid s})\geq K(r\mid s)>0,
+\]
+then
+\[
+0\leq \sigma(d_{r\mid s})\leq 1.
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(l(d_{r\mid s})\geq K(r\mid s)>0\), we have
+\[
+0<\frac{K(r\mid s)}{l(d_{r\mid s})}\leq 1.
+\]
+Therefore,
+\[
+0\leq 1-\frac{K(r\mid s)}{l(d_{r\mid s})}<1.
+\]
+Hence \(0\leq \sigma(d_{r\mid s})\leq 1\).
+\end{proof}
+
+Intuition tells us that the surfeit of a description should decrease when relevant background knowledge is assumed, provided that such background knowledge is itself represented without surfeit. However, a complete formal treatment requires a precise definition of conditional descriptions and of the operations by which background knowledge is made available to a model. For this reason, we leave the deeper study of conditional surfeit for future refinement of the theory.
+
+In the same way that surfeit provides a weaker, description-internal version of description surplus, we can introduce conditional redundancy as a weaker version of conditional surfeit.
+
+\begin{definition}[Conditional redundancy]
+Let \(s\in\mathcal B^\ast\) be a string, and let \(d_{r\mid s}\in\mathcal D\) be a conditional description given \(s\). We define the \emph{conditional redundancy}\index{Conditional redundancy} of \(d_{r\mid s}\), denoted by \(\rho(d_{r\mid s})\), as
+\[
+\rho(d_{r\mid s})
+=
+1-\frac{K(d_{r\mid s})}{l(d_{r\mid s})}.
+\]
+\end{definition}
+
+Conditional redundancy is a relative measure, and so it is a number between \(0\) and \(1\).
+
+\begin{proposition}
+We have that
+\[
+0\leq \rho(d_{r\mid s})\leq 1
+\]
+for every non-empty conditional description \(d_{r\mid s}\).
+\end{proposition}
+
+\begin{proof}
+Since \(K(d_{r\mid s})\leq l(d_{r\mid s})\), we have
+\[
+\frac{K(d_{r\mid s})}{l(d_{r\mid s})}\leq 1.
+\]
+Thus,
+\[
+1-\frac{K(d_{r\mid s})}{l(d_{r\mid s})}\geq 0.
+\]
+Also, since \(K(d_{r\mid s})\geq 0\), we have
+\[
+1-\frac{K(d_{r\mid s})}{l(d_{r\mid s})}\leq 1.
+\]
+Therefore,
+\[
+0\leq \rho(d_{r\mid s})\leq 1.
+\]
+\end{proof}
+
+Finally, we can extend the concepts of conditional surfeit and conditional redundancy to a finite number of background topics.
+
+\begin{definition}
+Let \(t,s_1,s_2,\ldots,s_n\) be a finite collection of topics, and let
+\[
+d_{t\mid s_1^\star,s_2^\star,\ldots,s_n^\star}
+\]
+be a conditional description of \(t\) given perfect descriptions of \(s_1,s_2,\ldots,s_n\). We define the \emph{conditional surfeit} of this description as
+\[
+\sigma(d_{t\mid s_1^\star,s_2^\star,\ldots,s_n^\star})
+=
+1-\frac{
+K(t\mid s_1^\star,s_2^\star,\ldots,s_n^\star)
+}{
+l(d_{t\mid s_1^\star,s_2^\star,\ldots,s_n^\star})
+}.
+\]
+The \emph{conditional redundancy} of the same description is defined as
+\[
+\rho(d_{t\mid s_1^\star,s_2^\star,\ldots,s_n^\star})
+=
+1-\frac{
+K(d_{t\mid s_1^\star,s_2^\star,\ldots,s_n^\star})
+}{
+l(d_{t\mid s_1^\star,s_2^\star,\ldots,s_n^\star})
+}.
+\]
+\end{definition}
+
+It is easy to show that the basic range properties of conditional surfeit and conditional redundancy apply to the case of multiple background topics as well, whenever the corresponding lengths are positive and the denominator is at least as large as the relevant conditional complexity.
+
+%
+% Section: Decreasing Surfeit
+%
+
+\section{Decreasing Surfeit}
+\label{sec:decreasing_surfeit}
+
+Our objective is to reduce the surfeit of a current description \(d_1\). This may be done by simplifying the description, removing unused assumptions, pruning unnecessary parameters, replacing a verbose formulation with a shorter equivalent one, or discovering a more compact modeling principle. The result is a new description \(d_2\).
+
+The decrease of surfeit should not be interpreted in isolation. A shorter or less redundant description may become more inaccurate. Conversely, a more complex description may reduce inaccuracy. For this reason, surfeit reduction is only one part of the broader problem of reducing mismodel and, ultimately, nescience.
+
+\begin{definition}[Variation of surfeit]
+Let \(d_1,d_2\in\mathcal D\) be two descriptions. We define the \emph{variation of surfeit}\index{Variation of surfeit} from \(d_1\) to \(d_2\), denoted by \(\Delta_\sigma(d_1,d_2)\), as
+\[
+\Delta_\sigma(d_1,d_2)=\sigma(d_1)-\sigma(d_2).
+\]
+\end{definition}
+
+A positive value of \(\Delta_\sigma(d_1,d_2)\) indicates that \(d_2\) has lower surfeit than \(d_1\). A negative value indicates that surfeit has increased.
+
+\begin{proposition}
+\label{prop:variation_surfeit_range}
+For every pair of descriptions \(d_1,d_2\in\mathcal D\),
+\[
+-1\leq \Delta_\sigma(d_1,d_2)\leq 1.
+\]
+\end{proposition}
+
+\begin{proof}
+By Proposition \ref{prop:range_surfeit}, both \(\sigma(d_1)\) and \(\sigma(d_2)\) belong to \([0,1]\). Therefore their difference belongs to \([-1,1]\).
+\end{proof}
+
+We can also introduce a relative measure of improvement.
+
+\begin{definition}[Relative variation of surfeit]
+Let \(d_1,d_2\in\mathcal D\) be two descriptions such that \(\sigma(d_1)\neq 0\). We define the \emph{relative variation of surfeit}\index{Relative variation of surfeit} from \(d_1\) to \(d_2\), denoted by \(\Delta^r_\sigma(d_1,d_2)\), as
+\[
+\Delta^r_\sigma(d_1,d_2)
+=
+\frac{\sigma(d_1)-\sigma(d_2)}{\sigma(d_1)}.
+\]
+\end{definition}
+
+A value of \(0\) indicates that there is no change in surfeit. A value of \(1\) indicates complete elimination of surfeit. Negative values indicate that surfeit has increased. As usual with relative quantities, this measure becomes unstable when \(\sigma(d_1)\) is close to zero.
+
+The following proposition gives a sufficient condition for decreasing surfeit through simplification.
+
+\begin{proposition}
+\label{prop:surfeit_decrease_sufficient}
+Let \(d_1,d_2\in\mathcal D\) be descriptions such that
+\[
+l(d_2)<l(d_1)
+\]
+and
+\[
+K(d_2)=K(d_1)+O(1).
+\]
+Then, for sufficiently large descriptions, \(d_2\) has lower surfeit than \(d_1\), that is,
+\[
+\sigma(d_2)<\sigma(d_1).
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\sigma(d_i)=1-\frac{K(d_i)}{l(d_i)}
+\]
+for \(i=1,2\). If \(K(d_2)=K(d_1)+O(1)\) and \(l(d_2)<l(d_1)\), then, ignoring the additive constant for sufficiently large descriptions,
+\[
+\frac{K(d_2)}{l(d_2)}
+>
+\frac{K(d_1)}{l(d_1)}.
+\]
+Therefore,
+\[
+1-\frac{K(d_2)}{l(d_2)}
+<
+1-\frac{K(d_1)}{l(d_1)}.
+\]
+Hence \(\sigma(d_2)<\sigma(d_1)\).
+\end{proof}
+
+This proposition captures the ideal form of simplification: the description becomes shorter without losing algorithmic content. In scientific terms, this corresponds to removing unnecessary expressive material while preserving the same explanatory or predictive structure.
+
+However, simplification can also remove useful information. If the shortened description no longer reconstructs the representation accurately, inaccuracy will increase. Therefore, the main practical problem is not merely to decrease surfeit, but to decrease surfeit without increasing inaccuracy too much.
+
+%
+% Section: Surfeit-Inaccuracy Trade-off
+%
+
+\section{Surfeit-Inaccuracy Rate of Change}
+\label{Surfeit_inaccuracy_rate_of_Change}
+
+In the previous section, we studied changes in surfeit. We now examine the interaction between surfeit and inaccuracy. This interaction is central because the two quantities approximate the two components of mismodel. Inaccuracy approximates the deficiency of the description with respect to the representation, while surfeit approximates its surplus.
+
+A model that is too simple may have low surfeit but high inaccuracy. A model that is too complex may have low inaccuracy but high surfeit. Scientific modeling often consists in navigating this trade-off.
+
+\begin{definition}[Surfeit-inaccuracy rate of change]
+Let \(r\in\mathcal B^\ast\) be a representation, and let \(d_1,d_2\in\mathcal D\) be two descriptions such that
+\[
+\iota(d_2,r)-\iota(d_1,r)\neq 0.
+\]
+We define the \emph{surfeit-inaccuracy rate of change}\index{Surfeit-inaccuracy rate of change}, denoted by \(\Delta_{\sigma\iota}(d_1,d_2,r)\), as
+\[
+\Delta_{\sigma\iota}(d_1,d_2,r)
+=
+\frac{\sigma(d_2)-\sigma(d_1)}
+{\iota(d_2,r)-\iota(d_1,r)}.
+\]
+\end{definition}
+
+This quantity measures how surfeit changes per unit change in inaccuracy when moving from \(d_1\) to \(d_2\). The interpretation depends on the signs of the numerator and denominator.
+
+\begin{itemize}
+    \item If both surfeit and inaccuracy decrease, then the move from \(d_1\) to \(d_2\) is unambiguously favorable.
+    \item If both surfeit and inaccuracy increase, then the move is unambiguously unfavorable.
+    \item If surfeit decreases while inaccuracy increases, then the move is a simplification that sacrifices some accuracy.
+    \item If inaccuracy decreases while surfeit increases, then the move is an enrichment that sacrifices simplicity.
+\end{itemize}
+
+\begin{example}
+Let \(r\in\mathcal B^\ast\) be a representation. Suppose that for \(d_1\) we have
+\[
+\sigma(d_1)=0.40,
+\qquad
+\iota(d_1,r)=0.15,
+\]
+and for \(d_2\) we have
+\[
+\sigma(d_2)=0.20,
+\qquad
+\iota(d_2,r)=0.25.
+\]
+Then
+\[
+\Delta_{\sigma\iota}(d_1,d_2,r)
+=
+\frac{0.20-0.40}{0.25-0.15}
+=
+\frac{-0.20}{0.10}
+=
+-2.
+\]
+The transition from \(d_1\) to \(d_2\) reduces surfeit by \(0.20\), but increases inaccuracy by \(0.10\). The value \(-2\) indicates that two units of surfeit are removed for each unit of inaccuracy introduced.
+\end{example}
+
+The rate of change should be interpreted with caution when the denominator is close to zero. Small changes in inaccuracy may produce very large values of \(\Delta_{\sigma\iota}\), even when the actual change in surfeit is modest.
+
+\begin{example}
+Let
+\[
+\sigma(d_1)=0.35,
+\qquad
+\iota(d_1,r)=0.20,
+\]
+and
+\[
+\sigma(d_2)=0.30,
+\qquad
+\iota(d_2,r)=0.2001.
+\]
+Then
+\[
+\Delta_{\sigma\iota}(d_1,d_2,r)
+=
+\frac{0.30-0.35}{0.2001-0.20}
+=
+\frac{-0.05}{0.0001}
+=
+-500.
+\]
+The numerical value is large, but the actual changes are small: surfeit decreases by \(0.05\), and inaccuracy increases by only \(0.0001\). This illustrates why absolute variations should always be considered together with rates of change.
+\end{example}
+
+As we optimize both surfeit and inaccuracy, we encounter descriptions where improving one quantity requires worsening the other. These descriptions form a Pareto frontier.
+
+\begin{definition}[Pareto optimality for inaccuracy and surfeit]
+Let \(r\in\mathcal B^\ast\) be a representation, and let \(d_1\in\mathcal D\) be a description. We say that \(d_1\) is \emph{Pareto optimal}\index{Pareto optimal description} with respect to inaccuracy and surfeit if there is no description \(d_2\in\mathcal D\) such that
+\[
+\iota(d_2,r)\leq \iota(d_1,r)
+\]
+and
+\[
+\sigma(d_2)\leq \sigma(d_1),
+\]
+with at least one inequality strict.
+\end{definition}
+
+Pareto optimal descriptions represent the best available trade-offs between reconstructing the representation accurately and avoiding unnecessary descriptive complexity. In practical scientific work, model selection should normally be restricted to this frontier. A description outside the frontier is dominated: another description is at least as good in both inaccuracy and surfeit and strictly better in one of them.
+
+%
+% Section: Surfeit of Areas
+%
+
+\section{Surfeit of Areas}
+\label{sec:surfeit_areas}
+
+The concept of surfeit can be extended from individual descriptions to descriptions of research areas. Let \(A\subseteq\mathcal E\) be a research area, and let \(\hat A=\{e_1,e_2,\ldots,e_n\}\) be the subset of entities in \(A\) currently under consideration. A description of the area should encode the models, relations, assumptions, and organizing principles used to describe the entities in \(\hat A\).
+
+\begin{definition}[Description of an area]
+Let \(A\subseteq\mathcal E\) be a research area with known subset
+\[
+\hat A=\{e_1,e_2,\ldots,e_n\}.
+\]
+A \emph{description of the area} \(\hat A\) is a valid description \(d_{\hat A}\in\mathcal D\) intended to describe the entities in \(\hat A\) and their relevant relations.
+\end{definition}
+
+We define the surfeit of an area description exactly as in the case of individual descriptions.
+
+\begin{definition}[Surfeit of an area description]
+Let \(d_{\hat A}\in\mathcal D\) be a description of a known research area \(\hat A\). We define the \emph{surfeit of the area description}\index{Surfeit of an area} as
+\[
+\sigma(d_{\hat A})
+=
+1-\frac{K(d_{\hat A})}{l(d_{\hat A})}.
+\]
+\end{definition}
+
+This quantity measures the internal compressibility of the description of the area. A high value suggests that the area is being described with avoidable redundancy: repeated concepts, duplicated subtheories, overlapping taxonomies, or unnecessarily fragmented models. A low value suggests that the available description is compact relative to its own information content.
+
+In practice, \(K(d_{\hat A})\) must be approximated by compression.
+
+\begin{definition}[Practical surfeit of an area]
+Let \(C\) be a fixed compressor and let \(d_{\hat A}\in\mathcal D\) be a description of a known research area. We define the \emph{practical surfeit of the area} as
+\[
+\hat\sigma_C(d_{\hat A})
+=
+1-\frac{C(d_{\hat A})}{l(d_{\hat A})}.
+\]
+\end{definition}
+
+The surfeit of an area is especially useful when studying scientific maturity. A mature area should not merely accumulate more descriptions; it should organize them more efficiently. If a field contains many overlapping definitions, duplicated models, inconsistent taxonomies, or repeated explanatory structures, then its area description will tend to be compressible. Reducing this compressibility by unifying concepts, eliminating duplication, and discovering more general principles corresponds to decreasing surfeit at the area level.
+
+\begin{example}
+Consider an early stage of a scientific field in which several subcommunities introduce different names, notations, and models for closely related phenomena. A description of the whole area may contain many repeated structures because the same principles are rediscovered independently in different subfields. Later, a unifying theory may show that these models are special cases of a single framework. The new area description is shorter and less redundant. In the terminology of this chapter, the surfeit of the area has decreased.
+\end{example}
+
+Area-level surfeit should also be interpreted together with area-level inaccuracy. A unified theory that compresses many models into one may be elegant but inaccurate if it fails to reproduce the empirical or formal content of the subareas it replaces. As before, conciseness is valuable only when it does not destroy descriptive adequacy.
+
+%
+% Section: References
+%
+
+\section*{References}
+
+The concept of redundancy has been extensively studied in information theory, where efficient codes are designed to remove predictable structure from messages; see, for example, \cite{abramson1963information}. The relation between simplicity, compression, and model selection is also central to algorithmic information theory and to minimum-description-length approaches; see \cite{li2013introduction} and the references on MDL and MML discussed in Appendix \ref{chap:Learning}. In the present chapter, these ideas are reinterpreted within the theory of nescience: surfeit is not merely a preference for short descriptions, but a practical approximation to the surplus component of mismodel.
+
+\section{old}
+
+
 Surfeit is the final metric we introduce to quantitatively assess our understanding of a research entity. It measures the presence of superfluous symbols in the description used to model that entity. Intuitively, our lack of knowledge is often reflected in the length (i.e., number of symbols) of our current description. Lengthy descriptions tend to include erroneous or redundant elements. As our understanding of the subject improves, we should be able to identify and remove these unnecessary symbols, resulting in a more concise and accurate description.
 
 We define the surfeit of a description for an entity as the difference in length between the given description and the optimal (i.e., shortest) one for that entity. Within the framework of the theory of nescience, we assume that the pinnacle of knowledge about an entity, its perfect description, is represented by the shortest description capable of fully reconstructing the entity's representation. This notion of perfection relies on both the validity of the representation and the accuracy of the description.

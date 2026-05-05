@@ -1,0 +1,925 @@
+%
+% CHAPTER: Supervised Miscoding
+%
+
+\chapterimage{Train_wreck_at_Montparnasse_1895.pdf} % Chapter heading image
+
+\chapter{Supervised Miscoding}
+\label{cha:supervised_miscoding}
+
+\begin{quote}
+\begin{flushright}
+\emph{A little inaccuracy sometimes saves\\
+tons of explanations.}\\
+Saki
+\end{flushright}
+\end{quote}
+\bigskip
+
+
+In Chapter \ref{chap:Miscoding} we introduced \emph{miscoding} as a measure of the error introduced when an effective representation is used in place of an admissible representation of an entity. The definition is conceptually clear but practically inaccessible. In order to compute the miscoding of an effective representation \(r\in \hat{\mathcal R}_e\), one would need to compare it with the set of admissible representations \(\bar{\mathcal R}_e\) of the entity \(e\). In ordinary scientific practice this set is not known. Indeed, if an admissible representation of the entity were already available, the central representational problem would largely have been solved.
+
+This creates an important practical limitation. The theoretical definition of miscoding tells us what should be minimized, but it does not directly tell us how to estimate miscoding when the admissible representation is unknown. In many empirical settings, however, we possess a weaker but useful substitute for the missing admissible representation. We may not know what the correct representation of each entity is, but we may know that certain effective representations refer to the same entity. That is, we may have a collection of representations together with labels indicating the entity, class, type, or category to which each representation belongs.
+
+The most familiar example appears in supervised machine learning. A training dataset consists of observations described by attributes \(X\), together with a target variable \(y\). The target variable does not provide an admissible representation of the entity under study. It does not tell us what the entity is in its full structure. Nevertheless, it provides an index that groups observations according to the entity, property, or outcome we wish to explain or predict. This information allows us to estimate, in a practical way, how well a given representation captures the distinctions that matter for the task.
+
+The purpose of this chapter is to formalize this idea. We introduce \emph{supervised miscoding}, a practical approximation to miscoding in situations where effective representations are accompanied by labels. The label does not replace the entity, and it should not be confused with an admissible representation. Rather, it acts as a supervised proxy for entity identity. Supervised miscoding therefore measures how well a candidate representation preserves the information contained in the labels, while also penalizing information in the representation that is not explained by those labels.
+
+\section{Labeled Effective Representations}
+\label{sec:labeled_effective_representations}
+
+Let \(\mathcal E\) be a set of entities. In the theoretical definition of miscoding, an effective representation \(r\in \hat{\mathcal R}_e\) is compared against the unknown set of admissible representations \(\bar{\mathcal R}_e\). In the supervised setting we do not assume access to \(\bar{\mathcal R}_e\). Instead, we assume access to a finite collection of effective representations whose intended entity membership is indexed by labels.
+
+\begin{definition}
+\label{def:labeled_sample}
+Let \(I=\{1,\ldots,n\}\) be a finite index set. A \emph{labeled sample of effective representations} is a finite sequence
+\[
+    \mathcal S =
+    \big((r_1,\lambda_1),\ldots,(r_n,\lambda_n)\big),
+\]
+where \(r_i\in \mathcal B^\ast\) is an effective representation and \(\lambda_i\in \Lambda\) is a label belonging to a finite label set \(\Lambda\).
+\end{definition}
+
+The label \(\lambda_i\) should be interpreted as an empirical index indicating that the representation \(r_i\) is taken to belong to a certain entity, class, or target category. The label need not be an admissible representation of that entity. It may be incomplete, noisy, conventional, or even historically provisional. What matters is that the labels provide an external grouping of the effective representations.
+
+\begin{definition}
+\label{def:label_class}
+Let \(\mathcal S\) be a labeled sample of effective representations. For each label \(\lambda\in \Lambda\), we define the corresponding \emph{label class} as
+\[
+    \hat{\mathcal R}_{\lambda}^{\mathcal S}
+    =
+    \{r_i\in \mathcal B^\ast : \lambda_i=\lambda\}.
+\]
+\end{definition}
+
+The set \(\hat{\mathcal R}_{\lambda}^{\mathcal S}\) contains all effective representations that are assigned the same label in the sample. It is an empirical substitute for the unknown set \(\hat{\mathcal R}_e\) of effective representations of an entity. However, the substitution is only approximate. A label may group together different entities, split a single entity into several categories, or contain human classification errors.
+
+\begin{example}
+Let \(\mathcal S\) be a collection of images of handwritten digits. Each image \(r_i\) is an effective representation, and its label \(\lambda_i\in\{0,1,\ldots,9\}\) indicates the digit shown in the image. The class \(\hat{\mathcal R}_{3}^{\mathcal S}\) contains all images labeled as the digit \(3\). This set is not an admissible representation of the abstract entity ``the digit \(3\)'', but it provides empirical information about how instances of that entity are represented in the dataset.
+\end{example}
+
+The supervised setting therefore replaces the unknown admissible representation of an entity by an empirical relation of co-membership: two representations with the same label are treated as representations of the same target, at least for the purposes of the supervised task.
+
+\section{The Supervised Proxy}
+\label{sec:supervised_proxy}
+
+To compute a practical approximation to miscoding, we need to transform the labeled sample into strings whose algorithmic relationship can be estimated. Let
+\[
+    \boldsymbol{\lambda}
+    =
+    \lambda_1\lambda_2\cdots \lambda_n
+\]
+denote an encoding of the sequence of labels. We call this string the \emph{label string}. It is a finite binary string obtained by encoding each label with a fixed prefix-free code.
+
+In many applications, each representation \(r_i\) is structured. For example, in a tabular dataset, each observation consists of \(p\) attributes:
+\[
+    r_i = (x_{i1},\ldots,x_{ip}).
+\]
+For each feature \(j\), we may form the feature string
+\[
+    \mathbf{x}_j = x_{1j}x_{2j}\cdots x_{nj},
+\]
+that is, the sequence of values taken by the \(j\)-th feature across the sample.
+
+More generally, we may consider any computable extraction function
+\[
+    \phi:\mathcal B^\ast \to \mathcal B^\ast
+\]
+and construct the induced sample string
+\[
+    \phi(\mathcal S)
+    =
+    \phi(r_1)\phi(r_2)\cdots \phi(r_n).
+\]
+The string \(\phi(\mathcal S)\) represents the information extracted from the effective representations by the transformation \(\phi\).
+
+\begin{definition}
+\label{def:supervised_proxy_representation}
+Let \(\mathcal S=((r_1,\lambda_1),\ldots,(r_n,\lambda_n))\) be a labeled sample, and let \(\phi:\mathcal B^\ast\to\mathcal B^\ast\) be a computable extraction function. The string
+\[
+    \mathbf{x}_{\phi}
+    =
+    \phi(r_1)\phi(r_2)\cdots \phi(r_n)
+\]
+is called the \emph{supervised proxy representation} induced by \(\phi\).
+\end{definition}
+
+The supervised proxy representation is not a representation of a single entity. It is a representation of how a certain observable aspect of the sample varies across labeled examples. Its purpose is to determine whether the extracted information is useful for reconstructing the label string.
+
+\begin{example}
+In a tabular machine learning dataset, the function \(\phi_j\) that extracts the \(j\)-th attribute from each observation induces the proxy representation
+\[
+    \mathbf{x}_j = x_{1j}x_{2j}\cdots x_{nj}.
+\]
+The supervised miscoding of \(\mathbf{x}_j\) measures how well the \(j\)-th feature represents the target labels.
+\end{example}
+
+\section{Supervised Deficiency and Supervised Surplus}
+\label{sec:supervised_deficiency_surplus}
+
+The theoretical notion of miscoding is based on two components: deficiency and surplus. Deficiency measures how much information is missing from an effective representation in order to reach an admissible representation. Surplus measures how much information in the effective representation is not attributable to the entity.
+
+In the supervised setting, the admissible representation is unavailable. The label string \(\boldsymbol{\lambda}\) is therefore used as a proxy for the target information that the representation should preserve. If the proxy representation \(\mathbf{x}\) does not allow us to reconstruct \(\boldsymbol{\lambda}\), then it is deficient with respect to the supervised task. Conversely, if \(\mathbf{x}\) contains substantial information that cannot be recovered from \(\boldsymbol{\lambda}\), then it contains surplus with respect to the supervised task.
+
+Let \(K(\cdot)\) denote Kolmogorov complexity. For two strings \(\mathbf{x},\boldsymbol{\lambda}\in\mathcal B^\ast\), the conditional complexity \(K(\boldsymbol{\lambda}\mid \mathbf{x})\) measures how much information is required to reconstruct the labels from the representation, while \(K(\mathbf{x}\mid \boldsymbol{\lambda})\) measures how much information is required to reconstruct the representation from the labels.
+
+\begin{definition}
+\label{def:ideal_supervised_deficiency_surplus}
+Let \(\mathbf{x}\in\mathcal B^\ast\) be a supervised proxy representation, and let \(\boldsymbol{\lambda}\in\mathcal B^\ast\) be the corresponding label string. We define the \emph{ideal supervised deficiency} of \(\mathbf{x}\) with respect to \(\boldsymbol{\lambda}\) as
+\[
+    d^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{K(\boldsymbol{\lambda}\mid \mathbf{x})}
+    {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}.
+\]
+We define the \emph{ideal supervised surplus} of \(\mathbf{x}\) with respect to \(\boldsymbol{\lambda}\) as
+\[
+    s^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{K(\mathbf{x}\mid \boldsymbol{\lambda})}
+    {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}.
+\]
+\end{definition}
+
+The first quantity measures the fraction of label information that is not supplied by the representation. The second measures the fraction of representation information that is not explained by the labels. The normalization makes the quantities dimensionless and allows comparisons across representations of different sizes.
+
+\begin{definition}
+\label{def:ideal_supervised_miscoding}
+Let \(\mathbf{x}\in\mathcal B^\ast\) be a supervised proxy representation, and let \(\boldsymbol{\lambda}\in\mathcal B^\ast\) be the corresponding label string. We define the \emph{ideal supervised miscoding} of \(\mathbf{x}\) with respect to \(\boldsymbol{\lambda}\) as
+\[
+    \mu^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \max\left\{
+        d^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda}),
+        s^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    \right\}.
+\]
+\end{definition}
+
+Equivalently,
+\[
+    \mu^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{
+        \max\{K(\boldsymbol{\lambda}\mid \mathbf{x}),
+              K(\mathbf{x}\mid \boldsymbol{\lambda})\}
+    }
+    {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}.
+\]
+This is the normalized information distance between the supervised proxy representation and the label string. The lower this value, the better the representation captures the supervised information encoded by the labels.
+
+\section{Computable Supervised Miscoding}
+\label{sec:computable_supervised_miscoding}
+
+The ideal quantities above are not computable because Kolmogorov complexity is not computable. To obtain a practical metric, we approximate Kolmogorov complexity by the length of compressed strings. Let \(C\) be a fixed compressor, and let
+\[
+    \hat K_C(x)
+\]
+denote the length of the compressed version of \(x\) under \(C\). Similarly, let \(\hat K_C(x,y)\) denote the length of the compressed encoding of the concatenated pair \((x,y)\), using a fixed self-delimiting pairing convention.
+
+\begin{definition}
+\label{def:computable_supervised_miscoding}
+Let \(\mathbf{x}\in\mathcal B^\ast\) be a supervised proxy representation, let \(\boldsymbol{\lambda}\in\mathcal B^\ast\) be the corresponding label string, and let \(C\) be a compressor. We define the \emph{computable supervised miscoding} of \(\mathbf{x}\) with respect to \(\boldsymbol{\lambda}\) as
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{
+        \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+        -
+        \min\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    }
+    {
+        \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    }.
+\]
+\end{definition}
+
+This definition is the computable counterpart of the ideal supervised miscoding. It estimates the algorithmic distance between the representation and the labels. If the representation contains enough information to reconstruct the labels, then \(\hat K_C(\mathbf{x},\boldsymbol{\lambda})\) will be close to \(\hat K_C(\mathbf{x})\). If the labels contain enough information to reconstruct the representation, then \(\hat K_C(\mathbf{x},\boldsymbol{\lambda})\) will be close to \(\hat K_C(\boldsymbol{\lambda})\). If neither string explains the other, then the joint compressed length will be close to the sum of the two compressed lengths, and supervised miscoding will be large.
+
+\begin{definition}
+\label{def:computable_supervised_deficiency_surplus}
+Under the same assumptions, we define the \emph{computable supervised deficiency} by
+\[
+    \hat d_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{
+        \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+        -
+        \hat K_C(\mathbf{x})
+    }
+    {
+        \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    },
+\]
+and the \emph{computable supervised surplus} by
+\[
+    \hat s_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{
+        \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+        -
+        \hat K_C(\boldsymbol{\lambda})
+    }
+    {
+        \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    }.
+\]
+\end{definition}
+
+These two quantities approximate the two directions of the information gap. The deficiency term is large when the representation fails to determine the labels. The surplus term is large when the representation contains information that is not determined by the labels.
+
+\begin{proposition}
+\label{prop:supervised_miscoding_max_components}
+Let \(\mathbf{x},\boldsymbol{\lambda}\in\mathcal B^\ast\). Then
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \max\left\{
+        \hat d_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda}),
+        \hat s_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    \right\}.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+    \hat d_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{
+        \hat K_C(\mathbf{x},\boldsymbol{\lambda})-\hat K_C(\mathbf{x})
+    }
+    {
+        \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    },
+\]
+and
+\[
+    \hat s_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{
+        \hat K_C(\mathbf{x},\boldsymbol{\lambda})-\hat K_C(\boldsymbol{\lambda})
+    }
+    {
+        \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    }.
+\]
+Since the denominator is the same in both expressions, the maximum is obtained by subtracting the smaller of \(\hat K_C(\mathbf{x})\) and \(\hat K_C(\boldsymbol{\lambda})\) from \(\hat K_C(\mathbf{x},\boldsymbol{\lambda})\). Hence
+\[
+    \max\left\{
+        \hat d_C^{\mathrm{sup}},
+        \hat s_C^{\mathrm{sup}}
+    \right\}
+    =
+    \frac{
+        \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+        -
+        \min\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    }
+    {
+        \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    },
+\]
+which is precisely \(\hat\mu_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})\).
+\end{proof}
+
+This result shows that supervised miscoding retains the same conceptual structure as theoretical miscoding: it is determined by the worse of two defects, missing supervised information and extraneous supervised information.
+
+\section{Basic Properties}
+\label{sec:supervised_miscoding_properties}
+
+We now study several basic properties of supervised miscoding. These properties clarify how the metric should be interpreted and where its limitations lie.
+
+\begin{proposition}
+\label{prop:supervised_miscoding_nonnegative}
+Assume that the compressor \(C\) satisfies
+\[
+    \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+    \geq
+    \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+\]
+up to a constant independent of \(\mathbf{x}\) and \(\boldsymbol{\lambda}\). Then
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda}) \geq 0
+\]
+up to a vanishing additive term.
+\end{proposition}
+
+\begin{proof}
+If
+\[
+    \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+    \geq
+    \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\},
+\]
+then in particular
+\[
+    \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+    \geq
+    \min\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}.
+\]
+Therefore the numerator in Definition \ref{def:computable_supervised_miscoding} is non-negative. Since the denominator is positive for non-empty strings, the result follows.
+\end{proof}
+
+In practical implementations, compressors may violate the inequality for very short strings because of headers, block sizes, or implementation details. For this reason, one may truncate the value to the interval \([0,1]\) when using supervised miscoding as a numerical score.
+
+\begin{proposition}
+\label{prop:supervised_miscoding_upper_bound}
+Assume that the compressor \(C\) satisfies
+\[
+    \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+    \leq
+    \hat K_C(\mathbf{x})+\hat K_C(\boldsymbol{\lambda})+O(1).
+\]
+Then
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    \leq
+    1+O\left(
+        \frac{1}
+        {\max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}}
+    \right).
+\]
+\end{proposition}
+
+\begin{proof}
+By assumption,
+\[
+    \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+    -
+    \min\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+    \leq
+    \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}+O(1).
+\]
+Dividing both sides by
+\[
+    \max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}
+\]
+gives the result.
+\end{proof}
+
+Thus, for sufficiently long strings and a reasonable compressor, computable supervised miscoding lies approximately in the interval \([0,1]\). Values close to \(0\) indicate strong supervised adequacy, whereas values close to \(1\) indicate that the representation and the labels share little usable information.
+
+\begin{proposition}
+\label{prop:supervised_miscoding_symmetry}
+For every \(\mathbf{x},\boldsymbol{\lambda}\in\mathcal B^\ast\),
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \hat\mu_C^{\mathrm{sup}}(\boldsymbol{\lambda},\mathbf{x}),
+\]
+provided that the pairing convention used to compute \(\hat K_C(\mathbf{x},\boldsymbol{\lambda})\) is symmetric up to a constant.
+\end{proposition}
+
+\begin{proof}
+The expression in Definition \ref{def:computable_supervised_miscoding} is symmetric in \(\mathbf{x}\) and \(\boldsymbol{\lambda}\), except possibly for the joint compressed length. If the pairing convention is symmetric up to a constant, then
+\[
+    \hat K_C(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \hat K_C(\boldsymbol{\lambda},\mathbf{x})+O(1).
+\]
+The minimum and maximum terms are exactly symmetric. Therefore the two supervised miscoding values differ at most by a term of order
+\[
+    O\left(
+        \frac{1}
+        {\max\{\hat K_C(\mathbf{x}),\hat K_C(\boldsymbol{\lambda})\}}
+    \right),
+\]
+which is negligible for long strings.
+\end{proof}
+
+The symmetry property should not be misinterpreted. Although the numerical distance is symmetric, the scientific interpretation is not. In supervised miscoding, \(\mathbf{x}\) is the candidate representation and \(\boldsymbol{\lambda}\) is the supervised target. The two strings play different roles in the application even if the mathematical distance is symmetric.
+
+\begin{proposition}
+\label{prop:supervised_miscoding_irrelevant}
+Suppose that \(\mathbf{x}\) and \(\boldsymbol{\lambda}\) are algorithmically independent in the sense that
+\[
+    K(\mathbf{x},\boldsymbol{\lambda})
+    =
+    K(\mathbf{x})+K(\boldsymbol{\lambda})+O(1).
+\]
+Then the ideal supervised miscoding satisfies
+\[
+    \mu^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    1+O\left(
+        \frac{1}
+        {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}
+    \right).
+\]
+\end{proposition}
+
+\begin{proof}
+If \(\mathbf{x}\) and \(\boldsymbol{\lambda}\) are algorithmically independent, then
+\[
+    K(\boldsymbol{\lambda}\mid \mathbf{x}) = K(\boldsymbol{\lambda})+O(1)
+\]
+and
+\[
+    K(\mathbf{x}\mid \boldsymbol{\lambda}) = K(\mathbf{x})+O(1).
+\]
+Therefore
+\[
+    \max\{K(\boldsymbol{\lambda}\mid \mathbf{x}),K(\mathbf{x}\mid \boldsymbol{\lambda})\}
+    =
+    \max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}+O(1).
+\]
+Dividing by \(\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}\) gives the result.
+\end{proof}
+
+This proposition formalizes the intuition that an irrelevant representation has maximal supervised miscoding. If the representation and the labels contain no shared algorithmic structure, then the representation does not help us reconstruct the labels, and the labels do not explain the representation.
+
+\begin{proposition}
+\label{prop:supervised_miscoding_equivalence}
+Suppose that
+\[
+    K(\boldsymbol{\lambda}\mid \mathbf{x})=O(1)
+    \quad\text{and}\quad
+    K(\mathbf{x}\mid \boldsymbol{\lambda})=O(1).
+\]
+Then
+\[
+    \mu^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    O\left(
+        \frac{1}
+        {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}
+    \right).
+\]
+\end{proposition}
+
+\begin{proof}
+By Definition \ref{def:ideal_supervised_miscoding},
+\[
+    \mu^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    \frac{
+        \max\{K(\boldsymbol{\lambda}\mid \mathbf{x}),K(\mathbf{x}\mid \boldsymbol{\lambda})\}
+    }
+    {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}.
+\]
+The numerator is \(O(1)\) by hypothesis. Dividing by the denominator yields the result.
+\end{proof}
+
+This proposition identifies the ideal supervised case: the representation and the labels are mutually reconstructible up to a constant. In practice this rarely occurs, because useful representations often contain within-class variation not determined by the label. Such variation is not necessarily bad, but it is surplus relative to the supervised task.
+
+\begin{proposition}
+\label{prop:supervised_miscoding_relabeling}
+Let \(\pi:\Lambda\to\Lambda'\) be a computable bijection between label sets, and let
+\[
+    \pi(\boldsymbol{\lambda})
+\]
+be the relabeled string obtained by applying \(\pi\) to every label in \(\boldsymbol{\lambda}\). If both \(\pi\) and \(\pi^{-1}\) are computable with constant overhead, then
+\[
+    \mu^{\mathrm{sup}}(\mathbf{x},\pi(\boldsymbol{\lambda}))
+    =
+    \mu^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    +
+    O\left(
+        \frac{1}
+        {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}
+    \right).
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(\pi\) and \(\pi^{-1}\) are computable with constant overhead,
+\[
+    K(\pi(\boldsymbol{\lambda})\mid \boldsymbol{\lambda})=O(1)
+    \quad\text{and}\quad
+    K(\boldsymbol{\lambda}\mid \pi(\boldsymbol{\lambda}))=O(1).
+\]
+Thus
+\[
+    K(\pi(\boldsymbol{\lambda})) = K(\boldsymbol{\lambda})+O(1),
+\]
+and the conditional complexities involving \(\mathbf{x}\) change by at most \(O(1)\). Substituting these relations into Definition \ref{def:ideal_supervised_miscoding} gives the result.
+\end{proof}
+
+This proposition is important in practice. Supervised miscoding depends on the information content of the label partition, not on the arbitrary names assigned to labels. Renaming the classes from \(\{0,1\}\) to \(\{\text{negative},\text{positive}\}\), for instance, should not change the value except for coding overhead.
+
+\section{Feature Supervised Miscoding}
+\label{sec:feature_supervised_miscoding}
+
+One of the most useful applications of supervised miscoding is feature evaluation. Suppose that each representation \(r_i\) is a vector of \(p\) components:
+\[
+    r_i=(x_{i1},\ldots,x_{ip}).
+\]
+For each feature \(j\), define
+\[
+    \mathbf{x}_j=x_{1j}x_{2j}\cdots x_{nj}.
+\]
+The supervised miscoding of the feature \(j\) is then computed by comparing \(\mathbf{x}_j\) with the label string \(\boldsymbol{\lambda}\).
+
+\begin{definition}
+\label{def:feature_supervised_miscoding}
+Let \(\mathcal S\) be a labeled sample with feature strings \(\mathbf{x}_1,\ldots,\mathbf{x}_p\) and label string \(\boldsymbol{\lambda}\). The \emph{regular supervised miscoding} of feature \(j\) is
+\[
+    \hat\mu_{C,j}^{\mathrm{sup}}
+    =
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_j,\boldsymbol{\lambda}).
+\]
+\end{definition}
+
+A small value of \(\hat\mu_{C,j}^{\mathrm{sup}}\) indicates that the feature carries information about the labels. A large value indicates that the feature is weakly related or unrelated to the supervised target.
+
+\begin{example}
+Let \(\boldsymbol{\lambda}\) be a binary label indicating whether a patient has a certain disease. Suppose that \(\mathbf{x}_1\) records a biomarker strongly associated with the disease, while \(\mathbf{x}_2\) records the patient identification number. We should expect
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_1,\boldsymbol{\lambda})
+    <
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_2,\boldsymbol{\lambda}).
+\]
+The biomarker is more useful for reconstructing the labels, whereas the identification number may contain information about the sample but little or no information about the disease.
+\end{example}
+
+It is sometimes more convenient to convert miscoding values into relative importance weights. Since lower miscoding is better, we consider the complement \(1-\hat\mu_{C,j}^{\mathrm{sup}}\).
+
+\begin{definition}
+\label{def:adjusted_supervised_miscoding}
+Let \(\hat\mu_{C,1}^{\mathrm{sup}},\ldots,\hat\mu_{C,p}^{\mathrm{sup}}\) be the regular supervised miscodings of the features. We define the \emph{adjusted supervised relevance} of feature \(j\) by
+\[
+    w_j
+    =
+    \frac{
+        1-\hat\mu_{C,j}^{\mathrm{sup}}
+    }
+    {
+        \sum_{k=1}^p \left(1-\hat\mu_{C,k}^{\mathrm{sup}}\right)
+    },
+\]
+provided that the denominator is nonzero.
+\end{definition}
+
+The weights \(w_j\) are not miscodings. They are normalized relevance scores derived from supervised miscoding. They are useful for visualization and feature ranking, but they should not be interpreted as absolute measures of representational error.
+
+\begin{proposition}
+\label{prop:adjusted_weights_sum}
+If
+\[
+    \sum_{k=1}^p \left(1-\hat\mu_{C,k}^{\mathrm{sup}}\right)\neq 0,
+\]
+then
+\[
+    \sum_{j=1}^p w_j=1.
+\]
+\end{proposition}
+
+\begin{proof}
+By Definition \ref{def:adjusted_supervised_miscoding},
+\[
+    \sum_{j=1}^p w_j
+    =
+    \sum_{j=1}^p
+    \frac{
+        1-\hat\mu_{C,j}^{\mathrm{sup}}
+    }
+    {
+        \sum_{k=1}^p \left(1-\hat\mu_{C,k}^{\mathrm{sup}}\right)
+    }
+    =
+    \frac{
+        \sum_{j=1}^p \left(1-\hat\mu_{C,j}^{\mathrm{sup}}\right)
+    }
+    {
+        \sum_{k=1}^p \left(1-\hat\mu_{C,k}^{\mathrm{sup}}\right)
+    }
+    =
+    1.
+\]
+\end{proof}
+
+\section{Joint Supervised Miscoding}
+\label{sec:joint_supervised_miscoding}
+
+Individual features may be misleading when considered in isolation. Two features may each have high supervised miscoding individually, while their joint representation has low supervised miscoding. This occurs when the label depends on an interaction between the features.
+
+Let \(Z\subseteq\{1,\ldots,p\}\) be a subset of features. We denote by
+\[
+    \mathbf{x}_Z
+\]
+the joint string obtained by encoding, for each sample, the values of the features in \(Z\).
+
+\begin{definition}
+\label{def:joint_supervised_miscoding}
+Let \(Z\subseteq\{1,\ldots,p\}\). The \emph{joint supervised miscoding} of the feature subset \(Z\) is
+\[
+    \hat\mu_C^{\mathrm{sup}}(Z,\boldsymbol{\lambda})
+    =
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_Z,\boldsymbol{\lambda}).
+\]
+\end{definition}
+
+This definition follows the same principle as theoretical miscoding of joint representations: no separate concept is needed once the joint object has been encoded as a string. The joint representation is simply evaluated against the supervised target.
+
+\begin{example}
+Suppose that the label is defined by the exclusive-or relation
+\[
+    \lambda_i = x_{i1}\oplus x_{i2}.
+\]
+Individually, neither \(\mathbf{x}_1\) nor \(\mathbf{x}_2\) may determine the label. Hence both features may have high supervised miscoding. However, the joint representation \(\mathbf{x}_{\{1,2\}}\) determines the label exactly, so its supervised deficiency is small. This illustrates why feature selection based only on individual scores may fail.
+\end{example}
+
+\begin{definition}
+\label{def:marginal_supervised_miscoding_reduction}
+Let \(Z\subseteq\{1,\ldots,p\}\), and let \(j\notin Z\). The \emph{marginal supervised miscoding reduction} of feature \(j\) relative to \(Z\) is
+\[
+    \Delta_C^{\mathrm{sup}}(j\mid Z)
+    =
+    \hat\mu_C^{\mathrm{sup}}(Z,\boldsymbol{\lambda})
+    -
+    \hat\mu_C^{\mathrm{sup}}(Z\cup\{j\},\boldsymbol{\lambda}).
+\]
+\end{definition}
+
+If \(\Delta_C^{\mathrm{sup}}(j\mid Z)>0\), then adding feature \(j\) improves the supervised representation. If \(\Delta_C^{\mathrm{sup}}(j\mid Z)<0\), then adding the feature worsens supervised miscoding, usually because it introduces surplus that is not compensated by a reduction in deficiency.
+
+\begin{proposition}
+\label{prop:marginal_positive_improvement}
+Let \(Z\subseteq\{1,\ldots,p\}\) and \(j\notin Z\). Then
+\[
+    \Delta_C^{\mathrm{sup}}(j\mid Z)>0
+\]
+if and only if
+\[
+    \hat\mu_C^{\mathrm{sup}}(Z\cup\{j\},\boldsymbol{\lambda})
+    <
+    \hat\mu_C^{\mathrm{sup}}(Z,\boldsymbol{\lambda}).
+\]
+\end{proposition}
+
+\begin{proof}
+This follows immediately from the definition:
+\[
+    \Delta_C^{\mathrm{sup}}(j\mid Z)
+    =
+    \hat\mu_C^{\mathrm{sup}}(Z,\boldsymbol{\lambda})
+    -
+    \hat\mu_C^{\mathrm{sup}}(Z\cup\{j\},\boldsymbol{\lambda}).
+\]
+The difference is positive exactly when the second term is smaller than the first.
+\end{proof}
+
+The quantity \(\Delta_C^{\mathrm{sup}}(j\mid Z)\) provides a practical criterion for greedy feature selection. Starting from \(Z=\emptyset\), one may repeatedly add the feature with the largest positive marginal reduction until no feature decreases supervised miscoding. This procedure is not guaranteed to find a global optimum, but it is consistent with the idea of decreasing miscoding by adding information that helps reconstruct the target while controlling surplus.
+
+\section{Supervised Partial Miscoding}
+\label{sec:supervised_partial_miscoding}
+
+In practice, one often wants to assign each feature a signed contribution. A feature should contribute positively if it helps reconstruct the labels and negatively if it mostly adds irrelevant information. For this purpose we can compare two normalized quantities: the relative relevance of a feature and its relative miscoding.
+
+\begin{definition}
+\label{def:supervised_partial_miscoding}
+Let \(\hat\mu_{C,1}^{\mathrm{sup}},\ldots,\hat\mu_{C,p}^{\mathrm{sup}}\) be the regular supervised miscodings of the features. The \emph{partial supervised contribution} of feature \(j\) is defined as
+\[
+    \tilde\mu_{C,j}^{\mathrm{sup}}
+    =
+    \frac{
+        1-\hat\mu_{C,j}^{\mathrm{sup}}
+    }
+    {
+        \sum_{k=1}^p \left(1-\hat\mu_{C,k}^{\mathrm{sup}}\right)
+    }
+    -
+    \frac{
+        \hat\mu_{C,j}^{\mathrm{sup}}
+    }
+    {
+        \sum_{k=1}^p \hat\mu_{C,k}^{\mathrm{sup}}
+    },
+\]
+provided that both denominators are nonzero.
+\end{definition}
+
+A positive value of \(\tilde\mu_{C,j}^{\mathrm{sup}}\) indicates that the feature is more relevant than miscoded relative to the other features. A negative value indicates that the feature contributes more supervised error than supervised relevance.
+
+\begin{proposition}
+\label{prop:partial_supervised_sum_zero}
+Assume that the denominators in Definition \ref{def:supervised_partial_miscoding} are nonzero. Then
+\[
+    \sum_{j=1}^p \tilde\mu_{C,j}^{\mathrm{sup}}=0.
+\]
+\end{proposition}
+
+\begin{proof}
+By Definition \ref{def:supervised_partial_miscoding},
+\[
+    \sum_{j=1}^p \tilde\mu_{C,j}^{\mathrm{sup}}
+    =
+    \sum_{j=1}^p
+    \frac{
+        1-\hat\mu_{C,j}^{\mathrm{sup}}
+    }
+    {
+        \sum_{k=1}^p \left(1-\hat\mu_{C,k}^{\mathrm{sup}}\right)
+    }
+    -
+    \sum_{j=1}^p
+    \frac{
+        \hat\mu_{C,j}^{\mathrm{sup}}
+    }
+    {
+        \sum_{k=1}^p \hat\mu_{C,k}^{\mathrm{sup}}
+    }.
+\]
+Both sums are equal to \(1\). Therefore the difference is \(0\).
+\end{proof}
+
+This result shows that partial supervised contributions are relative rather than absolute. They distribute the balance of relevance and miscoding across features. They are useful for ranking and selection, but not for measuring the absolute miscoding of the whole dataset.
+
+\section{Supervised Miscoding of a Dataset}
+\label{sec:supervised_miscoding_dataset}
+
+Let
+\[
+    \mathbf X = (\mathbf{x}_1,\ldots,\mathbf{x}_p)
+\]
+be the full supervised representation induced by all features. The supervised miscoding of the dataset is not the sum of the individual feature miscodings. Summing individual values ignores redundancy and interaction effects. Two features may encode the same information about the labels, in which case their individual relevance should not be counted twice. Conversely, two features may jointly encode information that neither contains alone.
+
+For this reason, the most direct definition of dataset-level supervised miscoding is the joint one.
+
+\begin{definition}
+\label{def:dataset_supervised_miscoding}
+Let \(\mathbf X\) be the joint encoding of all features in a labeled dataset, and let \(\boldsymbol{\lambda}\) be the label string. The \emph{supervised miscoding of the dataset} is
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf X,\boldsymbol{\lambda})
+    =
+    \frac{
+        \hat K_C(\mathbf X,\boldsymbol{\lambda})
+        -
+        \min\{\hat K_C(\mathbf X),\hat K_C(\boldsymbol{\lambda})\}
+    }
+    {
+        \max\{\hat K_C(\mathbf X),\hat K_C(\boldsymbol{\lambda})\}
+    }.
+\]
+\end{definition}
+
+This quantity measures how well the dataset as a whole represents the supervised target. It automatically accounts for interactions among features, redundancy between features, and surplus information unrelated to the labels.
+
+\begin{proposition}
+\label{prop:dataset_not_sum_features}
+In general,
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf X,\boldsymbol{\lambda})
+    \neq
+    \sum_{j=1}^p
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_j,\boldsymbol{\lambda}).
+\]
+\end{proposition}
+
+\begin{proof}
+It is enough to exhibit two cases.
+
+First, suppose that \(\mathbf{x}_1=\mathbf{x}_2\). Then the two features contain the same information. The joint representation \((\mathbf{x}_1,\mathbf{x}_2)\) is computably equivalent to \(\mathbf{x}_1\), up to a small overhead. Hence
+\[
+    \hat\mu_C^{\mathrm{sup}}((\mathbf{x}_1,\mathbf{x}_2),\boldsymbol{\lambda})
+    \approx
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_1,\boldsymbol{\lambda}),
+\]
+whereas
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_1,\boldsymbol{\lambda})
+    +
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x}_2,\boldsymbol{\lambda})
+    =
+    2\hat\mu_C^{\mathrm{sup}}(\mathbf{x}_1,\boldsymbol{\lambda}).
+\]
+Thus equality fails in general.
+
+Second, suppose that the label is determined by an interaction between two features, as in the exclusive-or example. Then the individual supervised miscodings may be large, while the joint supervised miscoding is small. Again equality fails.
+\end{proof}
+
+This proposition explains why supervised miscoding should be computed at the level of the representation actually used. Individual feature scores are useful diagnostic tools, but the miscoding of a dataset is a property of the joint representation.
+
+\section{Connection with Theoretical Miscoding}
+\label{sec:supervised_theoretical_connection}
+
+Supervised miscoding is not a replacement for theoretical miscoding. It is an approximation that becomes meaningful under a specific empirical assumption: the labels capture the entity distinctions that matter for the investigation.
+
+Let \(e_i\in \mathcal E\) denote the entity associated with \(r_i\), even if this entity is not directly accessible. The label map
+\[
+    i \mapsto \lambda_i
+\]
+may be interpreted as an empirical approximation to the unknown entity assignment
+\[
+    i \mapsto e_i.
+\]
+If the labels are correct and sufficiently informative, then reducing supervised miscoding tends to improve the representation for the supervised task. If the labels are poor, noisy, or conceptually misaligned, then supervised miscoding may optimize the wrong target.
+
+\begin{definition}
+\label{def:label_faithfulness}
+Let \(\mathcal S=((r_1,\lambda_1),\ldots,(r_n,\lambda_n))\) be a labeled sample, and let \(e_i\) denote the intended entity represented by \(r_i\). We say that the labels are \emph{faithful} with respect to the sample if
+\[
+    \lambda_i=\lambda_j
+    \quad\Longleftrightarrow\quad
+    e_i=e_j
+\]
+for all \(i,j\in I\).
+\end{definition}
+
+Faithfulness means that the labels identify exactly the entity membership relation within the sample. This is a strong condition. In many applications the labels identify not entities themselves, but properties of entities. For example, a medical label may indicate whether a patient has a disease, not the complete biomedical state of the patient.
+
+\begin{proposition}
+\label{prop:faithful_labels_zero_deficiency}
+Suppose that the labels are faithful and that a supervised proxy representation \(\mathbf{x}\) determines the entity membership relation of the sample up to a constant-size program. Then
+\[
+    K(\boldsymbol{\lambda}\mid \mathbf{x})=O(1),
+\]
+and therefore
+\[
+    d^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda})
+    =
+    O\left(
+        \frac{1}
+        {\max\{K(\mathbf{x}),K(\boldsymbol{\lambda})\}}
+    \right).
+\]
+\end{proposition}
+
+\begin{proof}
+If \(\mathbf{x}\) determines the entity membership relation and the labels are faithful, then there exists a constant-size decoding rule that assigns to each sample its correct label from the structure encoded in \(\mathbf{x}\). Hence
+\[
+    K(\boldsymbol{\lambda}\mid \mathbf{x})=O(1).
+\]
+Substituting into the definition of supervised deficiency gives the result.
+\end{proof}
+
+The proposition states that, under faithful labels, a representation that determines the relevant entity distinctions has negligible supervised deficiency. However, its supervised surplus may still be large if it contains substantial within-class information not determined by the labels.
+
+\begin{proposition}
+\label{prop:label_coarsening_increases_surplus}
+Let \(\boldsymbol{\lambda}'\) be a computable coarsening of \(\boldsymbol{\lambda}\), meaning that
+\[
+    K(\boldsymbol{\lambda}'\mid \boldsymbol{\lambda})=O(1),
+\]
+but in general
+\[
+    K(\boldsymbol{\lambda}\mid \boldsymbol{\lambda}')\not=O(1).
+\]
+Then a representation \(\mathbf{x}\) may have larger supervised surplus with respect to \(\boldsymbol{\lambda}'\) than with respect to \(\boldsymbol{\lambda}\).
+\end{proposition}
+
+\begin{proof}
+A coarser label string contains less information than the original one. Information in \(\mathbf{x}\) that explains distinctions present in \(\boldsymbol{\lambda}\) may no longer be recoverable from \(\boldsymbol{\lambda}'\). Therefore the conditional complexity
+\[
+    K(\mathbf{x}\mid \boldsymbol{\lambda}')
+\]
+may be larger than
+\[
+    K(\mathbf{x}\mid \boldsymbol{\lambda}).
+\]
+Since supervised surplus is proportional to the information required to reconstruct \(\mathbf{x}\) from the labels, the surplus may increase under coarsening.
+\end{proof}
+
+This result is important because it shows that supervised miscoding depends on the granularity of the labels. A representation may be excellent for a fine-grained classification task but appear to contain surplus under a coarse-grained labeling scheme.
+
+\section{Limitations of Supervised Miscoding}
+\label{sec:limitations_supervised_miscoding}
+
+Supervised miscoding is practical precisely because it replaces the inaccessible admissible representation by an available label string. This replacement is useful, but it introduces several limitations.
+
+First, supervised miscoding is task-relative. It measures how well a representation captures the information encoded by the labels, not how well it represents the entity in its full structure. A feature may be irrelevant for predicting the label and still be scientifically important for understanding the entity.
+
+Second, supervised miscoding depends on label quality. Incorrect labels introduce a distorted supervised target. In that case, a representation that correctly tracks the underlying entity may be penalized because it disagrees with the labels.
+
+Third, supervised miscoding is sensitive to the representation of continuous quantities. Continuous measurements must be discretized or encoded before compression. Different discretization schemes may lead to different numerical values.
+
+Fourth, supervised miscoding depends on the compressor. Different compressors approximate different regularities. A compressor that fails to exploit the relevant structure in the data may overestimate miscoding.
+
+Finally, supervised miscoding should not be confused with accuracy. A representation may have low supervised miscoding because it contains information about the labels, while a particular model trained on that representation may still be inaccurate. Miscoding evaluates the representational relation between data and labels; inaccuracy evaluates the relation between a model output and the intended representation.
+
+\section{Practical Use}
+\label{sec:practical_use_supervised_miscoding}
+
+The practical use of supervised miscoding can be summarized as follows.
+
+Given a labeled dataset, one first encodes the labels as a string \(\boldsymbol{\lambda}\). Then, for each candidate representation \(\mathbf{x}\), feature \(\mathbf{x}_j\), or feature subset \(\mathbf{x}_Z\), one computes
+\[
+    \hat\mu_C^{\mathrm{sup}}(\mathbf{x},\boldsymbol{\lambda}).
+\]
+Representations with smaller supervised miscoding are preferred, because they preserve more information about the labels while introducing less information unrelated to them.
+
+A simple feature-selection procedure is the following:
+
+\begin{enumerate}
+    \item Encode the label string \(\boldsymbol{\lambda}\).
+    \item Compute \(\hat\mu_C^{\mathrm{sup}}(\mathbf{x}_j,\boldsymbol{\lambda})\) for each feature \(j\).
+    \item Rank features from lowest to highest supervised miscoding.
+    \item Optionally compute marginal supervised miscoding reductions
+    \[
+        \Delta_C^{\mathrm{sup}}(j\mid Z)
+    \]
+    to account for interactions and redundancy.
+    \item Select features that decrease the joint supervised miscoding of the representation.
+\end{enumerate}
+
+This procedure is not a substitute for model validation. Rather, it provides a representation-level criterion that can be used before or alongside model training. It helps identify which parts of the representation are likely to be useful for the supervised task and which parts mostly add surplus.
+
+\section{Conclusion}
+\label{sec:supervised_miscoding_conclusion}
+
+Supervised miscoding provides a practical approximation to miscoding in settings where admissible representations are unknown but labeled effective representations are available. The key idea is to use the label string as a supervised proxy for the entity distinctions that matter in a given task. A representation has low supervised miscoding when it allows the labels to be reconstructed and when it contains little information not explained by those labels.
+
+This construction preserves the conceptual structure of theoretical miscoding. Supervised deficiency measures missing target information. Supervised surplus measures extraneous representation information. Supervised miscoding is the maximum of these two components. In this sense, the supervised version remains faithful to the original theory while becoming computable through compression.
+
+The price paid for computability is that the resulting quantity is relative to the labels, the encoding scheme, the sample, and the compressor. It should therefore be interpreted as a practical diagnostic rather than as an exact measure of the true miscoding of an entity. Nevertheless, in domains such as machine learning, experimental science, and empirical classification, supervised miscoding provides a useful bridge between the formal theory of nescience and operational methods for selecting and improving representations.

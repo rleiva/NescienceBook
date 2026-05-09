@@ -19,13 +19,11 @@
 
 In many areas of science, the entities we aim to study (the set $\mathcal{E}$) often include abstract concepts or complex phenomena that are difficult to investigate directly. These may be ideas or processes that resist straightforward description or modeling. To gain insight into such entities, we must often rely on indirect methods. As discussed in the previous chapter, the theory of nescience suggests using representations, that is, sequences of symbols, rather than attempting to interact directly with the entities themselves.
 
-However, this approach introduces its own challenges. Because our understanding of the elements in $\mathcal{E}$ is incomplete (otherwise, further research would be unnecessary), the representations we construct are typically imperfect, they lack the completeness and precision we would ideally desire. These imperfections can lead to significant problems: inaccuracies in representation can propagate into the models derived from them, potentially distorting our interpretation and understanding. It is therefore essential to recognize this source of error and to carefully consider its implications.
+However, this approach introduces its own challenges. Because our understanding of the elements in $\mathcal{E}$ is incomplete (otherwise, further research would be unnecessary), the representations we construct are typically imperfect; they lack the completeness and precision we would ideally desire. These imperfections can lead to significant problems: inaccuracies in representation can propagate into the models derived from them, potentially distorting our interpretation and understanding. It is therefore essential to recognize this source of error and to carefully consider its implications.
 
 To address this issue, we introduce the concept of \emph{miscoding}, a measure used to quantify the error that arises from misrepresenting or inaccurately encoding entities. Miscoding is defined in terms of the length of the shortest computer program capable of transforming an incorrect representation into a correct one. In essence, it measures the amount of effort, as reflected by the program's length, required to correct a faulty representation.
 
 However, there is a significant complication: applying this idea in practice is not straightforward, since the perfect representations of entities are unknown. As a result, we cannot directly measure the gap between a given representation and an ideal one. Nevertheless, we propose a theoretical framework based on the oracle machine (an abstract construct) used to define the set $\mathcal{E}$. This oracle machine is assumed to be capable of recognizing valid representations for all entities in the set. It is important to note, however, the limitations of this approach; for instance, we cannot query the oracle about a specific entity unless we already possess a valid representation of it.
-
-Getting a better grasp on scientific representation and the challenges in reducing miscoding could really push forward scientific research, helping us create better, more thorough models of the natural world. In this chapter, we are going to properly introduce the idea of miscoding and look into its various characteristics. We will examine how miscoding behaves when it comes to combined representations and discuss methods to reduce miscoding. We will delve into the idea that there are strings that do not represent any entity. And we will dig into why miscoding is important in different research areas and talk about its potential to open up new lines of inquiry.
 
 Gaining a deeper understanding of scientific representation and the difficulties involved in reducing miscoding can significantly advance scientific research, enabling the development of more accurate and comprehensive models of the natural world. In this chapter, we formally introduce the concept of \emph{miscoding} and explore its key properties. We will analyze how miscoding behaves in the context of combined representations and consider strategies for reducing it. We will also examine the notion that some strings fail to represent any entity and investigate the implications of this idea. Finally, we will highlight the relevance of miscoding across various research domains and discuss its potential to inspire new lines of inquiry.
 
@@ -41,7 +39,7 @@ To overcome this limitation, we propose an alternative approach. Rather than ask
 
 \begin{definition} [Miscoding]\index{Miscoding}
 \label{def:miscoding}
-Let $r \in \mathcal{B}^\ast$ be a representation. We define the \emph{miscoding} of $r$, denoted by $\mu(r)$, as:
+Let $r \in \mathcal{B}^\ast$ be a string. We define the \emph{miscoding} of $r$, denoted by $\mu(r)$, as:
 \[
 \mu(r) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r \mid r^\star_e \right), K \left( r^\star_e \mid r \right) \} } { \max\{ K \left( r \right), K \left( r^\star_e \right) \} }
 \]
@@ -117,7 +115,7 @@ Consider the text $r$ of a biology research article that succinctly and accurate
 Conversely, in a second scenario, consider another research article $r'$ that exhibits a relatively high miscoding value $\mu(r')$, due to an incomplete description of the specimen. If this article is supplemented with additional text $s'$, containing essential information previously omitted, the resulting concatenated representation $r's'$ becomes significantly more informative and coherent. As a result, the miscoding value decreases, demonstrating a case where $\mu(r's') \leq \mu(r')$. This highlights that enriching an incomplete representation with relevant and focused content can yield a more accurate and lower-miscoding representation.
 \end{example}
 
-Furthermore, it should not be assumed that the miscoding of a joint representation is less than or equal to the sum of the miscodings of the individual representations, i.e., $\mu(st) \leq \mu(s) + \mu(t)$. This inequality does not necessarily hold, even when both $s$ and $t$ encode the same entity. The reason is that the joint representation \$st\$ may end up encoding an entirely different entity from those represented by $s$ and $t$ individually.
+Furthermore, it should not be assumed that the miscoding of a joint representation is less than or equal to the sum of the miscodings of the individual representations, i.e., $\mu(st) \leq \mu(s) + \mu(t)$. This inequality does not necessarily hold, even when both $s$ and $t$ encode the same entity. The reason is that the joint representation $st$ may end up encoding an entirely different entity from those represented by $s$ and $t$ individually.
 
 \begin{example}
 In a medical research context, representation $r$ describes a new drug compound $A$ for treating a specific type of cancer, while representation $s$ outlines a genetic mutation $B$ associated with that cancer type. Both $r$ and $s$ have low miscoding values, denoting accurate, focused content. However, when concatenated, the combined representation $rs$ unintentionally suggests a third entity $C$, implying a causal relationship between $A$ and $B$. This unintended implication stems from the mixture of distinct information, leading to a higher miscoding value. In this instance, each of $r$, $s$, and $rs$ essentially represents different research entities. $r$ and $s$ are clear in their individual contexts, but $rs$ is ambiguous, exemplifying a case where concatenated information can inadvertently create a representation of an entirely different, unintended entity, thus increasing miscoding.
@@ -137,7 +135,7 @@ The concept of miscoding can be naturally extended to joint representations form
 \[
 \mu(r_1 r_2 \ldots r_n) = \overset{o}{ \underset{ r^\star_e \in \mathcal{R}^\star_\mathcal{E} } \min} \frac{ \max\{ K \left( r_1 r_2 \ldots r_n \mid r^\star_e \right), K \left( r^\star_e \mid r_1 r_2 \ldots r_n \right) \} } { \max\{ K \left( r_1 r_2 \ldots r_n \right), K \left( r^\star_e \right) \} }
 \]
-As in the case of concatenating two representations, the miscoding of a joint representation composed of \$n\$ elements remains bounded within the unit interval $0 \leq \mu(r_1 r_2 \ldots r_n) \leq 1$. However, several caveats must be noted. There is no guarantee that $\mu(r_1 r_2 \ldots r_n) \leq \mu(r_i) \quad \text{or} \quad \mu(r_1 r_2 \ldots r_n) \geq \mu(r_i)$ for any $i = 1, \ldots, n$. Moreover, the miscoding of the joint representation is not necessarily less than or equal to the sum of the individual miscodings $\mu(r_1 r_2 \ldots r_n) \nleq \mu(r_1) + \mu(r_2) + \cdots + \mu(r_n)$. Finally, no general conclusions can be drawn regarding how the miscoding of a joint representation is affected by permutations of its components. That is, reordering the representations may increase, decrease, or leave unchanged the overall miscoding.
+As in the case of concatenating two representations, the miscoding of a joint representation composed of $n$ elements remains bounded within the unit interval $0 \leq \mu(r_1 r_2 \ldots r_n) \leq 1$. However, several caveats must be noted. There is no guarantee that $\mu(r_1 r_2 \ldots r_n) \leq \mu(r_i) \quad \text{or} \quad \mu(r_1 r_2 \ldots r_n) \geq \mu(r_i)$ for any $i = 1, \ldots, n$. Moreover, the miscoding of the joint representation is not necessarily less than or equal to the sum of the individual miscodings $\mu(r_1 r_2 \ldots r_n) \leq \mu(r_1) + \mu(r_2) + \cdots + \mu(r_n)$. Finally, no general conclusions can be drawn regarding how the miscoding of a joint representation is affected by permutations of its components. That is, reordering the representations may increase, decrease, or leave unchanged the overall miscoding.
 
 %
 % Section: Decreasing Miscoding
@@ -202,7 +200,7 @@ Thus
 so either $\mu(rs)<\mu(r)$ (if we append) or, by symmetric reasoning, $\mu(sr)<\mu(r)$ (if we prepend).
 Hence condition (i) is satisfied.
 
-Case ii). $B=0$, that is, all information needed to produce $r^{\star}$ is contained in $r$; extra symbols remain. Now $A>0$ because $\mu(r)>0$. Since $K(r^{\star}\mid r)=0$, a deterministic algorithm can scan $r$ from left to right and halt as soon as it has seen a **shortest prefix** that already allows it to output $r^{\star}$.
+Case ii). $B=0$, that is, all information needed to produce $r^{\star}$ is contained in $r$; extra symbols remain. Now $A>0$ because $\mu(r)>0$. Since $K(r^{\star}\mid r)=0$, a deterministic algorithm can scan $r$ from left to right and halt as soon as it has seen a shortest prefix that already allows it to output $r^{\star}$.
 Let $s$ be that prefix and write $r=\alpha s\beta$ with $\beta\ne\lambda$ (otherwise $r=s$ and $A=0$, contradicting $\mu(r)>0$).
 \[
 K(r^{\star}\mid s)=0,\qquad
@@ -264,7 +262,7 @@ which implies that neither $r$ can help generate $r^\star_e$ nor $r^\star_e$ can
 For every finite or countably infinite set of entities $\mathcal{E}$, there exists an infinite number of targetless representations. We will prove this result constructively by showing that at least one targetless representation exists and then defining a method to generate infinitely many more from it.
 
 \begin{proposition}
-For every finite or countably infinite set of entities $\mathcal{E}$, there exists an uncountably infinite set of targetless representations.
+For every finite or countably infinite set of entities $\mathcal{E}$, there exists an countably infinite set of targetless representations.
 \end{proposition}
 \begin{proof}
 Let $\mathcal{R}$ denote the set of all valid representations of entities in $\mathcal{E}$, such that for each entity $e \in \mathcal{E}$, there exists a representation $r \in \mathcal{R}$ and vice versa. Since $\mathcal{E}$ is finite or countably infinite, $\mathcal{R}$ is also countable.
@@ -342,9 +340,3 @@ Misrepresentation or inaccuracies in scientific representation have significant 
 \cite{suppes2002representation} provides a formal foundation for scientific representation and emphasizes the role of structure-preserving mappings; his analysis is crucial for understanding when and how representations fail to capture relevant features of phenomena. \cite{van1980scientific} introduces the concept of "constructive empiricism" and highlights the model-dependent nature of scientific representation. \cite{latour2013laboratory} offers an ethnographic study of how scientific representations are socially constructed—and, at times, distorted—in scientific practice.
 
 Although the specific topic of incorrect representations has not been directly examined in this way, various researchers have addressed related concerns indirectly. Their discussions often focus on issues such as scientific fraud, the replication crisis, and the use of incorrect or misleading models. For example, \cite{ioannidis2005most} presents a widely cited empirical and philosophical analysis of how methodological biases, poor model design, and selective reporting contribute to unreliable or misleading scientific results.
-
-
-
-
-
-

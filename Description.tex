@@ -144,7 +144,7 @@ Take, for instance, a set $\mathcal{E}$ consisting of two books: "The Ingenious 
 
 One possible response to the limitation discussed in Example \ref{ex:shannon_encoding}, where entities are encoded using overly simplistic strings that fail to capture their internal structure, would be to require the set $\mathcal{E}$ to be infinite, as is done in Kolmogorov complexity. This requirement avoids pathological cases in which too many entities are assigned trivial or arbitrary encodings. However, merely increasing the size of $\mathcal{E}$ does not solve the fundamental issue: even with an infinite set of entities, many encoding schemes still fall short of supporting surrogative reasoning. That is, they do not allow us to make meaningful inferences about the original entities based solely on their representations. To enable such reasoning, the encoding must preserve essential structural and semantic features of the entities, not just their identity.
 
-We distinguish between \emph{knowable} and \emph{unknowable} entities. Knowable entities are those that can, in principle, be understood through scientific inquiry (see Section \ref{sec:what-is-an-entity}). Unknowable entities, on the other hand, lie beyond the reach of human comprehension—either because they are inherently inaccessible to observation and reasoning, or because they exceed the cognitive or methodological limits of science.
+We distinguish between \emph{knowable} and \emph{unknowable} entities. Knowable entities are those that can, in principle, be understood through scientific inquiry (see Section \ref{sec:what-is-an-entity}). Unknowable, relative to the selected oracle, means that no finite representation is mapped to the entity.
 
 \begin{definition}
 We say that an entity $e \in \mathcal{E}$ is \emph{knowable}\index{Knowable entity} if there exists at least one $r \in \mathcal{B}^\ast$ such that $\mathcal{O}_\mathcal{E}(r) = e$. An entity $e \in \mathcal{E}$ is \emph{unknowable}\index{Unknowable entity} if it is not knowable.
@@ -153,7 +153,7 @@ We say that an entity $e \in \mathcal{E}$ is \emph{knowable}\index{Knowable enti
 A priori, it is not possible to determine whether an entity $e \in \mathcal{E}$ is knowable, unknowable, or only partially knowable. Identifying suitable knowable entities for study is a matter of trial and error. In this book, we say nothing further about unknowable entities, except to note that their unknowability can neither be proven nor discovered.
 
 \begin{definition}
-Let $e \in \mathcal{E}$ be a knowable entity. We define the \emph{set of representations}\index{Set of representations} for $e$, denoted by $\mathcal{R}_e$, as $\{ r \in \mathcal{B}^\ast : \mathcal{O}_\mathcal{E} (r) = e \}$.
+Let $e \in \mathcal{E}$ be a knowable entity. We define the \emph{set of valid representations}\index{Set of valid representations} for $e$, denoted by $\mathcal{R}^\star_e$, as $\{ r \in \mathcal{B}^\ast : \mathcal{O}_\mathcal{E} (r) = e \}$.
 \end{definition}
 
 In Figure \ref{fig:entities_topics_1}, we present a depiction of a hypothetical oracle mapping from the set of finite binary strings $\mathcal{B}^\ast$ to the set of entities $\mathcal{E}$. The figure also highlights a particular entity $e_1$, the subset of strings $\mathcal{R}_{e_1}$ that represent this entity, and a specific representation $r_1$. Since the set $\mathcal{E}$ is, in general, not well defined, the inverse function $\mathcal{O}_\mathcal{E}^{-1}(e_1)$ cannot be computed in practice.
@@ -216,7 +216,7 @@ A consequence of working with finite strings as representations is that some ent
 If the collection of entities under study consists of real numbers, then there exist numbers that cannot be encoded using finite binary strings. This is because the set $\mathbb{R}$ has the cardinality of the continuum, whereas the set $\mathcal{B}^\ast$ is countable.
 \end{example}
 
-Since our knowledge of the entities and the internal workings of the oracle is incomplete, in practice we work with a different set of strings, denoted by $\hat{\mathcal{R}}_e$, which we believe are close approximations of the true representations $\mathcal{R}_e$ that encode the entity $e$. The elements of this set typically change over time, as our understanding of the entities in $\mathcal{E}$ and of how the oracle encodes them improves. The more abstract the set of entities is, the more difficult it becomes to approximate them as strings (see Chapter \ref{chap:Miscoding}).
+Since our knowledge of the entities and the internal workings of the oracle is incomplete, in practice we work with a different set of strings, denoted by $\mathcal{R}_e$, which we believe are close approximations of the true representations $\mathcal{R}^\star_e$ that encode the entity $e$. The elements of this set typically change over time, as our understanding of the entities in $\mathcal{E}$ and of how the oracle encodes them improves. The more abstract the set of entities is, the more difficult it becomes to approximate them as strings (see Chapter \ref{chap:Miscoding}).
 
 \begin{example}
 \label{ex:luminiferous_ether}
@@ -257,16 +257,10 @@ Recall that, in our framework, we only allow representations of entities in the 
 We will denote the set of valid representations of $\mathcal{E}$ by $\mathcal{R}^\star_\mathcal{E}$ when there is no ambiguity regarding the oracle $\mathcal{O}_\mathcal{E}$ in use.
 \end{notation}
 
-We can similarly define the set of valid representations for an individual entity $e$.
-
-\begin{definition}
-We define the set of valid representations for an entity $e \in \mathcal{E}$, denoted by $\mathcal{R}^\star_e$, as the subset of representations that perfectly encode the entity $e$; that is, $\mathcal{R}^\star_e = \mathcal{R}^\star_\mathcal{E} \cap \mathcal{R}_e$.
-\end{definition}
-
 As we have seen in Example \ref{ex:description_dna} there could be more than one valid representation for some entities, even if the oracle is restricted to a particular style. It might also happen that the set of valid representations is empty, that is, there is no valid representation for that entity. In that case the entity will be unknowable.
 
 \begin{notation}
-We denoted by $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$ the fact that $r$ is a valid representation of the entity $e$.
+We write $r^\star_e$ for an arbitrary element of $\mathcal{R}^\star_\mathcal{E}$.
 \end{notation}
 
 A consequence of working with approximations instead of true representations is that some of the candidate strings currently in use may encode a different entity than the one we intended to study.
@@ -278,12 +272,12 @@ In 1961, Soviet physicist Nikolai Fedyakin conducted a series of experiments tha
 
 We can safely assume (without logical contradiction) that the oracle machine not only knows which representations correspond to which entities, but also how far any string $r \in \mathcal{B}^\ast$ is from being a valid representation $r^\star_e \in \mathcal{R}^\star_\mathcal{E}$.
 
-If a representation $r$ is non-valid, the oracle will identify the closest valid representation and assume they both refer to the same entity.
+Once a distance or correction criterion is chosen, one may associate invalid strings with nearby valid representations (see \ref{chap:Miscoding}).
 
-The oracle defines an equivalence relation that partitions the set $\mathcal{B}^\ast$ into equivalence classes. Each class corresponds to an entity in $\mathcal{E}$, although it may happen that some entities in $\mathcal{E}$ do not have any associated class, these are what we call the unknowable unknowns\index{Unknowable unknown}. Every string is associated with some entity, but some representations are better than others (i.e., they yield lower nescience). No string can belong to more than one entity. Moreover, for any given collection $\mathcal{E}$, multiple valid oracles may exist.
+The oracle defines an equivalence relation that partitions the set $\mathcal{B}^\ast$ into equivalence classes. Each class corresponds to an entity in $\mathcal{E}$, although it may happen that some entities in $\mathcal{E}$ do not have any associated class, these are what we call the unknowable unknowns\index{Unknowable unknown}. Not every string is associated with some entity, and some representations are better than others (i.e., they yield lower nescience). No string can represent more than one entity. Moreover, for any given collection $\mathcal{E}$, multiple valid oracles may exist.
 
 \begin{definition}
-Let $\mathcal{B}^\ast / \mathcal{O}$ be the quotient set defined by the oracle's equivalence relation over the set of binary strings. We call each class in this quotient set an \emph{entity class}\index{Entity class}, denoted by $[e]$, that is, $[e] \in \mathcal{B}^\ast / \mathcal{O}$.
+Let $dom(\mathcal{B}^\ast) / \mathcal{O}$, where $r \sim s$ if and only if $\mathcal{O}_\mathcal{E}(r) = \mathcal{O}_\mathcal{E}(s)$, be the quotient set defined by the oracle's equivalence relation over the set of binary strings. We call each class in this quotient set an \emph{entity class}\index{Entity class}.
 \end{definition}
 
 %
@@ -308,18 +302,11 @@ Suppose the research entity $e$ of interest is the set of causes of lung cancer.
 
 It would be desirable for the set of representations $\mathcal{R}_\mathcal{E}$ to be closed under the operation of concatenation, meaning that if $s$ and $t$ are representations of an entity $e$, then their concatenation $st$ would also be a representation of some entity (not necessarily the same one). Unfortunately, this is not the case, since the oracle function is partial; it does not assign an entity to every possible binary string. Moreover, we do not even require the set of representations $\mathcal{R}_e$ for a given entity $e$ to be closed under concatenation. It is entirely possible that two strings $s \in \mathcal{R}_e$ and $t \in \mathcal{R}_e$ produce a concatenated string $st$ that does not belong to $\mathcal{R}_e$.
 
-The concept of joint representation is defined for any pair of strings $s, t \in \mathcal{R}_\mathcal{E}$, even if they do not belong to the same set of representations $\mathcal{R}_e$, that is, even when $\mathcal{O}_\mathcal{E}(s) \neq \mathcal{O}_\mathcal{E}(t)$. This ability to combine representations of different entities will prove particularly useful for the discovery of new research entities that are currently unknown (see Section \ref{sec:New_Research_Topics}).
+The concept of joint representation is defined for any pair of strings $s, t \in \mathcal{R}_\mathcal{E}$, even if they do not belong to the same set of representations $\mathcal{R}_e$, that is, even when $\mathcal{O}_\mathcal{E}(s) \neq \mathcal{O}_\mathcal{E}(t)$. This ability to combine representations of different entities will prove particularly useful for the discovery of new research entities that are currently unknown (see Section \ref{sec:new-topics}).
 
-The operation of string concatenation is associative; that is, for all $r, s, t \in \mathcal{R}_\mathcal{E}$, we have $(rs)t = r(st)$. This property underlies the algebraic structure of the set of representations.
+The operation of string concatenation is associative; that is, for all $r, s, t \in \mathcal{R}_\mathcal{E}$, we have $(rs)t = r(st)$.
 
-\begin{proposition}
-The set $\mathcal{R}_\mathcal{E}$ of representations, together with the operation of concatenation, has the structure of a free monoid.
-\end{proposition}
-\begin{proof}
-As shown in Section \ref{sec:strings}, the operation of string concatenation on $\mathcal{R}_\mathcal{E}$ is associative, and the empty string $\lambda$ serves as the identity element.
-\end{proof}
-
-We do not require the operation of joining representations to be commutative with respect to the oracle function. Given representations $s, t \in \mathcal{R}_\mathcal{E}$, it may happen that the concatenated strings $st$ and $ts$ represent different entities—that is, $\mathcal{O}_\mathcal{E} \left( st \right) \neq \mathcal{O}_\mathcal{E} \left( ts \right)$.
+We do not require the operation of joining representations to be commutative with respect to the oracle function. Given representations $s, t \in \mathcal{R}_\mathcal{E}$, it may happen that the concatenated strings $st$ and $ts$ represent different entities, that is, $\mathcal{O}_\mathcal{E} \left( st \right) \neq \mathcal{O}_\mathcal{E} \left( ts \right)$.
 
 The concept of joint representation can be extended to any arbitrary, but finite, collection of representations. This allows us to incorporate multiple partial representations into our research or to use them in the process of discovering new entities.
 
@@ -332,7 +319,7 @@ Unfortunately, the set $\mathcal{R}_\mathcal{E}$ is not closed under the operati
 We have seen that the concatenation of two or more representations of an entity can result in a string that encodes a different entity from the original. Remarkably, this phenomenon can occur even when the individual representations being concatenated all correspond to the same entity. This non-trivial behavior opens the door to a novel strategy for scientific discovery: the generation of new, previously unknown entities through the systematic combination of representations of known entities.
 
 \begin{example}
-Consider a research scenario in which the entities under study are chemical compounds, and the representations are strings encoding molecular descriptors. Suppose $s$ encodes a compound known for its anti-inflammatory properties, and $t$ encodes a structurally similar compound with anti-viral properties. While both $s$ and $t$ individually map to well-known compounds via the oracle, the concatenation $st$ may correspond to a novel hybrid molecule whose biological activity has not yet been characterized. In this case, $st$ represents a new research entity, possibly a candidate for drug discovery—that was not explicitly part of the original knowledge base.
+Consider a research scenario in which the entities under study are chemical compounds, and the representations are strings encoding molecular descriptors. Suppose $s$ encodes a compound known for its anti-inflammatory properties, and $t$ encodes a structurally similar compound with anti-viral properties. While both $s$ and $t$ individually map to well-known compounds via the oracle, the concatenation $st$ may correspond to a novel hybrid molecule whose biological activity has not yet been characterized. In this case, $st$ represents a new research entity, possibly a candidate for drug discovery, that was not explicitly part of the original knowledge base.
 \end{example}
 
 %
@@ -375,7 +362,7 @@ Finally, given an entity $e \in \mathcal{E}$, we define the set of \emph{descrip
 \]
 \end{definition}
 
-From an ontological point of view, descriptions are string-based representations that satisfy the additional requirement of being computable. In this sense, descriptions are a subset of representations, and thus, there can exist descriptions that describe other descriptions. However, in practice, it is not advisable to use descriptions as representations of entities, since what we seek in a good representation is the inclusion of as many details as possible about the original entities, not a concise encoding. Using descriptions in place of representations would make the task of scientific discovery considerably more difficult for humans.
+Descriptions are strings that satisfy the additional requirement of being computable. Descriptions and representations are both finite binary strings, but they play different formal roles. In practice, it might happen that there axists descriptions that describe other descriptions. However, it is not advisable to use descriptions as representations of entities, since what we seek in a good representation is the inclusion of as many details as possible about the original entities, not a concise encoding. Using descriptions in place of representations would make the task of scientific discovery considerably more difficult for humans.
 
 Since each description corresponds to one, and only one, representation, we can define a function that maps descriptions to representations. Given that descriptions are encoded Turing machines, it is natural to define this mapping using a universal Turing machine. As a result, not only are individual descriptions of representations computable, but the function that maps descriptions to representations is also computable.
 
@@ -407,13 +394,22 @@ Let $\mathcal{D}_r$ be the set of descriptions of a representation $r \in \mathc
 
 Unfortunately, the set of perfect descriptions of a representation is generally unknown, and as Proposition \ref{prop:nescience-kolmogorov} shows, there exists no algorithm to compute it. In practice, we must rely on approximations to estimate how far our current best description is from a perfect one, that is, to quantify how much we do not know about a particular representation of an entity (see Chapter \ref{chap:Redundancy}).
 
+A remarkable consequence of Proposition \ref{prop:nescience-kolmogorov} is that perfect descriptions must be incompressible; that is, \emph{perfect knowledge implies randomness} (see Section \ref{sec:incompressibility_randomness}).
+
 \begin{proposition}
 \label{prop:nescience-kolmogorov}
-Let $r \in \mathcal{B}^\ast$ be a representation and let $d_r^{\star}$ be a perfect description of $r$. Then we have $l \left( d_r^{\star} \right) = K\left( r \right)$.
+Let $d_r^{\star}$ be a perfect description of a representation $r$, then $K(r) = l \left( d_r^{\star} \right)$.
 \end{proposition}
 \begin{proof}
-Apply Definition \ref{def:Kolmogorov-Complexity} and note that the Turing machines $TM$ used in descriptions of the form $\langle TM, a \rangle$ are required to be prefix-free.
+If $K(r) < l \left( d\_r^{\star} \right)$, then $d\_r^{\star}$ could be replaced by a shorter description, contradicting its minimality as a perfect description.
 \end{proof}
+
+The converse does not generally hold: a description can be random without being the shortest possible one. That is, we may have a description $d$ of a representation $r$ such that $l(d) = K(d)$, yet $l(d\_r^{\star}) < l(d)$.
+
+\begin{example}
+\label{ex:description_neural}
+Consider a deep neural network\index{Neural network} with an input layer of one thousand nodes, ten hidden layers of fifty thousand nodes each, and an output layer of one thousand nodes. Suppose the network is trained to output a fixed string of one thousand 1's for any given input. The Kolmogorov complexity of this neural network is much greater than that of the output string itself, which consists of one thousand identical bits.
+\end{example}
 
 The actual length of a description $l(d)$ for a representation $r$ depends on the specific encoding of Turing machines used. This encoding method is determined by the chosen description function $\delta$. Fortunately, if we replace our description function with a different one, the length of perfect descriptions remains essentially unchanged, up to an additive constant that does not depend on the representation itself.
 
@@ -426,22 +422,6 @@ Apply Proposition \ref{prop:nescience-kolmogorov} and Theorem \ref{def:Invarianc
 \end{proof}
 
 In general, within the theory of nescience, we are not concerned with computing the exact value of nescience for an entity given a specific description and representation. Instead, our interest lies in the relative ordering of different possible pairs of descriptions and representations according to their nescience. In this sense, the specific details of the universal Turing machine used in practice are not relevant\footnote{Do not confuse the internal workings of the universal Turing machine that maps descriptions to representations, which are not of interest, with the internal workings of the universal oracle Turing machine that maps representations to entities, which are of interest, as understanding this mechanism is crucial to understanding how things work.}. For the remainder of this book, we will assume that $\delta$ is fixed to a reference universal Turing machine. Alternatively, the reader may consider that all theorems in this book involving the length of the shortest models are valid up to an additive constant that does not depend on the topics themselves.
-
-A remarkable consequence of Proposition \ref{prop:nescience-kolmogorov} is that perfect descriptions must be incompressible; that is, \emph{perfect knowledge implies randomness} (see Section \ref{sec:incompressibility_randomness}).
-
-\begin{corollary}
-Let $d_r^{\star}$ be a perfect description of a representation $r$, then $K(r) = l \left( d_r^{\star} \right)$.
-\end{corollary}
-\begin{proof}
-If $K(r) < l \left( d\_r^{\star} \right)$, then $d\_r^{\star}$ could be replaced by a shorter description, contradicting its minimality as a perfect description.
-\end{proof}
-
-The converse does not generally hold: a description can be random without being the shortest possible one. That is, we may have a description $d$ of a representation $r$ such that $l(d) = K(d)$, yet $l(d\_r^{\star}) < l(d)$.
-
-\begin{example}
-\label{ex:description_neural}
-Consider a deep neural network\index{Neural network} with an input layer of one thousand nodes, ten hidden layers of fifty thousand nodes each, and an output layer of one thousand nodes. Suppose the network is trained to output a fixed string of one thousand 1's for any given input. The Kolmogorov complexity of this neural network is much greater than that of the output string itself, which consists of one thousand identical bits.
-\end{example}
 
 There is little value in descriptions that are longer than the representations they describe, that is, descriptions that do not compress the representations.
 
@@ -544,7 +524,7 @@ It is often cumbersome to include all the information required to reconstruct an
 Let $r, d, s \in \mathcal{B}^\ast$ be strings. We say that the string $\langle d, s \rangle$ is a \emph{valid conditional description}\index{Conditional model} of the representation $r$ given the string $s$, denoted by $d_{r \mid s}$, if $d = \langle TM, a \rangle$ is a description, and $TM \left(\langle a, s \rangle \right) = r$.
 \end{definition}
 
-The conditional description $d_{r \mid s}$ relies on two distinct strings: $a$ and $s$, each fulfilling a different role. The string $a$ is provided as input to the Turing machine $TM$ and is intended to contain the portion of the representation $r$ that cannot be derived from prior knowledge, that is, the incompressible or novel part. In contrast, the string $s$ represents background knowledge: it is a description or representation of another entity that is assumed to be already known and that can facilitate the reconstruction or understanding of $r$. For example, as we will explain in Chapter \ref{chap:Redundancy}, when evaluating the redundancy of a conditional description, the contribution of the string $s$ is disregarded—only the length and content of $a$ are taken into account.
+The conditional description $d_{r \mid s}$ relies on two distinct strings: $a$ and $s$, each fulfilling a different role. The string $a$ is provided as input to the Turing machine $TM$ and is intended to contain the portion of the representation $r$ that cannot be derived from prior knowledge, that is, the incompressible or novel part. In contrast, the string $s$ represents background knowledge: it is a description or representation of another entity that is assumed to be already known and that can facilitate the reconstruction or understanding of $r$. For example, as we will explain in Chapter \ref{chap:Redundancy}, when evaluating the redundancy of a conditional description, the contribution of the string $s$ is disregarded, only the length and content of $a$ are taken into account.
 
 Note that the conditional description $d_{r \mid s}$ does not belong to the set of valid descriptions $\mathcal{D}$ for the representation $r$, since computing $r$ requires the additional string $s$, which is not part of the description itself. Therefore, a new definition is needed to formally capture this concept.
 
@@ -650,7 +630,7 @@ Given a set of entities $\mathcal{E}$, we define a \emph{research area}\index{Re
 If we want to quantify how much we do not know about a research area, we must first provide a representation for that area. In general, research areas are infinite, but the number of known representations is finite. Therefore, we can only describe an area with respect to our current state of knowledge.
 
 \begin{definition}
-Let $\mathcal{A} \subset \mathcal{E}$ be a research area. We define the \emph{known subset of the area}\index{Known subset of an area} $\mathcal{A}$, denoted by $\hat{\mathcal{A}}$, as the set of entities $e_1, e_2, \ldots, e_n \in A$ for which at least one non-pleonastic description is known.
+Let $\mathcal{A} \subset \mathcal{E}$ be a research area. We define the \emph{known subset of the area}\index{Known subset of an area} $\mathcal{A}$, denoted by $\hat{\mathcal{A}}$, as the set of entities $e_1, e_2, \ldots, e_n \in \mathcal{A}$ for which at least one non-pleonastic description is known.
 \end{definition}
 
 We must distinguish between the knowable subset of $\mathcal{A}$, composed of those entities for which a representation exists, and the known subset of $\mathcal{A}$, composed of those entities for which at least one non-pleonastic description is known, that is, entities about which some research has already been conducted. Clearly, the set of known entities is a subset of the set of knowable entities.

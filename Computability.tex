@@ -16,7 +16,7 @@ Antonio Machado
 \end{quote}
 \bigskip
 
-We continue our review of the background required to understand the theory of nescience by providing a mathematical formalization of the concept of a \emph{computable procedure}\index{Computable procedure}. Intuitively, a computable procedure is a method consisting of a finite sequence of instructions that, when applied to a problem, produces the correct answer after a finite number of steps. This informal notion rests on the requirement that the instructions be clear and precise enough for any human to follow without additional guidance. We may strengthen this requirement further by demanding that the instructions be so unambiguous that a machine could execute them.
+We continue our review of the background required to understand the theory of nescience by providing a mathematical formalization of the concept of \emph{computable procedure}\index{Computable procedure}. Intuitively, a computable procedure is a method consisting of a finite sequence of instructions that, when applied to a problem, produces the correct answer after a finite number of steps. This informal notion rests on the requirement that the instructions be clear and precise enough for any human to follow without additional guidance. We may strengthen this requirement further by demanding that the instructions be so unambiguous that a machine could execute them.
 
 In 1936, the British mathematician Alan Turing introduced a formal model of a family of hypothetical machines and argued that, for every intuitively computable procedure, there exists a \emph{Turing machine}\index{Turing machine} capable of carrying it out. The model is not only simple enough to allow precise mathematical analysis but also sufficiently general to capture the intuitive concept of effective computation.
 
@@ -26,7 +26,7 @@ The concept of the Turing machine, originally conceived as a model of a mechanic
 
 Given the abstract character of many entities studied in science, we employ the concept of the \emph{oracle Turing machine}\index{Oracle Turing machine} to formalize our framework. An oracle Turing machine resembles an ordinary Turing machine but is augmented with the ability to query an external oracle. The oracle, whose internal mechanism is unspecified, provides answers to questions that may be uncomputable for standard machines. Different oracles yield different computational powers, giving rise to a hierarchy of relative computability. For our purposes, the oracle can be viewed as a theoretical construct that models access to sources of information beyond the limits of mechanical computation. It should be emphasized that the oracle is not a physical device but an abstract tool for reasoning about the boundaries of computation.
 
-Turing machines reveal the intrinsic limitations of computation. Exploring these limitations is not merely a philosophical exercise; it has profound implications for the field of \emph{computational complexity}\index{Computational complexity}. Situated at the intersection of computer science and mathematics, computational complexity studies the resources (most notably time and space) required to solve problems. Problems are classified into \emph{complexity classes}\index{Complexity classes} according to the asymptotic resources needed by the best algorithms known for their solution. One of the most famous open problems in this field is the $P\overset{?}{=}NP$\index{$P\overset{?}{=}NP$} question, which asks whether the class $P$ of problems solvable in polynomial time coincides with the class $NP$ of problems for which proposed solutions can be verified in polynomial time. In this book, our interest extends beyond the epistemological issue of determining which problems can be solved in principle, given unlimited resources, to the more practical question of which problems can be solved efficiently with respect to time.
+% Turing machines reveal the intrinsic limitations of computation. Exploring these limitations is not merely a philosophical exercise; it has profound implications for the field of \emph{computational complexity}\index{Computational complexity}. Situated at the intersection of computer science and mathematics, computational complexity studies the resources (most notably time and space) required to solve problems. Problems are classified into \emph{complexity classes}\index{Complexity classes} according to the asymptotic resources required by algorithms solving them. One of the most famous open problems in this field is the $P\overset{?}{=}NP$\index{$P\overset{?}{=}NP$} question, which asks whether the class $P$ of problems solvable in polynomial time coincides with the class $NP$ of problems for which proposed solutions can be verified in polynomial time. In this book, our interest extends beyond the epistemological issue of determining which problems can be solved in principle, given unlimited resources, to the more practical question of which problems can be solved efficiently with respect to time.
 
 %
 % Section: Turing Machines
@@ -71,12 +71,12 @@ A \emph{Turing machine} is a 7-tuple $\left(Q,\Gamma,\sqcup,\Sigma,q_{0},q_{f},\
  & \sqcup\in\Gamma \quad \text{is the \emph{blank symbol},} \index{Blank Symbol} \\
  & \Sigma\subseteq\Gamma\setminus\{\sqcup\} \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
  & q_{0}\in Q \quad \text{is the \emph{initial state},} \index{Initial State} \\
- & q_{f}\in Q \setminus \{q_0\} \quad \text{is the designated \emph{halting state},} \index{Halting State} \\ 
+ & q_{f}\in Q \setminus \{q_o\} \quad \text{is the designated \emph{halting state},} \index{Halting State} \\ 
  & \tau:\left(Q\setminus \{q_{f}\}\right)\times\Gamma \rightharpoonup  Q\times\Gamma\times\{L,R,S\} \quad\text{is a \emph{transition function}. \index{Transition Function} }
 \end{align*}
 \end{definition}
 
-The algorithm executed by the machine is defined by the (partial) transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$\footnote{Some authors allow multiple halting states in the definition of Turing machines.} and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Gamma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, it will enter an infinite loop, never halting. We assume that the head of the machine is initially positioned at the first symbol of the input string.
+The algorithm executed by the machine is defined by the (partial) transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$\footnote{Some authors allow multiple halting states in the definition of Turing machines.} and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Gamma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, the computation halts. We assume that the head of the machine is initially positioned at the first symbol of the input string.
 
 \begin{example}
 \label{ex:Turing-Machine}
@@ -103,13 +103,13 @@ A Turing machine can also be represented by a \emph{state diagram}\index{State d
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto] 
-   \node[state,initial] (q_0)   {$q_0$}; 
-   \node[state] (q_1) [right=of q_0] {$q_1$}; 
+   \node[state,initial] (q_o)   {$q_o$}; 
+   \node[state] (q_1) [right=of q_o] {$q_1$}; 
    \node[state] (q_f) [right=of q_1] {$q_f$}; 
    
    \path[->] 
-    (q_0) edge  node {1$\to$$\sqcup$,R} (q_1)
-    (q_0) edge[bend right] node[below] {0$\to$$\sqcup$,R} (q_f)
+    (q_o) edge  node {1$\to$$\sqcup$,R} (q_1)
+    (q_o) edge[bend right] node[below] {0$\to$$\sqcup$,R} (q_f)
     (q_1) edge  node {0$\to$1,S} (q_f)
     (q_1) edge [loop above] node {1$\to$1,R} ();
 \end{tikzpicture}
@@ -122,7 +122,7 @@ It is a remarkable fact that minor alterations to the definition of a Turing mac
 \label{ex:multitape_turing_machine}
 A \emph{multitape Turing machine}\index{Multitape Turing machine} is a Turing machine equipped with multiple heads and their respective tapes. In the initial configuration, the input string resides in tape 1, while the other tapes are blank. The transition function for a multitape Turing machine is:
 \[
-\tau:\left(Q \setminus q_{f} \right) \times \Gamma^k \rightarrow  Q \times \Gamma^k \times \left\{L,R,S\right\}^k,
+\tau:\left(Q \setminus \{q_{f}\} \right) \times \Gamma^k \rightarrow  Q \times \Gamma^k \times \left\{L,R,S\right\}^k,
 \]
 where $k$ denotes the number of tapes. Multitape Turing machines are equivalent in power to standard Turing machines. We can validate this claim by devising a method for a standard Turing machine to mimic a multitape machine's behavior. This requires encoding the content of multiple tapes onto a single tape, introducing a new symbol as a tape separator, and encoding the positions of the heads across the tapes with a distinct head location symbol. If we designate the tape separation symbol as $|$ and the head location symbol as $h$, a simulation tape for a machine with 3 tapes might appear as $\sqcup01h00|000h1|h0101\sqcup$. The standard machine's operation would involve scanning the subtapes one by one, pinpointing the head's location, and executing the necessary transition. If the computation on one subtape necessitates writing a new symbol beyond its boundary, we'd need to shift subsequent symbols to accommodate the new one. While the simulation might operate at a slower pace than the original multitape machine, both machine types can solve an identical set of problems.
 \end{example}
@@ -132,7 +132,7 @@ For the remainder of this book, without any loss of generality, we'll assume tha
 In addition to providing a formal definition of a Turing machine, it's essential to formally outline its computational process. This entails detailing how the machine reads the input string, produces the output string, and transitions between states during computation. We will start by defining the concept of the machine's internal configuration. This configuration captures the machine's current state and position, as well as the present state of the tape.
 
 \begin{definition}\index{Configuration}
-A \emph{configuration}\index{Configuration} of a Turing machine $T$ is the 3-tuple $\left(q,s,i\right)$, where $q\in Q$ represents a state of the machine, $s\in\Gamma^+$ denotes a string containing the tape's content (excluding the blank symbols), and $1 \le i \le n$ is the index of the symbol $s_i$ beneath the head. Here, $s_1$ is the first symbol on the tape, and $n=l(s)$. 
+A \emph{configuration}\index{Configuration} of a Turing machine $T$ is the 3-tuple $\left(q,s,i\right)$, where $q\in Q$ represents a state of the machine, $s \in \Gamma$ denotes a string containing the tape's content, and $1 \le i \le n$ is the index of the symbol $s_i$ beneath the head. Here, $s_1$ is the first symbol on the tape, and $n=l(s)$. 
 \end{definition}
 
 Configurations enable us to describe the current state of a Turing machine without any loss of information. At any stage of computation, one could halt the machine, record its configuration, and later resume the computation from the exact point of interruption using this configuration.
@@ -140,7 +140,7 @@ Configurations enable us to describe the current state of a Turing machine witho
 The following definition explains how we transition from one configuration to the next during computation.
 
 \begin{definition}\index{Configuration yields configuration}
-A configuration $C=\left(q,s,i\right)$ \emph{yields}\index{Yield} another configuration $C'=\left(r,s',j\right)$ if there exists a transition $\tau:\left(q, s_{i}\right) = \left(r, s'_{i}, a\right)$, where $s=s_{1} \dots s_{i-1}s_{i}s_{i+1} \dots s_{n}$, $s'=s_{1} \dots s_{i-1}s'_{i}s_{i+1} \dots s_{n}$, and
+A configuration $C=\left(q,s,i\right)$ \emph{yields}\index{Yield} another configuration $C'=\left(r,s',j\right)$ if there exists a transition $\tau \left(q, s_{i}\right) = \left(r, s'_{i}, a\right)$, where $s=s_{1} \dots s_{i-1}s_{i}s_{i+1} \dots s_{n}$, $s'=s_{1} \dots s_{i-1}s'_{i}s_{i+1} \dots s_{n}$, and
 \begin{equation}
   j = \begin{cases}
         i+1 & \text{if $a=R$} \\
@@ -158,13 +158,13 @@ Building on the concepts of configuration and one configuration yielding another
 Let $T$ be a Turing machine, $C_{0}$ its initial configuration, and $C_n$ a configuration encompassing the final state $q_f$. A \emph{computation}\index{Computation} under machine $T$ refers to a finite sequence of $n+1$ configurations $\left(C_{0},C_{1},\ldots,C_n\right)$ wherein each configuration $C_{k}$ yields the subsequent configuration $C_{k+1}$, for all $0\leq k < n$.
 \end{definition}
 
-Computations are deterministic; meaning, for a given Turing machine $T$ and an input string $s$, the configuration sequence is uniquely determined.. If machine $T$ neither halts nor progresses with input $s$, we deduce the absence of computation.
+Computations are deterministic, meaning, for a given Turing machine $T$ and an input string $s$, the configuration sequence is uniquely determined. If machine $T$ neither halts nor progresses with input $s$, we deduce the absence of computation.
 
 \begin{example}
 The computation of the Turing machine described in Example \ref{ex:Turing-Machine} using the input string $110111$ results in the following sequence of configurations:
 
 \begin{enumerate}
-\item $(q_0, 110111, 1)$
+\item $(q_o, 110111, 1)$
 \item $(q_1, 10111,  1)$
 \item $(q_1, 10111,  2)$  
 \item $(q_f, 11111,  2)$  
@@ -172,7 +172,7 @@ The computation of the Turing machine described in Example \ref{ex:Turing-Machin
 
 \end{example}
 
-Intuitively, a procedure is deemed computable by a human if it can be delineated through specific steps, executed systematically, without relying on intuition or ingenuity. This intuitive grasp aligns with the formalized concept of a Turing machine, bridging informal comprehension and the machine's rigorous definition—a cornerstone in the theory of computation. However, this alignment presents an intriguing challenge. Affirming that our grasp of computability mirrors a Turing machine's capabilities cannot be proven traditionally, as 'computability' lacks a well-defined interpretation. Consequently, some researchers categorize this as a \emph{thesis}, avoiding the formal 'theorem' label. Turing himself opted to term it a \emph{definition}, steering clear of denoting it as a theorem.
+Intuitively, a procedure is deemed computable by a human if it can be delineated through specific steps, executed systematically, without relying on intuition or ingenuity. This intuitive grasp aligns with the formalized concept of a Turing machine, bridging informal comprehension and the machine's rigorous definition. However, this alignment presents an intriguing challenge. Affirming that our grasp of computability mirrors a Turing machine's capabilities cannot be proven traditionally, as "computability" lacks a well-defined interpretation. Consequently, some researchers categorize this as a \emph{thesis}, avoiding the formal "theorem" label. Turing himself opted to term it a \emph{definition}, steering clear of denoting it as a theorem.
 
 \begin{theorem}[Turing's Thesis]
 \label{th:turing_thesis}\index{Turing's thesis}
@@ -197,9 +197,9 @@ To describe a Turing machine concisely, we need to encode the transition functio
 \left(q_{1},s_{1},r_{1},t_{1},a_{1}\right),\left(q_{2},s_{2},r_{2},t_{2},a_{2}\right),\ldots,\left(q_{m},s_
 {m},r_{m},t_{m},a_{m}\right)
 \]
-where $m \leq d\left(Q\setminus \{q_{f}\}\right) \times d(\Gamma)$, with the stipulation that the first quintuple refers to the initial state and the second one to the final state; i.e., $q_{1} = q_{o}$ and $r_{2} = q_{f}$. A possible approach to describe these quintuples is to encode the elements of the set $Q\cup\Gamma\cup\left\{ L, R, S \right\}$ using a fixed-length binary code (refer to Definition \ref{def:Fixed-Length-Codes} for more details), encoding the quintuple $\left(q,s,r,t,a\right)$ as $\left\langle q, s, r, t, a \right\rangle$. The length of an encoded quintuple is $5l$, where $l=\left\lceil \log\left(d\left(Q\cup\Gamma\cup\left\{ L,R,S\right\}\right)\right)\right\rceil$. Following this convention, machine $T$ is encoded as the binary string:
+where $m \leq d\left(Q\setminus \{q_{f}\}\right) \times d(\Gamma)$, with the stipulation that the first quintuple refers to the initial state and the second one to the final state. A possible approach to describe these quintuples is to encode the elements of the set $Q\cup\Gamma\cup\left\{ L, R, S \right\}$ using a fixed-length binary code (refer to Definition \ref{def:Fixed-Length-Codes} for more details), encoding the quintuple $\left(q,s,r,t,a\right)$ as $\left\langle q, s, r, t, a \right\rangle$. The length of an encoded quintuple is $5l$, where $l=\left\lceil \log\left(d\left(Q\cup\Gamma\cup\left\{ L,R,S\right\}\right)\right)\right\rceil$. Following this convention, machine $T$ is encoded as the binary string:
 \[
-\left\langle T \right\rangle = \left\langle \bar{l}, \left\langle q_{1}, s_{1}, r_{1}, t_{1}, a_{1} \right\rangle, \ldots, \left\langle q_{r}, r_{r}, s_{r}, t_{r}, a_{r} \right\rangle \right\rangle 
+\left\langle T \right\rangle = \left\langle \bar{l}, \left\langle q_{1}, s_{1}, r_{1}, t_{1}, a_{1} \right\rangle, \ldots, \left\langle q_{r}, s_{r}, r_{r}, t_{r}, a_{r} \right\rangle \right\rangle 
 \]
 The length of the encoded machine, following this schema, would be $l(\left\langle T \right\rangle) \leq 5lm + \log l + 1$.
 \end{example}
@@ -219,7 +219,7 @@ A universal Turing machine is a machine that can simulate the behavior of any ot
 \begin{definition}[Universal Turing Machine]
 \label{def:Universal-Turing-Machine}
 \index{Universal Turing machine}
-A \emph{Universal Turing Machine} is a Turing machine $U$ such that $U(\langle \langle T_i\rangle, s \rangle) = T_i(s)$ for all Turing machines $T_i$ and all input strings $s \in \mathcal{B}$.
+A \emph{Universal Turing Machine} is a Turing machine $U$ such that $U(\langle \langle T_i\rangle, s \rangle) = T_i(s)$ for all Turing machines $T_i$ and all input strings $s \in \mathcal{B}^\ast$ that halt.
 \end{definition}
 
 Naturally, we must prove that such a machine exists before we can utilize it. One could argue that a human being could decode the machine $T_i$ and simulate its behavior with the input string $s$, and then refer to Theorem \ref{th:turing_thesis}. A more rigorous approach would be to explicitly construct a universal Turing machine. However, providing a detailed description of one of these machines is beyond the scope of this book. Instead, we direct the reader to the references included at the end of the chapter for further exploration.
@@ -257,7 +257,7 @@ The proposition below proves that the halting problem is non-computable.
 Define HALT as in Algorithm \ref{alg:halt}. There does not exist a Turing machine that computes the HALT function for all possible pairs $(A, I)$, where $A$ is a Turing machine and $I$ is the input string to that machine.
 \end{proposition}
 \begin{proof}
-The proof is by contradiction. Assume that the machine $HALT$  exists, and define a new Turing machine $TC$ such that $TC(A) = 1$ if $HALT(A,A) = 0$, and $TC(A)$ will never stop if $HALT(A,A) = 1$. Then the contradiction arises when we ask about the result of $TC(TC)$: if $TC(TC)$ stops we have that $HALT(TC,TC) = 0$ and that $TC(TC)$ should not stop, and if $TC(TC)$ does not stop then we have that $H(TC,TC) = 1$ and thus $TC(TC)$ should stop.
+The proof is by contradiction. Assume that the machine $HALT$  exists, and define a new Turing machine $TC$ such that $TC(A) = 1$ if $HALT(A,A) = 0$, and $TC(A)$ will never stop if $HALT(A,A) = 1$. Then the contradiction arises when we ask about the result of $TC(TC)$: if $TC(TC)$ stops we have that $HALT(TC,TC) = 1$ and that $TC(TC)$ should not stop, and if $TC(TC)$ does not stop then we have that $HALT(TC,TC) = 0$ and thus $TC(TC)$ should stop.
 \end{proof}
 
 The existence of such non-computable problems underscores the boundaries of mechanical computation. It illustrates that while Turing machines, and by extension, computers are profoundly powerful tools capable of solving an extensive array of problems, they are not omnipotent. A frontier of unsolvable problems exists, necessitating deeper exploration into the realms of mathematics, logic, and perhaps even philosophy to understand the inherent limits of computation.
@@ -280,7 +280,7 @@ Non-computable problems are generally not derived directly from natural phenomen
 \section{Computable Functions and Sets}
 \label{sec:computable_functions}
 
-Each Turing machine \(T\) defines a function \(f_T:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) that assigns to each input string \(s \in \mathcal{B}^{\ast}\) an output string \(T(s) \in \mathcal{B}^{\ast}\). The relationship between Turing machines and functions forms the basis for introducing the concept of a \emph{computable function}.
+Each Turing machine \(T\) defines a partial function \(f_T:\mathcal{B}^{\ast} \rightharpoonup \mathcal{B}^{\ast}\) that assigns to each input string \(s \in \mathcal{B}^{\ast}\) an output string \(T(s) \in \mathcal{B}^{\ast}\). The relationship between Turing machines and functions forms the basis for introducing the concept of a \emph{computable function}.
 
 \begin{definition}
 \label{def:computable-function}
@@ -309,7 +309,7 @@ The function $f: \mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that assig
 We can expand the application of the principles of computability and partial computability to the domain of sets. We characterize sets through the lens of theirs characteristic functions that discern the membership of elements within the sets.
 
 \begin{definition}
-A set $A \in \mathcal{B}^\ast$ is \emph{computable}\index{Computable set} if its characteristic function $\mathcal{X}_A$ is a total computable function. A set $A \in \mathcal{B}^\ast$ is \emph{computably enumerable}\index{Computably enumerable set} if its characteristic function $\mathcal{X}_A$ is a partial computable function, that is, $\mathcal{X}_A(a) = 1$ if $a \in A$, but $\mathcal{X}_A(a)$ is undefined if $a \not\in A$.
+A set $A \subseteq \mathcal{B}^\ast$ is \emph{computable}\index{Computable set} if its characteristic function $\mathcal{X}_A$ is a total computable function. A set $A \in \mathcal{B}^\ast$ is \emph{computably enumerable}\index{Computably enumerable set} if its characteristic function $\mathcal{X}_A$ is a partial computable function, that is, $\mathcal{X}_A(a) = 1$ if $a \in A$, but $\mathcal{X}_A(a)$ is undefined if $a \not\in A$.
 \end{definition}
 
 The application of these concepts is illustrated through the example of the set of all Turing machines that halt for all inputs.
@@ -326,7 +326,7 @@ A set $A \in \mathcal{B}^\ast$ is computable if and only if $A$ and its compleme
 \begin{proof}
 If $A$ is computable, by definition, there exists a Turing machine that decides for any input $x \in \mathcal{B}^\ast$ whether $x \in A$ or $x \notin A$, halting in both cases. This implies that both $A$ and its complement $A^c$ can be enumerated by Turing machines. Thus, both $A$ and $A^c$ are computably enumerable.
 
-Conversely, suppose $A$ and $A^c$ are computably enumerable. This means there exist two Turing machines, $T_A$ and $T_{A^c}$, that enumerate the elements of $A$ and $A^c$, respectively. To show that $A$ is computable, construct a Turing machine $T$ that, given an input $x \in \mathcal{B}^\ast$, simulates $T_A$ and $T_{A^c}$ in parallel to search for $x$. If $x$ appears in the enumeration produced by $T_A$, $T$ halts and accepts $x$ as an element of $A$. If $x$ appears in the enumeration produced by $T_{A^c}$, $T$ halts and accpts $x$, indicating $x \notin A$. Since every element of $\mathcal{B}^\ast$ must be in either $A$ or $A^c$ and both sets are computably enumerable, $T$ will eventually halt for every input $x$, proving that $A$ is computable.
+Conversely, suppose $A$ and $A^c$ are computably enumerable. This means there exist two Turing machines, $T_A$ and $T_{A^c}$, that enumerate the elements of $A$ and $A^c$, respectively. To show that $A$ is computable, construct a Turing machine $T$ that, given an input $x \in \mathcal{B}^\ast$, simulates $T_A$ and $T_{A^c}$ in parallel to search for $x$. If $x$ appears in the enumeration produced by $T_A$, $T$ halts and accepts $x$ as an element of $A$. If $x$ appears in the enumeration produced by $T_{A^c}$, $T$ halts and accepts $x$, indicating $x \notin A$. Since every element of $\mathcal{B}^\ast$ must be in either $A$ or $A^c$ and both sets are computably enumerable, $T$ will eventually halt for every input $x$, proving that $A$ is computable.
 \end{proof}
 
 %
@@ -371,14 +371,14 @@ An oracle Turing machine\index{Oracle Turing machine} (see Figure \ref{fig:Oracl
 
 \begin{definition}[Oracle Turing Machine]
 \label{def:Oracle-Turing-Machine}
-An \emph{oracle Turing machine} with oracle set $\mathcal{O}$ is a 8-tuple $\left(Q, \Gamma, \sqcup, \Sigma, q_i, q_f, \tau, \mathcal{O} \right)$ where:
+An \emph{oracle Turing machine} with oracle set $\mathcal{O}$ is a 8-tuple $\left(Q, \Gamma, \sqcup, \Sigma, q_o, q_f, \tau, \mathcal{O} \right)$ where:
 \begin{align*}
  & Q \quad \text{is a finite, non-empty, set of \emph{states},} \index{Machine State} \\
  & \Gamma \quad \text{is a finite, non-empty, set of \emph{tape symbols},} \index{Tape Symbol} \\
  & \sqcup\in\Gamma \quad \text{is the \emph{blank symbol},} \index{Blank Symbol} \\
- & \Sigma\subseteq\Gamma\setminus\sqcup \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
+ & \Sigma\subseteq\Gamma\setminus\{\sqcup\} \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
  & q_{o}\in Q \quad \text{is the \emph{initial state},} \index{Initial State} \\
- & q_{f}\in Q \setminus \{q_0\} \quad \text{is the \emph{final state},} \index{Final State} \\ 
+ & q_{f}\in Q \setminus \{q_o\} \quad \text{is the \emph{final state},} \index{Final State} \\ 
  & \tau: \left(Q \setminus \{q_{f}\}\right) \times \Gamma \times \{0, 1\} \rightarrow  Q\times\Gamma\times\left\{ L,R,S\right\} \quad\text{is the \emph{transition function}, \index{Transition Function} } \\
  & \mathcal{O} \subseteq \Sigma^\ast \quad \text{is the \emph{oracle set}.}
 \end{align*}
@@ -386,7 +386,7 @@ An \emph{oracle Turing machine} with oracle set $\mathcal{O}$ is a 8-tuple $\lef
 
 Building on the concept of a regular Turing machine (refer to Definition \ref{def:Turing-Machine}), an oracle Turing machine introduces the unique feature of an oracle set $\mathcal{O}$. This set comprises a subset of strings for which the oracle can instantly provide answers. The true strength of an oracle machine emerges when the set $\mathcal{O}$ is non-computable; in cases where $\mathcal{O}$ is computable, a regular Turing machine would be sufficient.
 
-The transition function $\tau$ for the oracle Turing machine is nuanced. At each step the machine will query the oracle. Specifically, it sends the current string $w$ —starting under the head and extending to the rightmost non-empty cell of the input tape—to the oracle. The oracle then responds with a binary answer: '1' if $w$ is in $\mathcal{O}$ or '0' if it isn't. The machine doesn't always utilize this response. There are steps where, despite receiving an answer, the computation proceeds unaffected by the oracle's response—essentially ignoring it. However, when the oracle's answer is pivotal, the machine makes a decision based on it. This decision could affect the next state, the next symbol to be written, or the next move (left, right, or stay). In essence, while the machine has the capability to continuously consult the oracle, it strategically chooses when to act on the information received. We could have modified the $\tau$ funcion in such a way that the oracle is queried only when the answer is relevant for the computation, but that would require making important changes to the behaviour of the function, such as the introduction of new control states.
+The transition function $\tau$ for the oracle Turing machine is nuanced. At each step the machine will query the oracle. Specifically, it sends the current string $w$, starting under the head and extending to the rightmost non-empty cell of the input tape, to the oracle. The oracle then responds with a binary answer: '1' if $w$ is in $\mathcal{O}$ or '0' if it isn't. The machine doesn't always utilize this response. There are steps where, despite receiving an answer, the computation proceeds unaffected by the oracle's response, essentially ignoring it. However, when the oracle's answer is pivotal, the machine makes a decision based on it. This decision could affect the next state, the next symbol to be written, or the next move (left, right, or stay). In essence, while the machine has the capability to continuously consult the oracle, it strategically chooses when to act on the information received. We could have modified the $\tau$ funcion in such a way that the oracle is queried only when the answer is relevant for the computation, but that would require making important changes to the behaviour of the function, such as the introduction of new control states.
 
 \begin{example}
 In the realm of theoretical computer science, an oracle can be invoked to "solve" the halting problem (refer to Theorem \ref{th:halting-problem}). The oracle is a hypothetical device or black box that, as if by magic, provides an instantaneous answer to a specific problem instance. The oracle set $\mathcal{O}$ would consist of a collection of strings in the form $\langle P, I \rangle$, where $P$ represents a program encoded as a string and $I$ denotes its input. Given a program and its input, this oracle would instantly inform us whether the program halts on that input. Naturally, this concept is purely theoretical. No such oracle exists in reality, and the halting problem remains unsolvable in practical terms.
@@ -396,22 +396,22 @@ A standard Turing machine can be viewed as an oracle machine that simply \emph{i
 
 \begin{proposition}
 \label{prop:tm_subset_otm}
-For every (ordinary) Turing machine $T=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ and every oracle set $\mathcal{O}\subseteq\Sigma^\ast$, there exists an oracle Turing machine $T^{\mathcal{O}}$ such that for all inputs $x\in\Sigma^\ast$, the computation of $T$ on $x$ and the computation of $T^{\mathcal{O}}$ on $x$ (with oracle $\mathcal{O}$) produce the same outcome.
+For every (ordinary) Turing machine $T=(Q,\Gamma,\sqcup,\Sigma,q_o,q_f,\tau)$ and every oracle set $\mathcal{O}\subseteq\Sigma^\ast$, there exists an oracle Turing machine $T^{\mathcal{O}}$ such that for all inputs $x\in\Sigma^\ast$, the computation of $T$ on $x$ and the computation of $T^{\mathcal{O}}$ on $x$ (with oracle $\mathcal{O}$) produce the same outcome.
 \end{proposition}
 
 \begin{proof}
-Define $T^{\mathcal{O}}=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau',\mathcal{O})$ with the same components as $T$ and transition function $\tau'$ given by
+Define $T^{\mathcal{O}}=(Q,\Gamma,\sqcup,\Sigma,q_o,q_f,\tau',\mathcal{O})$ with the same components as $T$ and transition function $\tau'$ given by
 \[
 \tau'(q,s,b) \;=\; \tau(q,s)\qquad\text{for all }(q,s)\in (Q\setminus\{q_f\})\times\Gamma\text{ and }b\in\{0,1\}.
 \]
 That is, $T^{\mathcal{O}}$ ignores the oracle bit. A step-by-step induction on the unique computation of $T$ on $x$ shows that $T$ and $T^{\mathcal{O}}$ visit identical configurations (up to the presence of the unused oracle bit) and therefore have the same outcome and output.
 \end{proof}
 
-An oracle machine is specified by two pieces of data: the \emph{machine component} $(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ and the \emph{oracle set} $\mathcal{O}$. The former is defined syntactically and does not depend on which $\mathcal{O}$ is chosen. Semantically, the behavior of a fixed machine component on a given input depends only on the answers to the queries it actually makes (i.e., on the restriction of $\mathcal{O}$ to those queries).
+An oracle machine is specified by two pieces of data: the \emph{machine component} $(Q,\Gamma,\sqcup,\Sigma,q_o,q_f,\tau)$ and the \emph{oracle set} $\mathcal{O}$. The former is defined syntactically and does not depend on which $\mathcal{O}$ is chosen. Semantically, the behavior of a fixed machine component on a given input depends only on the answers to the queries it actually makes (i.e., on the restriction of $\mathcal{O}$ to those queries).
 
 \begin{proposition}
 \label{prop:indep_machine_oracle}
-Let $M=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ be a fixed machine component. For any two oracle sets $\mathcal{O}_1,\mathcal{O}_2\subseteq\Sigma^\ast$ and any input $x$, if $\mathcal{O}_1$ and $\mathcal{O}_2$ give the same answers to all oracle queries made during the run of $M$ on input $x$ (with either oracle), then the computations $M^{\mathcal{O}_1}(x)$ and $M^{\mathcal{O}_2}(x)$ are identical (same sequence of configurations, hence same outcome and output).
+Let $M=(Q,\Gamma,\sqcup,\Sigma,q_o,q_f,\tau)$ be a fixed machine component. For any two oracle sets $\mathcal{O}_1,\mathcal{O}_2\subseteq\Sigma^\ast$ and any input $x$, if $\mathcal{O}_1$ and $\mathcal{O}_2$ give the same answers to all oracle queries made during the run of $M$ on input $x$ (with either oracle), then the computations $M^{\mathcal{O}_1}(x)$ and $M^{\mathcal{O}_2}(x)$ are identical (same sequence of configurations, hence same outcome and output).
 \end{proposition}
 \begin{proof}
 Consider the (unique) run of $M^{\mathcal{O}_1}$ on input $x$. By hypothesis, $\mathcal{O}_2$ agrees with $\mathcal{O}_1$ on precisely the queried strings that arise along this run. Since $\tau$ is deterministic given the current state, scanned symbol, and oracle bit, and the oracle bit provided by $\mathcal{O}_2$ matches that from $\mathcal{O}_1$ at every step, both computations take the same transition at each step. Thus the configuration sequences coincide, yielding identical outcomes.
@@ -439,19 +439,19 @@ If $f$ is computable by an ordinary machine $T$, then by Proposition \ref{prop:t
 
 More generally, if $\mathcal{O}$ is \emph{Turing reducible} to $\mathcal{O}'$ (i.e., decidable by some $\mathcal{O}'$-oracle machine), then every $\mathcal{O}$-computable function is $\mathcal{O}'$-computable. This captures the standard notion of \emph{relative computability}.
 
-\begin{example}[Toy oracle machine that outputs the oracle's answer]
+\begin{example}
 \label{ex:encode_otm}
 Let $\Sigma={0,1}$ and $\Gamma={0,1,\sqcup}$. Fix the oracle set $\mathcal{O}={11,101}$ (finite for concreteness). Consider the oracle machine $M^{\mathcal{O}}$ that, on any input $w\in\Sigma^\ast$, writes a single symbol indicating the oracle's answer and halts:
 \begin{itemize}
-\item If the queried string (as per your convention) is in $\mathcal{O}$, write $1$ and halt.
+\item If the queried string (under the query convention adopted above) is in $\mathcal{O}$, write $1$ and halt.
 \item Otherwise, write $0$ and halt.
 \end{itemize}
-Use states $Q={q_0,q_f}$, with $q_0$ initial and $q_f$ halting. Define $\tau$ independently of the scanned symbol $s\in\Gamma$ by the sextuples
+Use states $Q={q_o,q_f}$, with $q_o$ initial and $q_f$ halting. Define $\tau$ independently of the scanned symbol $s\in\Gamma$ by the sextuples
 \[
-(q_0,0,1,q_f,1,S),\quad (q_0,1,1,q_f,1,S),\quad (q_0,\sqcup,1,q_f,1,S),
+(q_o,0,1,q_f,1,S),\quad (q_o1,1,q_f,1,S),\quad (q_o,\sqcup,1,q_f,1,S),
 \]
 \[
-(q_0,0,0,q_f,0,S),\quad (q_0,1,0,q_f,0,S),\quad (q_0,\sqcup,0,q_f,0,S),
+(q_o,0,0,q_f,0,S),\quad (q_o,1,0,q_f,0,S),\quad (q_o,\sqcup,0,q_f,0,S),
 \]
 and leave all other transitions undefined (so the machine halts after one step). Then $\langle M\rangle$ is obtained by concatenating the fixed-length codes of these six sextuples after the header. The oracle's finite code is, for example,
 \[
@@ -459,8 +459,6 @@ and leave all other transitions undefined (so the machine halts after one step).
 \]
 using any self-delimiting code for strings. The full encoding is the pairing $\big\langle \langle M\rangle,\langle \mathcal{O}\rangle\big\rangle$.
 \end{example}
-
-These additions make explicit (i) how ordinary computation embeds into oracle computation, (ii) in what precise sense the machine component is independent of the oracle set, (iii) that an oracle machine is exactly a pair $(M,\mathcal{O})$, and (iv) what it means for a function to be computable \emph{relative} to an oracle. The encoding example matches your earlier quintuple-based scheme with a minimal extension to handle the oracle bit.
 
 %
 % Section: Computational Complexity
@@ -584,5 +582,4 @@ These additions make explicit (i) how ordinary computation embeds into oracle co
 
 \section*{References}
 
-The original paper form Alan Turing where the concepts of Turing machine, universal Turing machine, and non-computable problems were introduced is \cite{turing1936computable}, however it is a difficult to read paper for the contemporary reader. An easier to read introduction to computability theory, from the point of view of languages, can be found in \cite{sipser2012introduction}, and a more advanced introductions in \cite{cooper2003computability} and \cite{soare2016turing}. In \cite{fernandez2009models} we can find a description of the most important computability models proposed so far. The Post Correspondence Problem was introduced by Emil Post in \cite{post1946variant}; for the details of the proof sketched in Example \ref{ex:PCP} please refer to \cite{sipser2012introduction}.
-
+The original paper by Alan Turing where the concepts of Turing machine, universal Turing machine, and non-computable problems were introduced is \cite{turing1936computable}, however, it is difficult for contemporary readers. An easier to read introduction to computability theory, from the point of view of languages, can be found in \cite{sipser2012introduction}, and more advanced introductions in \cite{cooper2003computability} and \cite{soare2016turing}. In \cite{fernandez2009models} we can find a description of the most important computability models proposed so far. The Post Correspondence Problem was introduced by Emil Post in \cite{post1946variant}; for the details of the proof sketched in Example \ref{ex:PCP} please refer to \cite{sipser2012introduction}.

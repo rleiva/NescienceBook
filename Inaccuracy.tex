@@ -103,11 +103,12 @@ Conversely, suppose $\iota(d, r) = 0$. Then,
 which implies that both conditional complexities are zero. Therefore, $r = \delta(d)$, and it follows that $d \in \mathcal{D}_r$.
 \end{proof}
 
-Finally, given two representations $r$ and $s$, we may also be interested in evaluating the inaccuracy of a description $d$ when it is used to describe their joint representation $rs$. Since we require that $rs$ is itself a valid representation, the extension of the inaccuracy concept to joint representations is straightforward and does not require a new definition:
+Finally, given two representations $r$ and $s$, we may also be interested in evaluating the inaccuracy of a description $d$ when it is used to describe their joint representation $rs$. Since we have that $rs \in \mathcal{B}^\ast$ is itself a valid representation, the extension of the inaccuracy concept to joint representations is straightforward and does not require a new definition:
 \[
 \iota(d, rs) = \frac{ \max\left\{ K \left(rs \mid \delta(d) \right),\ K \left( \delta(d) \mid rs \right) \right\} }{ \max\left\{ K(rs),\ K \left(\delta(d) \right) \right\} }
 \]
-As a direct consequence of Proposition \ref{prop:inaccuracy:inaccuracy:range}, for any representations $r, s \in \mathcal{B}^\ast$ and any description $d \in \mathcal{D}$, we have:
+
+As a direct consequence of Proposition \ref{prop:inaccuracy:inaccuracy:relative_range}, for any representations $r, s \in \mathcal{B}^\ast$ and any description $d \in \mathcal{D}$, we have:
 \[
 0 \leq \iota(d, rs) \leq 1.
 \]
@@ -127,7 +128,7 @@ It is important to note that $d \mid s$ must be defined for all possible backgro
 Building on the concept of inaccuracy introduced in Definition \ref{def:inaccuracy:inaccuracy:inaccuracy}, we now define the notion of \emph{conditional inaccuracy} to capture the error introduced when using an inaccurate conditional description.
 
 \begin{definition}
-Let $r \in \mathcal{B}^\ast$ be a representation, $s \in \mathcal{B}^\ast$ a background string, and $d \mid s$ an inaccurate conditional description. We define the \emph{conditional inaccuracy}\index{Conditional inaccuracy} of the description $d$ for the representation $r$ given the string $s$, denoted by $\iota(d \mid s, r)$, as:
+Let $r \in \mathcal{B}^\ast$ be a representation, $s \in \mathcal{B}^\ast$ a background string, and $d \mid s$ a conditional description. We define the \emph{conditional inaccuracy}\index{Conditional inaccuracy} of the description $d$ for the representation $r$ given the string $s$, denoted by $\iota(d \mid s, r)$, as:
 \[
 \iota(d \mid s, r) = \frac{ \max\left\{ K \left(r \mid \delta(d \mid s) \right),\ K \left( \delta(d \mid s) \mid r \right) \right\} }{ \max\left\{ K(r),\ K \left( \delta(d \mid s) \right) \right\} }
 \]
@@ -167,7 +168,7 @@ Hence, $\iota(d \mid s, r) = 0$. Conversely, if $\iota(d \mid s, r) = 0$, then
 which implies both conditional complexities are zero. Therefore, $\delta(d \mid s) = r$, which means $TM \left(\langle a, s \rangle \right) = r$.
 \end{proof}
 
-Incorporating established prior knowledge into research does not increase the inaccuracy of a description. If this background knowledge is relevant to the representation being described, the oracle will use it accordingly. Conversely, if the prior knowledge is irrelevant, the oracle will simply disregard it. The following theorem formalizes this idea.
+Incorporating established prior knowledge into research does not increase the inaccuracy of a description. If this background knowledge is relevant to the representation being described, the Turing machine may use it accordingly. Conversely, if the prior knowledge is irrelevant, the oracle will simply disregard it. The following theorem formalizes this idea.
 
 \begin{theorem}
 \label{th:conditional_inaccuracy}
@@ -221,7 +222,7 @@ Let $r \in \mathcal{B}^\ast$ be a representation, and let $d_1, d_2 \in \mathcal
 
 Since inaccuracy is bounded between 0 and 1, the maximum possible variation in inaccuracy is $\pm 1$. A positive value of $\Delta_{\iota}$ indicates that description $d_2$ is preferable to $d_1$ in terms of accuracy. Conversely, a negative value suggests that $d_1$ is more accurate than $d_2$. It is important to note that the new description may also introduce a substantial increase in surfeit, potentially outweighing the improvement in inaccuracy. For a detailed discussion of surfeit, refer to Chapter \ref{chap:Redundancy}, and for an explanation of how inaccuracy and surfeit combine into the unified metric of nescience, see Chapter \ref{chap:Nescience}.
 
-We can also introduce a relative measure of the variation in inaccuracy, when moving from description $d_1$ to $d_2$
+We can also introduce a relative measure of the variation in inaccuracy, when moving from description $d_1$ to $d_2$.
 
 \begin{definition}
 Let $r \in \mathcal{B}^\ast$ be a representation, and $d_1, d_2 \in \mathcal{D}$ be two descriptions. We define the \emph{relative variation of inaccuracy}\index{Relative variation of inaccuracy} between descriptions $d_1$ and $d_2$, denoted by $\Delta^{r}_{\iota}(d_1, d_2, r)$, as:
@@ -246,7 +247,7 @@ Let $r_1, r_2 \in \mathcal{B}^\ast$ be two representations, and let $d \in \math
 
 As before, since inaccuracy is bounded between 0 and 1, the maximum possible variation is 1. A positive value of $\Delta^{a}_{\iota}$ indicates a preference for representation $r_2$ over $r_1$ with respect to the fixed description $d$. Conversely, a negative value suggests that $r_1$ is more accurate than $r_2$. This comparison is based solely on inaccuracy, as miscoding is not considered here. Additionally, since the description remains unchanged, there is no risk of variation in surfeit.
 
-Finally, we can also introduce a relative variation of inaccuracy with respect to a change in representation
+Finally, we can also introduce a relative variation of inaccuracy with respect to a change in representation.
 
 \begin{definition}
 Let $r_1, r_2 \in \mathcal{B}^\ast$ be two representations, and $d \in \mathcal{D}$ be a description. We define the \emph{relative variation of inaccuracy} of the representations $r_1, r_2$, denoted by $\Delta^{r}_{\iota} ( d, r_1, r_2 )$, as:
@@ -270,7 +271,7 @@ In the preceding section, we examined how the inaccuracy of a representation can
 The balance between the amount of miscoding we are willing to accept in order to achieve a reduction in inaccuracy is referred to as the \emph{miscoding-inaccuracy trade-off}. For a broader discussion of trade-offs in multi-objective optimization, refer to Section \ref{sec:trade_offs}.
 
 \begin{definition}
-Let $e \in \mathcal{E}$ be an entity, and $\mathbf{x}_1, \mathbf{x}_2 \in \mathcal{R}_e \times \mathcal{D}$ be two hypotheses, with $\mathbf{x}_1 = (r_1, d_1)$ and $\mathbf{x}_2 = (r_2, d_2)$. We define the \emph{rate of change between the inaccuracy and the miscoding} of the hypothesis $\mathbf{x}_1, \mathbf{x}_2$, denoted by $\Delta_{\mu \iota} ( \mathbf{x}_1, \mathbf{x}_2 )$ as:
+Let $e \in \mathcal{E}$ be an entity, and $\mathbf{x}_1, \mathbf{x}_2 \in \mathcal{R}_e \times \mathcal{D}$ be two hypotheses, with $\mathbf{x}_1 = (r_1, d_1)$ and $\mathbf{x}_2 = (r_2, d_2)$. We define the \emph{rate of change between the inaccuracy and the miscoding} of the hypothesis $\mathbf{x}_1, \mathbf{x}_2$, denoted by $\Delta_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 )$ as:
 \[
 \Delta_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{\iota(d_2, r_2) - \iota(d_1, r_1)}{\mu(r_2) - \mu(r_1)}
 \] 
@@ -314,7 +315,7 @@ Let \( e \in \mathcal{E} \) be an entity, and let \( \mathbf{x} = (r, d) \in \ma
 \end{enumerate}
 \end{definition}
 
-In simpler terms, a hypothesis $\mathbf{x}$ is Pareto optimal if: (i) no other hypothesis is better in both inaccuracy and miscoding, and (ii) any improvement in one metric necessarily results in a worsening of the other.
+In simpler terms, a hypothesis $\mathbf{x}$ is Pareto optimal if: (i) no other hypothesis is better in both inaccuracy and miscoding, and (ii) no feasible alternative improves one metric without worsening the other.
 
 The rate of change $\Delta_{\iota \mu}$ between any two Pareto optimal points provides insight into how the trade-off between inaccuracy and miscoding evolves along the Pareto frontier. If decision-makers are more sensitive to changes in inaccuracy than to miscoding, they may prefer configurations with a less negative $\Delta_{\iota \mu}$. Conversely, if miscoding is of greater concern, they may accept solutions where $\Delta_{\iota \mu}$ indicates a larger increase in inaccuracy in exchange for a smaller gain in miscoding.
 
@@ -332,7 +333,7 @@ Given the strings $r_1, r_2, \ldots, r_n$, where each $r_i \in \mathcal{B}^\ast$
 The following definition extends the concept of inaccuracy to research areas.
 
 \begin{definition}
-Let $\mathcal{A} \subset \mathcal{E}$ be an area with a known subset $\hat{\mathcal{A}} = {r_1, r_2, \ldots, r_n}$, and let $d \in \mathcal{D}$ be a description. We define the \emph{inaccuracy of the area} given the description $d$, denoted by $\iota(d, \hat{\mathcal{A}})$, as:
+Let $\mathcal{A} \subset \mathcal{E}$ be an area with a known subset of representations $\{r_1, r_2, \ldots, r_n\}$, and let $d \in \mathcal{D}$ be a description. We define the \emph{inaccuracy of the area} given the description $d$, denoted by $\iota(d, \hat{\mathcal{A}})$, as:
 \[
 \iota(d, \hat{\mathcal{A}}) = \frac{ \max\{ K \left( \langle r_1, r_2, \ldots, r_n \rangle \mid \delta(d) \right), K \left( \delta(d) \mid \langle r_1, r_2, \ldots, r_n \rangle \right) \} } { \max\{ K(\langle r_1, r_2, \ldots, r_n \rangle), K \left(\delta(d) \right) \} }
 \]
@@ -342,7 +343,7 @@ The inaccuracy of a description for an area falls within the interval from $0$ t
 
 \begin{proposition}
 \label{prop:inaccuracy:inaccuracy:range}
-For all known subsets $\hat{\mathcal{A}} = {r_1, r_2, \ldots, r_n}$ and all descriptions $d \in \mathcal{D}$, we have that $0 \leq \iota(d, \hat{\mathcal{A}}) \leq 1$.
+For all known subsets of representations $\{r_1, r_2, \ldots, r_n\}$ and all descriptions $d \in \mathcal{D}$, we have that $0 \leq \iota(d, \hat{\mathcal{A}}) \leq 1$.
 \end{proposition}
 \begin{proof}
 The result follows directly from the fact that $\langle r_1, r_2, \ldots, r_n \rangle$ is a string in $\mathcal{B}^\ast$, and from Proposition \ref{prop:ncd_between_zero_and_one}.

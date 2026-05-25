@@ -39,7 +39,7 @@ Before we can measure the relevance of a topic, that is, its impact on people's 
 
 \begin{definition}\index{Relevance Graph}
 \label{def:relevance-graph}
-We define the \emph{relevance graph}\index{Relevance graph}, denoted by $\mathbf{RG}$, as the bipartite graph $\mathbf{RG} = (\mathcal{T}, \mathcal{P}, E)$, where $\mathcal{T}$ is the set of topics, $\mathcal{P}$ is the set of people, and $E\subseteq\left\{ \left(i,j\right):i\in \mathcal{T},j\in \mathcal{P} \right\}$ is the set of edges between topics and people. An edge $(i, j)$ belong to $E$ if, and only if, person $j$ is affected by topic $i$.
+We define the \emph{relevance graph}\index{Relevance graph}, denoted by $\mathbf{RG}$, as the bipartite graph $\mathbf{RG} = (\mathcal{T}, \mathcal{P}, EG)$, where $\mathcal{T}$ is the set of topics, $\mathcal{P}$ is the set of people, and $EG \subseteq \left\{ \left(i,j\right):i\in \mathcal{T},j\in \mathcal{P} \right\}$ is the set of edges between topics and people. An edge $(i, j)$ belongs to $E$ if, and only if, person $j$ is affected by topic $i$.
 \end{definition}
 
 When we refer to the set of people $\mathcal{P}$, we mean all individuals in the world. A connection between a topic and a person indicates that the person is affected by the topic, not that they are necessarily interested in it. For example, someone researching a cure for diabetes would not be connected to the research topic "diabetes," but someone who actually suffers from the disease would be.
@@ -92,7 +92,7 @@ The relevance of a topic measures the extent to which it affects people. This ca
 \label{def:relevance}
 Let $t \in \mathcal{T}$ be a topic, $\mathcal{P}_t \subseteq \mathcal{P}$ the set of people connected to $t$ in the relevance graph, and $w_{tp} \in [0,1]$ the weight of the edge between $t$ and $p \in \mathcal{P}_t$. We define the \emph{relevance} of $t$ as
 \[
-R(t) = \sum_{p : (t,p) \in E} w_{tp},
+R(t) = \sum_{p : (t,p) \in E} w_{tp}.
 \]
 \end{definition}
 
@@ -107,6 +107,9 @@ Let $t \in \mathcal{T}$ be a topic. We define the \emph{min-max normalized relev
 \bar{R}(t) = \frac{R(t) - \min_{t' \in \mathcal{T}} R(t')}{\max_{t' \in \mathcal{T}} R(t') - \min_{t' \in \mathcal{T}} R(t')}
 \]
 \end{definition}
+
+\noindent
+We set $\bar{R}(t)=0$ for the particular case when all the topics have the same relevance.
 
 This transformation ensures that $\bar{R}(t) \in [0,1]$, with $0$ assigned to the least relevant topic and $1$ to the most relevant. In the degenerate case where all topics have the same relevance, all normalized values are set to $0$.
 
@@ -246,6 +249,9 @@ Given the applicability graph $AG = (\mathcal{T}, E)$, we define the \emph{minâ€
 where $A(t_i)$ is the applicability of $t_i$ as in Definition \ref{def:applicability}.
 \end{definition}
 
+\noindent
+We set $\tilde{A}(t_i)=0$ for the particular case when all the topics have the same applicability.
+
 This normalization ensures that $\tilde{A}(t_i) \in [0,1]$, with $0$ assigned to the least applicable topic and $1$ to the most applicable. In the degenerate case where all topics have the same applicability, all normalized values are set to 0. Note that min-max normalization can be sensitive to extreme values: if a single topic has exceptionally high applicability, the normalized scores of all other topics will be compressed toward zero.
 
 In practice, computing the exact applicability graph is difficult because, for most topics, $N(t_i \mid t_j)$ is not known. We can approximate it by using a \emph{simplified applicability graph}, where arcs are unweighted and represent known instances of one topic being applied to another.
@@ -276,6 +282,9 @@ SA_n(t_i) =
 where $SA(t_i)$ is the simplified applicability of $t_i$ as in Definition \ref{def:simplified-applicability}.
 \end{definition}
 
+\noindent
+We set $SA_n(t_i)=0$ for the particular case when all the topics have the same simplified applicability.
+
 This normalization ensures that $SA_n(t_i) \in [0,1]$, with $0$ assigned to the least applicable topic and $1$ to the most applicable. In the degenerate case where all topics have the same applicability, all normalized values are set to 0. As with the weighted case, min-max normalization may be sensitive to extreme values.
 
 %
@@ -295,6 +304,9 @@ Let $t \in \mathcal{T}$ be a topic, and let $N(t)$ denote its nescience.
 The \emph{maturity} of $t$, denoted $M(t)$, is defined as $M(t) = \frac{1}{N(t)}$.
 \end{definition}
 
+\noindent
+We set $M(t)$ as undefined when nescience is equal to zero.
+
 A higher maturity value indicates that the topic is better understood, and thus more suitable to be used as a tool in solving other problems. Conversely, highly immature topics (low $M(t)$) should be avoided as tools, since applying them would risk transferring our lack of understanding from one domain to another.
 
 \begin{example}
@@ -313,6 +325,9 @@ Given the set of topics $\mathcal{T}$, the \emph{min-max normalized maturity} of
 \]
 where $M(t)$ is the maturity of $t$ as in Definition \ref{def:maturity}.
 \end{definition}
+
+\noindent
+We set $\tilde{M}(t)=0$ for the particular case when all the topics have the same maturity.
 
 Min-max normalization ensures $\tilde{M}(t) \in [0,1]$, facilitating direct comparison between topics. However, as with other metrics, extreme outliers in maturity can compress the normalized values of the remaining topics toward zero.
 
@@ -334,7 +349,7 @@ IT(t)=\frac{\sqrt{\,\tilde{M}(t)^2+\tilde{A}(t)^2\,}}{\sqrt{2}}
 \]
 \end{definition}
 
-A topic will have a high $IT_n(t)$ value when it is both well understood ($\tilde{M}(t)$ close to $1$) and widely applicable ($\tilde{A}(t)$ close to $1$). In other words, the most interesting tools are those that combine deep understanding with broad utility in solving other problems.
+A topic will have a high $IT(t)$ value when it is both well understood ($\tilde{M}(t)$ close to $1$) and widely applicable ($\tilde{A}(t)$ close to $1$). In other words, the most interesting tools are those that combine deep understanding with broad utility in solving other problems.
 
 \begin{example}
 The Pythagorean theorem\index{Pythagorean theorem} (in a right-angled triangle, the square of the length of the hypotenuse is equal to the sum of the squares of the other two sides) is undoubtedly one of the most widely used and applied theorems in various fields and practical situations, including but not limited to: engineering (calculating distances, angles, and forces in structures and mechanical systems), architecture (determining lengths and angles in building design and construction projects), land surveying (measuring distances and calculating areas of land parcels), physics (analyzing problems in mechanics, optics, and electromagnetism), computer graphics and game development (calculating distances and angles in 2D and 3D spaces) or trigonometry(serving as a foundation for the study of trigonometric functions and their applications).
@@ -349,10 +364,10 @@ IP(t)=\frac{\sqrt{\,\tilde{N}(t)^2+\bar{R}(t)^2\,}}{\sqrt{2}}
 \]
 \end{definition}
 
-Intuitively, a topic is interesting as a problem worth investigating if it has a large relevance (it has high impact in people's life) and a large nescience (it is not very well understood). In this sense, we are borrowing ideas from Popper's falsificationism: the more risky is a conjecture, the higher the advance achieved in science given its confirmation.
+Intuitively, a topic is interesting as a problem worth investigating if it has a large relevance (it has high impact in people's lives) and a large nescience (it is not very well understood). In this sense, we are borrowing ideas from Popper's falsificationism: the riskier a conjecture is, the greater the scientific advance achieved if it is confirmed.
 
 \begin{example}
-World War I is a very relevant topic, because it had a huge impact on many people's life, and also it is not very well understood topic, since it takes hundreds of pages to explain its causes, and there is no general agreement among the specialists. So, according to our definition, it is a very interesting research problem.
+World War I is a very relevant topic, because it had a huge impact on many people's lives, and also it is not very well understood topic, since it takes hundreds of pages to explain its causes, and there is no general agreement among the specialists. So, according to our definition, it is a very interesting research problem.
 \end{example}
 
 %
@@ -360,19 +375,19 @@ World War I is a very relevant topic, because it had a huge impact on many peopl
 %
 
 \section{Interesting Questions}
-\label{sec:interestingness-metrics}
+\label{sec:interesting-questions}
 
-In the theory of nescience we distinguish two kinds of unknowns, the known unknown and the unknown unknown. By known unknown we mean all those already known problems for which we do not know their solutions, for example, nobody knows how to cure diabetes, but we know what diabetes is and we are aware that nobody knows how to cure it. By unknown unknown we mean the collection of unknown problems, that is, all those problems that have not been found yet. In this section we focus on tools to takcle known unknown.
+In the theory of nescience we distinguish two kinds of unknowns, the known unknown and the unknown unknown. By known unknown we mean all those already known problems for which we do not know their solutions, for example, nobody knows how to cure diabetes, but we know what diabetes is and we are aware that nobody knows how to cure it. By unknown unknown we mean the collection of unknown problems, that is, all those problems that have not been found yet. In this section we focus on tools to tackle known unknowns.
 
 In our methodology, an interesting question emerges from the combination of two pre-existing topics. An interesting question is an ordered pair of topics $t$ and $p$, where $t$ has high interestingness as a tool, and $p$ has high interestingness as a problem.
 
 \begin{definition}\index{Question}
-Given $t, p\in\mathcal{T}$, we call \emph{question}\index{Question} the ordered pair $Q_{t\to p}=(t,p)$.
+Given $t, p\in\mathcal{T}$, we call the ordered pair $Q_{t\to p}=(t,p)$ a \emph{question}\index{Question} .
 \end{definition}
 
-Given a pair of a topics in $t_1, t_2 \in \mathcal{T}$, the question can be framed as "can we apply the tool described by topic $t_1$ to solve the problem described by topic $t_2$?".
+Given a pair of a topics $t_1, t_2 \in \mathcal{T}$, the question can be framed as "can we apply the tool described by topic $t_1$ to solve the problem described by topic $t_2$?".
 
-The most interesting questions arise when topic $t_1$ exhibits high interestingness as a tool, and topic $t_2$ exhibits high interestingness as a problem. We define the interestingness of a question using the Euclidean distance, considering the interestingness of topics $t_1$ and $t_2$ as points in a two-dimensional space. The coordinates of these points are $(A_{t_1}, M_{t_1})$ for the tool and $(R_{t_2}, N_{t_2})$ for the problem. The distance between these points reflects how promising the combination of $t_1$ as a tool and $t_2$ as a problem is.
+The most interesting questions arise when topic $t_1$ exhibits high interestingness as a tool, and topic $t_2$ exhibits high interestingness as a problem. We define the interestingness of a question using the normalized Euclidean norm, considering the interestingness of topics $t_1$ and $t_2$ as points in a two-dimensional space. The coordinates of these points are $(A_{t_1}, M_{t_1})$ for the tool and $(R_{t_2}, N_{t_2})$ for the problem. The distance between these points reflects how promising the combination of $t_1$ as a tool and $t_2$ as a problem is.
 
 \begin{definition}\index{Interestingness of a question}
 We define the interestingness of $Q_{t\to p}$ as
@@ -408,7 +423,7 @@ Using the Euclidean distance in this way provides a clear geometric interpretati
 \node[point, label={right:$R_{t_2}, N_{t_2}$}] at (t2) {};
 
 \end{tikzpicture}
-\caption{\label{fig:InterestingQuestion}Example of an interesting quetion.}
+\caption{\label{fig:InterestingQuestion}Example of an interesting question.}
 \end{figure}
 
 In practice, we must calculate all possible combinations of topics with high interestingness as tools and those with high interestingness as problems. We then select the combinations with the highest interestingness as questions. Naturally, most questions generated using this approach will be meaningless, much like those arising during brainstorming sessions when researchers attempt to identify new tools for tackling difficult problems.
@@ -424,7 +439,7 @@ Let $\mathcal{A}\subseteq\mathcal{T}$ be a research area. The question $Q_{t\to 
 \end{definition}
 
 \begin{example}
-We could combine the topics with high interestingness as tools found in the area of "computer science" with those topics with high interestingness as problems found in the area of "biochemistry" in order to find new interesting interdisciplinary questions. Some examples of the kind of questions we can find with this approach include: "can we use regular expressions to identify DNA genes?" or "can we use a recursive algorithm to characterize proteins tertiary structure?"
+We could combine the topics with high interestingness as tools found in the area of "computer science" with those topics with high interestingness as problems found in the area of "biochemistry" in order to find new interesting interdisciplinary questions. Some examples of the kind of questions we can find with this approach include: "can we use regular expressions to identify DNA genes?" or "can we use a recursive algorithm to characterize protein tertiary structure?"
 \end{example}
 
 The most innovative questions tend to be interdisciplinary, as they have a lower likelihood of having been considered previously. This is because they require collaboration between specialists from different research areas. 
@@ -435,14 +450,13 @@ The most innovative questions tend to be interdisciplinary, as they have a lower
 \section{New Topics}
 \label{sec:new-topics}
 
-The area composed by the unknown unknown problems is a highly interesting one, since it contains those research topics that will be addressed in the future. One of the main goals of this book is to help scientists discover the topics that lay in this unknown unknown area, since that would bring to the present the research problems of the future. In this section we focus on how to indentify the topics hidden in the unknown unknown area.
+The area composed of the unknown unknown problems is a highly interesting one, since it contains those research topics that will be addressed in the future. One of the main goals of this book is to help scientists discover the topics that lie in this unknown unknown area, since that would bring to the present the research problems of the future. In this section we focus on how to identify the topics hidden in the unknown unknown area.
 
 \begin{definition}\index{New topic}
-Given $t_1,t_2\in T'$, a (candidate) \emph{new topic} from their combination is the unordered pair
+Given $t_1,t_2\in \mathcal{T}$, a (candidate) \emph{new topic} from their combination is the unordered pair
 \[
 S_{\{t_1,t_2\}}=\{t_1,t_2\}.
 \]
-Associate $v(t)=(\tilde{N}(t),\bar{R}(t))$ and define the combination vector $v^\oplus(t_1,t_2)=v(t_1)+v(t_2)$.
 \end{definition}
 
 The exact meaning of the new topic that results as the combination of topics $t_{1}$ and $t_{2}$ is left to the creative interpretation of the researcher.
@@ -455,13 +469,13 @@ IS(\{t_1,t_2\})=\frac{\sqrt{\,IT(t_1)^2+IT(t_2)^2\,}}{\sqrt{2}}
 
 \end{definition}
 
-In practice, what we have to do is to compute all possible combination of those topics with very large interestingness as problems $IP_{t}$ with themselves, and select the combinations with higher $IS$. Of course, some of the combinations generated would be totally meaningless. Advanced techniques from the area of natural language processing or machine learning could be used to try filter out those nonsense combinations.
+In practice, what we have to do is to compute all possible combinations of those topics with very large interestingness as problems $IP_{t}$ with themselves, and select the combinations with higher $IS$. Of course, some of the combinations generated would be totally meaningless. Advanced techniques from the area of natural language processing or machine learning could be used to try to filter out those nonsense combinations.
 
 \begin{definition}\index{Intradisciplinary new topic}\index{Interdisciplinary new topic}
 Let $\mathcal{A}\subseteq\mathcal{T}$. The new topic $S_{\{t_1,t_2\}}$ is \emph{intradisciplinary} if $t_1,t_2\in\mathcal{A}$; otherwise it is \emph{interdisciplinary}.
 \end{definition}
 
-Again, the most innovative new topics would be by the combination of interdisciplinary topics, because the probability that somebody has already though about them is lower.
+Again, the most innovative new topics would tend to arise from interdisciplinary combinations, because the probability that somebody has already thought about them is lower.
 
 %
 % References

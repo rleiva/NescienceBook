@@ -1,0 +1,875 @@
+%
+% CHAPTER: Effort
+%
+
+\chapterimage{owl.pdf} % Chapter heading image (Sisyphus)
+
+\chapter{Effort}
+\label{chap:Effort}
+
+\begin{quote}
+\begin{flushright}
+TODO: Add quote. Possible options:\\
+``The effort to understand the universe is one of the very few things that lifts human life a little above the level of farce.''\\
+Steven Weinberg
+\end{flushright}
+\end{quote}
+
+\section{The Cost of Scientific Progress}
+\label{sec:effort_intro}
+
+The theory of nescience has been developed to quantify the extent to which a research entity remains unknown. Given a representation and a description, nescience measures the residual defects that prevent us from reaching perfect knowledge. In this sense, nescience is a measure of epistemic imperfection: it tells us how far our current hypothesis is from an ideal representation and an ideal description.
+
+However, knowing how much nescience remains is not enough. Scientific practice is not concerned only with the existence of better hypotheses, but also with the difficulty of finding them. Two research topics may have similar levels of nescience and yet differ radically in the effort required to reduce it. One topic may contain many obvious improvements, inexpensive experiments, and stable representations. Another may require expensive instruments, rare observations, difficult computations, or conceptual breakthroughs before any measurable progress becomes possible.
+
+This chapter introduces the concept of \emph{effort}. Effort is intended to measure the difficulty of reducing nescience. It is not a new component of nescience. Rather, it is an orthogonal property of the process by which nescience is reduced.
+
+Nescience is a property of a hypothesis. Effort is a property of a transition between hypotheses.
+
+If a hypothesis is denoted by
+\[
+x=(r,d),
+\]
+where \(r\) is a representation and \(d\) is a description, then nescience assigns a value to \(x\):
+\[
+N(x).
+\]
+Effort, by contrast, is associated with a transformation
+\[
+x \longrightarrow y,
+\]
+where \(y\) is another hypothesis with lower nescience. The central question of this chapter is therefore not simply:
+\[
+\text{How much do we not know?}
+\]
+but rather:
+\[
+\text{How difficult is it to know more?}
+\]
+
+This distinction is important. A topic may have high nescience but low effort if many simple improvements are available. Conversely, a topic may have low nescience but very high effort if it is close to a mature frontier where further progress requires expensive or conceptually difficult work. Effort therefore provides a formal way to study the cost of scientific progress.
+
+The concept also helps us address a broader question: are some research areas intrinsically more difficult than others? The answer proposed in this chapter is that the difficulty of a research area can be characterized by the expected effort required to reduce its nescience by a fixed amount. In this sense, a research area is difficult not merely because we know little about it, but because improving our knowledge is costly.
+
+\section{Research Transition Systems}
+\label{sec:research_transition_systems}
+
+To define effort formally, we first need to specify the space in which scientific progress takes place.
+
+Let \(\mathcal{H}\) be a set of hypotheses. In the theory of nescience, a hypothesis is a pair
+\[
+x=(r,d),
+\]
+where \(r \in \mathcal{B}^{\ast}\) is a representation and \(d \in \mathcal{D}\) is a valid description. Thus, in the most general case,
+\[
+\mathcal{H} \subseteq \mathcal{B}^{\ast}\times \mathcal{D}.
+\]
+
+Scientific progress is modeled as a sequence of transformations between hypotheses. These transformations may modify the representation, the description, or both. For example, one may collect new data, remove irrelevant variables, change a model family, add background knowledge, simplify a description, perform a new experiment, or reframe the entity under study.
+
+\begin{definition}
+A \emph{research transition system} is a tuple
+\[
+\mathcal{S}=(\mathcal{H},\mathcal{A},\tau),
+\]
+where:
+\begin{itemize}
+    \item \(\mathcal{H}\) is a set of hypotheses;
+    \item \(\mathcal{A}\) is a set of admissible research operations;
+    \item \(\tau:\mathcal{H}\times\mathcal{A}\rightharpoonup \mathcal{H}\) is a partial transition function.
+\end{itemize}
+If \(\tau(x,a)=y\), we say that the operation \(a\) transforms the hypothesis \(x\) into the hypothesis \(y\), and write
+\[
+x \xrightarrow{a} y.
+\]
+\end{definition}
+
+The function \(\tau\) is partial because not every research operation is applicable to every hypothesis. For example, a reduction operation cannot remove a variable that is not present in the representation, and a model simplification operation may not be defined for a non-parametric description.
+
+\begin{definition}
+Let \(\mathcal{S}=(\mathcal{H},\mathcal{A},\tau)\) be a research transition system. A \emph{research path} from \(x_0\) to \(x_k\) is a finite sequence
+\[
+\pi=(x_0,a_1,x_1,a_2,\ldots,a_k,x_k)
+\]
+such that
+\[
+\tau(x_{i-1},a_i)=x_i
+\]
+for every \(i=1,\ldots,k\).
+\end{definition}
+
+The path \(\pi\) represents a possible trajectory of scientific work. Each step corresponds to a concrete or abstract research operation.
+
+Typical admissible operations include:
+\begin{itemize}
+    \item augmentation of a representation;
+    \item reduction of a representation;
+    \item replacement of a representation by another representation;
+    \item augmentation of a description;
+    \item simplification of a description;
+    \item change of model family;
+    \item conditioning on background knowledge;
+    \item collection of additional observations;
+    \item performance of a new experiment;
+    \item numerical simulation;
+    \item computational search over candidate descriptions;
+    \item conceptual reframing of the entity under investigation.
+\end{itemize}
+
+The choice of admissible operations is application-dependent. In a machine learning problem, the operations may include feature selection, hyperparameter search, model training, label correction, and data acquisition. In theoretical physics, they may include deriving a new equation, changing a mathematical formalism, or testing a limiting case. In philosophy, they may include clarifying concepts, distinguishing senses of a term, or constructing counterexamples.
+
+\section{Computational Effort}
+\label{sec:computational_effort}
+
+We now introduce effort as the computational cost of a research path. The simplest notion of computational cost counts the number of admissible operations performed along the path.
+
+\begin{definition}
+Let
+\[
+\pi=(x_0,a_1,x_1,\ldots,a_k,x_k)
+\]
+be a research path. The \emph{unit computational cost} of \(\pi\) is
+\[
+C_{\mathrm{unit}}(\pi)=k.
+\]
+\end{definition}
+
+This definition is useful when all research operations are treated as having equal cost. In practice, however, different operations may require different amounts of computation. Training a large model, conducting an exhaustive search, or simulating a physical system may require many more elementary steps than removing a redundant variable. We therefore introduce a more general cost function.
+
+\begin{definition}
+A \emph{computational cost function} on a research transition system is a function
+\[
+c:\mathcal{H}\times\mathcal{A}\rightarrow \mathbb{N}\cup\{\infty\},
+\]
+where \(c(x,a)\) denotes the number of computational steps required to apply operation \(a\) to hypothesis \(x\).
+\end{definition}
+
+Given such a function, the cost of a complete research path is obtained by summing the costs of its individual steps.
+
+\begin{definition}
+Let
+\[
+\pi=(x_0,a_1,x_1,\ldots,a_k,x_k)
+\]
+be a research path. The \emph{computational cost} of \(\pi\) is
+\[
+C(\pi)=\sum_{i=1}^{k} c(x_{i-1},a_i).
+\]
+\end{definition}
+
+We can now define the effort required to reduce nescience by a specified amount.
+
+\begin{definition}
+Let \(x\in\mathcal{H}\) be a hypothesis and let \(\varepsilon>0\). The \emph{effort required to reduce nescience by \(\varepsilon\)} is defined as
+\[
+\operatorname{Eff}_{\varepsilon}(x)
+=
+\inf_{\pi:x\leadsto y}
+\left\{
+C(\pi)
+:
+N(y)\leq N(x)-\varepsilon
+\right\},
+\]
+where the infimum is taken over all research paths \(\pi\) starting at \(x\) and ending at some hypothesis \(y\).
+\end{definition}
+
+If no such path exists, then
+\[
+\operatorname{Eff}_{\varepsilon}(x)=\infty.
+\]
+
+In many applications it is more natural to ask for a relative reduction. For example, we may ask for the effort required to reduce nescience by one percent.
+
+\begin{definition}
+Let \(0<\alpha<1\). The \emph{effort required to reduce nescience by the relative amount \(\alpha\)} is
+\[
+\operatorname{Eff}_{\alpha}^{\mathrm{rel}}(x)
+=
+\inf_{\pi:x\leadsto y}
+\left\{
+C(\pi)
+:
+N(y)\leq (1-\alpha)N(x)
+\right\}.
+\]
+\end{definition}
+
+The particular case \(\alpha=0.01\) corresponds to the effort required to reduce nescience by \(1\%\).
+
+\begin{example}
+Suppose that \(x\) is the current best hypothesis for a machine learning problem, and that \(N(x)=0.40\). A reduction of \(1\%\) means reaching a hypothesis \(y\) such that
+\[
+N(y)\leq 0.99\cdot 0.40 = 0.396.
+\]
+The effort \(\operatorname{Eff}_{0.01}^{\mathrm{rel}}(x)\) is the minimum number of computational steps, model evaluations, or admissible operations required to obtain such a hypothesis.
+\end{example}
+
+\section{Component-wise Effort}
+\label{sec:componentwise_effort}
+
+Nescience is obtained from several components. In the theoretical formulation developed in this book, the central components are miscoding and mismodel. In practical applications, mismodel may be approximated through inaccuracy and surfeit. It is therefore useful to define effort not only for nescience as a whole, but also for each of its components.
+
+Let
+\[
+\mu(r)
+\]
+denote the miscoding of a representation, and let
+\[
+\nu_r(d)
+\]
+denote the mismodel of a description \(d\) with respect to a representation \(r\). For a hypothesis \(x=(r,d)\), we may write
+\[
+\mu(x)=\mu(r),
+\qquad
+\nu(x)=\nu_r(d).
+\]
+
+\begin{definition}
+Let \(x\in\mathcal{H}\) be a hypothesis and let \(\varepsilon>0\). The \emph{effort required to reduce miscoding by \(\varepsilon\)} is
+\[
+\operatorname{Eff}^{\mu}_{\varepsilon}(x)
+=
+\inf_{\pi:x\leadsto y}
+\left\{
+C(\pi)
+:
+\mu(y)\leq \mu(x)-\varepsilon
+\right\}.
+\]
+\end{definition}
+
+\begin{definition}
+Let \(x\in\mathcal{H}\) be a hypothesis and let \(\varepsilon>0\). The \emph{effort required to reduce mismodel by \(\varepsilon\)} is
+\[
+\operatorname{Eff}^{\nu}_{\varepsilon}(x)
+=
+\inf_{\pi:x\leadsto y}
+\left\{
+C(\pi)
+:
+\nu(y)\leq \nu(x)-\varepsilon
+\right\}.
+\]
+\end{definition}
+
+Component-wise effort identifies the bottlenecks of scientific progress. If \(\operatorname{Eff}^{\mu}_{\varepsilon}(x)\) is high, then improving the representation is difficult. This may occur because the entity is hard to observe, because measurements are noisy, because relevant variables are unknown, or because no stable representation style is available. If \(\operatorname{Eff}^{\nu}_{\varepsilon}(x)\) is high, then improving the description is difficult. This may occur because the representation is already rich but difficult to model, because the required computation is large, or because the underlying structure is complex.
+
+\begin{definition}
+Let \(x\in\mathcal{H}\) be a hypothesis and let \(\varepsilon>0\). The \emph{effort bottleneck} of \(x\) at scale \(\varepsilon\) is the component whose reduction requires the largest effort:
+\[
+B_{\varepsilon}(x)
+=
+\arg\max_{c\in\{\mu,\nu\}}
+\operatorname{Eff}^{c}_{\varepsilon}(x).
+\]
+\end{definition}
+
+The effort bottleneck indicates where progress is most difficult. In applied research, identifying this bottleneck is essential. If the bottleneck is miscoding, additional modeling may be unproductive because the representation itself is inadequate. If the bottleneck is mismodel, collecting more data may be less useful than improving the model class or the description.
+
+\begin{example}
+Consider a predictive model in medicine. If the input data omit a clinically relevant variable, then the dominant difficulty lies in the representation. Reducing miscoding may require new measurement protocols, new instruments, or additional clinical tests. By contrast, if the representation already contains the relevant variables but the model fails to capture their interactions, then the dominant difficulty lies in mismodel. Reducing mismodel may require a richer model class, better optimization, or a different inductive bias.
+\end{example}
+
+\section{Marginal Effort and Return on Effort}
+\label{sec:marginal_effort}
+
+The effort required for large reductions of nescience is often less informative than the effort required for the next small improvement. Scientific progress is frequently incremental, and researchers must decide where to allocate limited resources. We therefore introduce the notion of marginal effort.
+
+\begin{definition}
+Let \(x\in\mathcal{H}\) and let \(\varepsilon>0\). The \emph{marginal effort of nescience reduction} at scale \(\varepsilon\) is
+\[
+\operatorname{ME}_{\varepsilon}(x)
+=
+\frac{\operatorname{Eff}_{\varepsilon}(x)}{\varepsilon}.
+\]
+\end{definition}
+
+For relative reductions we define
+\[
+\operatorname{ME}_{\alpha}^{\mathrm{rel}}(x)
+=
+\frac{\operatorname{Eff}_{\alpha}^{\mathrm{rel}}(x)}{\alpha N(x)}.
+\]
+
+The marginal effort measures how many computational steps are required per unit of nescience reduction. It captures the local difficulty of making progress from the current state of knowledge.
+
+As a research field matures, one expects marginal effort to increase. Early stages often contain many obvious improvements: better measurements, simpler models, missing variables, or incorrect assumptions. Later stages may require increasingly precise experiments, more elaborate theories, and larger computational resources. Thus, a mature field may have low nescience but high marginal effort.
+
+The dual concept is the return on effort.
+
+\begin{definition}
+Let \(x\to y\) be a transition between hypotheses. The \emph{return on effort} of the transition is
+\[
+\operatorname{RoE}(x\to y)
+=
+\frac{N(x)-N(y)}{C(x\to y)}.
+\]
+For a research path \(\pi:x\leadsto y\), the return on effort is
+\[
+\operatorname{RoE}(\pi)
+=
+\frac{N(x)-N(y)}{C(\pi)}.
+\]
+\end{definition}
+
+A rational research strategy should not necessarily choose the path that produces the largest absolute reduction of nescience. Instead, under limited resources, it should often choose the path that maximizes expected nescience reduction per unit of effort.
+
+\section{Expected Effort}
+\label{sec:expected_effort}
+
+The definitions above assume that the result of a research path is known. In practice, however, research is uncertain. An experiment may fail, a simulation may be inconclusive, a new representation may introduce additional miscoding, and a more complex model may increase surfeit without reducing inaccuracy.
+
+For this reason, practical effort must be treated probabilistically. Let \(a\) be a research action available at hypothesis \(x\). The result of applying \(a\) may be a random hypothesis \(Y\), depending on experimental outcomes, data quality, optimization success, or theoretical discovery. The expected nescience reduction is
+\[
+\mathbb{E}[\Delta N(a\mid x)]
+=
+\mathbb{E}\left[N(x)-N(Y)\right].
+\]
+
+\begin{definition}
+Let \(a\) be an admissible research operation at hypothesis \(x\). The \emph{expected return on effort} of \(a\) at \(x\) is
+\[
+\operatorname{ERoE}(a\mid x)
+=
+\frac{\mathbb{E}[\Delta N(a\mid x)]}{c(x,a)}.
+\]
+\end{definition}
+
+This quantity ranks research actions by their expected nescience reduction per computational step. If monetary costs are used instead of computational costs, the same definition gives expected nescience reduction per unit of money.
+
+A related quantity is the expected cost per unit of reduction.
+
+\begin{definition}
+The \emph{expected effort per unit reduction} of an action \(a\) at \(x\) is
+\[
+\operatorname{EEUR}(a\mid x)
+=
+\frac{c(x,a)}{\mathbb{E}[\Delta N(a\mid x)]},
+\]
+provided \(\mathbb{E}[\Delta N(a\mid x)]>0\).
+\end{definition}
+
+If the expected reduction is zero or negative, the action does not constitute a rational nescience-reducing move under the chosen model.
+
+\begin{example}
+Suppose that two research actions are available. The first action costs \(100\) units and is expected to reduce nescience by \(0.01\). The second costs \(1000\) units and is expected to reduce nescience by \(0.05\). The first has expected return
+\[
+0.01/100 = 0.0001,
+\]
+whereas the second has expected return
+\[
+0.05/1000 = 0.00005.
+\]
+Although the second action produces a larger expected reduction, the first action is more efficient per unit of effort.
+\end{example}
+
+Research also involves risk. Two actions may have the same expected reduction but different variance. A risky action may lead to a breakthrough, but may also fail completely. To account for this, one may define a risk-adjusted effort.
+
+\begin{definition}
+Let \(\lambda\geq 0\) be a risk-aversion parameter. The \emph{risk-adjusted effort} of an action \(a\) at \(x\) is
+\[
+\operatorname{RAE}(a\mid x)
+=
+\frac{c(x,a)}{\mathbb{E}[\Delta N(a\mid x)]}
++
+\lambda\operatorname{Var}(\Delta N(a\mid x)).
+\]
+\end{definition}
+
+This definition penalizes actions whose outcomes are highly uncertain. The parameter \(\lambda\) determines how strongly risk is penalized. A risk-neutral researcher may take \(\lambda=0\), while a conservative funding agency may choose a larger value.
+
+\section{Conditional Effort}
+\label{sec:conditional_effort}
+
+Background knowledge can reduce nescience, but it can also reduce the effort required to reduce nescience. These are different effects.
+
+Let \(b\) denote background knowledge. Conditional nescience measures how much ignorance remains when \(b\) is available. Conditional effort measures how hard it is to reduce that remaining ignorance when \(b\) is available.
+
+\begin{definition}
+Let \(b\in\mathcal{B}^{\ast}\) be a string encoding background knowledge. The \emph{conditional effort required to reduce nescience by \(\varepsilon\) given \(b\)} is
+\[
+\operatorname{Eff}_{\varepsilon}(x\mid b)
+=
+\inf_{\pi:x\leadsto y}
+\left\{
+C_b(\pi)
+:
+N(y\mid b)\leq N(x\mid b)-\varepsilon
+\right\},
+\]
+where \(C_b(\pi)\) denotes the computational cost of the path when the background knowledge \(b\) is available.
+\end{definition}
+
+Background knowledge may reduce effort in several ways. It may restrict the search space, suggest relevant representations, eliminate impossible hypotheses, provide reusable descriptions, or identify promising experiments.
+
+\begin{example}
+The development of Newtonian mechanics is easier if infinitesimal calculus is already available. Calculus may not itself be part of the representation of a particular mechanical system, but it reduces the effort required to construct, manipulate, and compare descriptions of motion. Thus, calculus acts as background knowledge that lowers conditional effort.
+\end{example}
+
+This distinction is important for education and scientific planning. A prerequisite theory may be valuable not only because it directly reduces nescience, but because it reduces the effort required for future nescience reduction.
+
+\section{Effort Landscapes}
+\label{sec:effort_landscapes}
+
+The hypothesis space \(\mathcal{H}\) can be viewed as a landscape in which each point \(x\in\mathcal{H}\) has a nescience value \(N(x)\). Scientific progress corresponds to moving through this landscape toward regions of lower nescience.
+
+Effort enriches this picture by assigning costs to movements through the landscape. Some transitions are cheap; others are expensive. Some nearby hypotheses may be easy to reach but offer little improvement. Other hypotheses may offer large reductions of nescience but require difficult transformations.
+
+This leads to the notion of an effort barrier.
+
+\begin{definition}
+Let \(x,y\in\mathcal{H}\). The \emph{effort distance} from \(x\) to \(y\) is
+\[
+D_{\mathrm{Eff}}(x,y)
+=
+\inf_{\pi:x\leadsto y} C(\pi),
+\]
+where the infimum is taken over all research paths from \(x\) to \(y\).
+\end{definition}
+
+The effort distance need not be symmetric. It may be easier to move from \(x\) to \(y\) than from \(y\) to \(x\). For example, adding complexity to a description may be easier than simplifying it; collecting data may be easier than identifying which parts of the data are irrelevant.
+
+\begin{definition}
+A hypothesis \(x\) is a \emph{local effort minimum} for nescience if every hypothesis \(y\) with \(N(y)<N(x)\) lies beyond a high effort barrier relative to the available resources.
+\end{definition}
+
+A field may stagnate not because no better hypotheses exist, but because all known paths to better hypotheses require prohibitive effort. In such cases, progress may require reframing the problem rather than continuing along the same path.
+
+\begin{definition}
+A research operation \(a\) is \emph{effort-reducing} at \(x\) if, for some \(\varepsilon>0\),
+\[
+\operatorname{Eff}_{\varepsilon}(\tau(x,a)) < \operatorname{Eff}_{\varepsilon}(x),
+\]
+even if
+\[
+N(\tau(x,a))\geq N(x).
+\]
+\end{definition}
+
+Effort-reducing operations are important because they may not immediately improve knowledge, but they make future improvements easier. Many scientific innovations have this character. A new notation, a new instrument, a new coordinate system, a new representation, or a new computational method may lower future effort before producing a direct reduction in nescience.
+
+\begin{example}
+The periodic table did not merely summarize known chemical elements. It organized them in a way that made future discoveries easier. It reduced the effort required to identify missing elements and predict their properties. In this sense, it functioned as an effort-reducing representation.
+\end{example}
+
+\section{Thermodynamic Lower Bounds}
+\label{sec:thermodynamic_effort}
+
+Effort has been defined above as computational cost. However, any actual computation must be physically implemented. Strings must be stored in physical media, computations must be performed by physical devices, and information may be copied, transformed, or erased. This raises a deeper question: is there a physical lower bound on the effort required to reduce nescience?
+
+A partial answer is provided by Landauer's principle. According to this principle, the irreversible erasure of one bit of information in a system at temperature \(T\) requires the dissipation of at least
+\[
+k_B T\ln 2
+\]
+units of energy as heat, where \(k_B\) is Boltzmann's constant.
+
+This observation does not imply that effort should be identified with energy. The effort defined in this chapter is abstract and computational. Nevertheless, Landauer's principle shows that any physical implementation of irreversible information erasure has a nonzero energetic cost.
+
+\begin{definition}
+Let a research path \(\pi\) involve the irreversible erasure of \(m(\pi)\) bits in a physical system at temperature \(T\). The \emph{Landauer lower bound} for the energetic cost of \(\pi\) is
+\[
+E_{\mathrm{min}}(\pi)
+=
+m(\pi)k_B T\ln 2.
+\]
+\end{definition}
+
+This lower bound is usually far below the practical energy costs of scientific research. Its importance is not practical but foundational: it shows that information refinement cannot be physically free when it requires irreversible erasure.
+
+The connection is especially natural in the case of surfeit. Surfeit measures excess descriptive material. When reducing surfeit requires physically erasing unnecessary bits from a stored description, Landauer's principle provides a theoretical lower bound on the energetic cost of that erasure.
+
+However, care is needed. Abstract simplification is not identical to physical erasure. A description may be compressed reversibly, copied, or transformed without immediately erasing information. Landauer's bound applies specifically to irreversible erasure, not to every logical or mathematical act of simplification.
+
+Thus, thermodynamic effort should be interpreted as a lower physical bound on implemented research processes, not as the primary definition of effort.
+
+\section{Monetary Cost of Nescience Reduction}
+\label{sec:monetary_cost_nescience_reduction}
+
+Computational effort measures the number of steps required to reduce nescience. Practical scientific research, however, is often constrained by money. We therefore need a way to convert effort into monetary cost.
+
+This cannot be done by assigning a universal price to a computational step. The monetary cost of a step depends on the implementation: the hardware used, the personnel involved, the experimental apparatus, the cost of data acquisition, and the institutional context. Therefore, monetary cost must be defined through a resource model.
+
+Let
+\[
+\rho(x,a)
+\]
+be a resource vector associated with applying action \(a\) to hypothesis \(x\). For example,
+\[
+\rho(x,a)=
+(
+\rho_{\mathrm{human}},
+\rho_{\mathrm{compute}},
+\rho_{\mathrm{data}},
+\rho_{\mathrm{experiment}},
+\rho_{\mathrm{equipment}},
+\rho_{\mathrm{validation}},
+\rho_{\mathrm{coordination}}
+).
+\]
+Each component measures the amount of a resource consumed by the operation.
+
+Let
+\[
+p=
+(
+p_{\mathrm{human}},
+p_{\mathrm{compute}},
+p_{\mathrm{data}},
+p_{\mathrm{experiment}},
+p_{\mathrm{equipment}},
+p_{\mathrm{validation}},
+p_{\mathrm{coordination}}
+)
+\]
+be a vector of unit prices.
+
+\begin{definition}
+The \emph{monetary cost} of applying operation \(a\) to hypothesis \(x\) is
+\[
+m(x,a)=p\cdot \rho(x,a).
+\]
+\end{definition}
+
+For a research path
+\[
+\pi=(x_0,a_1,x_1,\ldots,a_k,x_k),
+\]
+the total monetary cost is
+\[
+M(\pi)=\sum_{i=1}^{k}m(x_{i-1},a_i).
+\]
+
+\begin{definition}
+Let \(x\in\mathcal{H}\) and let \(\varepsilon>0\). The \emph{monetary cost required to reduce nescience by \(\varepsilon\)} is
+\[
+\operatorname{MCost}_{\varepsilon}(x)
+=
+\inf_{\pi:x\leadsto y}
+\left\{
+M(\pi)
+:
+N(y)\leq N(x)-\varepsilon
+\right\}.
+\]
+\end{definition}
+
+For a relative reduction of \(1\%\), we define
+\[
+\operatorname{MCost}_{1\%}(x)
+=
+\inf_{\pi:x\leadsto y}
+\left\{
+M(\pi)
+:
+N(y)\leq 0.99N(x)
+\right\}.
+\]
+
+This expression formalizes the question:
+
+\[
+\text{How much does it cost to reduce the nescience of this topic by one percent?}
+\]
+
+In practice, this quantity will almost never be known exactly. It must be estimated using empirical cost models, historical data, expert judgment, and approximations of nescience. Nevertheless, the definition is useful because it decomposes the problem into explicit elements:
+\begin{itemize}
+    \item a current hypothesis \(x\);
+    \item a practical approximation of \(N(x)\);
+    \item a set of admissible research operations;
+    \item an estimate of the expected nescience reduction of each operation;
+    \item a resource vector for each operation;
+    \item a price vector for the resources.
+\end{itemize}
+
+\section{Machine Learning Application}
+\label{sec:effort_machine_learning}
+
+Machine learning provides a particularly clear setting in which to apply the concept of effort. In supervised learning, the representation \(r\) is usually a dataset, and the description \(d\) is a trained model or learning procedure. Reducing nescience means improving the representation, improving the model, or both.
+
+Let
+\[
+x=(r,d)
+\]
+be the current hypothesis, where \(r\) is the available dataset and \(d\) is the current model. The main admissible operations include:
+\begin{itemize}
+    \item collecting more samples;
+    \item improving labels;
+    \item adding features;
+    \item removing irrelevant features;
+    \item reducing measurement noise;
+    \item balancing classes;
+    \item changing the representation of the data;
+    \item selecting another model family;
+    \item tuning hyperparameters;
+    \item increasing model size;
+    \item training for longer;
+    \item regularizing the model;
+    \item compressing or pruning the model;
+    \item ensembling several models;
+    \item changing the loss function;
+    \item improving validation procedures.
+\end{itemize}
+
+Some operations primarily reduce miscoding. For example, collecting better data, correcting labels, or adding missing features improves the representation. Other operations primarily reduce mismodel. For example, changing the model family, tuning hyperparameters, or improving optimization changes the description.
+
+A practical monetary cost model for machine learning may take the form
+\[
+M_{\mathrm{ML}}(\pi)
+=
+p_{\mathrm{gpu}}H_{\mathrm{gpu}}
++
+p_{\mathrm{cpu}}H_{\mathrm{cpu}}
++
+p_{\mathrm{label}}n_{\mathrm{label}}
++
+p_{\mathrm{data}}D
++
+p_{\mathrm{eng}}H_{\mathrm{eng}}
++
+p_{\mathrm{val}}V,
+\]
+where:
+\begin{itemize}
+    \item \(H_{\mathrm{gpu}}\) is the number of GPU-hours;
+    \item \(H_{\mathrm{cpu}}\) is the number of CPU-hours;
+    \item \(n_{\mathrm{label}}\) is the number of labels acquired or corrected;
+    \item \(D\) is the amount of external data purchased or generated;
+    \item \(H_{\mathrm{eng}}\) is the number of engineering hours;
+    \item \(V\) is the validation cost;
+    \item the \(p\)'s are unit prices.
+\end{itemize}
+
+The expected return on monetary effort is then
+\[
+\operatorname{ERoM}(\pi)
+=
+\frac{\mathbb{E}[N(x_0)-N(x_k)]}{M_{\mathrm{ML}}(\pi)}.
+\]
+
+\begin{example}
+Suppose a classification problem has current nescience \(N(x)=0.30\). Three possible actions are available:
+\begin{itemize}
+    \item \(a_1\): tune hyperparameters at cost \(2{,}000\) euros, expected nescience reduction \(0.002\);
+    \item \(a_2\): label additional data at cost \(10{,}000\) euros, expected nescience reduction \(0.009\);
+    \item \(a_3\): remove irrelevant features at cost \(1{,}500\) euros, expected nescience reduction \(0.003\).
+\end{itemize}
+The expected reductions per euro are:
+\[
+\frac{0.002}{2000}=10^{-6},
+\]
+\[
+\frac{0.009}{10000}=9\cdot 10^{-7},
+\]
+and
+\[
+\frac{0.003}{1500}=2\cdot 10^{-6}.
+\]
+Although labeling additional data produces the largest expected reduction, feature removal has the best expected return per euro.
+\end{example}
+
+This example illustrates why effort is useful. A research action should not be evaluated only by its expected improvement, but also by the cost required to obtain that improvement.
+
+Machine learning also allows effort curves to be estimated empirically. If \(C\) denotes compute, data, or money, then one can estimate a function
+\[
+N(C)
+\]
+describing the nescience remaining after spending effort \(C\). The slope of this curve indicates marginal return:
+\[
+-\frac{dN}{dC}.
+\]
+When the curve flattens, additional effort yields diminishing returns.
+
+\section{Effort and the Difficulty of Research Areas}
+\label{sec:effort_difficulty_research_areas}
+
+The concept of effort provides a way to address the question of whether some research areas are more difficult than others. A research area should not be considered difficult merely because its current nescience is high. It should be considered difficult if reducing its nescience requires high effort.
+
+Let \(A\subseteq E\) be a research area. Suppose that for each entity \(e\in A\) there is a current best hypothesis \(x_e\). We define the difficulty of \(e\) at scale \(\varepsilon\) as the effort required to reduce the nescience of \(x_e\) by \(\varepsilon\).
+
+\begin{definition}
+Let \(e\in E\) be an entity with current best hypothesis \(x_e\). The \emph{difficulty of \(e\) at scale \(\varepsilon\)} is
+\[
+D_{\varepsilon}(e)=\operatorname{Eff}_{\varepsilon}(x_e).
+\]
+\end{definition}
+
+The difficulty of a research area is obtained by aggregating the difficulty of its entities.
+
+\begin{definition}
+Let \(A\subseteq E\) be a finite research area and let \(w_e\geq 0\) be weights satisfying
+\[
+\sum_{e\in A}w_e=1.
+\]
+The \emph{difficulty of the research area \(A\) at scale \(\varepsilon\)} is
+\[
+D_{\varepsilon}(A)=\sum_{e\in A}w_eD_{\varepsilon}(e).
+\]
+\end{definition}
+
+The weights may represent scientific relevance, practical importance, funding priority, or proximity to the knowledge frontier.
+
+For large areas, it may be preferable to compute difficulty only over frontier entities, that is, entities corresponding to current open problems or active research questions. If \(F_A\subseteq A\) denotes the frontier of the area \(A\), then the frontier difficulty is
+\[
+D_{\varepsilon}^{\mathrm{frontier}}(A)
+=
+\sum_{e\in F_A}w_eD_{\varepsilon}(e).
+\]
+
+This definition separates the amount of ignorance in a field from the difficulty of reducing it. A field may contain many unknowns but still admit rapid progress if its representations are stable, its experiments are cheap, and its models can be efficiently tested. Another field may contain fewer open questions but require enormous effort for each improvement.
+
+\begin{definition}
+Let \(A\) and \(B\) be two research areas. We say that \(A\) is more difficult than \(B\) at scale \(\varepsilon\) if
+\[
+D_{\varepsilon}(A)>D_{\varepsilon}(B).
+\]
+\end{definition}
+
+This definition leads to a possible explanation of why different disciplines progress at different rates. Some areas may be successful not only because they contain more capable researchers or better institutions, but because their entities admit lower-effort nescience reduction.
+
+\begin{example}
+Many entities in physics admit stable quantitative representations: measurements, units, equations, coordinate systems, experimental protocols, and numerical simulations. These features restrict the hypothesis space and create strong feedback loops between representation, description, and experiment. As a consequence, many branches of physics may have relatively low effort per unit of nescience reduction, despite being mathematically and experimentally demanding.
+
+By contrast, many entities in philosophy, such as truth, consciousness, meaning, causality, justice, or knowledge, are harder to represent in stable and operational terms. Different traditions may disagree about what counts as an adequate representation, and feedback mechanisms are often weaker than in experimental science. The difficulty may therefore lie not in lack of intelligence or rigor, but in the higher effort required to reduce miscoding and mismodel for such entities.
+\end{example}
+
+This example should not be read as a claim that philosophy is less valuable than physics. On the contrary, the effort framework suggests a more charitable interpretation: some philosophical entities may be difficult precisely because they have high representational and validation effort. Slow progress may reflect the structure of the entities rather than the inferiority of the discipline.
+
+\section{Difficulty Profiles}
+\label{sec:difficulty_profiles}
+
+Different research areas may be difficult for different reasons. Therefore, instead of assigning a single difficulty value to an area, we can define a difficulty profile.
+
+\begin{definition}
+Let \(A\subseteq E\) be a research area. A \emph{difficulty profile} of \(A\) is a vector
+\[
+\mathbf{D}(A)
+=
+\left(
+D^{\mu}(A),
+D^{\nu}(A),
+D^{\mathrm{exp}}(A),
+D^{\mathrm{comp}}(A),
+D^{\mathrm{val}}(A),
+D^{\mathrm{coord}}(A)
+\right),
+\]
+where:
+\begin{itemize}
+    \item \(D^{\mu}(A)\) is the effort required to reduce miscoding;
+    \item \(D^{\nu}(A)\) is the effort required to reduce mismodel;
+    \item \(D^{\mathrm{exp}}(A)\) is experimental effort;
+    \item \(D^{\mathrm{comp}}(A)\) is computational effort;
+    \item \(D^{\mathrm{val}}(A)\) is validation effort;
+    \item \(D^{\mathrm{coord}}(A)\) is coordination effort.
+\end{itemize}
+\end{definition}
+
+This profile gives a more informative view than a single scalar measure. Physics may have high experimental effort but strong validation. Philosophy may have lower monetary cost but higher representational and validation effort. Biology may have high miscoding effort because living systems are heterogeneous and measurement is difficult. Mathematics may have low experimental cost but high proof-search effort.
+
+\begin{example}
+Particle physics may have a difficulty profile dominated by experimental and monetary effort. Building accelerators and detectors is expensive, but the entities involved often have precise mathematical representations and strong validation procedures.
+
+Philosophy may have a difficulty profile dominated by representational and validation effort. The monetary cost of proposing an argument may be low, but the cost of stabilizing the relevant concepts and obtaining agreement about improvement may be high.
+\end{example}
+
+The concept of difficulty profiles avoids simplistic comparisons between disciplines. It allows us to say not merely that one area is harder than another, but why it is harder.
+
+\section{Effort and Research Prioritization}
+\label{sec:effort_research_prioritization}
+
+Effort is central to research prioritization. A research question should not be evaluated only by its importance or its expected nescience reduction. It should also be evaluated by the effort required to obtain that reduction.
+
+Let \(q\) be a research question. Suppose that answering \(q\) is expected to reduce nescience by
+\[
+\mathbb{E}[\Delta N(q)]
+\]
+and requires expected effort
+\[
+\mathbb{E}[\operatorname{Eff}(q)].
+\]
+A simple measure of research efficiency is
+\[
+R(q)
+=
+\frac{\mathbb{E}[\Delta N(q)]}{\mathbb{E}[\operatorname{Eff}(q)]}.
+\]
+
+If \(I(q)\) denotes the interestingness of \(q\), one may include effort as a denominator:
+\[
+I(q)
+=
+\frac{
+\operatorname{Rel}(q)\cdot \operatorname{App}(q)\cdot \mathbb{E}[\Delta N(q)]
+}{
+\mathbb{E}[\operatorname{Eff}(q)]
+},
+\]
+where \(\operatorname{Rel}(q)\) is the relevance of the question and \(\operatorname{App}(q)\) is its applicability.
+
+This formula is not intended as a universal definition. Rather, it illustrates how effort can be incorporated into the selection of research questions. A question may be very important but require such high effort that it is not the best immediate target. Conversely, a modest question may be worth pursuing if it offers substantial nescience reduction at low cost.
+
+Research funding can also be formulated as a portfolio problem. Suppose that actions \(a_1,\ldots,a_k\) are available, with monetary costs \(M(a_i)\) and expected nescience reductions \(\mathbb{E}[\Delta N(a_i)]\). Given a budget \(B\), the objective is to choose a subset of actions maximizing expected nescience reduction:
+\[
+\max_{S\subseteq\{1,\ldots,k\}}
+\sum_{i\in S}\mathbb{E}[\Delta N(a_i)]
+\]
+subject to
+\[
+\sum_{i\in S}M(a_i)\leq B.
+\]
+This formulation connects the theory of nescience with scientific management and funding allocation.
+
+\section{Limits of Effort Reduction}
+\label{sec:limits_effort_reduction}
+
+The effort required to reduce nescience may be infinite.
+
+\begin{definition}
+Let \(x\in\mathcal{H}\) and \(\varepsilon>0\). We say that the reduction of nescience by \(\varepsilon\) from \(x\) is \emph{effort-impossible} if
+\[
+\operatorname{Eff}_{\varepsilon}(x)=\infty.
+\]
+\end{definition}
+
+This situation can arise for several reasons.
+
+First, no better hypothesis may exist within the chosen hypothesis space. Second, better hypotheses may exist but may not be reachable under the admissible operations. Third, the improvement may require information that is not computable. Fourth, the entity may be unknowable under the relevant representation framework. Finally, the effort may be finite in theory but so large that it is practically infinite.
+
+This distinction is important. A problem may be:
+\begin{itemize}
+    \item \emph{theoretically impossible}, if no admissible path exists;
+    \item \emph{computationally intractable}, if a path exists but requires prohibitive computation;
+    \item \emph{economically infeasible}, if the monetary cost exceeds available resources;
+    \item \emph{experimentally inaccessible}, if the required observations cannot be obtained;
+    \item \emph{conceptually blocked}, if no stable representation is available.
+\end{itemize}
+
+In such cases, the rational response may not be to continue applying effort within the same framework, but to reframe the problem. A new representation may lower effort even before it reduces nescience directly.
+
+\section{Conclusion}
+\label{sec:effort_conclusion}
+
+Nescience measures how much we do not know. Effort measures how difficult it is to reduce what we do not know. The two concepts are orthogonal. A topic may have high nescience and low effort, low nescience and high effort, or any combination in between.
+
+In this chapter, effort has been defined as the computational cost of moving from one hypothesis to another with lower nescience. This definition allows us to study the difficulty of reducing nescience in general, and the difficulty of reducing its components, such as miscoding and mismodel, in particular. It also provides a bridge from abstract theory to practical applications. By introducing resource vectors and price vectors, computational effort can be connected to monetary cost. This makes it possible, at least in principle, to ask how much it costs to reduce the nescience of a topic by a specified amount.
+
+The concept of effort also sheds light on the difficulty of research areas. Some fields may progress faster not because their entities are more important or their researchers more capable, but because their entities admit lower-effort reductions of nescience. Stable representations, strong feedback mechanisms, good instruments, and quantitative models all reduce effort. Conversely, unstable representations, weak validation procedures, and high conceptual ambiguity increase effort.
+
+Finally, effort provides a natural framework for research prioritization. A rational research strategy should consider not only expected nescience reduction, but expected nescience reduction per unit of effort. In this way, effort connects the theory of nescience with scientific planning, machine learning, funding allocation, and the long-term project of understanding the limits of knowledge.
+
+\section*{References}
+\label{sec:effort_references}
+
+TODO: Add references.
+
+Suggested references:
+\begin{itemize}
+    \item Landauer, R. (1961). Irreversibility and heat generation in the computing process.
+    \item Bennett, C. H. (1982). The thermodynamics of computation.
+    \item Li, M. and Vitányi, P. An Introduction to Kolmogorov Complexity and Its Applications.
+    \item Sipser, M. Introduction to the Theory of Computation.
+    \item Cover, T. M. and Thomas, J. A. Elements of Information Theory.
+    \item Russell, S. and Norvig, P. Artificial Intelligence: A Modern Approach.
+    \item Kuhn, T. S. The Structure of Scientific Revolutions.
+\end{itemize}

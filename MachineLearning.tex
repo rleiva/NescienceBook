@@ -46,87 +46,273 @@ pip install nescience
 On the companion website for the library, the reader will find a collection of \texttt{jupyter-lab} notebooks that illustrate how the library works. Each subsection of this chapter is accompanied by a notebook containing implementations of all the examples discussed, so that the reader can reproduce the results and experiment with them interactively. Additional information about the \texttt{nescience} library, including a complete API reference, is also available on the library's website.
 
 %
-% Section: A Note About Compression
+% Section: Empirical Encoding and Code Length
 %
 
-\section{A Note About Compression}
-\label{sec:note_about_compression}
+\section{Empirical Encoding and Code Length}
+\label{sec:empirical_encoding_and_code_length}
 
-As is customary, the Kolmogorov complexity $K(s)$ of a string $s$ will be approximated by the length of the compressed version of that string using a standard compressor. In this way, we can estimate the normalized compression distance as follows:
+The practical computation of the components of nescience requires finite, computable approximations to quantities that are theoretically defined in terms of Kolmogorov complexity. Since Kolmogorov complexity is not computable in general, the \texttt{mnplib} library replaces it with empirical code lengths derived from observed data. The role of the utility functions in the library is therefore foundational: they transform observed variables into finite empirical states and compute the corresponding empirical distributions, entropies, and code lengths.
+
+Let $\mathbf{x}=(x_1,\ldots,x_n)$ be a vector of observations of a random variable $X$. If $X$ is categorical and takes values in a finite alphabet $\mathcal{G}=\{g_1,\ldots,g_\ell\}$, we denote by
 \[
-E_Z(\mathbf{x}_j, \mathbf{y}) = \frac{\max\{ \hat{K}_Z(\mathbf{x}_j \mid \mathbf{y}), \hat{K}_Z(\mathbf{y} \mid \mathbf{x}_j) \}}{\max \{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} },
+n_i=\sum_{j=1}^n I(x_j=g_i)
 \]
-where $\hat{K}_Z(s)$ denotes the length of the compressed version of the string $s$ using the compressor $Z$.
-
-In the particular case of having a vector $\mathbf{x} = \{ x_1, \ldots, x_n \}$ of measurements, the string $s$ to be compressed will be the concatenation of the encoded values $s = \langle x_1, \ldots, x_n \rangle$. In practice, it is usually easier to compute the joint encoding of two vectors than their conditional encoding. For this reason, we prefer the following equivalent definition of normalized compression distance:
+the number of observations belonging to category $g_i$, and by
 \[
-E_Z(\mathbf{x}_j, \mathbf{y}) = \frac{ \hat{K}_Z(\mathbf{x}_j, \mathbf{y}) - \min\{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} } { \max\{ \hat{K}_Z(\mathbf{x}_j), \hat{K}_Z(\mathbf{y}) \} }.
+\hat{p}_i=\frac{n_i}{n}
 \]
-As the compression technique, we will use a code $C$ of minimal expected length, given the relative frequencies of the observed values (see Section \ref{sec:Optimal-Codes}). If $\mathbf{x}$ is a qualitative vector (either a feature or the target variable) taking values from a set of labels $\mathcal{G} = \{g_1, \ldots, g_\ell\}$, that is, $\mathbf{x} \in \mathcal{G}^n$, the quantity $\hat{K}_C(\mathbf{x})$ can be computed as:
+the corresponding empirical probability. The empirical entropy of $\mathbf{x}$ is then
 \[
-\hat{K}_C(\mathbf{x}) = - \sum_{i=1}^\ell \log_2\!\left( \frac{ \sum_{j=1}^n I(x_j = g_i)} {n} \right).
+\hat{H}(\mathbf{x})
+=
+-\sum_{i:n_i>0} \hat{p}_i\log_2 \hat{p}_i.
 \]
-If $\mathbf{x}$ is based on a continuous random variable, we cannot directly calculate the probability of each $x_j$ since, in general, the underlying probability distribution of $\mathbf{x}$ is unknown, and moreover $P(x_j)=0$ for all $j$. To approximate $K(\mathbf{x})$ using a minimal-length code $C$, we must first discretize the vector $\mathbf{x}$ into a finite set of intervals.
-
-A discretization algorithm maps a (potentially huge) set of numeric values to a reduced set of discrete categories, inevitably losing some information. The choice of discretization algorithm can have a significant impact on the practical computation of nescience. Ideally, we want a discretization method that balances bias and variance: it should produce enough intervals to capture relevant variation (low bias), while ensuring enough observations per interval to obtain reliable frequency estimates (low variance).
-
-Common techniques include \emph{equal-width discretization}, \emph{equal-frequency discretization}, and \emph{fixed-frequency discretization}. However, these methods require selecting a hyperparameter (the number of intervals), which makes them unsuitable for fully automated model selection.
-
-In the \texttt{nescience} library, we use a proportional discretization approach (see Section \ref{sec:discretization_algorithms}), where both the number of intervals $m$ and the number of observations per interval $s$ are proportional to the total number of observations $n$. In particular, the library sets $s = m = \sqrt{n}$, which grows adaptively with the dataset size without introducing external hyperparameters.
-
-Using this discretization procedure, we can approximate the Kolmogorov complexity of a vector $\mathbf{x}$ by:
+The empirical code length associated with an optimal prefix code adapted to these observed frequencies is
 \[
-\hat{K}_C(\mathbf{x}) = - \sum_{i=1}^m \log_2\!\left( \frac{ \sum_{j=1}^n I(x_j \in D_i)} {n} \right),
+\hat{K}_C(\mathbf{x})
+=
+n\hat{H}(\mathbf{x})
+=
+-\sum_{i:n_i>0} n_i \log_2 \hat{p}_i.
 \]
-where $D_i$ is the $i$-th interval defined by the endpoints $(i-1, i)$.
-
-This quantity $\hat{K}_C$ can be generalized to an arbitrary number of $m$ vectors $\hat{K}_C(\mathbf{x_1}, \ldots, \mathbf{x_m})$ composed of $n$ samples each, by considering the joint encoded vector
+Equivalently, since each observation $x_j$ is encoded using a codeword of length approximately $-\log_2 \hat{p}(x_j)$, we have
 \[
-\langle \mathbf{x_1}, \mathbf{x_2}, \ldots, \mathbf{x_m} \rangle = \{ \langle x_{11}, x_{12}, \ldots, x_{1m} \rangle, \ldots, \langle x_{n1}, x_{n2}, \ldots, x_{nm} \rangle \}.
+\hat{K}_C(\mathbf{x})
+=
+-\sum_{j=1}^n \log_2 \hat{p}(x_j).
 \]
+This quantity is not a direct estimate of Kolmogorov complexity in the algorithmic sense, but a practical empirical approximation based on Shannon coding. It measures the length of the data under the empirical distribution induced by the observed sample.
 
-\begin{proposition}
-The normalized compression distance of two vectors $\mathbf{x}$ and $\mathbf{y}$, when computed using a compressor based on optimal codes, is equivalent to the normalized mutual information between these two vectors, that is:
+The same construction applies to several random variables. Given vectors $\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(m)}$ with $n$ observations each, we form the joint empirical vector
 \[
-NCD_C\left(\mathbf{x},\mathbf{y}\right)=1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }.
+\left\langle
+\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(m)}
+\right\rangle
+=
+\left\{
+\left\langle x^{(1)}_1,\ldots,x^{(m)}_1\right\rangle,
+\ldots,
+\left\langle x^{(1)}_n,\ldots,x^{(m)}_n\right\rangle
+\right\}.
 \]
-\end{proposition}
-\begin{proof}
-We must prove that
-\begin{align*}
-NCD\left(\mathbf{x},\mathbf{y}\right) 
-&= \frac{C\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} }{\max\left\{ C\left(\mathbf{x}\right),C\left(\mathbf{y}\right)\right\} } \\[4pt]
-&= \frac{nH\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} }{\max\left\{ nH\left(\mathbf{x}\right),nH\left(\mathbf{y}\right)\right\} } \\[4pt]
-&= \frac{H\left(\mathbf{x},\mathbf{y}\right)-\min\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }.
-\end{align*}
-
-Consider two cases.  
-
-\textbf{Case 1:} $H\left(\mathbf{x}\right) > H\left(\mathbf{y}\right)$.
-\begin{align*}
-NCD\left(\mathbf{x},\mathbf{y}\right)
-&= \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} 
-= \frac{H\left(\mathbf{y}\right)+H\left(\mathbf{x}\mid\mathbf{y}\right)-H\left(\mathbf{y}\right)}{H\left(\mathbf{x}\right)} 
-= \frac{H\left(\mathbf{x}\mid\mathbf{y}\right)}{H\left(\mathbf{x}\right)} \\[4pt]
-&= \frac{H\left(\mathbf{x}\right)-I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\mathbf{x}\right)}
-= 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\mathbf{x}\right)}.
-\end{align*}
-
-\textbf{Case 2:} $H\left(\mathbf{y}\right) > H\left(\mathbf{x}\right)$.
-\begin{align*}
-NCD\left(\mathbf{x},\mathbf{y}\right)
-&= \frac{H\left(\mathbf{x},\mathbf{y}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)} 
-= \frac{H\left(\mathbf{x}\right)+H\left(\mathbf{y}\mid\mathbf{x}\right)-H\left(\mathbf{x}\right)}{H\left(\mathbf{y}\right)}
-= \frac{H\left(\mathbf{y}\mid\mathbf{x}\right)}{H\left(\mathbf{y}\right)} \\[4pt]
-&= \frac{H\left(\mathbf{y}\right)-I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\mathbf{y}\right)}
-= 1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{H\left(\mathbf{y}\right)}.
-\end{align*}
-
-Combining both cases, we obtain:
+The observed joint states are the distinct tuples appearing in this vector. If these joint states are denoted by $s_1,\ldots,s_q$, with counts $n_1,\ldots,n_q$, the joint empirical entropy is
 \[
-NCD_C\left(\mathbf{x},\mathbf{y}\right)=1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }.
+\hat{H}\!\left(\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(m)}\right)
+=
+-\sum_{i:n_i>0}
+\frac{n_i}{n}
+\log_2\!\left(\frac{n_i}{n}\right),
 \]
-\end{proof}
+and the joint empirical code length is
+\[
+\hat{K}_C\!\left(\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(m)}\right)
+=
+n\hat{H}\!\left(\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(m)}\right).
+\]
+
+This formulation is especially useful because many quantities appearing in the theory of nescience can be expressed in terms of individual and joint code lengths. For example, the compression-based approximation of an information distance between two empirical vectors $\mathbf{x}$ and $\mathbf{y}$ can be written as
+\[
+E_C(\mathbf{x},\mathbf{y})
+=
+\frac{
+\hat{K}_C(\mathbf{x},\mathbf{y})
+-
+\min\{\hat{K}_C(\mathbf{x}),\hat{K}_C(\mathbf{y})\}
+}{
+\max\{\hat{K}_C(\mathbf{x}),\hat{K}_C(\mathbf{y})\}
+}.
+\]
+Since $\hat{K}_C(\mathbf{x})=n\hat{H}(\mathbf{x})$, this is equivalent to
+\[
+E_C(\mathbf{x},\mathbf{y})
+=
+\frac{
+\hat{H}(\mathbf{x},\mathbf{y})
+-
+\min\{\hat{H}(\mathbf{x}),\hat{H}(\mathbf{y})\}
+}{
+\max\{\hat{H}(\mathbf{x}),\hat{H}(\mathbf{y})\}
+}.
+\]
+Using the empirical mutual information
+\[
+\hat{I}(\mathbf{x};\mathbf{y})
+=
+\hat{H}(\mathbf{x})+\hat{H}(\mathbf{y})-\hat{H}(\mathbf{x},\mathbf{y}),
+\]
+we obtain the equivalent expression
+\[
+E_C(\mathbf{x},\mathbf{y})
+=
+1-
+\frac{
+\hat{I}(\mathbf{x};\mathbf{y})
+}{
+\max\{\hat{H}(\mathbf{x}),\hat{H}(\mathbf{y})\}
+}.
+\]
+Thus, when optimal empirical codes are used, the compression-based distance coincides with a normalized mutual-information distance. This identity explains why empirical code length is a natural practical substitute for compression in the machine-learning implementation of the theory.
+
+\subsection*{Encoding Numeric Variables}
+
+The previous construction assumes that the values of the random variable belong to a finite set. Numeric variables, however, often take many distinct values, and in the case of continuous variables the probability of observing any exact value is zero. Therefore, before empirical frequencies can be computed, numeric vectors must be discretized.
+
+A discretization procedure maps a numeric vector $\mathbf{x}=(x_1,\ldots,x_n)\in\mathbb{R}^n$ to an encoded vector $\tilde{\mathbf{x}}=(\tilde{x}_1,\ldots,\tilde{x}_n)$ whose values belong to a finite alphabet of bins. If the bins are denoted by $D_1,\ldots,D_b$, then
+\[
+\tilde{x}_j=i
+\quad\Longleftrightarrow\quad
+x_j\in D_i.
+\]
+The empirical code length of the numeric vector is then computed from the discretized vector:
+\[
+\hat{K}_C(\mathbf{x})
+\approx
+\hat{K}_C(\tilde{\mathbf{x}})
+=
+-\sum_{i=1}^b n_i \log_2\!\left(\frac{n_i}{n}\right),
+\]
+where
+\[
+n_i=\sum_{j=1}^n I(x_j\in D_i).
+\]
+
+The current version of \texttt{mnplib} uses uniform discretization. In uniform discretization, the interval between the minimum and maximum observed values is divided into intervals of equal width. This choice is deliberate. The goal of discretization in this context is not merely to create balanced bins, but to preserve the empirical shape of the numeric distribution at the chosen resolution. Dense regions of the original vector remain dense after discretization, and sparse regions remain sparse. Consequently, the empirical frequencies of the discretized vector still contain information about the distribution of the original numeric vector.
+
+This is important because empirical code length is computed from the observed probabilities of the discrete states. If the discretization procedure forced all bins to contain approximately the same number of observations, the resulting distribution would become close to uniform and the empirical code length would be determined mainly by the number of bins rather than by the original distribution of the data. Uniform discretization avoids this collapse and is therefore better aligned with the compression interpretation used in \texttt{mnplib}.
+
+The choice of the number of bins is critical. Too few bins produce an overly coarse representation and may hide relevant variation. Too many bins produce sparse empirical distributions and unreliable probability estimates. The \texttt{mnplib} library therefore uses an occupancy-based rule. Suppose that $d$ numeric variables are encoded jointly, and that the categorical variables already present in the joint representation induce $C$ observed categorical states. If each numeric variable is discretized into $b$ bins, then the approximate number of joint cells is $C b^d$. If $m$ denotes the desired average number of observations per joint cell, we choose $b$ so that
+\[
+C b^d \approx \frac{n}{m}.
+\]
+Solving for $b$ gives
+\[
+b
+\approx
+\left(
+\frac{n}{mC}
+\right)^{1/d}.
+\]
+In practice, the result is rounded to an integer and constrained by user-defined lower and upper bounds. This rule adapts automatically to the sample size and to the dimensionality of the empirical distribution being estimated. In particular, it prevents the number of joint cells from growing too quickly when several numeric variables are encoded together.
+
+\subsection*{Stateless Empirical Encoding}
+
+The current utility layer is stateless. Each call to the empirical distribution, empirical entropy, or empirical code-length functions receives the variables to be analyzed, encodes them within that call, and computes the corresponding empirical quantities. No fitted encoder object is stored and no learned representation is reused across calls.
+
+For categorical variables, the library assigns integer symbols to the observed labels according to their equality classes. The actual integer assigned to each category is irrelevant; only the partition of the sample into equal values matters. If two observations have the same categorical value, they receive the same symbol. If they have different categorical values, they receive different symbols.
+
+For numeric variables, the library computes uniform bin boundaries from the values supplied in the current call. The numeric values are then replaced by the index of the bin to which they belong. In this way, every numeric vector is converted into a finite symbolic vector before frequencies are counted.
+
+The stateless design has the advantage of simplicity. The empirical distribution of a collection of variables is always computed from the variables supplied to the function, without reference to external state. This is appropriate when estimating the empirical code length of a vector or of a joint vector as it appears in the data. For example, the joint code length of a target vector and a prediction vector should be computed by passing both vectors in the same call, so that the joint empirical states are counted directly from the paired observations.
+
+This design also clarifies the interpretation of empirical code length. The library is not estimating the code length relative to a fixed external alphabet. It is estimating the code length induced by the empirical distribution of the observed encoded states. Therefore, unobserved states do not contribute to the plug-in code length unless an explicit finite-sample correction or alphabet size is provided.
+
+\subsection*{Finite-Sample Corrections}
+
+The empirical entropy
+\[
+\hat{H}(\mathbf{x})
+=
+-\sum_i \hat{p}_i\log_2\hat{p}_i
+\]
+is a plug-in estimator. Although simple and natural, it is biased in finite samples, especially when the number of observed states is large relative to the number of observations. The \texttt{mnplib} library therefore allows entropy-bias corrections.
+
+One classical correction is the Miller--Madow correction. If $q$ is the number of observed states and $n$ is the sample size, the corrected entropy is
+\[
+\hat{H}_{MM}(\mathbf{x})
+=
+\hat{H}(\mathbf{x})
++
+\frac{q-1}{2n\ln 2}.
+\]
+More generally, if entropy is computed with logarithm base $a$, the correction becomes
+\[
+\hat{H}_{MM}^{(a)}(\mathbf{x})
+=
+\hat{H}^{(a)}(\mathbf{x})
++
+\frac{q-1}{2n\ln a}.
+\]
+This correction increases the entropy estimate to compensate for the downward bias of the empirical plug-in estimator.
+
+Another possibility is Dirichlet smoothing. If the empirical counts are $n_1,\ldots,n_q$, and an alphabet of size $Q$ is assumed, one defines smoothed probabilities
+\[
+\tilde{p}_i
+=
+\frac{n_i+\alpha}{n+\alpha Q},
+\]
+where $\alpha>0$ is a smoothing parameter. The corresponding smoothed entropy is
+\[
+\hat{H}_{\alpha}(\mathbf{x})
+=
+-\sum_{i=1}^{Q}
+\tilde{p}_i\log_2\tilde{p}_i.
+\]
+Dirichlet smoothing is useful when some states are possible but unobserved, or when zero empirical probabilities would make the representation too brittle. In the default plug-in computation, however, only observed states contribute to the empirical code length.
+
+\subsection*{Normalized and Per-Sample Quantities}
+
+The utility functions distinguish between entropy and total code length. Entropy is a per-sample quantity:
+\[
+\hat{H}(\mathbf{x})
+=
+-\sum_i \hat{p}_i\log_2\hat{p}_i,
+\]
+whereas code length is a total quantity:
+\[
+\hat{K}_C(\mathbf{x})
+=
+n\hat{H}(\mathbf{x}).
+\]
+Both are useful. Total code length is appropriate when approximating description length, while entropy is useful when comparing samples of different sizes.
+
+The library also supports normalized entropy. If the empirical alphabet has $q$ possible states, the maximum entropy is $\log_2 q$. The normalized entropy is therefore
+\[
+\hat{H}_{\mathrm{norm}}(\mathbf{x})
+=
+\frac{\hat{H}(\mathbf{x})}{\log_2 q},
+\]
+with the convention that the normalized entropy is zero when $q=1$. This quantity lies in the interval $[0,1]$, and measures how close the empirical distribution is to the uniform distribution over its state space.
+
+The logarithm base is also explicit. The default base is $2$, so that all code lengths are measured in bits. Other bases may be used when convenient: base $e$ gives entropy in nats, and base $10$ gives entropy in decimal units.
+
+\subsection*{Information-Theoretic Identities}
+
+The empirical code-length utilities are designed to satisfy basic information-theoretic identities, up to finite-sample and discretization effects. For any empirical vectors $\mathbf{x}$ and $\mathbf{y}$, the following properties hold for the plug-in estimates:
+\[
+\hat{H}(\mathbf{x})\geq 0,
+\]
+\[
+\hat{H}(\mathbf{x},\mathbf{y})\geq \hat{H}(\mathbf{x}),
+\qquad
+\hat{H}(\mathbf{x},\mathbf{y})\geq \hat{H}(\mathbf{y}),
+\]
+and
+\[
+\hat{H}(\mathbf{x},\mathbf{x})=\hat{H}(\mathbf{x}).
+\]
+The last identity expresses the fact that duplicating a variable does not add information. Similarly, if $\mathbf{x}$ is constant, then
+\[
+\hat{H}(\mathbf{x})=0,
+\qquad
+\hat{K}_C(\mathbf{x})=0.
+\]
+These identities are used as sanity checks in the implementation. They ensure that the empirical representation behaves as expected before it is used in higher-level nescience quantities such as miscoding, inaccuracy, and surfeit.
+
+\subsection*{Role in the Library}
+
+The utility layer of \texttt{mnplib} is not merely an implementation detail. It defines the empirical representation space on which the practical version of the theory operates. The theoretical framework speaks about representations, descriptions, and code lengths. In machine learning applications, these become finite empirical vectors, encoded states, empirical distributions, entropies, and code lengths.
+
+The central approximation can be summarized as
+\[
+K(\mathbf{x})
+\quad\leadsto\quad
+\hat{K}_C(\mathbf{x})
+=
+n\hat{H}(\tilde{\mathbf{x}}),
+\]
+where $\tilde{\mathbf{x}}$ is the finite empirical encoding of the observed vector. For categorical variables, this encoding is obtained by mapping labels to discrete symbols. For numeric variables, it is obtained by uniform discretization. The quality of this approximation depends on the choice of discretization resolution, the treatment of categorical states, and the finite-sample correction applied to entropy. By making these choices explicit, the utility layer provides a stable computational basis for the rest of the library.
+
 
 % % Subsection: Compression of strings
 
@@ -317,7 +503,7 @@ Sometimes, we will use the normalized version of the complements of the individu
 \[
 \frac{ 1 - \hat\mu(\mathbf{x}_i, \mathbf{y}) } { \sum_{j=1}^p \big(1 - \hat\mu(\mathbf{x}_j, \mathbf{y})\big) },
 \]
-instead of the raw values $\hat\mu(\mathbf{x}_i, \mathbf{y})$. This alternative, which we call the \emph{adjusted feature miscoding}, is useful because it allows easier comparison with other feature selection techniques, and it has a visually intuitive interpretation as relative importance weights.
+instead of the raw values $\hat\mu(\mathbf{x}_i, \mathbf{y})$. This alternative, which we call the adjusted feature miscoding, is useful because it allows easier comparison with other feature selection techniques, and it has a visually intuitive interpretation as relative importance weights.
 
 \begin{example}
 \label{example:gaussian_blob_miscoding}
@@ -471,7 +657,8 @@ reduction = 1 - X_red_train.shape[1] / X_raw_train.shape[1]
 print("Score raw:", score_raw, " Score Miscoding:", score_red,
       " Reduction:", reduction)
 
-Score raw: 0.9833333333333333  Score Miscoding: 0.9814814814814815  Data Reduction: 0.46875
+Score raw: 0.9833333333333333  Score Miscoding: 0.9814814814814815
+Data Reduction: 0.46875
 \end{verbatim}}
 \end{sourcecode}
 
@@ -1165,7 +1352,8 @@ We examine cycles in the number of passengers of a US airline. Figure \ref{figur
 {\scriptsize \begin{verbatim}
 from nescience.timeseries import TimeSeries
 
-data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"], parse_dates=True)
+data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"],
+                    parse_dates=True)
 X = np.array(data["#Passengers"]).reshape(-1, 1)
 
 ts = TimeSeries(auto=False)
@@ -1200,7 +1388,8 @@ For each feature we compute the lag in $[1,30]$ that maximizes crossmiscoding wi
 {\scriptsize \begin{verbatim}
 from fastautoml.fastautoml import Miscoding
 
-X = pd.read_csv("../data/energydata_complete.csv", parse_dates=["date"], index_col="date")
+X = pd.read_csv("../data/energydata_complete.csv", parse_dates=["date"],
+                index_col="date")
 y = X["Appliances"]
 X = X.drop(["Appliances", "lights"], axis=1)
 
@@ -1436,7 +1625,8 @@ The regression line suggests that house prices are lower in areas with higher ni
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
-class0, class1 = model.get_class_points(attribute1=4, attribute2=None, an_type="smaller")
+class0, class1 = model.get_class_points(attribute1=4, attribute2=None,
+                 an_type="smaller")
 
 plt.hist(class0)
 plt.hist(class1)
@@ -1780,7 +1970,8 @@ The methodology has been applied to a dataset gathered in a single experiment un
 \section*{References}
 \label{sec:ML_references}
 
-The quantity $1 - I(\mathbf{x};\mathbf{y}) / \max\left\{ H(\mathbf{x}),H(\mathbf{y})\right\}$ has previously been proposed in~\cite{ferri2009experimental} as a candidate definition of \emph{normalized mutual information}. However, to the best of our knowledge, it has not been used in practice.
+% TODO: Fix this reference
+% The quantity $1 - I(\mathbf{x};\mathbf{y}) / \max\left\{ H(\mathbf{x}),H(\mathbf{y})\right\}$ has previously been proposed in~\cite{ferri2009experimental} as a candidate definition of \emph{normalized mutual information}. However, to the best of our knowledge, it has not been used in practice.
 
 A insightful description of the differences between explanation models and predictive models, how these models are used in different scientific disciplines, and what are the implications for the process of statistical modeling can be found in \cite{shmueli2010explain}.
 

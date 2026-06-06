@@ -1720,6 +1720,296 @@ Let $r_1, r_2, \ldots, r_n \in \mathcal{R}_\mathcal{E}$ be a finite collection o
 The possibility that joint representations of known entities give rise to representations of new entities is a critical element of the theory of nescience. It provides a formal mechanism for the discovery of previously unknown entities through the systematic combination of existing knowledge, without requiring access to representations that lie outside the current epistemic horizon.
 
 %
+% Section: Representation of Areas
+%
+
+\section{Representations of Research Areas}
+
+Research areas are subsets of the set of entities \(E\). Once individual
+entities admit representations, it is natural to ask how an entire area can be
+represented. Intuitively, a representation of an area should collect
+representations of the entities that compose it in such a way that each
+component can be isolated and identified. This allows the area to be studied
+not merely as an undifferentiated collection of symbols, but as a structured
+family of entity-level representations.
+
+A first difficulty is that research areas need not be finite, whereas
+representations are finite binary strings. A second difficulty is that some
+entities in an area may be unknowable, and therefore may not admit any
+representation at all. For these reasons, the representation of an area must be
+understood relative to a finite subset of its representable entities.
+
+Let \(A \subseteq E\) be a research area. Recall that, for each entity
+\(e \in E\), the set \(R_e \subseteq B^\ast\) denotes the set of representations of
+\(e\), and \(\hat{R}_e \subseteq B^\ast\) denotes the set of effective
+representations of \(e\).
+
+\begin{definition}
+Let \(\mathcal{O}\) be a representation oracle over \(E\), and let \(A \subseteq E\)
+be a research area. We define the \emph{oracle-knowable part} of \(A\) by
+\[
+A_{\mathcal{O}}^{\top} := A \cap E_{\mathcal{O}}^{\top}.
+\]
+\end{definition}
+
+Thus, \(A_{\mathcal{O}}^{\top}\) is the subset of entities in the area that are
+knowable with respect to the oracle \(\mathcal{O}\). If \(A\) contains entities
+outside \(A_{\mathcal{O}}^{\top}\), then no area representation based on
+\(\mathcal{O}\) can include them as individually decodable components.
+
+In order to represent several entities together, we must separate their
+representations and attach identifiers that allow each component to be
+recognized. Any standard self-delimiting encoding of finite strings may be
+used for this purpose.
+
+\begin{definition}
+Let \(A \subseteq E\) be a research area, let
+\[
+F = \{e_1,\dots,e_n\} \subseteq A
+\]
+be a finite subset, and let \(r_i \in R_{e_i}\) for each \(i=1,\dots,n\). Let
+\(\iota_1,\dots,\iota_n \in B^\ast\) be pairwise distinct identifier strings. We
+define a \emph{representation of the finite subarea \(F\)} as any finite binary
+string of the form
+\[
+\rho_F
+=
+\langle (\iota_1,r_1),\dots,(\iota_n,r_n)\rangle,
+\]
+where \(\langle \cdot,\cdot\rangle\) and its finite iteration denote a fixed
+self-delimiting computable encoding of pairs and finite sequences of binary
+strings.
+\end{definition}
+
+The identifiers \(\iota_i\) do not need to carry scientific meaning by
+themselves. Their only purpose is to make it possible to separate the
+different components of the area representation and to determine which
+representation belongs to which entity within the represented finite family.
+
+\begin{definition}
+Let \(A \subseteq E\) be a research area. We say that a binary string
+\(\rho\in B^\ast\) is an \emph{extended representation of the area \(A\)} if
+there exists a finite subset \(F=\{e_1,\dots,e_n\}\subseteq A\) and strings
+\(r_i\in R_{e_i}\) such that
+\[
+\rho=\langle (\iota_1,r_1),\dots,(\iota_n,r_n)\rangle
+\]
+for some pairwise distinct identifiers \(\iota_1,\dots,\iota_n\).
+\end{definition}
+
+This definition deliberately allows area representations to be partial: the
+string \(\rho\) need not encode all entities in \(A\), but only a finite subset of
+them. This is unavoidable whenever \(A\) is infinite, and it remains useful
+even when \(A\) is finite but some of its entities are unknowable.
+
+\begin{definition}
+Let \(A \subseteq E\) be a research area and let \(\mathcal{O}\) be a
+representation oracle. We say that \(\rho\) is a \emph{complete area
+representation of \(A\) relative to \(\mathcal{O}\)} if \(\rho\) is an area
+representation associated with the finite set
+\[
+F=A_{\mathcal{O}}^{\top}.
+\]
+In particular, such a complete representation can exist only if
+\(A_{\mathcal{O}}^{\top}\) is finite.
+\end{definition}
+
+Thus, if \(A\) is finite and all its entities are knowable with respect to
+\(\mathcal{O}\), then \(A\) admits a complete area representation. If \(A\)
+contains unknowable entities, then at best one can represent its knowable
+part \(A_{\mathcal{O}}^{\top}\).
+
+\begin{proposition}
+Let
+\[
+\rho_F=\langle (\iota_1,r_1),\dots,(\iota_n,r_n)\rangle
+\]
+be a representation of a finite subarea \(F=\{e_1,\dots,e_n\}\subseteq A\).
+Then each pair \((\iota_i,r_i)\) can be recovered effectively from \(\rho_F\).
+\end{proposition}
+
+\begin{proof}
+By construction, \(\rho_F\) is encoded using a fixed self-delimiting
+computable coding of finite sequences of pairs. Therefore there exists a
+computable decoding procedure that parses \(\rho_F\) and returns each pair
+\((\iota_i,r_i)\). Hence every component representation is effectively
+recoverable from the area representation.
+\end{proof}
+
+The previous proposition formalizes the main purpose of tagging
+individual entity representations: the representation of an area preserves the
+identity of its components.
+
+\begin{proposition}
+Area representations are not unique.
+\end{proposition}
+
+\begin{proof}
+Non-uniqueness may arise in at least two ways. First, an entity
+\(e \in E\) may admit several distinct representations \(r,r' \in R_e\). Second,
+even for a fixed family of entity-level representations, one may choose
+different identifiers or a different order of concatenation. Therefore the same
+research area may admit multiple distinct area representations.
+\end{proof}
+
+This non-uniqueness is not a defect. It reflects the fact that a research area
+may be organized in different representational styles, just as an individual
+entity may admit several valid representations.
+
+\begin{proposition}
+Let \(F_1,F_2\subseteq A\) be finite subareas with \(F_1\cap F_2=\varnothing\).
+If \(\rho_{F_1}\) and \(\rho_{F_2}\) are area representations of \(F_1\) and \(F_2\),
+respectively, then there exists an area representation of \(F_1\cup F_2\).
+\end{proposition}
+
+\begin{proof}
+Write
+\[
+\rho_{F_1}=\langle (\iota_1,r_1),\dots,(\iota_m,r_m)\rangle
+\]
+and
+\[
+\rho_{F_2}=\langle (\kappa_1,s_1),\dots,(\kappa_\ell,s_\ell)\rangle.
+\]
+Choosing the identifiers so that all
+\(\iota_1,\dots,\iota_m,\kappa_1,\dots,\kappa_\ell\) are pairwise distinct, the
+concatenated string
+\[
+\langle (\iota_1,r_1),\dots,(\iota_m,r_m),(\kappa_1,s_1),\dots,(\kappa_\ell,s_\ell)\rangle
+\]
+is a representation of the finite subarea \(F_1\cup F_2\).
+\end{proof}
+
+This shows that finite area representations are closed under finite
+aggregation. In this sense, representing an area amounts to collecting
+identifiable entity-level representations into a single structured string.
+
+In practice, however, science does not work with the full set \(R_e\) of
+representations of an entity, but with the currently available effective
+representations.
+
+\begin{definition}
+Let \(A \subseteq E\) be a research area and let \(t\) denote a time index. We
+define the \emph{effectively known part} of the area at time \(t\) by
+\[
+\hat{A}^{\,t} := A \cap \hat{E}^{\,t}.
+\]
+\end{definition}
+
+The set \(\hat{A}^{\,t}\) contains those entities of the area for which at least one
+effective representation is available at time \(t\).
+
+\begin{definition}
+Let \(A \subseteq E\) be a research area and let
+\[
+F=\{e_1,\dots,e_n\}\subseteq \hat{A}^{\,t}
+\]
+be a finite subset of effectively known entities at time \(t\). For each
+\(i=1,\dots,n\), let \(\hat{r}_i \in \hat{R}_{e_i}^{\,t}\), and let
+\(\iota_1,\dots,\iota_n\in B^\ast\) be pairwise distinct identifiers. We define an
+\emph{effective representation of the finite known subarea \(F\) at time \(t\)}
+as any binary string of the form
+\[
+\hat{\rho}^{\,t}_F
+=
+\langle (\iota_1,\hat{r}_1),\dots,(\iota_n,\hat{r}_n)\rangle.
+\]
+\end{definition}
+
+Effective area representations are the practical counterparts of area
+representations. They need not be correct or complete, because their
+components are only effective representations of the individual entities.
+Nevertheless, they encode the current representational state of the part of
+the area that is effectively known.
+
+\begin{proposition}
+Let \(A \subseteq E\) be a fixed research area. If \(t_1<t_2\), then
+\[
+\hat{A}^{\,t_1}\subseteq \hat{A}^{\,t_2}.
+\]
+\end{proposition}
+
+\begin{proof}
+By Proposition~3.8.2, the set \(\hat{E}^{\,t}\) of effectively known entities is
+monotone in time. Therefore
+\[
+\hat{A}^{\,t_1}
+=
+A\cap \hat{E}^{\,t_1}
+\subseteq
+A\cap \hat{E}^{\,t_2}
+=
+\hat{A}^{\,t_2}.
+\]
+\end{proof}
+
+This proposition states that, if the research area \(A\) is held fixed, the
+subset of its entities that are effectively known is expected to grow over
+time. Consequently, effective area representations may be progressively
+extended by incorporating newly available effective representations of
+entities that were previously unknown.
+
+\begin{proposition}
+Let \(A \subseteq E\) be a fixed research area, and let
+\(\hat{\rho}^{\,t_1}_{F_1}\) be an effective representation of a finite known
+subarea \(F_1\subseteq \hat{A}^{\,t_1}\). If \(t_1<t_2\), then there exists a finite
+set \(F_2\) such that
+\[
+F_1\subseteq F_2\subseteq \hat{A}^{\,t_2}
+\]
+and an effective representation \(\hat{\rho}^{\,t_2}_{F_2}\) extending
+\(\hat{\rho}^{\,t_1}_{F_1}\).
+\end{proposition}
+
+\begin{proof}
+Since \(\hat{A}^{\,t_1}\subseteq \hat{A}^{\,t_2}\), every entity in \(F_1\) remains
+effectively known at time \(t_2\). Let \(F_2\) be any finite subset of
+\(\hat{A}^{\,t_2}\) containing \(F_1\). For entities in \(F_1\), retain their
+previous tagged effective representations, and for entities in \(F_2\setminus
+F_1\), append newly available tagged effective representations. The resulting
+self-delimiting concatenation is an effective representation of \(F_2\) at time
+\(t_2\).
+\end{proof}
+
+The previous proposition formalizes the idea that scientific progress can be
+viewed as a gradual enrichment of area representations.
+
+However, this monotonicity concerns only the set of effectively known
+entities relative to a \emph{fixed} research area. In practice, the area itself may
+change over time.
+
+\begin{notation}
+If the membership of a research area changes with time, we write \(A^t\) for
+the set of entities regarded as belonging to the area at time \(t\).
+\end{notation}
+
+This distinction is important. As scientific understanding deepens, the very
+delimitation of an area may be revised. New entities may be incorporated
+because they are discovered to belong naturally to the area, while other
+entities may be removed because they are reclassified or shown to be
+irrelevant.
+
+For example, a research area may initially include only those entities that
+are directly observable within a given methodological framework. Later, the
+introduction of new theories or instruments may enlarge the area by adding
+previously inaccessible entities. Conversely, some entities once thought to
+belong to the area may later be abandoned as fictitious, misclassified, or
+scientifically unproductive. Thus, the time evolution of a research area has
+two distinct components: the growth of the effectively known subset of a
+fixed area, and the possible redefinition of the area itself.
+
+In summary, the representation of a research area is necessarily
+component-wise and finite. It is obtained by concatenating identifiable
+representations of individual entities. When all entities in a finite area are
+knowable, one may represent the whole area. When some entities are
+unknowable, only the knowable part can be represented. In practice, one
+works instead with effective area representations built from the currently
+available effective representations of the effectively known entities. These
+effective representations are expected to become richer over time, while the
+boundaries of the research area itself may also evolve as scientific knowledge
+progresses.
+
+%
 % Section: References
 %
 

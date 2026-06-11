@@ -20,13 +20,15 @@ Richard Feynman
 % Section: Descriptions
 %
 
-In Chapter \ref{chap:Representations} we addressed the problem of how to encode a possibly abstract entity as a finite string of symbols that preserves enough information about it to serve as an object of study; such a string was called a representation. But a representation alone is not sufficient for science. Although it may contain relevant information about the entity, it may still be too large, too irregular, or too unstructured to support explanation, prediction, or understanding. The next problem, therefore, is to find a short description that generates, explains, or approximates that representation. Descriptions allow us not merely to store or inspect a representation, but to do science with it: they isolate regularities, compress what can be made systematic, and provide an effective account from which reasoning and prediction can proceed.
+In Chapter \ref{chap:Representations} we addressed the problem of how to encode a possibly abstract entity as a finite string of symbols that preserves enough information to make the entity available for study. Such a string was called a \emph{representation}. A representation, however, is not yet enough for science. Even when it contains relevant information about the entity, it may still be too large, too irregular, or too unstructured to support explanation, prediction, or understanding. The next task is therefore to construct a description that generates, explains, or approximates that representation. Descriptions make it possible not merely to store or inspect a representation, but to do science with it: they capture regularities, compress what can be made systematic, and provide an effective basis for reasoning and prediction.
 
-In the theory of nescience, descriptions are treated as computable objects, as procedures that effectively produce an output representation. This requirement is essential. It excludes purely informal or self-referential descriptions that may be suggestive philosophically but cannot be executed or checked mechanically. By grounding descriptions in computability, the theory of nescience places scientific explanation within a framework in which descriptions can be compared, transformed, and analyzed with mathematical precision.
+In the theory of nescience, descriptions are treated as computable objects: finite strings that encode procedures capable of producing an output representation. This requirement is essential. It excludes purely informal, ambiguous, or self-referential descriptions that may be suggestive from a philosophical point of view but cannot be executed or checked mechanically. By grounding descriptions in computability, the theory places scientific explanation within a framework in which descriptions can be compared, transformed, and analyzed with mathematical precision.
 
-Some descriptions are shorter than others, and this leads to the notion of minimal descriptions. Some are those currently used in practice, even if they are not optimal, which motivates the notion of effective descriptions. Descriptions may also be restricted to particular model classes, reflecting the fact that in real scientific work we rarely search over all conceivable descriptions, but rather over families such as linear models, differential equations, or neural networks. The chapter also studies basic operations on descriptions, such as augmentation and reduction, which formalize the ways in which descriptions may be refined, enriched, or simplified.
+Not every computable string qualifies equally as a scientific description. A \emph{valid description} is one that encodes a computation that produces a representation. Among the valid descriptions of a given representation, some may be shorter than others. This leads to the notion of a \emph{minimal description}, namely, a description of shortest possible length for that representation. Minimal descriptions play a central theoretical role, since they capture the smallest amount of information needed to reconstruct the representation. In practice, however, such optimal descriptions are generally unknown and cannot be identified effectively. For this reason, scientific work proceeds instead with \emph{effective descriptions}: descriptions that are actually available and used in a given scientific context, even though they need not be minimal and may even fail to generate the intended representation exactly.
 
-Whereas the chapter on representations focused on how entities are encoded, the present chapter focuses on how those encodings are modeled. It is here that the theory of nescience moves from the problem of representing the world to the problem of explaining those representations through effective and computable descriptions.
+Descriptions may also be restricted to particular families, reflecting the fact that in real scientific work we rarely search over the entire space of conceivable descriptions. Instead, we usually work within structured classes such as linear models, systems of differential equations, decision trees, or neural networks. In this setting, a description may be understood as consisting of two parts: a structural component, which captures the regularities present in the representation, and an input component, which provides the remaining information needed for reconstruction. When the structural component is restricted to a given family, the resulting descriptions correspond to what scientists ordinarily call \emph{models}. The chapter also studies basic operations on descriptions, such as augmentation and reduction, which formalize the ways in which descriptions may be refined, enriched, or simplified.
+
+Whereas the chapter on representations focused on how entities are encoded, the present chapter focuses on how those encodings are modeled. It is at this point that the theory of nescience moves from the problem of representing entities to the problem of explaining their representations through valid, minimal, and effective descriptions, and through the model classes used in scientific practice.
 
 %
 % Section: Valid Descriptions
@@ -35,14 +37,18 @@ Whereas the chapter on representations focused on how entities are encoded, the 
 \section{Valid Descriptions}
 \label{sec:descriptions_models}
 
-A description is intended to capture a representation in computable form. Intuitively, it consists of two parts: a Turing machine, which encodes the regularities present in the representation, and an input string, which supplies the remaining information needed to produce it. In this way, the Turing machine captures the compressible structure, while the input string accounts for what is left unspecified.
+A description is intended to capture a representation in a form that can support explanation, prediction, and further reasoning. By replacing an unstructured string with a computable account of how that string is produced, descriptions make it possible to study representations as scientific objects rather than merely to record them.
 
-\begin{definition}[Valid description]
+Intuitively, a description consists of two parts: a Turing machine, which encodes the regularities present in the representation, and an input string, which supplies the remaining information needed to produce it. In this way, the Turing machine captures the compressible structure, while the input string accounts for what is left unspecified.
+
+\begin{definition}
 \label{def:description_model}
 Let $d \in \mathcal{B}^\ast$ be a binary string of the form $d = \langle TM, a \rangle$, where $TM$ is the encoding of a prefix-free Turing machine and $a \in \mathcal{B}^\ast$ is an input string. If $TM(a)\downarrow$, then we say that $d$ is a \emph{valid description}\index{Valid description}.
 \end{definition}
 
 From an ontological point of view, descriptions are finite strings that satisfy an additional requirement: they must encode a computation that halts. Thus, descriptions are not arbitrary symbolic objects, but effective procedures for producing strings.
+
+This computational requirement has important advantages. First, it excludes purely informal, ambiguous, or metaphorical descriptions that may suggest an interpretation but do not determine any definite procedure. Second, it makes descriptions mechanically checkable: in principle, one can execute the encoded computation and verify the resulting output. Third, it allows descriptions to be compared in a mathematically precise way, for example by their length, their structure, or the transformations that relate one description to another. In this way, computable descriptions provide a rigorous foundation for scientific modeling, since they turn the problem of explanation into the study of explicit procedures rather than of arbitrary symbolic expressions.
 
 The following definition specifies the set of all valid descriptions, that is, the ser of finite binary strings that encode a computable procedure together with an input on which it halts.
 
@@ -54,6 +60,8 @@ We define the \emph{set of descriptions}\index{Set of descriptions}, denoted by 
 \]
 \end{definition}
 
+Only strings belonging to $\mathcal{D}$ will be considered descriptions in the theory of nescience.
+
 Once the global set of descriptions has been fixed, we can restrict attention to those descriptions that generate a given representation. This allows us to associate descriptions directly with individual representations.
 
 \begin{definition}
@@ -63,6 +71,8 @@ Let $r \in \mathcal{R}$ be a representation. We define the \emph{set of descript
 \mathcal{D}_r = \left\{ d=\langle TM,a\rangle \in \mathcal{D} : TM(a)=r \right\}.
 \]
 \end{definition}
+
+The set $\mathcal{D}_r$ is important because it contains all the exact descriptions of the representation $r$. It therefore characterizes the full descriptive variability associated with $r$: different elements of $\mathcal{D}_r$ may encode the same representation by means of different procedures and with different amounts of information. This makes $\mathcal{D}_r$ the natural reference set for studying optimality and excess in description, since any shortest or most economical description of $r$ must belong to $\mathcal{D}_r$.
 
 Since a description produces a unique output whenever the computation halts, the sets of descriptions associated with distinct representations are disjoint.
 
@@ -81,7 +91,11 @@ d=\langle TM,a\rangle \in \mathcal{D}_{r_1}\cap \mathcal{D}_{r_2}.
 By definition of $\mathcal{D}_{r_1}$, we have $TM(a)=r_1$, and by definition of $\mathcal{D}_{r_2}$, we also have $TM(a)=r_2$. Since $TM$ is deterministic, the computation on input $a$ has a unique output. Hence $r_1=r_2$, contradicting the assumption that $r_1\neq r_2$.
 \end{proof}
 
-More generally, we may consider all descriptions that generate some representation of a given entity. In this way, the notion of description is lifted from individual representations to the entities they represent.
+This proposition shows that the sets \(\mathcal{D}_r\) are pairwise disjoint. Therefore, any valid description whose output is a representation in \(\mathcal{R}\) is associated with exactly one representation. This makes it possible to classify descriptions according to their output and to study each representation through its own set of descriptions, independently of the others.
+
+It is important to note, however, that not every description in \(\mathcal{D}\) must necessarily generate a string belonging to \(\mathcal{R}\). A valid description is only required to encode a halting computation, and its output may be an arbitrary binary string. Thus, the sets \(\mathcal{D}_r\) do not partition the whole set \(\mathcal{D}\), but only the subset of descriptions whose outputs are representations in \(\mathcal{R}\).
+
+We can generalize and consider all descriptions that generate some representation of a given entity. In this way, the notion of description is lifted from individual representations to the entities they represent.
 
 \begin{definition}
 \label{def:descriptions_for_entity}
@@ -91,7 +105,9 @@ Let $e \in \mathcal{E}$ be an entity. We define the \emph{set of valid descripti
 \]
 \end{definition}
 
-The previous definition can be expressed more transparently in terms of the sets $\mathcal{D}_r$ associated with the representations of $e$.
+The set $\mathcal{D}_e$ collects all valid descriptions that generate some representation of the entity $e$. Unlike the sets $\mathcal{D}_r$, which are tied to a single representation, the set $\mathcal{D}_e$ brings together all the different ways in which the same entity may be described through possibly different representations. In this sense, $\mathcal{D}_e$ characterizes the descriptive variability of the entity itself, rather than of any one particular encoding.
+
+By definition, $\mathcal{D}_e$ is the union of the sets $\mathcal{D}_r$ over all representations $r \in \mathcal{R}_e$. It therefore provides the natural domain for studying descriptions at the level of the entity, especially in situations where the entity admits multiple representations and, correspondingly, multiple families of descriptions.
 
 \begin{proposition}
 \label{prop:descriptions_entity_union}
@@ -102,9 +118,7 @@ For every entity $e \in \mathcal{E}$,
 \end{proposition}
 
 \begin{proof}
-We prove both inclusions.
-
-First, let $d \in \mathcal{D}_e$. By Definition \ref{def:descriptions_for_entity}, there exists some $r \in \mathcal{R}_e$ such that $TM(a)=r$. By Definition \ref{def:descriptions_for_representation}, this implies that $d \in \mathcal{D}_r$. Hence
+We prove both inclusions. First, let $d \in \mathcal{D}_e$. By Definition \ref{def:descriptions_for_entity}, there exists some $r \in \mathcal{R}_e$ such that $TM(a)=r$. By Definition \ref{def:descriptions_for_representation}, this implies that $d \in \mathcal{D}_r$. Hence
 \[
 d \in \bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
 \]
@@ -128,15 +142,13 @@ Combining both inclusions gives
 \]
 \end{proof}
 
-The next result shows that an entity has descriptions exactly when it has representations.
+The next proposition makes explicit the relation between representation and description at the level of entities. Descriptions are defined only through the representations they generate, so the existence of valid descriptions for an entity is equivalent to the existence of representations of that entity. In this sense, the descriptive layer of the theory does not extend beyond the representational one, but presupposes it.
 
 \begin{proposition}
 \label{prop:descriptions_entity_empty_iff_repr_empty}
 For every entity $e \in \mathcal{E}$,
 \[
-\mathcal{D}_e=\varnothing
-\quad\Longleftrightarrow\quad
-\mathcal{R}_e=\varnothing.
+\mathcal{D}_e = \varnothing \quad\Longleftrightarrow\quad \mathcal{R}_e = \varnothing.
 \]
 \end{proposition}
 
@@ -149,39 +161,53 @@ First, assume that $\mathcal{R}_e=\varnothing$. Then, by Proposition \ref{prop:d
 Conversely, assume that $\mathcal{D}_e=\varnothing$. Suppose, for contradiction, that $\mathcal{R}_e\neq\varnothing$. Then there exists some $r\in \mathcal{R}_e$. Since $r$ is a finite binary string, there exists a prefix-free Turing machine that ignores its input and prints $r$, then halts. Let $d=\langle TM,a\rangle$ be the encoding of such a machine together with any admissible input $a$. Then $d\in\mathcal{D}$ and $TM(a)=r$, so $d\in\mathcal{D}_r\subseteq\mathcal{D}_e$, contradicting $\mathcal{D}_e=\varnothing$. Therefore, $\mathcal{R}_e=\varnothing$.
 \end{proof}
 
+This proposition links the existence of descriptions to the representability of entities. In particular, if an entity is unknowable, in the sense that it admits no representations, then it also admits no valid descriptions. Conversely, whenever an entity is representable, it also becomes describable, since any of its representations may be produced by at least one valid description. Thus, at the level of entities, describability and representability coincide: the boundary between describable and undescribable entities is the same as the boundary between knowable and unknowable entities.
+
 In some cases, a description may also qualify as a representation, namely when it is accepted by the oracle as encoding an entity. In this sense, there may exist descriptions that describe other descriptions. In practice, however, it is not advisable to use descriptions as representations of entities. A useful representation should preserve as much relevant detail about the original entity as possible, whereas a description is designed to provide a concise computational account of a representation. Replacing representations with descriptions would therefore make the task of scientific discovery considerably harder.
 
-The set of descriptions associated with an entity is not arbitrary from a computability-theoretic point of view. In fact, it can be effectively enumerated.
+The set of descriptions associated with an entity is not arbitrary from a computability-theoretic point of view. Under a mild effectiveness assumption on the set of representations of the entity, the corresponding set of descriptions can also be effectively enumerated.
 
 \begin{proposition}
 \label{prop:De_recursively_enumerable}
-For every entity $e \in \mathcal{E}$, the set $\mathcal{D}_e$ is recursively enumerable.
+Let \(e \in \mathcal{E}\). If the set \(\mathcal{R}_e\) is recursively enumerable, then the set \(\mathcal{D}_e\) is recursively enumerable.
 \end{proposition}
-
 \begin{proof}
 By Proposition \ref{prop:descriptions_entity_union},
 \[
 \mathcal{D}_e=\bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
 \]
-Fix $r\in\mathcal{R}_e$. The set $\mathcal{D}_r$ is recursively enumerable: one can enumerate all binary strings $d$, interpret each of them as a candidate pair $\langle TM,a\rangle$, simulate $TM(a)$ by dovetailing, and output $d$ whenever the computation halts with value $r$.
 
-Since $\mathcal{R}_e \subseteq \mathcal{B}^\ast$ is a set of finite strings, it is at most countable. Therefore, $\mathcal{D}_e$ is a countable union of recursively enumerable sets. Such a union is recursively enumerable: one can dovetail the enumerations of all sets $\mathcal{D}_r$ with $r\in\mathcal{R}_e$ and output every description that appears in one of them. Hence $\mathcal{D}_e$ is recursively enumerable.
+Fix \(r\in\mathcal{R}_e\). The set \(\mathcal{D}_r\) is recursively enumerable: one can enumerate all binary strings \(d\), interpret each of them as a candidate pair \(\langle TM,a\rangle\), simulate \(TM(a)\) by dovetailing, and output \(d\) whenever the computation halts with value \(r\).
+
+Now assume that \(\mathcal{R}_e\) is recursively enumerable. Then one can enumerate its elements
+\[
+r_1,r_2,r_3,\ldots
+\]
+and, for each \(r_i\), run in parallel the corresponding enumeration of \(\mathcal{D}_{r_i}\). By dovetailing these enumerations, every description belonging to some \(\mathcal{D}_{r_i}\) will eventually be produced. Therefore, one obtains an effective enumeration of
+\[
+\bigcup_{r\in\mathcal{R}_e}\mathcal{D}_r = \mathcal{D}_e.
+\]
+Hence \(\mathcal{D}_e\) is recursively enumerable.
 \end{proof}
 
-Since each valid description determines exactly one output string, it is natural to define a function that maps descriptions to the representations they produce. Because descriptions encode Turing machines together with their inputs, this mapping can be implemented by a universal Turing machine. Thus, not only are individual descriptions computable objects, but the operation that sends a description to its output is computable as well.
+This proposition has an important practical implication. Whenever the set \(\mathcal{R}_e\) can be effectively enumerated, the corresponding descriptions of the entity can also be searched effectively, at least in principle. That is, one may systematically generate candidate descriptions of the entity and test their properties. This does not solve the problem of finding good or minimal descriptions, but it shows that the search space is not completely inaccessible from a computability-theoretic point of view.
+
+A final and particularly important point is that, since each valid description determines exactly one output string, it is natural to define a function that maps descriptions to the representations they produce. Because descriptions encode Turing machines together with their inputs, this mapping can be implemented by a universal Turing machine. Thus, not only are individual descriptions computable objects, but the operation that sends a description to its output is computable as well.
 
 \begin{definition}
 \label{def:description_function}
-We call a \emph{description function}\index{Description function}, denoted by $\gamma$, a universal Turing machine
+We call a \emph{description function}\index{Description function}, denoted by $\Gamma$, a universal Turing machine
 \[
-\gamma : \mathcal{D}\to \mathcal{B}^\ast
+\Gamma : \mathcal{D}\to \mathcal{B}^\ast
 \]
 that halts on all inputs in $\mathcal{D}$ and maps each description to the representation it generates.
 \end{definition}
 
+\noindent
+
 If $d=\langle TM,a\rangle$ is a description of the representation $r$, then by definition
 \[
-\gamma(d)=\gamma(\langle TM,a\rangle)=TM(a)=r.
+\Gamma(d)=\Gamma(\langle TM,a\rangle)=TM(a)=r.
 \]
 Hence the description function provides the canonical computable map from valid descriptions to the representations they produce.
 
@@ -191,65 +217,80 @@ Hence the description function provides the canonical computable map from valid 
 
 \section{Minimal Descriptions}
 
-Inspired by the principle of Occam's razor\index{Occam's razor principle}\footnote{The Occam's razor principle refers to the number of assumptions in an explanation, not to the length of the explanation itself.}, if two explanations are equivalent, we should prefer the shorter one. Accordingly, the limit of what can be known, or understood, about a representation, that is, its minimal model, is given by the shortest description that allows us to reconstruct that representation.
+Inspired by the principle of Occam's razor\index{Occam's razor principle}\footnote{Occam's razor concerns the number of assumptions required by an explanation, not merely the number of symbols used to express it.}, if two explanations are equally successful in reconstructing a representation, we should in general prefer the shorter one. The reason is not only aesthetic economy. Shorter descriptions tend to be easier to understand, since they isolate the essential regularities of the representation without obscuring them under unnecessary detail. They are also easier to manipulate in practice: from a shorter and more structured model, it is usually simpler to derive consequences, formulate predictions, compare alternative explanations, and detect which assumptions are actually doing the explanatory work. By contrast, excessively long descriptions may reproduce the representation correctly while still hiding its structure behind redundancy, ad hoc clauses, or irrelevant complexity.
+
+For this reason, shortness plays a central role in the theory of nescience. A representation may admit many valid descriptions, but not all of them are equally informative from a scientific point of view. Some may reconstruct the representation only at the price of introducing superfluous structure, while others may capture the same content more economically. This motivates the relevance of minimal descriptions. A minimal description of a representation is, by definition, a shortest valid description that reconstructs it. In this sense, minimal descriptions mark the limit of what can be known, or understood, about a representation through description: once a shortest description has been reached, no further compression is possible without losing the ability to reconstruct the representation. Minimal descriptions therefore provide a natural theoretical ideal of scientific understanding, even if in practice they are typically unknown and must be approximated by the effective models actually available.
 
 \begin{definition}
 \label{def:descriptions_perfect_model}
 Let $\mathcal{D}_r$ be the set of descriptions of a representation $r \in \mathcal{R}$, and let $d \in \mathcal{D}_r$ be a description of $r$. We say that $d$ is a \emph{minimal description}\index{Minimal description} of the representation $r$ if there is no other description $d' \in\mathcal{D}_r$ such that $l(d') < l(d)$.
 \end{definition}
 
-Recall that what we know about an entity $e$ depends on the quality of the representation $r$ used. If the representation $r$ is incorrect, we cannot achieve perfect knowledge of $e$, even if we have found the perfect description $d$ for $r$.
+Recall that what we know about an entity $e$ depends on the quality of the representation $r$ used. A minimal description is defined only relative to a given representation: it is the shortest valid description that reconstructs $r$. Therefore, even if we find a minimal description of $r$, this does not guarantee perfect knowledge of $e$. If the representation \(r\) is incorrect, incomplete, or otherwise defective, then the best possible description of $r$ will still inherit those representational limitations. Thus, perfect knowledge of an entity requires not only a minimal description, but also an admissible representation.
 
 \begin{notation}
 We denote by $d_r^{\star}$ the fact that the description $d$ is a minimal description of the representation $r$.
 \end{notation}
 
-The minimal description of a representation may not be unique; that is, there could be multiple optimal ways to compute $r$.
+In general, the minimal description of a representation need not be unique. A given representation \(r\) may admit several distinct descriptions of the same shortest length, corresponding to different but equally economical ways of reconstructing it. This non-uniqueness is not exceptional: different Turing machines, different encodings of the same computational strategy, or different decompositions between regularities and residual input may all yield descriptions that are optimal in length.
+
+For this reason, it is useful to consider not just one minimal description, but the full collection of all optimal descriptions of \(r\). This set captures the entire class of shortest valid descriptions associated with the representation and provides the natural reference point for later notions such as descriptive deficiency, surplus, and mismodel.
 
 \begin{definition}
 \label{def:set_descriptions_perfect_model}
-Let $\mathcal{D}_r$ be the set of descriptions of a representation $r \in \mathcal{R}_\mathcal{E}$. We define the \emph{set of minimal descriptions} for $r$, denoted by $\mathcal{D}^\star_r$, as the subset of $\mathcal{D}_r$ consisting of all minimal descriptions of $r$.
+Let $\mathcal{D}_r$ be the set of descriptions of a representation $r \in \mathcal{R}_{\mathcal{E}}$. We define the \emph{set of minimal descriptions}\index{Set of minimal descriptiosn} for $r$, denoted by $\mathcal{D}^\star_r$, as the subset of $\mathcal{D}_r$ consisting of all minimal descriptions of $r$.
 \end{definition}
+
+That is, \(\mathcal{D}^\star_r\) contains precisely those descriptions in \(\mathcal{D}_r\) having minimum length.
 
 Unfortunately, the set of minimal descriptions of a representation is generally unknown, and as Proposition \ref{prop:nescience-kolmogorov} shows, there exists no algorithm to compute it. In practice, we must rely on approximations to estimate how far our current best description is from a minimal one, that is, to quantify how much we do not know about a particular representation of an entity (see Chapter \ref{chap:Surfeit}).
 
 \begin{proposition}
 \label{prop:nescience-kolmogorov}
-Let $r \in \mathcal{B}^\ast$ be a representation and let $d_r^{\star}$ be a minimal description of $r$. Then we have $l \left( d_r^{\star} \right) = K\left( r \right)$.
+Let $r \in \mathcal{R}$ be a representation and let $d_r^{\star}$ be a minimal description of $r$. Then we have $l \left( d_r^{\star} \right) = K\left( r \right)$.
 \end{proposition}
 \begin{proof}
 Apply Definition \ref{def:Kolmogorov-Complexity} and note that the Turing machines $TM$ used in descriptions of the form $\langle TM, a \rangle$ are required to be prefix-free.
 \end{proof}
 
-The actual length of a description $l(d)$ for a representation $r$ depends on the specific encoding of Turing machines used. This encoding method is determined by the chosen description function $\delta$. Fortunately, if we replace our description function with a different one, the length of perfect descriptions remains essentially unchanged, up to an additive constant that does not depend on the representation itself.
+The actual length of a description $l(d)$ for a representation $r$ depends on the specific encoding of Turing machines used. This encoding method is determined by the chosen description function $\Gamma$. Fortunately, if we replace our description function with a different one, the length of perfect descriptions remains essentially unchanged, up to an additive constant that does not depend on the representation itself.
 
 \begin{corollary}
-Let $r \in \mathcal{R}$ be a representation, and let $\delta$ and $\dot{\delta}$ be two different description functions. Let $d_r^{\star}$ be a minimal description of $r$ under $\delta$, and $\dot{d}_r^{\star}$ a minimal description under $\dot{\delta}$. Then $\mid l \left( d_r^{\star} \right) - l \left( \dot{d}_r^{\star} \right) \mid \leq c$, where $c$ is a constant that does not depend on $r$.
+Let $r \in \mathcal{R}$ be a representation, and let $\Gamma$ and $\dot{\Gamma}$ be two different description functions. Let $d_r^{\star}$ be a minimal description of $r$ under $\Gamma$, and $\dot{d}_r^{\star}$ a minimal description under $\dot{\Gamma}$. Then $\mid l \left( d_r^{\star} \right) - l \left( \dot{d}_r^{\star} \right) \mid \leq c$, where $c$ is a constant that does not depend on $r$.
 \end{corollary}
 \begin{proof}
 Apply Proposition \ref{prop:nescience-kolmogorov} and Theorem \ref{def:Invariance-theorem}.
 \end{proof}
 
-In practice, within the theory of nescience, we are often not interested in computing the exact numerical value of the nescience associated with an entity for a given description–representation pair. Rather, our goal is to determine a weaker but sufficient notion: the relative ordering of different pairs of descriptions and representations according to their nescience. From this perspective, the specific details of the universal Turing machine used to compute description lengths are not essential\footnote{Do not confuse the internal workings of the universal Turing machine that maps descriptions to representations, which are not of interest here, with the internal workings of the universal oracle Turing machine that maps representations to entities, which are of interest, as understanding this mechanism is crucial to understanding how things work.}. Accordingly, for the remainder of this book we assume that the description function $\delta$ is fixed to a reference universal Turing machine. Alternatively, the reader may interpret all theorems in this book involving the length of the shortest models as holding up to an additive constant that does not depend on the topics themselves.
+In practice, within the theory of nescience, we are often not interested in computing the exact numerical value of the nescience associated with an entity for a given description–representation pair. Rather, our goal is to determine a weaker but sufficient notion: the relative ordering of different pairs of descriptions and representations according to their nescience. From this perspective, the specific details of the universal Turing machine used to compute description lengths are not essential\footnote{Do not confuse the internal workings of the universal Turing machine $\Gamma$ that maps descriptions to representations, which are not of interest here, with the internal workings of the universal oracle Turing machine $\delta$ that maps representations to entities, which are of interest, as understanding this mechanism is crucial to understanding how things work.}. Accordingly, for the remainder of this book we assume that the description function $\Gamma$ is fixed to a reference universal Turing machine. Alternatively, the reader may interpret all theorems in this book involving the length of the shortest models as holding up to an additive constant that does not depend on the topics themselves.
 
-A remarkable consequence of Proposition \ref{prop:nescience-kolmogorov} is that minimal descriptions must be incompressible.
+A central consequence of Proposition \ref{prop:nescience-kolmogorov} is that minimal descriptions are not only shortest among all valid descriptions of a representation, but also algorithmically irreducible as strings in their own right. This fact is one of the key elements of the theory of nescience, because it connects scientific understanding with incompressibility: once a representation has been described in an optimal way, the resulting description cannot itself be simplified any further, except by a fixed additive constant.
 
-\begin{corollary}
-Let $d_r^{\star}$ be a minimal description of a representation $r$. Then $d_r^{\star}$ is incompressible, in the sense that
+\begin{theorem}
+\label{th:perfect_incompressible}
+Let \(d_r^{\star}\) be a minimal description of a representation \(r\). Then \(d_r^{\star}\) is incompressible, in the sense that
 \[
 K\!\left(d_r^{\star}\right) \geq l\!\left(d_r^{\star}\right) - c,
 \]
-for some constant $c$ independent of $r$.
-\end{corollary}
+for some constant \(c\) independent of \(r\).
+\end{theorem}
 \begin{proof}
-By Proposition \ref{prop:nescience-kolmogorov}, the length of a perfect description satisfies
+By Proposition \ref{prop:nescience-kolmogorov}, the length of a minimal description satisfies
 \[
 l\!\left(d_r^{\star}\right) = K(r),
 \]
-up to an additive constant fixed by the choice of universal Turing machine. Suppose that $d_r^{\star}$ were compressible, that is, that there existed a description of $d_r^{\star}$ of length strictly smaller than $l(d_r^{\star}) - c$, for arbitrarily large $c$. Then this shorter description could be used to construct a description of $r$ shorter than $d_r^{\star}$, contradicting the minimality of $d_r^{\star}$ as a perfect description. Hence, $d_r^{\star}$ must be incompressible.
+up to an additive constant fixed by the choice of universal Turing machine. Suppose that \(d_r^{\star}\) were compressible, that is, that
+\[
+K\!\left(d_r^{\star}\right) < l\!\left(d_r^{\star}\right) - c
+\]
+for arbitrarily large \(c\). Then there would exist a program strictly shorter than \(d_r^{\star}\) that outputs \(d_r^{\star}\). By composing this program with a fixed universal procedure that, given \(d_r^{\star}\), executes the description and outputs \(r\), one would obtain a description of \(r\) shorter than \(d_r^{\star}\), contradicting the minimality of \(d_r^{\star}\). Therefore, \(d_r^{\star}\) must be incompressible up to an additive constant.
 \end{proof}
 
-The converse does not generally hold: a description can be random without being the shortest possible one (incompressibility does not imply minimality). That is, we may have a description $d$ of a representation $r$ such that $l(d) = K(d)$, yet $l(d_r^{\star}) < l(d)$.
+The significance of this corollary is substantial. It shows that minimal descriptions represent a limit of scientific understanding: once such a description has been reached, no further shortening is possible without losing the ability to reconstruct the representation. In this sense, a minimal description contains no dispensable structure. It also clarifies why minimal descriptions are theoretically so important in the theory of nescience. They do not merely provide the shortest way of generating a representation; they mark the point at which explanatory compression has been exhausted.
+
+This result also explains the deep connection between perfect knowledge and randomness that underlies the theory. A minimal description is not random in the everyday sense of being meaningless or patternless, but it is random in the precise algorithmic sense of being incompressible. Thus, when scientific understanding reaches its ideal limit, the corresponding description can no longer be shortened: it becomes algorithmically irreducible. This is one of the reasons why the theory of nescience identifies the frontier of perfect understanding with incompressibility.
+
+The converse of Theorem \ref{th:perfect_incompressible} does not generally hold: a description can be random without being the shortest possible one (incompressibility does not imply minimality). That is, we may have a description $d$ of a representation $r$ such that $l(d) = K(d)$, yet $l(d_r^{\star}) < l(d)$.
 
 \begin{example}
 \label{ex:description_neural}
@@ -262,6 +303,47 @@ The concept of a minimal description can be generalized from individual represen
 \label{def:entities_perfect_model}
 Let $\mathcal{D}_e$ be the set of descriptions of an entity $e \in \mathcal{E}$. We define the \emph{set of perfect descriptions} of the entity $e$, denoted by $\mathcal{D}^\star_e$, as the subset of $\mathcal{D}_e$ consisting of perfect descriptions. The elements of $\mathcal{D}^\star_e$ are denoted by $d^\star_e$.
 \end{definition}
+
+The following proposition shows that the perfect descriptions of an entity are exactly the perfect descriptions of its representations.
+
+\begin{proposition}
+\label{prop:descriptions_entity_union}
+For every entity \(e \in \mathcal{E}\),
+\[
+\mathcal{D}^\star_e=\bigcup_{r\in \mathcal{R}_e}\mathcal{D}^\star_r.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition, a description \(d\) belongs to \(\mathcal{D}_e^\star\) if and only if \(d\) is a perfect description of the entity \(e\). This means that \(d\) is a perfect description of some representation \(r \in \mathcal{R}_e\). Therefore, there exists \(r \in \mathcal{R}_e\) such that
+\[
+d \in \mathcal{D}_r^\star.
+\]
+Hence,
+\[
+\mathcal{D}_e^\star \subseteq \bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r^\star.
+\]
+
+Conversely, suppose that
+\[
+d \in \bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r^\star.
+\]
+Then there exists some \(r \in \mathcal{R}_e\) such that \(d \in \mathcal{D}_r^\star\). By definition, \(d\) is a perfect description of the representation \(r\). Since \(r\) is a representation of \(e\), it follows that \(d\) is a perfect description of the entity \(e\), and therefore
+\[
+d \in \mathcal{D}_e^\star.
+\]
+Thus,
+\[
+\bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r^\star \subseteq \mathcal{D}_e^\star.
+\]
+
+Combining both inclusions, we conclude that
+\[
+\mathcal{D}^\star_e=\bigcup_{r\in \mathcal{R}_e}\mathcal{D}^\star_r.
+\]
+\end{proof}
+
+This proposition makes explicit that perfect descriptions of an entity are always mediated by its representations. In particular, if an entity admits several representations, then its set of perfect descriptions is obtained by collecting the perfect descriptions associated with each of them. Thus, as in the case of valid descriptions, the descriptive study of an entity is organized through the representations by which that entity is encoded.
 
 If $d^\star_e \in \mathcal{D}^\star_e$ there must exist a representation $r \in \mathcal{R}^\star_e$ such that $d^\star_e \in \mathcal{D}^\star_r$.
 

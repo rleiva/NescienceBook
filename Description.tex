@@ -24,7 +24,7 @@ In Chapter \ref{chap:Representations} we addressed the problem of how to encode 
 
 In the theory of nescience, descriptions are treated as computable objects: finite strings that encode procedures capable of producing an output representation. This requirement is essential. It excludes purely informal, ambiguous, or self-referential descriptions that may be suggestive from a philosophical point of view but cannot be executed or checked mechanically. By grounding descriptions in computability, the theory places scientific explanation within a framework in which descriptions can be compared, transformed, and analyzed with mathematical precision.
 
-Not every computable string qualifies equally as a scientific description. A \emph{valid description} is one that encodes a computation that produces a representation. Among the valid descriptions of a given representation, some may be shorter than others. This leads to the notion of a \emph{minimal description}, namely, a description of shortest possible length for that representation. Minimal descriptions play a central theoretical role, since they capture the smallest amount of information needed to reconstruct the representation. In practice, however, such optimal descriptions are generally unknown and cannot be identified effectively. For this reason, scientific work proceeds instead with \emph{effective descriptions}: descriptions that are actually available and used in a given scientific context, even though they need not be minimal and may even fail to generate the intended representation exactly.
+Not every computable string qualifies equally as a scientific description. A \emph{valid description} is one that encodes a computation that produces a representation. Among the valid descriptions of a given representation, some may be shorter than others. This leads to the notion of a \emph{minimal description}, namely, a description of shortest possible length for that representation. Minimal descriptions play a central theoretical role, since they capture the smallest amount of information needed to reconstruct the representation. In practice, however, such optimal descriptions are generally unknown and cannot be identified effectively. For this reason, scientific work proceeds instead with \emph{extended descriptions}: descriptions that are actually available and used in a given scientific context, even though they need not be minimal and may even fail to generate the intended representation exactly.
 
 Descriptions may also be restricted to particular families, reflecting the fact that in real scientific work we rarely search over the entire space of conceivable descriptions. Instead, we usually work within structured classes such as linear models, systems of differential equations, decision trees, or neural networks. In this setting, a description may be understood as consisting of two parts: a structural component, which captures the regularities present in the representation, and an input component, which provides the remaining information needed for reconstruction. When the structural component is restricted to a given family, the resulting descriptions correspond to what scientists ordinarily call \emph{models}. The chapter also studies basic operations on descriptions, such as augmentation and reduction, which formalize the ways in which descriptions may be refined, enriched, or simplified.
 
@@ -54,7 +54,7 @@ The following definition specifies the set of all valid descriptions, that is, t
 
 \begin{definition}
 \label{def:set_of_descriptions}
-We define the \emph{set of descriptions}\index{Set of descriptions}, denoted by $\mathcal{D}$, as
+We define the \emph{set of valid descriptions}\index{Set of valid descriptions}, denoted by $\mathcal{D}$, as
 \[
 \mathcal{D} = \left\{ d \in \mathcal{B}^\ast : d = \langle TM,a\rangle \ \wedge\ TM(a)\downarrow \right\}.
 \]
@@ -62,17 +62,17 @@ We define the \emph{set of descriptions}\index{Set of descriptions}, denoted by 
 
 Only strings belonging to $\mathcal{D}$ will be considered descriptions in the theory of nescience.
 
-Once the global set of descriptions has been fixed, we can restrict attention to those descriptions that generate a given representation. This allows us to associate descriptions directly with individual representations.
+Once the global set of descriptions has been fixed, we can restrict attention to those descriptions that perfectly reproduce a given representation. This allows us to associate descriptions directly with individual representations.
 
 \begin{definition}
 \label{def:descriptions_for_representation}
-Let $r \in \mathcal{R}$ be a representation. We define the \emph{set of descriptions for $r$}\index{Set of descriptions for a representation}, denoted by $\mathcal{D}_r$, as
+Let $r \in \mathcal{R}$ be a representation. We define the \emph{set of exact descriptions for $r$}\index{Set of exact descriptions for a representation}, denoted by $\bar{\mathcal{D}}_r$, as
 \[
-\mathcal{D}_r = \left\{ d=\langle TM,a\rangle \in \mathcal{D} : TM(a)=r \right\}.
+\bar{\mathcal{D}}_r = \left\{ d=\langle TM,a\rangle \in \mathcal{D} : TM(a)=r \right\}.
 \]
 \end{definition}
 
-The set $\mathcal{D}_r$ is important because it contains all the exact descriptions of the representation $r$. It therefore characterizes the full descriptive variability associated with $r$: different elements of $\mathcal{D}_r$ may encode the same representation by means of different procedures and with different amounts of information. This makes $\mathcal{D}_r$ the natural reference set for studying optimality and excess in description, since any shortest or most economical description of $r$ must belong to $\mathcal{D}_r$.
+The set $\bar{\mathcal{D}}_r$ is important because it contains all the exact descriptions of the representation $r$. It therefore characterizes the full descriptive variability associated with $r$: different elements of $\bar{\mathcal{D}}_r$ may encode the same representation by means of different procedures and with different amounts of information. This makes $\bar{\mathcal{D}}_r$ the natural reference set for studying optimality and excess in description, since any shortest or most economical description of $r$ must belong to $\bar{\mathcal{D}}_r$.
 
 Since a description produces a unique output whenever the computation halts, the sets of descriptions associated with distinct representations are disjoint.
 
@@ -80,88 +80,88 @@ Since a description produces a unique output whenever the computation halts, the
 \label{prop:disjoint_descriptions_of_representations}
 Let $r_1,r_2 \in \mathcal{R}$ with $r_1 \neq r_2$. Then
 \[
-\mathcal{D}_{r_1}\cap \mathcal{D}_{r_2}=\varnothing.
+\bar{\mathcal{D}}_{r_1}\cap \bar{\mathcal{D}}_{r_2}=\varnothing.
 \]
 \end{proposition}
 \begin{proof}
 Suppose, for contradiction, that there exists a description
 \[
-d=\langle TM,a\rangle \in \mathcal{D}_{r_1}\cap \mathcal{D}_{r_2}.
+d=\langle TM,a\rangle \in \bar{\mathcal{D}}_{r_1} \cap \bar{\mathcal{D}}_{r_2}.
 \]
-By definition of $\mathcal{D}_{r_1}$, we have $TM(a)=r_1$, and by definition of $\mathcal{D}_{r_2}$, we also have $TM(a)=r_2$. Since $TM$ is deterministic, the computation on input $a$ has a unique output. Hence $r_1=r_2$, contradicting the assumption that $r_1\neq r_2$.
+By definition of $\bar{\mathcal{D}}_{r_1}$, we have $TM(a)=r_1$, and by definition of $\bar{\mathcal{D}}_{r_2}$, we also have $TM(a)=r_2$. Since $TM$ is deterministic, the computation on input $a$ has a unique output. Hence $r_1=r_2$, contradicting the assumption that $r_1\neq r_2$.
 \end{proof}
 
-This proposition shows that the sets \(\mathcal{D}_r\) are pairwise disjoint. Therefore, any valid description whose output is a representation in \(\mathcal{R}\) is associated with exactly one representation. This makes it possible to classify descriptions according to their output and to study each representation through its own set of descriptions, independently of the others.
+This proposition shows that the sets $\bar{\mathcal{D}}_r$ are pairwise disjoint. Therefore, any exact description whose output is a representation in \(\mathcal{R}\) is associated with exactly one representation. This makes it possible to classify descriptions according to their output and to study each representation through its own set of descriptions, independently of the others.
 
-It is important to note, however, that not every description in \(\mathcal{D}\) must necessarily generate a string belonging to \(\mathcal{R}\). A valid description is only required to encode a halting computation, and its output may be an arbitrary binary string. Thus, the sets \(\mathcal{D}_r\) do not partition the whole set \(\mathcal{D}\), but only the subset of descriptions whose outputs are representations in \(\mathcal{R}\).
+It is important to note, however, that not every description in \(\mathcal{D}\) must necessarily generate a string belonging to \(\mathcal{R}\). A valid description is only required to encode a halting computation, and its output may be an arbitrary binary string. Thus, the sets \(\bar{\mathcal{D}}_r\) do not partition the whole set \(\mathcal{D}\), but only the subset of descriptions whose outputs are representations in \(\mathcal{R}\).
 
-We can generalize and consider all descriptions that generate some representation of a given entity. In this way, the notion of description is lifted from individual representations to the entities they represent.
+We can generalize and consider all descriptions that perfectly generate some representation of a given entity. In this way, the notion of description is lifted from individual representations to the entities they represent.
 
 \begin{definition}
 \label{def:descriptions_for_entity}
-Let $e \in \mathcal{E}$ be an entity. We define the \emph{set of valid descriptions for $e$}\index{Set of valid descriptions}, denoted by $\mathcal{D}_e$, as
+Let $e \in \mathcal{E}$ be an entity. We define the \emph{set of exact descriptions for $e$}\index{Set of exact descriptions}, denoted by $\bar{\mathcal{D}}_e$, as
 \[
-\mathcal{D}_e = \left\{ d=\langle TM,a\rangle \in \mathcal{D} : \exists r \in \mathcal{R}_e,\; TM(a)=r \right\}.
+\bar{\mathcal{D}}_e = \left\{ d=\langle TM,a\rangle \in \mathcal{D} : \exists r \in \mathcal{R}_e,\; TM(a)=r \right\}.
 \]
 \end{definition}
 
-The set $\mathcal{D}_e$ collects all valid descriptions that generate some representation of the entity $e$. Unlike the sets $\mathcal{D}_r$, which are tied to a single representation, the set $\mathcal{D}_e$ brings together all the different ways in which the same entity may be described through possibly different representations. In this sense, $\mathcal{D}_e$ characterizes the descriptive variability of the entity itself, rather than of any one particular encoding.
+The set $\bar{\mathcal{D}}_e$ collects all exact descriptions that generate some representation of the entity $e$. Unlike the sets $\bar{\mathcal{D}}_r$, which are tied to a single representation, the set $\bar{\mathcal{D}}_e$ brings together all the different ways in which the same entity may be described through possibly different representations. In this sense, $\bar{\mathcal{D}}_e$ characterizes the descriptive variability of the entity itself, rather than of any one particular encoding.
 
-By definition, $\mathcal{D}_e$ is the union of the sets $\mathcal{D}_r$ over all representations $r \in \mathcal{R}_e$. It therefore provides the natural domain for studying descriptions at the level of the entity, especially in situations where the entity admits multiple representations and, correspondingly, multiple families of descriptions.
+By definition, $\bar{\mathcal{D}}_e$ is the union of the sets $\bar{\mathcal{D}}_r$ over all representations $r \in \mathcal{R}_e$. It therefore provides the natural domain for studying descriptions at the level of the entity, especially in situations where the entity admits multiple representations and, correspondingly, multiple families of descriptions.
 
 \begin{proposition}
 \label{prop:descriptions_entity_union}
 For every entity $e \in \mathcal{E}$,
 \[
-\mathcal{D}_e=\bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
+\bar{\mathcal{D}}_e=\bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r.
 \]
 \end{proposition}
 
 \begin{proof}
-We prove both inclusions. First, let $d \in \mathcal{D}_e$. By Definition \ref{def:descriptions_for_entity}, there exists some $r \in \mathcal{R}_e$ such that $TM(a)=r$. By Definition \ref{def:descriptions_for_representation}, this implies that $d \in \mathcal{D}_r$. Hence
+We prove both inclusions. First, let $d \in \bar{\mathcal{D}}_e$. By Definition \ref{def:descriptions_for_entity}, there exists some $r \in \mathcal{R}_e$ such that $TM(a)=r$. By Definition \ref{def:descriptions_for_representation}, this implies that $d \in \bar{\mathcal{D}}_r$. Hence
 \[
-d \in \bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
+d \in \bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r.
 \]
 Therefore,
 \[
-\mathcal{D}_e \subseteq \bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
+\bar{\mathcal{D}}_e \subseteq \bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r.
 \]
 
 Conversely, let
 \[
-d \in \bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
+d \in \bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r.
 \]
-Then there exists some $r \in \mathcal{R}_e$ such that $d \in \mathcal{D}_r$. By Definition \ref{def:descriptions_for_representation}, this means that $TM(a)=r$. Since $r \in \mathcal{R}_e$, Definition \ref{def:descriptions_for_entity} implies that $d \in \mathcal{D}_e$. Thus,
+Then there exists some $r \in \mathcal{R}_e$ such that $d \in \bar{\mathcal{D}}_r$. By Definition \ref{def:descriptions_for_representation}, this means that $TM(a)=r$. Since $r \in \mathcal{R}_e$, Definition \ref{def:descriptions_for_entity} implies that $d \in \bar{\mathcal{D}}_e$. Thus,
 \[
-\bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r \subseteq \mathcal{D}_e.
+\bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r \subseteq \bar{\mathcal{D}}_e.
 \]
 
 Combining both inclusions gives
 \[
-\mathcal{D}_e=\bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
+\bar{\mathcal{D}}_e=\bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r.
 \]
 \end{proof}
 
-The next proposition makes explicit the relation between representation and description at the level of entities. Descriptions are defined only through the representations they generate, so the existence of valid descriptions for an entity is equivalent to the existence of representations of that entity. In this sense, the descriptive layer of the theory does not extend beyond the representational one, but presupposes it.
+The next proposition makes explicit the relation between representation and description at the level of entities. Descriptions are defined only through the representations they generate, so the existence of exact descriptions for an entity is equivalent to the existence of representations of that entity. In this sense, the descriptive layer of the theory does not extend beyond the representational one, but presupposes it.
 
 \begin{proposition}
 \label{prop:descriptions_entity_empty_iff_repr_empty}
 For every entity $e \in \mathcal{E}$,
 \[
-\mathcal{D}_e = \varnothing \quad\Longleftrightarrow\quad \mathcal{R}_e = \varnothing.
+\bar{\mathcal{D}}_e = \varnothing \quad\Longleftrightarrow\quad \mathcal{R}_e = \varnothing.
 \]
 \end{proposition}
 
 \begin{proof}
 First, assume that $\mathcal{R}_e=\varnothing$. Then, by Proposition \ref{prop:descriptions_entity_union},
 \[
-\mathcal{D}_e=\bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r=\bigcup_{r\in \varnothing}\mathcal{D}_r=\varnothing.
+\bar{\mathcal{D}}_e=\bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r=\bigcup_{r\in \varnothing}\bar{\mathcal{D}}_r=\varnothing.
 \]
 
-Conversely, assume that $\mathcal{D}_e=\varnothing$. Suppose, for contradiction, that $\mathcal{R}_e\neq\varnothing$. Then there exists some $r\in \mathcal{R}_e$. Since $r$ is a finite binary string, there exists a prefix-free Turing machine that ignores its input and prints $r$, then halts. Let $d=\langle TM,a\rangle$ be the encoding of such a machine together with any admissible input $a$. Then $d\in\mathcal{D}$ and $TM(a)=r$, so $d\in\mathcal{D}_r\subseteq\mathcal{D}_e$, contradicting $\mathcal{D}_e=\varnothing$. Therefore, $\mathcal{R}_e=\varnothing$.
+Conversely, assume that $\bar{\mathcal{D}}_e=\varnothing$. Suppose, for contradiction, that $\mathcal{R}_e\neq\varnothing$. Then there exists some $r\in \mathcal{R}_e$. Since $r$ is a finite binary string, there exists a prefix-free Turing machine that ignores its input and prints $r$, then halts. Let $d=\langle TM,a\rangle$ be the encoding of such a machine together with any admissible input $a$. Then $d\in\bar{\mathcal{D}}$ and $TM(a)=r$, so $d\in\bar{\mathcal{D}}_r\subseteq\bar{\mathcal{D}}_e$, contradicting $\bar{\mathcal{D}}_e=\varnothing$. Therefore, $\mathcal{R}_e=\varnothing$.
 \end{proof}
 
-This proposition links the existence of descriptions to the representability of entities. In particular, if an entity is unknowable, in the sense that it admits no representations, then it also admits no valid descriptions. Conversely, whenever an entity is representable, it also becomes describable, since any of its representations may be produced by at least one valid description. Thus, at the level of entities, describability and representability coincide: the boundary between describable and undescribable entities is the same as the boundary between knowable and unknowable entities.
+This proposition links the existence of descriptions to the representability of entities. In particular, if an entity is unknowable, in the sense that it admits no representations, then it also admits no exact descriptions. Conversely, whenever an entity is representable, it also becomes describable, since any of its representations may be produced by at least one exact description. Thus, at the level of entities, describability and representability coincide: the boundary between describable and undescribable entities is the same as the boundary between knowable and unknowable entities.
 
 In some cases, a description may also qualify as a representation, namely when it is accepted by the oracle as encoding an entity. In this sense, there may exist descriptions that describe other descriptions. In practice, however, it is not advisable to use descriptions as representations of entities. A useful representation should preserve as much relevant detail about the original entity as possible, whereas a description is designed to provide a concise computational account of a representation. Replacing representations with descriptions would therefore make the task of scientific discovery considerably harder.
 
@@ -169,25 +169,25 @@ The set of descriptions associated with an entity is not arbitrary from a comput
 
 \begin{proposition}
 \label{prop:De_recursively_enumerable}
-Let \(e \in \mathcal{E}\). If the set \(\mathcal{R}_e\) is recursively enumerable, then the set \(\mathcal{D}_e\) is recursively enumerable.
+Let \(e \in \mathcal{E}\). If the set \(\mathcal{R}_e\) is recursively enumerable, then the set \(\bar{\mathcal{D}}_e\) is recursively enumerable.
 \end{proposition}
 \begin{proof}
 By Proposition \ref{prop:descriptions_entity_union},
 \[
-\mathcal{D}_e=\bigcup_{r\in \mathcal{R}_e}\mathcal{D}_r.
+\bar{\mathcal{D}}_e=\bigcup_{r\in \mathcal{R}_e}\bar{\mathcal{D}}_r.
 \]
 
-Fix \(r\in\mathcal{R}_e\). The set \(\mathcal{D}_r\) is recursively enumerable: one can enumerate all binary strings \(d\), interpret each of them as a candidate pair \(\langle TM,a\rangle\), simulate \(TM(a)\) by dovetailing, and output \(d\) whenever the computation halts with value \(r\).
+Fix \(r\in\mathcal{R}_e\). The set \(\bar{\mathcal{D}}_r\) is recursively enumerable: one can enumerate all binary strings \(d\), interpret each of them as a candidate pair \(\langle TM,a\rangle\), simulate \(TM(a)\) by dovetailing, and output \(d\) whenever the computation halts with value \(r\).
 
 Now assume that \(\mathcal{R}_e\) is recursively enumerable. Then one can enumerate its elements
 \[
 r_1,r_2,r_3,\ldots
 \]
-and, for each \(r_i\), run in parallel the corresponding enumeration of \(\mathcal{D}_{r_i}\). By dovetailing these enumerations, every description belonging to some \(\mathcal{D}_{r_i}\) will eventually be produced. Therefore, one obtains an effective enumeration of
+and, for each \(r_i\), run in parallel the corresponding enumeration of \(\bar{\mathcal{D}}_{r_i}\). By dovetailing these enumerations, every description belonging to some \(\mathcal{D}_{r_i}\) will eventually be produced. Therefore, one obtains an effective enumeration of
 \[
-\bigcup_{r\in\mathcal{R}_e}\mathcal{D}_r = \mathcal{D}_e.
+\bigcup_{r\in\mathcal{R}_e}\bar{\mathcal{D}}_r = \bar{\mathcal{D}}_e.
 \]
-Hence \(\mathcal{D}_e\) is recursively enumerable.
+Hence \(\bar{\mathcal{D}}_e\) is recursively enumerable.
 \end{proof}
 
 This proposition has an important practical implication. Whenever the set \(\mathcal{R}_e\) can be effectively enumerated, the corresponding descriptions of the entity can also be searched effectively, at least in principle. That is, one may systematically generate candidate descriptions of the entity and test their properties. This does not solve the problem of finding good or minimal descriptions, but it shows that the search space is not completely inaccessible from a computability-theoretic point of view.

@@ -623,7 +623,7 @@ Let \(\mathcal{D}\) be the set of valid descriptions. We define a \emph{model cl
 \]
 \end{definition}
 
-Each element of a model class is therefore a description that satisfies a specific structural constraint. The defining condition of the subset $\mathcal{M}$ encodes the structural hypothesis underlying the model.
+Each element of a model class should be a description that satisfies a common structural constraint. This constraint is precisely what makes models useful in practice: it restricts the space of possible descriptions to those that embody a particular kind of regularity, thereby making search, explanation, and prediction more manageable.
 
 A particularly important case is that of parametric models, where the variability within the model class is controlled by a parameter space.
 
@@ -666,7 +666,7 @@ A model class also induces an \emph{inductive bias}. By restricting the space of
 \label{def:expressive_set_model_class}
 Let $\mathcal{M} \subseteq \mathcal{D}$ be a model class. We define the \emph{expressive set}\index{Expressive set of a model class} of $\mathcal{M}$ by
 \[
-\mathcal{R}_{\mathcal{M}} = \{ r \in \mathcal{R} : \exists d \in \mathcal{M},\ \gamma(d)=r \}.
+\mathcal{R}_{\mathcal{M}} = \{ r \in \mathcal{R} : \exists d \in \mathcal{M},\ \Gamma(d)=r \}.
 \]
 \end{definition}
 
@@ -674,18 +674,14 @@ The set $\mathcal{R}_{\mathcal{M}}$ contains precisely those representations tha
 
 \begin{proposition}
 \label{prop:model_class_inclusion}
-Let $\mathcal{M}_1, \mathcal{M}_2 \subseteq \mathcal{D}$ be model classes such that
-\[
-\mathcal{M}_1 \subseteq \mathcal{M}_2.
-\]
-Then
+Let $\mathcal{M}_1, \mathcal{M}_2 \subseteq \mathcal{D}$ be model classes such that $\mathcal{M}_1 \subseteq \mathcal{M}_2$. Then
 \[
 \mathcal{R}_{\mathcal{M}_1} \subseteq \mathcal{R}_{\mathcal{M}_2}.
 \]
 \end{proposition}
 
 \begin{proof}
-Let $r \in \mathcal{R}_{\mathcal{M}_1}$. By Definition~\ref{def:expressive_set_model_class}, there exists $d \in \mathcal{M}_1$ such that $\gamma(d)=r$. Since $\mathcal{M}_1 \subseteq \mathcal{M}_2$, we also have $d \in \mathcal{M}_2$, and therefore $r \in \mathcal{R}_{\mathcal{M}_2}$.
+Let $r \in \mathcal{R}_{\mathcal{M}_1}$. By Definition~\ref{def:expressive_set_model_class}, there exists $d \in \mathcal{M}_1$ such that $\Gamma(d)=r$. Since $\mathcal{M}_1 \subseteq \mathcal{M}_2$, we also have $d \in \mathcal{M}_2$, and therefore $r \in \mathcal{R}_{\mathcal{M}_2}$.
 \end{proof}
 
 This proposition shows that enlarging a model class can only increase, or at least preserve, the set of representations that can be described within it. In this sense, more expressive model classes correspond to larger subsets of \(\mathcal{D}\).
@@ -703,7 +699,7 @@ In general, there exist representations \(r \in \mathcal{R}\) such that
 \end{proposition}
 
 \begin{proof}
-A model class \(\mathcal{M}\) is, in general, a proper subset of \(\mathcal{D}\). Hence there may exist valid descriptions \(d \in \mathcal{D} \setminus \mathcal{M}\). Let \(r = \gamma(d)\). Then \(d \in \mathcal{D}_r\), so \(\mathcal{D}_r \neq \varnothing\). However, there need not exist any description in \(\mathcal{M}\) that generates \(r\). In that case,
+A model class \(\mathcal{M}\) is, in general, a proper subset of \(\mathcal{D}\). Hence there may exist valid descriptions \(d \in \mathcal{D} \setminus \mathcal{M}\). Let \(r = \Gamma(d)\). Then \(d \in \mathcal{D}_r\), so \(\mathcal{D}_r \neq \varnothing\). However, there need not exist any description in \(\mathcal{M}\) that generates \(r\). In that case,
 \[
 \mathcal{D}_r \cap \mathcal{M} = \varnothing.
 \]
@@ -730,7 +726,7 @@ K(r) \leq \ell(TM_m) + \ell(\theta) + c.
 \begin{proof}
 Since \(d = \langle TM_m, \theta \rangle\) is a valid description of \(r\), we have
 \[
-\gamma(d) = TM_m(\theta) = r.
+\Gamma(d) = TM_m(\theta) = r.
 \]
 Therefore, there exists a program of length at most \(\ell(TM_m) + \ell(\theta) + c\) that outputs \(r\), where the constant \(c\) accounts for the fixed overhead of encoding the pairing and simulating the universal Turing machine. By definition of Kolmogorov complexity,
 \[
@@ -776,16 +772,14 @@ Finally, even within a fixed parametric model class, the parameterization itself
 \label{prop:parametric_model_noninjective}
 In general, parametric model classes need not be injective with respect to the parameterization. That is, there may exist \(\theta_1 \neq \theta_2\) such that
 \[
-\gamma(\langle TM_m, \theta_1 \rangle)
-=
-\gamma(\langle TM_m, \theta_2 \rangle).
+\Gamma(\langle TM_m, \theta_1 \rangle) = \Gamma(\langle TM_m, \theta_2 \rangle).
 \]
 \end{proposition}
 
 \begin{proof}
 The definition of parametric model class does not require the mapping
 \[
-\theta \mapsto \gamma(\langle TM_m,\theta\rangle)
+\theta \mapsto \Gamma(\langle TM_m,\theta\rangle)
 \]
 to be injective. Hence distinct parameter values may generate the same representation.
 \end{proof}
@@ -798,11 +792,11 @@ This shows that redundancy may arise not only from the model class itself, but a
 
 \section{Operations on Descriptions}
 
-Augmentation and reduction are two complementary operations on descriptions. Augmentation models the idea of enriching a description by supplying additional computable information that may be missing from the original one. Reduction models the opposite process: simplifying a description by separating out information that is not needed for the purpose at hand. Together, these operations provide a basic formal vocabulary for describing how scientific models may be refined, expanded, or simplified over time.
+Augmentation and reduction are two complementary operations on descriptions. Augmentation models the idea of enriching a description by supplying additional computable information that may be missing from the original one. Reduction models the opposite process: simplifying a description by separating out information that is not needed for the purpose at hand. Together, these operations provide a basic formal vocabulary for describing how scientific descriptions may be refined, expanded, or simplified over time.
 
 These operations are introduced here at a purely structural level. Their purpose is not yet to determine whether a description has improved, or whether a particular transformation brings it closer to an ideal description. Rather, they formalize two elementary ways of modifying descriptions: by adding information through augmentation, and by removing information through reduction. In both cases, the result is required to remain within the domain of valid descriptions, so that the transformed object continues to be interpretable as a computable description.
 
-This distinction is important because the same formal operation may have very different epistemic effects depending on the context. An augmentation may add genuinely useful information, but it may also introduce irrelevant detail. Likewise, a reduction may remove superfluous structure, but it may also discard information that later proves important. For this reason, augmentation and reduction are best understood at this stage as general operations on descriptions. Their role in decreasing deficiency, surplus, or mismodel will be examined in Chapter \ref{chap:Mismodel}, once those defects have been formally defined.
+This distinction is important because the same formal operation may have very different effects depending on the context. An augmentation may add genuinely useful information, but it may also introduce irrelevant detail. Likewise, a reduction may remove superfluous structure, but it may also discard information that later proves important. For this reason, augmentation and reduction are best understood at this stage as general operations on descriptions. Their role in decreasing deficiency, surplus, or mismodel will be examined in Chapter \ref{chap:Mismodel}, once those defects have been formally defined.
 
 
 % Subsection: Operation of Augmentation
@@ -823,7 +817,7 @@ For $d, d' \in \mathcal{D}$, whenever $\mathrm{aug}(d, d')$ is defined, the stri
 
 This definition does not prescribe how the information encoded by $d$ and $d'$ must be combined, only that the combination be computable whenever it is defined, and that the result be a valid description. In this way, augmentation is introduced as a structural operation on descriptions, independently of the particular effect it may have on the representation produced. Questions concerning whether augmentation improves a description, reduces its deficiency, or brings it closer to a target representation will be addressed in Chapter \ref{chap:Mismodel}.
 
-Thus, augmentation is a partially defined internal operation on the set of valid descriptions.
+Augmentation is a partially defined internal operation on the set of valid descriptions.
 
 \begin{proposition}
 \label{prop:augmentation_closed}
@@ -856,7 +850,37 @@ By Proposition \ref{prop:augmentation_closed}, if $\mathrm{aug}(d, d_1)\downarro
 
 This shows that augmentation can be applied repeatedly, thereby allowing the progressive construction of more elaborate descriptions from simpler ones, provided that each intermediate augmentation is defined.
 
-The definition of augmentation only requires that \(\mathrm{aug}\) be a partial computable function from $\mathcal{D}\times\mathcal{D}$ to $\mathcal{D}$. It imposes no condition requiring the output representation of $\mathrm{aug}(d, d')$, when defined, to coincide with that of $d$. Therefore, an augmentation operator may perfectly well be chosen so that, for some $d, d' \in \mathcal{D}$ such that $\mathrm{aug}(d, d') \downarrow$, we have $\gamma(\mathrm{aug}(d,d')) \neq \gamma(d)$.
+The definition of augmentation only requires that \(\mathrm{aug}\) be a partial computable function from $\mathcal{D}\times\mathcal{D}$ to $\mathcal{D}$. It imposes no condition requiring the output representation of $\mathrm{aug}(d, d')$, when defined, to coincide with that of $d$. Therefore, an augmentation operator may perfectly well be chosen so that, for some $d, d' \in \mathcal{D}$ such that $\mathrm{aug}(d, d') \downarrow$, we have $\Gamma(\mathrm{aug}(d,d')) \neq \Gamma(d)$.
+
+\begin{example}
+Consider a representation \(r\) consisting of the observed trajectory of a projectile. Let
+\[
+d = \langle TM_1,a_1\rangle
+\]
+be a valid description encoding the standard model of projectile motion in vacuum, where
+\(TM_1\) computes the trajectory from the initial conditions stored in \(a_1\). This
+description captures the main regularity of the phenomenon, but it ignores the effect of air
+resistance.
+
+Now let
+\[
+d'=\langle TM_2,a_2\rangle
+\]
+be another valid description encoding a correction model for aerodynamic drag, with \(a_2\)
+containing the relevant parameters, such as the drag coefficient. If the chosen augmentation
+operator is defined on the pair \((d,d')\), the augmented description
+\[
+\mathrm{aug}(d,d')
+\]
+may be a new valid description that combines the vacuum trajectory model with the drag
+correction.
+
+In this case, \(\Gamma(\mathrm{aug}(d,d'))\) will in general differ from \(\Gamma(d)\), since the
+augmented description produces a trajectory modified by air resistance. The role of
+augmentation is therefore not merely to attach extra information to the original
+description, but to construct a new description whose output may better account for the
+representation under study.
+\end{example}
 
 An augmentation is therefore not merely a passive attachment of additional information to a description; it is a new valid description obtained by computably combining two existing ones whenever that combination is meaningful within the chosen framework. As a consequence, the resulting description may produce the same representation as the original description, but it may also produce a different one.
 
@@ -864,7 +888,7 @@ An augmentation is therefore not merely a passive attachment of additional infor
 
 \subsection*{Operation of Reduction}
 
-A natural way to improve the quality of a description is by removing information that is not needed for the purpose at hand. We call this operation \emph{reduction}. Its purpose is to decompose a valid description into two parts: a retained part, which is kept as the relevant description, and a discarded part, which contains the information irrelevant or redundant. Unlike the reduction of representations, where symbols are deleted directly from a string, the reduction of descriptions is more appropriately treated as an operation on valid descriptions themselves.
+An alternative way to improve the quality of a description is by removing information that is not needed for the purpose at hand. We call this operation \emph{reduction}. Its purpose is to decompose a valid description into two parts: a retained part, which is kept as the relevant description, and a discarded part, which contains the information irrelevant or redundant. Unlike the reduction of representations, where symbols are deleted directly from a string, the reduction of descriptions is more appropriately treated as an operation on valid descriptions themselves.
 
 Since not every description need admit a meaningful decomposition, we model reduction as a partial computable operation on the set of valid descriptions.
 
@@ -883,7 +907,7 @@ The description $d_1$ is called a \emph{reduction}\index{Reduction of descriptio
 
 This definition does not prescribe how the decomposition of \(d\) into \(d_1\) and \(d_2\) is obtained, only that it be computable whenever it is defined, that the retained part \(d_1\) be no longer than the original description, and that the original description be recoverable by augmenting \(d_1\) with \(d_2\). In this way, reduction is introduced as a structural operation on descriptions, independently of the particular effect it may have on the representation produced. Questions concerning whether reduction improves a description, decreases its surplus, or preserves the represented string will be addressed in Chapter \ref{chap:Mismodel}.
 
-Reduction is a partially defined decomposition operation on the set of valid descriptions.
+Reduction is a partially defined decomposition operation on the set of valid descriptions. Its role is to separate a description into two components: a retained part, which is meant to preserve the essential content of the original description, and a discarded part, which contains the information removed by the reduction. The first basic property to verify is that, whenever a reduction is defined, both resulting components remain within the space of valid descriptions.
 
 \begin{proposition}
 \label{prop:reduction_components_valid}
@@ -893,9 +917,9 @@ If $d \in \mathcal{D}$ and $\mathrm{red}(d)\downarrow$, then there exist $d_1, d
 This follows directly from the definition of reduction operator.
 \end{proof}
 
-Hence, whenever a reduction is defined, it decomposes a valid description into two valid descriptions.
+Hence, whenever a reduction is defined, it does not produce arbitrary strings, but decomposes a valid description into two components that are themselves valid descriptions. This is important because it ensures that reduction remains internal to the descriptive framework: both the retained part and the discarded part continue to be legitimate objects of study.
 
-The next proposition records the basic size condition built into the notion of reduction.
+The next proposition records the basic size condition built into the notion of reduction. Since reduction is intended to simplify or compress a description by discarding information that may later be restored, it is natural to require that the retained part should never be longer than the original description.
 
 \begin{proposition}
 \label{prop:reduction_not_longer}
@@ -905,9 +929,9 @@ If \(d \in \mathcal{D}\) and \(\mathrm{red}(d)=(d_1,d_2)\), then $\ell(d_1)\leq 
 This is one of the defining conditions of the reduction operator.
 \end{proof}
 
-Thus, the retained part of a reduction is never longer than the original description.
+Thus, the retained part of a reduction is never longer than the original description. This formalizes the idea that reduction moves, at least weakly, in the direction of simplification: even when it does not strictly shorten the description, it never increases its size.
 
-A second basic property is that reduction is compatible with augmentation in the sense that the original description can be recovered from the retained part and the discarded part.
+A second basic property is that reduction is compatible with augmentation in the sense that the original description can be recovered from the retained part and the discarded part. In this way, reduction does not destroy information irreversibly, but reorganizes it into two components whose recombination restores the initial description.
 
 \begin{proposition}
 \label{prop:reduction_aug_reconstructs}
@@ -921,7 +945,7 @@ If \(d \in \mathcal{D}\) and \(\mathrm{red}(d)=(d_1,d_2)\), then
 This is again one of the defining conditions of the reduction operator.
 \end{proof}
 
-This proposition formalizes the intended interpretation of reduction: the discarded part is not arbitrary, but precisely the information that must be restored, via augmentation, in order to recover the original description.
+This proposition formalizes the intended interpretation of reduction: the discarded part is not arbitrary residue, but precisely the information that must be restored, via augmentation, in order to recover the original description. In this sense, reduction and augmentation are complementary operations: one separates a description into components, while the other recombines them.
 
 As an immediate consequence, every defined reduction determines a factorization of the original description through the augmentation operator.
 
@@ -933,9 +957,9 @@ If \(d \in \mathcal{D}\) and \(\mathrm{red}(d)=(d_1,d_2)\), then \(d\) belongs t
 By Proposition \ref{prop:reduction_aug_reconstructs}, $d=\mathrm{aug}(d_1,d_2)$ with \(\mathrm{aug}(d_1,d_2)\downarrow\). Therefore \(d\) lies in the image of \(\mathrm{aug}\).
 \end{proof}
 
-This shows that every reducible description can be reconstructed by augmenting its retained part with its discarded part.
+This shows that every reducible description can be reconstructed by augmenting its retained part with its discarded part. In particular, reduction does not take us outside the space generated by augmentation, but exhibits the original description as one that can be built back from simpler components.
 
-Reduction can also be iterated whenever the retained part admits a further reduction.
+Reduction can also be iterated whenever the retained part admits a further reduction. This makes it possible to study successive stages of simplification, in which a description is progressively decomposed into a sequence of retained and discarded parts.
 
 \begin{proposition}
 Let \(d \in \mathcal{D}\). Suppose
@@ -965,11 +989,54 @@ Applying the same proposition to each subsequent reduction yields
 Chaining these inequalities gives the result.
 \end{proof}
 
-This shows that repeated reduction yields a non-increasing sequence of retained-description lengths, and therefore behaves monotonically with respect to description size.
+This shows that repeated reduction yields a non-increasing sequence of retained-description lengths, and therefore behaves monotonically with respect to description size. In practical terms, iterative reduction provides a formal way of tracing successive simplifications of a description while preserving, at each step, the possibility of recovering the preceding stage by reintroducing the discarded information.
 
-In general, it is not the case that, if \(\mathrm{red}(d)=(d_1,d_2)\), then $\gamma(d_1)=\gamma(d)$. The definition of reduction requires only that \(d_1,d_2\in\mathcal{D}\), that \(\ell(d_1)\leq \ell(d)\), and that $\mathrm{aug}(d_1,d_2)=d$ when defined. It imposes no condition requiring \(d_1\) and \(d\) to produce the same output under \(\gamma\). Therefore, a reduction operator may perfectly well be chosen so that, for some \(d\in\mathcal{D}\) with \(\mathrm{red}(d)=(d_1,d_2)\), $\gamma(d_1)\neq \gamma(d)$.
+In general, it is not the case that, if \(\mathrm{red}(d)=(d_1,d_2)\), then $\Gamma(d_1)=\Gamma(d)$. The definition of reduction requires only that \(d_1,d_2\in\mathcal{D}\), that \(\ell(d_1)\leq \ell(d)\), and that $\mathrm{aug}(d_1,d_2)=d$ when defined. It imposes no condition requiring \(d_1\) and \(d\) to produce the same output under \(\Gamma\). Therefore, a reduction operator may perfectly well be chosen so that, for some \(d\in\mathcal{D}\) with \(\mathrm{red}(d)=(d_1,d_2)\), $\Gamma(d_1)\neq \Gamma(d)$.
 
 Thus, a reduction is not merely the deletion of inert material from a description. It is a decomposition into a retained part and a discarded part, and the retained part may or may not describe the same representation as the original description.
+
+\begin{example}
+Consider a valid description
+\[
+d=\langle TM,a\rangle
+\]
+encoding a trained machine-learning pipeline for credit-risk prediction. The machine \(TM\)
+specifies the whole predictive procedure: preprocessing, feature transformations, and a
+large ensemble model; the input \(a\) contains the learned parameters. Suppose that, after
+training, it is observed that many components of the model contribute little to the final
+predictions. For example, some engineered features may be nearly redundant, or many trees
+in the ensemble may have very small marginal effect.
+
+A reduction operator may then be defined so as to separate the original description into
+two parts,
+\[
+\mathrm{red}(d)=(d_1,d_2),
+\]
+where \(d_1\) is a reduced description encoding the simplified pipeline that keeps only the
+most relevant features and the most influential part of the ensemble, while \(d_2\) encodes
+the discarded components together with the information needed to restore them. In this
+setting, \(d_1\) is shorter than \(d\), so
+\[
+\ell(d_1)\leq \ell(d),
+\]
+and the original model can be reconstructed by augmentation:
+\[
+\mathrm{aug}(d_1,d_2)=d.
+\]
+
+The output of the reduced description, \(\Gamma(d_1)\), need not coincide with the output
+of the original description, \(\Gamma(d)\). The simplified model may produce slightly
+different scores or classifications, since it no longer uses all the components of the
+original pipeline. Nevertheless, \(d_1\) may still be preferable in practice if it is easier
+to interpret, faster to evaluate, or less prone to overfitting.
+
+This illustrates the intended role of reduction in machine learning: one starts from a
+complex trained description, removes components judged unnecessary for the purpose at
+hand, and obtains a simpler retained description together with a discarded part that allows
+the original description to be recovered exactly.
+\end{example}
+
+In practical terms, reduction corresponds to the common machine-learning strategy of simplifying a trained model while keeping track of the information needed to recover the original one.
 
 %
 % Section: Models for Joint Representations
@@ -984,7 +1051,7 @@ The length of the minimal description of a joint representation is greater than 
 
 \begin{proposition}
 \label{prop:joint_length}
-Let $t,s \in \mathcal{R}_\mathcal{E}$ be two representations, and let $d_{t}^{\star}$, $d_{s}^{\star}$, and $d_{ts}^{\star}$ denote the minimal descriptions of the representations $t$, $s$, and the joint representation $ts$, respectively. Then: $l \left( d_{ts}^{\star} \right) \geq l \left( d_{t}^{\star} \right) \quad \text{and} \quad l \left( d_{ts}^{\star} \right) \geq l \left( d_{s}^{\star} \right).$
+Let $t,s \in \mathcal{R}$ be two representations, and let $d_{t}^{\star}$, $d_{s}^{\star}$, and $d_{ts}^{\star}$ denote the minimal descriptions of the representations $t$, $s$, and the joint representation $ts$, respectively. Then: $l \left( d_{ts}^{\star} \right) \geq l \left( d_{t}^{\star} \right) \quad \text{and} \quad l \left( d_{ts}^{\star} \right) \geq l \left( d_{s}^{\star} \right).$
 \end{proposition}
 \begin{proof}
 The inequality $l \left( d_{ts}^{\star} \right) \geq l \left( d_{t}^{\star} \right)$ is equivalent to $K(ts) \geq K(t)$. The result then follows from Proposition \ref{prop:excess_kolmogorov}.
@@ -996,7 +1063,7 @@ If the selected representations partially overlap, we can exploit this redundanc
 
 \begin{proposition}
 \label{prop:joint_sum}
-Let $t, s \in \mathcal{R}_\mathcal{E}$ be two representations, and let $d_{t}^{\star}$, $d_{s}^{\star}$, and $d_{ts}^{\star}$ denote the minimal descriptions of the representations $t$, $s$, and the joint representation $ts$, respectively. Then: $l \left( d_{ts}^{\star} \right) \leq l \left( d_{t}^{\star} \right) + l \left( d_{s}^{\star} \right).$
+Let $t, s \in \mathcal{R}$ be two representations, and let $d_{t}^{\star}$, $d_{s}^{\star}$, and $d_{ts}^{\star}$ denote the minimal descriptions of the representations $t$, $s$, and the joint representation $ts$, respectively. Then: $l \left( d_{ts}^{\star} \right) \leq l \left( d_{t}^{\star} \right) + l \left( d_{s}^{\star} \right).$
 \end{proposition}
 \begin{proof}
 The inequality $l \left( d_{ts}^{\star} \right) \leq l \left( d_{t}^{\star} \right) + l \left( d_{s}^{\star} \right)$ is equivalent to $K(ts) \leq K(t) + K(s)$. The result follows from Proposition \ref{prop:additive_kolmogorov}.
@@ -1008,7 +1075,7 @@ Finally, the following proposition shows that the order of the representations i
 
 \begin{proposition}
 \label{prop:joint_order}
-Let $t, s \in \mathcal{R}_\mathcal{E}$ be two representations, and let $d_{ts}^{\star}$ and $d_{st}^{\star}$ be the minimal descriptions of the joint representations $ts$ and $st$, respectively. Then: $l \left( d_{ts}^{\star} \right) = l \left( d_{st}^{\star} \right).$
+Let $t, s \in \mathcal{R}$ be two representations, and let $d_{ts}^{\star}$ and $d_{st}^{\star}$ be the minimal descriptions of the joint representations $ts$ and $st$, respectively. Then: $l \left( d_{ts}^{\star} \right) = l \left( d_{st}^{\star} \right).$
 \end{proposition}
 \begin{proof}
 The equality $l \left( m_{ts}^{\star} \right) = l \left( m_{st}^{\star} \right)$ is equivalent to $K(ts) = K(st)$. The result follows from Proposition \ref{prop:kolmogorov_order}.
@@ -1020,7 +1087,7 @@ Propositions \ref{prop:joint_length}, \ref{prop:joint_sum} and \ref{prop:joint_o
 
 \begin{proposition}
 \label{prop:joint_multiple_topics}
-Let $t_1, t_2, \ldots, t_n \in \mathcal{R}_\mathcal{E}$ be a finite collection of representations. Then, we have that:
+Let $t_1, t_2, \ldots, t_n \in \mathcal{R}$ be a finite collection of representations. Then, we have that:
 
 \renewcommand{\theenumi}{\roman{enumi}}
 \begin{enumerate}
@@ -1612,196 +1679,6 @@ shorter, more modular, and easier to compare. Conditioning therefore provides a
 formal mechanism for representing cumulative scientific knowledge: new models
 are not evaluated in isolation, but relative to the knowledge already available.
 
-%
-% Section: Explanatory Hypothesis
-%
-
-\section{Hypotheses}
-\label{sec:hypotheses}
-
-The theory of nescience is built upon two complementary components: representations and descriptions. A representation encodes the entity under study as a finite string of symbols, while a description provides a computable account of that representation. In scientific practice, however, these two components are not considered in isolation. What researchers actually work with is a \emph{pair} consisting of a proposed representation and a proposed description of it. We call such a pair a \emph{hypothesis}.
-
-Intuitively, a hypothesis expresses a tentative state of scientific understanding. Its representational component specifies how the entity is being encoded, while its descriptive component specifies how that encoding is being modeled or explained. Scientific progress can then be understood as the process of replacing one hypothesis by another that yields a lower level of nescience.
-
-\begin{definition}
-\label{def:hypothesis}
-We define \emph{hypothesis}\index{Hypothesis} as an ordered pair
-\[
-x = (r,d),
-\]
-where \(r \in \mathcal{R}\) is a representation and \(d \in \mathcal{D}\) is a description.
-\end{definition}
-
-The set of all hypotheses is therefore the Cartesian product of the set of representations and the set of descriptions.
-
-\begin{definition}
-\label{def:set_of_hypotheses}
-We define the \emph{set of hypotheses}\index{Set of hypotheses}, denoted by \(\mathcal{H}\), as
-\[
-\mathcal{H} = \mathcal{R} \times \mathcal{D}.
-\]
-\end{definition}
-
-Not every hypothesis is equally meaningful. In general, a description \(d\) need not describe the representation \(r\) with which it is paired. The ordered pair \((r,d)\) is therefore a very general notion, intended to include both successful and unsuccessful attempts at scientific modeling. This generality is important, since the theory of nescience is precisely concerned with measuring how far a given hypothesis is from an ideal state of understanding.
-
-A particularly important subclass is formed by those hypotheses in which the description generates exactly the representation with which it is paired.
-
-\begin{definition}
-\label{def:exact_hypothesis}
-A hypothesis \(x=(r,d)\in\mathcal{H}\) is said to be \emph{exact}\index{Exact hypothesis} if
-\[
-\gamma(d)=r.
-\]
-\end{definition}
-
-Thus, exact hypotheses are those in which the descriptive component faithfully reconstructs the chosen representation. They correspond to the case in which the inaccuracy of the description with respect to the representation is zero.
-
-\begin{proposition}
-\label{prop:exact_hypothesis_equiv}
-A hypothesis \(x=(r,d)\in\mathcal{H}\) is exact if and only if \(d \in \mathcal{D}_r\).
-\end{proposition}
-
-\begin{proof}
-By definition,
-\[
-\mathcal{D}_r = \{ d \in \mathcal{D} : \gamma(d)=r \}.
-\]
-Therefore, \((r,d)\) is exact if and only if \(\gamma(d)=r\), which is equivalent to \(d \in \mathcal{D}_r\).
-\end{proof}
-
-This proposition shows that exact hypotheses are precisely those obtained by pairing a representation with one of its descriptions.
-
-For a fixed representation \(r\), the set of exact hypotheses associated with \(r\) is naturally determined by the set \(\mathcal{D}_r\).
-
-\begin{definition}
-\label{def:exact_hypotheses_for_representation}
-Let \(r \in \mathcal{R}\). We define the set of \emph{exact hypotheses for \(r\)} by
-\[
-\mathcal{H}_r
-=
-\{ (r,d) \in \mathcal{H} : d \in \mathcal{D}_r \}.
-\]
-\end{definition}
-
-Similarly, one may restrict attention to hypotheses whose representational component belongs to a given entity.
-
-\begin{definition}
-\label{def:hypotheses_for_entity}
-Let \(e \in \mathcal{E}\). We define the set of \emph{hypotheses for \(e\)} by
-\[
-\mathcal{H}_e
-=
-\{ (r,d) \in \mathcal{H} : r \in \mathcal{R}_e \}.
-\]
-\end{definition}
-
-This set contains all hypotheses whose representational component is associated with the entity \(e\), regardless of whether the descriptive component is exact or only approximate.
-
-Since a hypothesis is an ordered pair, it admits natural projection maps onto its two components.
-
-\begin{definition}
-\label{def:hypothesis_projections}
-For a hypothesis \(x=(r,d)\in\mathcal{H}\), we define its \emph{representation projection} and \emph{description projection} by
-\[
-\pi_{\mathcal{R}}(x)=r,
-\qquad
-\pi_{\mathcal{D}}(x)=d.
-\]
-\end{definition}
-
-These projections simply recover the two components of the hypothesis.
-
-\begin{proposition}
-\label{prop:hypothesis_determined_by_components}
-A hypothesis is uniquely determined by its representation and description projections. That is, if \(x,y\in\mathcal{H}\) satisfy
-\[
-\pi_{\mathcal{R}}(x)=\pi_{\mathcal{R}}(y)
-\qquad\text{and}\qquad
-\pi_{\mathcal{D}}(x)=\pi_{\mathcal{D}}(y),
-\]
-then \(x=y\).
-\end{proposition}
-
-\begin{proof}
-Let \(x=(r_1,d_1)\) and \(y=(r_2,d_2)\). If
-\[
-\pi_{\mathcal{R}}(x)=\pi_{\mathcal{R}}(y)
-\qquad\text{and}\qquad
-\pi_{\mathcal{D}}(x)=\pi_{\mathcal{D}}(y),
-\]
-then \(r_1=r_2\) and \(d_1=d_2\). Hence
-\[
-x=(r_1,d_1)=(r_2,d_2)=y.
-\]
-\end{proof}
-
-This elementary fact is useful because many operations on hypotheses act by modifying only one of the two components while leaving the other fixed.
-
-In scientific applications, one often works with restricted families of hypotheses in which the description is chosen from a model class.
-
-\begin{definition}
-\label{def:model_hypotheses}
-Let \(\mathcal{M} \subseteq \mathcal{D}\) be a model class. We define the set of \emph{hypotheses based on \(\mathcal{M}\)} by
-\[
-\mathcal{H}_{\mathcal{M}}
-=
-\mathcal{R} \times \mathcal{M}.
-\]
-\end{definition}
-
-The set \(\mathcal{H}_{\mathcal{M}}\) contains all hypotheses whose descriptive component belongs to the model class \(\mathcal{M}\). Thus, restricting attention to a model class induces a corresponding restriction on the space of admissible hypotheses.
-
-\begin{proposition}
-\label{prop:model_hypothesis_inclusion}
-Let \(\mathcal{M}_1,\mathcal{M}_2 \subseteq \mathcal{D}\) be model classes such that
-\[
-\mathcal{M}_1 \subseteq \mathcal{M}_2.
-\]
-Then
-\[
-\mathcal{H}_{\mathcal{M}_1} \subseteq \mathcal{H}_{\mathcal{M}_2}.
-\]
-\end{proposition}
-
-\begin{proof}
-If \((r,d) \in \mathcal{H}_{\mathcal{M}_1}\), then \(r \in \mathcal{R}\) and \(d \in \mathcal{M}_1\). Since \(\mathcal{M}_1 \subseteq \mathcal{M}_2\), we also have \(d \in \mathcal{M}_2\), and therefore \((r,d) \in \mathcal{H}_{\mathcal{M}_2}\).
-\end{proof}
-
-This proposition shows that enlarging the model class enlarges the corresponding hypothesis space.
-
-In general, different hypotheses may share the same representation but differ in their descriptions, or share the same description but be paired with different representations. These two sources of variability reflect the two main degrees of freedom in scientific modeling: how the entity is represented, and how that representation is described.
-
-\begin{proposition}
-\label{prop:hypotheses_same_representation}
-Let \(r \in \mathcal{R}\) and let \(d_1,d_2 \in \mathcal{D}\) with \(d_1 \neq d_2\). Then
-\[
-(r,d_1) \neq (r,d_2).
-\]
-Similarly, if \(r_1,r_2 \in \mathcal{R}\) with \(r_1 \neq r_2\) and \(d \in \mathcal{D}\), then
-\[
-(r_1,d) \neq (r_2,d).
-\]
-\end{proposition}
-
-\begin{proof}
-Both statements follow immediately from the definition of ordered pair.
-\end{proof}
-
-This simple observation underlines an important point: changing either the representation or the description yields a different hypothesis. Scientific refinement may therefore proceed in two distinct ways: by changing how the entity is encoded, or by changing how that encoding is modeled.
-
-Finally, exact hypotheses form a distinguished subset of the full hypothesis space.
-
-\begin{definition}
-\label{def:set_of_exact_hypotheses}
-We define the set of \emph{exact hypotheses}\index{Set of exact hypotheses} by
-\[
-\mathcal{H}^{\top}
-=
-\{ (r,d) \in \mathcal{H} : \gamma(d)=r \}.
-\]
-\end{definition}
-
-Thus, \(\mathcal{H}^{\top}\) contains precisely those hypotheses in which the descriptive component reproduces the representational component exactly. In the chapters that follow, the general concept of hypothesis will make it possible to measure the quality of scientific proposals using miscoding, inaccuracy, surplus, and, ultimately, nescience itself.
 
 %
 % Section: Descriptions of Areas

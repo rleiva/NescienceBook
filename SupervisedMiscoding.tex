@@ -4,8 +4,8 @@
 
 \chapterimage{Train_wreck_at_Montparnasse_1895.pdf} % Chapter heading image
 
-\chapter{Supervised Miscoding}
-\label{chap:Supervised_Miscoding}
+\chapter{Labeled Miscoding}
+\label{chap:Labeled_Miscoding}
 
 \begin{quote}
 \begin{flushright}
@@ -16,49 +16,53 @@ Saki
 \end{quote}
 \bigskip
 
+In Chapter \ref{chap:Miscoding}, we introduced miscoding as a measure of the error introduced when a (extended) representation is used in place of an admissible representation of an entity. The definition is conceptually clear, but it is not directly accessible in practice. To compute the miscoding of a representation $r \in \mathcal{R}_e$, one would need to compare it with the set of admissible representations $\bar{\mathcal R}_e$ of the entity $e$. In ordinary scientific practice, this set is not known. Indeed, if an admissible representation of the entity were already available, the central representational problem would largely have been solved.
 
-In Chapter \ref{chap:Miscoding} we introduced \emph{miscoding} as a measure of the error introduced when an effective representation is used in place of an admissible representation of an entity. The definition is conceptually clear but practically inaccessible. In order to compute the miscoding of an effective representation \(r\in \hat{\mathcal R}_e\), one would need to compare it with the set of admissible representations \(\bar{\mathcal R}_e\) of the entity \(e\). In ordinary scientific practice this set is not known. Indeed, if an admissible representation of the entity were already available, the central representational problem would largely have been solved.
+This creates an important practical limitation. The theoretical definition of miscoding tells us what should be minimized, but it does not directly tell us how to estimate miscoding when the set of admissible representations is unknown. In many empirical settings, however, we possess a weaker but still useful substitute for the missing admissible representations. We may not know the correct representation of each entity, but we may know that certain representations refer to the same entity, or to entities of the same kind. In other words, we may have a collection of representations together with labels indicating the entity, class, type, or category to which each representation belongs.
 
-This creates an important practical limitation. The theoretical definition of miscoding tells us what should be minimized, but it does not directly tell us how to estimate miscoding when the admissible representation is unknown. In many empirical settings, however, we possess a weaker but useful substitute for the missing admissible representation. We may not know what the correct representation of each entity is, but we may know that certain effective representations refer to the same entity. That is, we may have a collection of representations together with labels indicating the entity, class, type, or category to which each representation belongs.
+The most familiar example arises in supervised machine learning. A training dataset consists of observations described by a set of attributes $\mathbf{X}$, together with a target variable $\mathbf{y}$. The target variable does not constitute an admissible representation of the entity under study. It does not tell us what the entity is in its full structure. Nevertheless, it provides an index that groups observations according to the entity, property, or outcome we wish to explain or predict. This information allows us to estimate, in a practical way, how well a given representation captures the distinctions that matter for the task.
 
-The most familiar example appears in supervised machine learning. A training dataset consists of observations described by attributes \(X\), together with a target variable \(y\). The target variable does not provide an admissible representation of the entity under study. It does not tell us what the entity is in its full structure. Nevertheless, it provides an index that groups observations according to the entity, property, or outcome we wish to explain or predict. This information allows us to estimate, in a practical way, how well a given representation captures the distinctions that matter for the task.
+The purpose of this chapter is to formalize this idea. We introduce \emph{labeled miscoding} as a practical approximation to miscoding for situations in which representations are accompanied by labels. The label does not replace the entity, and it should not be confused with an admissible representation. Rather, it acts as a supervised proxy for entity identity, class membership, or target relevance. Supervised miscoding therefore measures how well a candidate representation preserves the information contained in the labels, while also penalizing information in the representation that is not explained by those labels.
 
-The purpose of this chapter is to formalize this idea. We introduce \emph{supervised miscoding}, a practical approximation to miscoding in situations where effective representations are accompanied by labels. The label does not replace the entity, and it should not be confused with an admissible representation. Rather, it acts as a supervised proxy for entity identity. Supervised miscoding therefore measures how well a candidate representation preserves the information contained in the labels, while also penalizing information in the representation that is not explained by those labels.
+%
+% Section: Labeled Representations
+%
 
-\section{Labeled Effective Representations}
-\label{sec:labeled_effective_representations}
+\section{Labeled Representations}
+\label{sec:labeled_representations}
 
-Let \(\mathcal E\) be a set of entities. In the theoretical definition of miscoding, an effective representation \(r\in \hat{\mathcal R}_e\) is compared against the unknown set of admissible representations \(\bar{\mathcal R}_e\). In the supervised setting we do not assume access to \(\bar{\mathcal R}_e\). Instead, we assume access to a finite collection of effective representations whose intended entity membership is indexed by labels.
+Let $\mathcal E$ be a set of entities. In the theoretical definition of miscoding, a representation $r \in \mathcal {R}_e$ is compared against the unknown set of admissible representations $\bar{\mathcal R}_e$. In the supervised setting we do not assume access to $\bar{\mathcal R}_e$. Instead, we assume access to a finite collection of representations whose intended entity membership is indexed by labels.
 
 \begin{definition}
 \label{def:labeled_sample}
-Let \(I=\{1,\ldots,n\}\) be a finite index set. A \emph{labeled sample of effective representations} is a finite sequence
+Let \(I=\{1,\ldots,n\}\) be a finite index set. A \emph{labeled sample of representations}\index{Labeled representatoins} is a finite sequence
 \[
-    \mathcal S =
-    \big((r_1,\lambda_1),\ldots,(r_n,\lambda_n)\big),
+\mathcal S = \big( (r_1, \lambda_1), \ldots, (r_n, \lambda_n) \big),
 \]
-where \(r_i\in \mathcal B^\ast\) is an effective representation and \(\lambda_i\in \Lambda\) is a label belonging to a finite label set \(\Lambda\).
+where $r_i \in \mathcal{R}$ is a representation and $\lambda_i \in \Lambda$ is a label belonging to a finite label set $\Lambda$.
 \end{definition}
 
-The label \(\lambda_i\) should be interpreted as an empirical index indicating that the representation \(r_i\) is taken to belong to a certain entity, class, or target category. The label need not be an admissible representation of that entity. It may be incomplete, noisy, conventional, or even historically provisional. What matters is that the labels provide an external grouping of the effective representations.
+The label $\lambda_i$ should be interpreted as an empirical index indicating the entity to which the representation $r_i$ is assigned. The label need not be an admissible representation of that entity; it only needs to identify the entity uniquely within the labeled sample. Thus, two representations with the same label are treated as representations of the same entity, while representations with different labels are treated as representations of different entities.
 
 \begin{definition}
 \label{def:label_class}
-Let \(\mathcal S\) be a labeled sample of effective representations. For each label \(\lambda\in \Lambda\), we define the corresponding \emph{label class} as
+Let $\mathcal S$ be a labeled sample of representations. For each label $\lambda \in \Lambda$, we define the corresponding \emph{label class}\index{Label class} as
 \[
-    \hat{\mathcal R}_{\lambda}^{\mathcal S}
-    =
-    \{r_i\in \mathcal B^\ast : \lambda_i=\lambda\}.
+\mathcal {R}_{\lambda}^{\mathcal S} = \{r_i\in \mathcal{R} : \lambda_i = \lambda\}.
 \]
 \end{definition}
 
-The set \(\hat{\mathcal R}_{\lambda}^{\mathcal S}\) contains all effective representations that are assigned the same label in the sample. It is an empirical substitute for the unknown set \(\hat{\mathcal R}_e\) of effective representations of an entity. However, the substitution is only approximate. A label may group together different entities, split a single entity into several categories, or contain human classification errors.
+The set $\mathcal {R}_{\lambda}^{\mathcal S}$ contains all representations that are assigned the same label in the sample. It is an empirical substitute for the unknown set $\mathcal{R}_e$ of representations of an entity. However, the substitution is only approximate. A label may incorrectly group together different entities, split a single entity into several categories, or contain attribute errors.
 
 \begin{example}
-Let \(\mathcal S\) be a collection of images of handwritten digits. Each image \(r_i\) is an effective representation, and its label \(\lambda_i\in\{0,1,\ldots,9\}\) indicates the digit shown in the image. The class \(\hat{\mathcal R}_{3}^{\mathcal S}\) contains all images labeled as the digit \(3\). This set is not an admissible representation of the abstract entity ``the digit \(3\)'', but it provides empirical information about how instances of that entity are represented in the dataset.
+Let $\mathcal S$ be a collection of images of handwritten digits. Each image $r_i$ is a representation, and its label $\lambda_i\in\{0,1,\ldots,9\}$ indicates the digit shown in the image. The class $\mathcal{R}_{3}^{\mathcal S}$ contains all images labeled as the digit $3$. This set is not an admissible representation of the abstract entity "the digit $3$", but it provides empirical information about how instances of that entity are represented in the dataset.
 \end{example}
 
-The supervised setting therefore replaces the unknown admissible representation of an entity by an empirical relation of co-membership: two representations with the same label are treated as representations of the same target, at least for the purposes of the supervised task.
+The supervised setting therefore replaces the unknown admissible representation of an entity by an empirical relation of co-membership: two representations with the same label are treated as representations of the same entity, at least for the purposes of the supervised task.
+
+%
+% Section: The Supervised Proxy
+%
 
 \section{The Supervised Proxy}
 \label{sec:supervised_proxy}
@@ -114,12 +118,16 @@ In a tabular machine learning dataset, the function \(\phi_j\) that extracts the
 The supervised miscoding of \(\mathbf{x}_j\) measures how well the \(j\)-th feature represents the target labels.
 \end{example}
 
-\section{Supervised Deficiency and Supervised Surplus}
-\label{sec:supervised_deficiency_surplus}
+%
+% Section: Deficiency and Surplus
+%
 
-The theoretical notion of miscoding is based on two components: deficiency and surplus. Deficiency measures how much information is missing from an effective representation in order to reach an admissible representation. Surplus measures how much information in the effective representation is not attributable to the entity.
+\section{Deficiency and Surplus}
+\label{sec:labeled_deficiency_surplus}
 
-In the supervised setting, the admissible representation is unavailable. The label string \(\boldsymbol{\lambda}\) is therefore used as a proxy for the target information that the representation should preserve. If the proxy representation \(\mathbf{x}\) does not allow us to reconstruct \(\boldsymbol{\lambda}\), then it is deficient with respect to the supervised task. Conversely, if \(\mathbf{x}\) contains substantial information that cannot be recovered from \(\boldsymbol{\lambda}\), then it contains surplus with respect to the supervised task.
+The theoretical notion of miscoding is based on two components: deficiency and surplus. Deficiency measures how much information is missing from a representation in order to reach an admissible representation. Surplus measures how much information in the representation is not attributable to the entity.
+
+In the labeled setting, the admissible representation is unavailable. The label string $\boldsymbol{\lambda}$ is therefore used as a proxy for the target distinctions that the representation should preserve. If the proxy representation $\mathbf{x}$ does not allow us to identify the corresponding label $\lambda_i$ for each represented instance, then it is deficient with respect to the supervised task. Conversely, if $\mathbf{x}$ contains substantial information that is not relevant to identifying the labels, then it contains surplus with respect to the supervised task.
 
 Let \(K(\cdot)\) denote Kolmogorov complexity. For two strings \(\mathbf{x},\boldsymbol{\lambda}\in\mathcal B^\ast\), the conditional complexity \(K(\boldsymbol{\lambda}\mid \mathbf{x})\) measures how much information is required to reconstruct the labels from the representation, while \(K(\mathbf{x}\mid \boldsymbol{\lambda})\) measures how much information is required to reconstruct the representation from the labels.
 

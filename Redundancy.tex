@@ -17,17 +17,17 @@ Albert Einstein
 \bigskip
 
 
-In Chapter \ref{chap:Mismodel} we introduced the concept of \emph{mismodel} as the discrepancy between a description currently available in scientific practice and the ideal class of minimal descriptions of a representation. If \(r\in\mathcal B^\ast\) is a representation and \(d\in\mathcal D\) is a valid description, then the mismodel of \(d\) with respect to \(r\) is determined by two components: the information still missing from \(d\), and the information contained in \(d\) that is not needed in any minimal description of \(r\).
+In Chapter \ref{chap:Mismodel} we introduced the concept of \emph{mismodel} as the discrepancy between a description currently available in scientific practice and the ideal class of minimal descriptions of a representation. If $r\in\mathcal R$ is a representation and $d\in\mathcal D$ is a valid description, then the mismodel of $d$ with respect to $r$ is determined by two components: the information still missing from $d$, and the information contained in $d$ that is not needed in any minimal description of $r$.
 
 The theoretical definition of mismodel is useful because it identifies the two fundamental ways in which a description can fail. A description may be \emph{deficient}: it may not contain enough information to reconstruct the representation. Or it may be \emph{excessive}: it may contain unnecessary descriptive content. However, mismodel is not computable in general. The main reason is that minimal descriptions are not known in scientific practice. Moreover, even if a candidate minimal description were available, verifying its minimality would require solving problems related to Kolmogorov complexity, which is non-computable in general.
 
-For this reason, mismodel cannot usually be computed directly. Instead, it must be approximated through operational quantities. There are two natural ways to do this. The first one, studied in Chapter \ref{chap:Error}, is to evaluate how far the output produced by the current description is from the representation \(r\). This gives rise to the notion of \emph{inaccuracy}. Inaccuracy is therefore a practical approximation to the deficiency component of mismodel: it measures the extent to which the current model fails to reproduce the representation.
+For this reason, mismodel cannot usually be computed directly. Instead, it must be approximated through operational quantities. There are two natural ways to do this. The first one, studied in Chapter \ref{chap:Inaccuracy}, is to evaluate how far the output produced by the current description is from the representation $r$. This gives rise to the notion of \emph{inaccuracy}. Inaccuracy is therefore a practical approximation to the deficiency component of mismodel: it measures the extent to which the current model fails to reproduce the representation.
 
-The second approach, studied in the present chapter, is to evaluate how far the current description is from being minimal as a description. This gives rise to the notion of \emph{surfeit}. Surfeit is intended as a practical approximation to the surplus component of mismodel. Rather than comparing the description with an unknown minimal description of \(r\), it examines the internal compressibility of the description itself. A description with a large amount of removable structure, repeated content, avoidable parameters, or unnecessary algorithmic machinery is unlikely to be close to minimal. Conversely, a description that is hard to compress is a better candidate for being near minimal, although not necessarily an accurate one.
+The second approach, studied in the present chapter, is to evaluate how far the current description is from being minimal as a description. This gives rise to the notion of \emph{surfeit}. Surfeit is intended as a practical approximation to the surplus component of mismodel. Rather than comparing the description with an unknown minimal description of $r$, it examines the internal compressibility of the description itself. A description with a large amount of removable structure, repeated content, avoidable parameters, or unnecessary algorithmic machinery is unlikely to be close to minimal. Conversely, a description that is hard to compress is a better candidate for being near minimal, although not necessarily an accurate one.
 
 This distinction is essential. Inaccuracy evaluates the relation between the description and the representation. Surfeit evaluates the description itself. A model may be concise but inaccurate; it may reproduce the representation well but be unnecessarily complicated; or it may be both accurate and concise. The theory of nescience requires these dimensions to be analyzed jointly.
 
-The central idea of this chapter is therefore modest but practical: since the surplus of a description cannot normally be computed, we approximate it by measuring how much the description can still be compressed. This approximation is not perfect. It detects syntactic and algorithmic redundancy, but it may fail to detect incompressible irrelevant information. Nevertheless, it captures an important and widely used principle of scientific practice: a better understanding of a phenomenon should allow us to replace unnecessarily complex models by simpler, more economical ones without increasing their inaccuracy.
+The central idea of this chapter is therefore essentially practical: since the surplus of a description cannot normally be computed, we approximate it by measuring how much the description can still be compressed. This approximation is not perfect. It detects syntactic and algorithmic redundancy, but it may fail to detect incompressible irrelevant information. Nevertheless, it captures an important and widely used principle of scientific practice: a better understanding of a phenomenon should allow us to replace unnecessarily complex models by simpler, more economical ones without increasing their inaccuracy.
 
 In this chapter we introduce surfeit formally, study its main properties, explain its relation to the theoretical surplus of descriptions, and discuss how it can be approximated in practice. We also examine how surfeit may be decreased, how it interacts with inaccuracy, and how the concept can be extended to research areas.
 
@@ -38,11 +38,11 @@ In this chapter we introduce surfeit formally, study its main properties, explai
 \section{Surfeit}
 \label{sec:Definition_surfeit}
 
-Let \(d\in\mathcal D\) be a valid description. Recall that a description is a finite string, usually interpreted as a pair \(\langle TM,a\rangle\), where \(TM\) is a Turing machine and \(a\) is an input such that \(TM(a)\) halts. The length \(l(d)\) measures the size of the description, while the Kolmogorov complexity \(K(d)\) measures the length of the shortest program capable of producing \(d\).
+Let \(d\in\mathcal D\) be a description. Recall that a description is a finite string, usually interpreted as a pair \(\langle TM,a\rangle\), where \(TM\) is a Turing machine and \(a\) is an input such that \(TM(a)\) halts. The length \(l(d)\) measures the size of the description, while the Kolmogorov complexity \(K(d)\) measures the length of the shortest program capable of producing \(d\).
 
 If \(K(d)\) is much smaller than \(l(d)\), then \(d\) contains compressible structure. In practical terms, this means that some part of the description is not being expressed economically. This compressible excess may correspond to repeated assumptions, redundant parameters, unnecessarily verbose formalism, duplicated rules, or avoidable implementation details. We call this excess the \emph{surfeit} of the description.
 
-\begin{definition}[Absolute surfeit]
+\begin{definition}
 Let \(d\in\mathcal D\) be a valid description. We define the \emph{absolute surfeit}\index{Absolute surfeit} of \(d\), denoted by \(\Sigma(d)\), as
 \[
 \Sigma(d)=l(d)-K(d).
@@ -77,7 +77,6 @@ For every non-empty description \(d\in\mathcal D\),
 0\leq \sigma(d)\leq 1.
 \]
 \end{proposition}
-
 \begin{proof}
 Since \(K(d)\leq l(d)+O(1)\), and since \(K(d)\geq 0\), we have, ignoring the usual additive constant,
 \[
@@ -94,14 +93,7 @@ The lower endpoint corresponds to descriptions that cannot be compressed further
 
 \begin{proposition}
 \label{prop:zero_surfeit}
-Let \(d\in\mathcal D\) be a valid description. Then
-\[
-\sigma(d)=0
-\]
-if and only if
-\[
-K(d)=l(d).
-\]
+Let \(d\in\mathcal D\) be a valid description. Then $\sigma(d)=0$ if and only if $K(d)=l(d)$.
 \end{proposition}
 
 \begin{proof}
@@ -113,10 +105,7 @@ Thus \(\sigma(d)=0\) if and only if
 \[
 1-\frac{K(d)}{l(d)}=0,
 \]
-which is equivalent to
-\[
-K(d)=l(d).
-\]
+which is equivalent to $K(d)=l(d)$.
 \end{proof}
 
 A description with zero surfeit is incompressible. This does not mean that it is correct, useful, or accurate. It only means that the description itself contains no algorithmically detectable redundancy. A random string has zero surfeit, but it need not describe anything meaningful. For this reason, surfeit must always be interpreted together with inaccuracy.
@@ -133,29 +122,29 @@ This example shows why surfeit cannot replace inaccuracy. Surfeit measures wheth
 % Section: Surfeit as an approximation to surplus
 %
 
-\section{Surfeit as an Approximation to Description Surplus}
-\label{sec:surfeit_as_approximation}
+\section{Surfeit and Description Surplus}
+\label{sec:surfeit_and_description_surplus}
 
-The theoretical surplus of a description was introduced in Chapter \ref{chap:Mismodel}. If \(r\in\mathcal B^\ast\) is a representation and \(\mathcal D_r^\ast\) denotes the set of minimal descriptions of \(r\), the surplus of \(d\) with respect to \(r\) measures the amount of information contained in \(d\) that is not needed once a minimal description of \(r\) is available. In its algorithmic form, it can be expressed as
+The theoretical surplus of a description was introduced in Chapter \ref{chap:Mismodel}. If \(r\in\mathcal R\) is a representation and \(\mathcal D_r^\ast\) denotes the set of minimal descriptions of \(r\), the surplus of \(d\) with respect to \(r\) measures the amount of information contained in \(d\) that is not needed once a minimal description of \(r\) is available. In its algorithmic form, it can be expressed as
 \[
-s_r(d)=\min_{d^\star\in\mathcal D_r^\ast} K(d\mid d^\star).
+s_D(r, d)=\min_{d^\star\in\mathcal D_r^\ast} K(d\mid d^\star).
 \]
 
-This quantity is conceptually precise, but it is not operational in general. The set \(\mathcal D_r^\ast\) is usually unknown, because minimal descriptions of \(r\) are not available in scientific practice. Moreover, determining whether a description is minimal would require solving a Kolmogorov-complexity problem. Hence, \(s_r(d)\) is normally non-computable.
+This quantity is conceptually precise, but it is not operational in general. The set \(\mathcal D_r^\ast\) is usually unknown, because minimal descriptions of \(r\) are not available in scientific practice. Moreover, determining whether a description is minimal would require solving a Kolmogorov-complexity problem. Hence, \(s_D(r, d)\) is normally non-computable.
 
 Surfeit provides a weaker but computable-oriented proxy:
 \[
-s_r(d)
+s_D(r, d)
 \quad\text{is approximated by}\quad
 \sigma(d).
 \]
 The approximation is based on the following intuition. If a description contains avoidable descriptive material, this excess will often manifest itself as internal compressibility. In such cases, measuring how much \(d\) can be compressed gives information about how much unnecessary content the description contains.
 
-However, the approximation is not exact. The theoretical surplus \(s_r(d)\) is semantic and representation-relative: it depends on what is unnecessary for describing \(r\). Surfeit \(\sigma(d)\) is syntactic and description-internal: it depends only on the compressibility of \(d\). Therefore, surfeit can detect redundant structure, but it cannot detect all forms of irrelevant information.
+However, the approximation is not exact. The theoretical surplus \(s_D(r, d)\) is semantic and representation-relative: it depends on what is unnecessary for describing \(r\). Surfeit \(\sigma(d)\) is syntactic and description-internal: it depends only on the compressibility of \(d\). Therefore, surfeit can detect redundant structure, but it cannot detect all forms of irrelevant information.
 
 \begin{proposition}
 \label{prop:surfeit_weak_proxy}
-Let \(r\in\mathcal B^\ast\) be a representation and \(d\in\mathcal D\) a description. The value \(\sigma(d)\) depends only on \(d\), while \(s_r(d)\) depends on both \(d\) and \(r\). Hence, in general, surfeit cannot be an exact measure of description surplus.
+Let \(r\in\mathcal R\) be a representation and \(d\in\mathcal D\) a description. The value \(\sigma(d)\) depends only on \(d\), while \(s_r(d)\) depends on both \(d\) and \(r\). Hence, in general, surfeit cannot be an exact measure of description surplus.
 \end{proposition}
 
 \begin{proof}
@@ -165,9 +154,9 @@ By definition,
 \]
 which depends only on the string \(d\). On the other hand,
 \[
-s_r(d)=\min_{d^\star\in\mathcal D_r^\ast}K(d\mid d^\star),
+s_D(r, d)=\min_{d^\star\in\mathcal D_r^\ast}K(d\mid d^\star),
 \]
-which depends on the set \(\mathcal D_r^\ast\), and therefore on the representation \(r\). Thus two different representations \(r_1\) and \(r_2\) may yield different values \(s_{r_1}(d)\) and \(s_{r_2}(d)\), while \(\sigma(d)\) remains unchanged. Consequently, surfeit cannot coincide with description surplus in general.
+which depends on the set \(\mathcal D_r^\ast\), and therefore on the representation \(r\). Thus two different representations \(r_1\) and \(r_2\) may yield different values \(s_D(r_1, d)\) and \(s_D(r_2, d)\), while \(\sigma(d)\) remains unchanged. Consequently, surfeit cannot coincide with description surplus in general.
 \end{proof}
 
 The previous proposition clarifies the role of surfeit. It is not a replacement for the theoretical concept of surplus. It is a practical approximation that becomes informative under additional assumptions about the kind of unnecessary content present in the description.
@@ -176,15 +165,7 @@ The approximation is most reliable when the superfluous part of the description 
 
 \begin{proposition}
 \label{prop:compressible_appendix_increases_surfeit}
-Let \(d,u\in\mathcal B^\ast\) be strings, and suppose that \(u\) is computable from \(d\) up to an additive constant, that is,
-\[
-K(u\mid d)=O(1).
-\]
-Then
-\[
-K(du)\leq K(d)+O(1).
-\]
-Consequently,
+Let \(d,u\in\mathcal B^\ast\) be strings, and suppose that \(u\) is computable from \(d\) up to an additive constant, that is, $K(u\mid d)=O(1)$. Then $K(du)\leq K(d)+O(1)$. Consequently,
 \[
 \sigma(du)\geq 1-\frac{K(d)+O(1)}{l(d)+l(u)}.
 \]
@@ -211,15 +192,7 @@ However, there are also cases where surplus is not detected by surfeit.
 
 \begin{proposition}
 \label{prop:incompressible_noise_limitation}
-Let \(d,u\in\mathcal B^\ast\) be strings such that \(u\) is incompressible and algorithmically independent of \(d\), that is,
-\[
-K(u)\geq l(u)-O(1)
-\]
-and
-\[
-K(u\mid d)\geq l(u)-O(1).
-\]
-Then
+Let \(d,u\in\mathcal B^\ast\) be strings such that \(u\) is incompressible and algorithmically independent of \(d\), that is, $K(u)\geq l(u)-O(1)$ and $K(u\mid d)\geq l(u)-O(1)$. Then
 \[
 K(du)\geq K(d)+l(u)-O(1).
 \]
@@ -239,15 +212,6 @@ Thus the appended string \(u\) may increase both the length and the Kolmogorov c
 \end{proof}
 
 This limitation is important. A description may contain irrelevant information that is itself incompressible. Such information contributes to the theoretical surplus \(s_r(d)\), because it is not needed to describe \(r\), but it may not contribute to \(\sigma(d)\), because it is not compressible. Surfeit is therefore a detector of compressible excess, not a universal detector of semantic irrelevance.
-
-We can summarize the quality of the approximation as follows:
-
-\begin{itemize}
-    \item Surfeit is a good approximation to description surplus when unnecessary parts of the model are redundant, repeated, predictable, or compressible.
-    \item Surfeit is a weak approximation when unnecessary parts are incompressible but still irrelevant to the representation.
-    \item Surfeit must be interpreted together with inaccuracy, because a concise description may fail to reconstruct the representation.
-    \item Surfeit is useful in practice because it can be estimated with compression methods, whereas the theoretical surplus of descriptions cannot be computed in general.
-\end{itemize}
 
 %
 % Section: Practical Surfeit

@@ -49,10 +49,10 @@ On the companion website for the library, the reader will find a collection of \
 % Section: Empirical Encoding and Code Length
 %
 
-\section{Empirical Encoding and Code Length}
-\label{sec:empirical_encoding_and_code_length}
+\section{A Note on Compression}
+\label{sec:note_compression}
 
-The practical computation of the components of nescience requires finite, computable approximations to quantities that are theoretically defined in terms of Kolmogorov complexity. Since Kolmogorov complexity is not computable in general, the \texttt{mnplib} library replaces it with empirical code lengths derived from observed data. The role of the utility functions in the library is therefore foundational: they transform observed variables into finite empirical states and compute the corresponding empirical distributions, entropies, and code lengths.
+The practical computation of the components of nescience requires finite, computable approximations to quantities that are theoretically defined in terms of Kolmogorov complexity. Since Kolmogorov complexity is not computable in general, the \texttt{mnplib} library replaces it with empirical code lengths derived from observed data. The role of the \texttt{utils} functions in the library is therefore foundational: they transform observed variables into finite empirical states and compute the corresponding empirical distributions, entropies, and code lengths.
 
 Let $\mathbf{x}=(x_1,\ldots,x_n)$ be a vector of observations of a random variable $X$. If $X$ is categorical and takes values in a finite alphabet $\mathcal{G}=\{g_1,\ldots,g_\ell\}$, we denote by
 \[
@@ -82,7 +82,8 @@ Equivalently, since each observation $x_j$ is encoded using a codeword of length
 =
 -\sum_{j=1}^n \log_2 \hat{p}(x_j).
 \]
-This quantity is not a direct estimate of Kolmogorov complexity in the algorithmic sense, but a practical empirical approximation based on Shannon coding. It measures the length of the data under the empirical distribution induced by the observed sample.
+This quantity is not a direct estimate of Kolmogorov complexity in the algorithmic sense, but a practical empirical approximation based on Shannon coding (see Section \ref{sec:Optimal-Codes}
+). It measures the length of the data under the empirical distribution induced by the observed sample.
 
 The same construction applies to several random variables. Given vectors $\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(m)}$ with $n$ observations each, we form the joint empirical vector
 \[
@@ -177,35 +178,28 @@ where
 n_i=\sum_{j=1}^n I(x_j\in D_i).
 \]
 
-The current version of \texttt{mnplib} uses uniform discretization. In uniform discretization, the interval between the minimum and maximum observed values is divided into intervals of equal width. This choice is deliberate. The goal of discretization in this context is not merely to create balanced bins, but to preserve the empirical shape of the numeric distribution at the chosen resolution. Dense regions of the original vector remain dense after discretization, and sparse regions remain sparse. Consequently, the empirical frequencies of the discretized vector still contain information about the distribution of the original numeric vector.
+The \texttt{mnplib} library is based on an uniform discretization. In uniform discretization, the interval between the minimum and maximum observed values is divided into intervals of equal width. This choice is deliberate. The goal of discretization in this context is not merely to create balanced bins, but to preserve the empirical shape of the numeric distribution at the chosen resolution. Dense regions of the original vector remain dense after discretization, and sparse regions remain sparse. Consequently, the empirical frequencies of the discretized vector still contain information about the distribution of the original numeric vector.
 
-This is important because empirical code length is computed from the observed probabilities of the discrete states. If the discretization procedure forced all bins to contain approximately the same number of observations, the resulting distribution would become close to uniform and the empirical code length would be determined mainly by the number of bins rather than by the original distribution of the data. Uniform discretization avoids this collapse and is therefore better aligned with the compression interpretation used in \texttt{mnplib}.
+This is important because empirical code length is computed from the observed probabilities of the discrete states. If the discretization procedure forced all bins to contain approximately the same number of observations (eg. quantaly based discretization), the resulting distribution would become close to uniform and the empirical code length would be determined mainly by the number of bins rather than by the original distribution of the data. Uniform discretization avoids this collapse and is therefore better aligned with the compression interpretation used in \texttt{mnplib}.
 
-The choice of the number of bins is critical. Too few bins produce an overly coarse representation and may hide relevant variation. Too many bins produce sparse empirical distributions and unreliable probability estimates. The \texttt{mnplib} library therefore uses an occupancy-based rule. Suppose that $d$ numeric variables are encoded jointly, and that the categorical variables already present in the joint representation induce $C$ observed categorical states. If each numeric variable is discretized into $b$ bins, then the approximate number of joint cells is $C b^d$. If $m$ denotes the desired average number of observations per joint cell, we choose $b$ so that
+The choice of the number of bins is critical. Too few bins produce an overly coarse representation and may hide relevant variation. Too many bins produce sparse empirical distributions and unreliable probability estimates. The
+\texttt{mnplib} library therefore uses a cubic-root rule inspired by the classical Rice rule.
+
+The Rice rule is a simple heuristic for choosing the number of bins in a histogram. Given $n$ observations, it recommends using approximately
 \[
-C b^d \approx \frac{n}{m}.
+b = 2 n^{1/3}
 \]
-Solving for $b$ gives
+bins. The rule is not derived from the specific distribution of the data; instead, it provides a general-purpose compromise between excessive coarseness and excessive sparsity. Following this idea, when \texttt{n\_bins="auto"}, the library
+chooses
 \[
-b
-\approx
-\left(
-\frac{n}{mC}
-\right)^{1/d}.
+b = \left\lceil 2 n^{1/3} \right\rceil .
 \]
-In practice, the result is rounded to an integer and constrained by user-defined lower and upper bounds. This rule adapts automatically to the sample size and to the dimensionality of the empirical distribution being estimated. In particular, it prevents the number of joint cells from growing too quickly when several numeric variables are encoded together.
+In practice, this value is constrained by user-defined lower and upper bounds. The lower bound prevents degenerate discretizations with too few bins, while the upper bound prevents excessively fine partitions in small or noisy datasets.
 
-\subsection*{Stateless Empirical Encoding}
+This rule depends only on the sample size, not on the number of numeric variables being encoded jointly. Consequently, when several numeric variables are discretized in the same empirical distribution, each numeric variable is discretized using the same number of bins, although the bin edges are computed separately from the range of each variable. This provides a common level of granularity across the encoded variables while preserving the empirical shape of each marginal numeric distribution (see Sections \ref{sec:machine_learning_miscoding}
+and \ref{sec:machine_learning_inaccuracy}).
 
 The current utility layer is stateless. Each call to the empirical distribution, empirical entropy, or empirical code-length functions receives the variables to be analyzed, encodes them within that call, and computes the corresponding empirical quantities. No fitted encoder object is stored and no learned representation is reused across calls.
-
-For categorical variables, the library assigns integer symbols to the observed labels according to their equality classes. The actual integer assigned to each category is irrelevant; only the partition of the sample into equal values matters. If two observations have the same categorical value, they receive the same symbol. If they have different categorical values, they receive different symbols.
-
-For numeric variables, the library computes uniform bin boundaries from the values supplied in the current call. The numeric values are then replaced by the index of the bin to which they belong. In this way, every numeric vector is converted into a finite symbolic vector before frequencies are counted.
-
-The stateless design has the advantage of simplicity. The empirical distribution of a collection of variables is always computed from the variables supplied to the function, without reference to external state. This is appropriate when estimating the empirical code length of a vector or of a joint vector as it appears in the data. For example, the joint code length of a target vector and a prediction vector should be computed by passing both vectors in the same call, so that the joint empirical states are counted directly from the paired observations.
-
-This design also clarifies the interpretation of empirical code length. The library is not estimating the code length relative to a fixed external alphabet. It is estimating the code length induced by the empirical distribution of the observed encoded states. Therefore, unobserved states do not contribute to the plug-in code length unless an explicit finite-sample correction or alphabet size is provided.
 
 \subsection*{Finite-Sample Corrections}
 
@@ -312,122 +306,6 @@ K(\mathbf{x})
 n\hat{H}(\tilde{\mathbf{x}}),
 \]
 where $\tilde{\mathbf{x}}$ is the finite empirical encoding of the observed vector. For categorical variables, this encoding is obtained by mapping labels to discrete symbols. For numeric variables, it is obtained by uniform discretization. The quality of this approximation depends on the choice of discretization resolution, the treatment of categorical states, and the finite-sample correction applied to entropy. By making these choices explicit, the utility layer provides a stable computational basis for the rest of the library.
-
-
-% % Subsection: Compression of strings
-
-% \subsection{Compression of Strings} 
-
-% {\color{red} TODO: Pending}
-
-% % Subsection: Compression of datasets
-
-% \subsection{Compression of Datasets}
-
-% Let $\mathbf{x} = { x_1, \ldots, x_n }$ be a vector to be compressed, representing either a feature or the target variable. As the compression technique, we employ a code $C$ of minimal length, determined by the relative frequencies of the observed values (see Section \ref{sec:Optimal-Codes}). We must distinguish between two cases: when the vector consists of discrete values and when it consists of continuous values.
-
-% If the variable is discrete, its values do not require further discretization. Suppose $\mathbf{x}$ is a qualitative vector taking values from a set of labels $\mathcal{G} = {g_1, \ldots, g_\ell}$, that is, $\mathbf{x} \in \mathcal{G}^n$. In this case, the empirical frequencies of the labels provide a natural basis for constructing the code. Specifically, let
-% \[
-% f_i = \frac{1}{n}\sum_{j=1}^n I(x_j = g_i)
-% \]
-% be the observed relative frequency of label $g_i$.
-
-% In the case where $\mathbf{x}$ is generated by a continuous random variable, we cannot directly assign probabilities to individual values $x_j$, since the underlying distribution of $\mathbf{x}$ is unknown and, moreover, $P(x_j)=0$ for all $j$. To approximate the Kolmogorov complexity $K(\mathbf{x})$, we first discretize $\mathbf{x}$ into a finite set of intervals and then apply the same optimal coding scheme used in the discrete case.
-
-% A discretization algorithm maps a (potentially vast) set of numeric values into a reduced set of discrete categories, inevitably losing some information in the process. The choice of discretization method strongly affects the practical computation of nescience. Ideally, the procedure should balance bias and variance: it should use enough intervals to capture the structure of the data (low bias), but not so many that most bins remain empty (which would lead to high variance).
-
-% Common approaches include \emph{equal-width discretization}\index{Equal-width discretization}, \emph{equal-frequency discretization}\index{Equal-frequency discretization}, and \emph{fixed-frequency discretization}\index{Fixed-frequency discretization}. In the \texttt{mnplib} library we adopt an equal-width discretization strategy, enhanced with additional techniques that remove the need to manually optimize the hyperparameter controlling the number of bins, thereby enabling full automation of the discretization process.
-
-% Our approach begins by selecting the number of bins according to \emph{Rice's rule},
-% \[
-% B \;\approx\; 2 \, n^{1/3},
-% \]
-% which is asymptotically motivated in the context of histogram density estimation and offers a good balance between resolution and robustness. This rule avoids the excessive granularity of the square-root heuristic (which can result in too few samples per bin when building joint encodings), while remaining less conservative than Sturges’ logarithmic rule (see Section \ref{sec:discretization_continuous_variables}).
-
-% Equal-width binning performs poorly in the presence of outliers, since extreme values can stretch the binning range, leaving large portions of the histogram empty. To address this issue, we adopt a \emph{trimmed core range}\index{Trimmed core range}: rather than spanning from $\min(x)$ to $\max(x)$, we restrict the binning interval to
-% \[
-% [a, b] \;=\; \bigl[ Q_\alpha(x), \; Q_{1-\alpha}(x) \bigr],  
-% \]
-% where $Q_\alpha(x)$ denotes the $\alpha$-quantile (e.g., $\alpha = 0.005$). Two additional overflow bins, $(-\infty, a)$ and $(b, +\infty)$, capture the extreme tails, ensuring robustness against outliers.
-
-% To further prevent sparsity within the core, we impose a minimum occupancy threshold $m_{\min}$. If any bins fall below this threshold, the number of core bins is reduced until all bins contain at least $m_{\min}$ samples. This guarantees that each symbol represents a meaningful portion of probability mass (see Section \ref{sec:discretization_continuous_variables}).
-
-% With this procedure, the estimated Kolmogorov complexity of a dataset is given by the length of its compressed representation under an optimal code. The discretization process combines Rice's rule for bin selection, robust trimming to handle outliers, and minimum occupancy enforcement to avoid empty bins. Together, these components ensure that the complexity estimates are (i) faithful to the observed distribution, (ii) robust to extreme values, and (iii) comparable across single and joint variables.
-
-% Given either a discretized continuous variable or a discrete variable with categorical labels, let $c_i$ denote the number of samples in category or bin $i$, and let $B$ be the total number of bins (or distinct labels). Instead of relying on the naive plug-in estimator $p_i = c_i/n$, we adopt the Krichevsky-Trofimov (or Jeffreys) smoothing:
-% \[
-% p_i \;=\; \frac{c_i + \tfrac{1}{2}}{n + \tfrac{B}{2}}.  
-% \]
-% This Bayesian correction eliminates zero-probability events, stabilizes the estimation of code length, and achieves minimax-optimal redundancy in universal coding (see Section \ref{sec:discretization_continuous_variables}). Intuitively, it can be interpreted as adding a "half-count" to every category or bin, ensuring that even rarely observed or unobserved outcomes contribute non-zero probability mass. The resulting compressed length is then
-% \[
-% \hat{K}_C(\mathbf{x}) \;=\; - \sum_{i=1}^B c_i \log_2 p_i.  
-% \]
-
-% \begin{example}
-% Consider the sample
-% \[
-% \mathbf{x} = \{-1.2,\,-0.8,\,-0.5,\,-0.1,\,0.0,\,0.2,\,0.4,\,0.9,\,1.1,\,1.3,\,1.5,\,4.5\}  
-% \]
-% with $n=12$, which contains an outlier at $4.5$. We discretize using equal-width bins, with the bin count determined by Rice's rule:
-% \[
-% B_{\text{core}} \;\approx\; \lceil 2\,n^{1/3}\rceil \;=\; \lceil 2 \cdot 12^{1/3}\rceil \;\approx\; \lceil 4.58\rceil \;=\; 5.  
-% \]
-% Next, we apply a small trimming factor $\alpha=0.05$. The core range is then defined as
-% \[
-% [a,b] \;=\; \bigl[ Q_{0.05}(x),\,Q_{0.95}(x) \bigr].  
-% \]
-% For this sample, the outlier $4.5$ falls into the right tail, and the core can be taken as $[a,b] = [-1.2,,1.5]$. We divide this interval into $B_{\text{core}}=5$ equal-width bins of size $h=(b-a)/5=0.54$:
-% \[
-% [-1.2,-0.66),\;[-0.66,-0.12),\;[-0.12,0.42),\;[0.42,0.96),\;[0.96,1.5].  
-% \]
-% We also add two overflow bins, $(-\infty,a)$ and $(b,+\infty)$. With a minimum occupancy threshold $m_{\min}=1$, all bins contain at least one observation, so no adjustment of $B_{\text{core}}$ is required. Assigning each $x_j$ to its bin (core bins are half-open except for the last) yields:
-% \[
-% \text{Left tail}=0,\quad  
-% \text{Core}=(2,\,1,\,4,\,1,\,3),\quad  
-% \text{Right tail}=1.  
-% \]
-% Thus, the 7-bin count vector is
-% \[
-% (c_1,\ldots,c_7) \;=\; (0,\,2,\,1,\,4,\,1,\,3,\,1), \qquad B=7,\; n=12.  
-% \]
-% Applying KT smoothing gives
-% \[
-% p_i \;=\; \frac{c_i + \tfrac12}{n + \tfrac{B}{2}}  
-% \;=\; \frac{c_i + \tfrac12}{12+3.5}  
-% \;=\; \frac{c_i + \tfrac12}{15.5},  
-% \]
-% so the smoothed probabilities are approximately
-% \[
-% p \;\approx\; \bigl(0.0323,\,0.1613,\,0.0968,\,0.2903,\,0.0968,\,0.2258,\,0.0968 \bigr).  
-% \]
-% Finally, the optimal data code length is
-% \[
-% \widehat{K}_C(\mathbf{x}) \;=\; -\sum_{i=1}^{B} c_i \log_2 p_i  
-% \;\approx\; 28.9 \;\text{bits.}  
-% \]
-% \end{example}
-
-% When compressing multiple variables jointly, for example $\mathbf{x}$ and $\mathbf{y}$, we first discretize each variable independently (if needed) using its own binning scheme, and then combine them into joint symbols. To preserve comparability, we use a \emph{mixed-radix encoding}\index{Mixed-radix encoding}: if $\mathbf{x}$ has $B_x$ bins and $\mathbf{y}$ has $B_y$, a pair $(i,j)$ is mapped to the integer
-% \[
-% z \;=\; i + B_x j.  
-% \]
-% This approach generalizes naturally to higher dimensions, providing a bijection between joint bins and integers while preserving the underlying probability distributions.
-
-% \begin{example}
-% Let $\mathbf{x}$ and $\mathbf{y}$ be two samples of size $n$. Each axis is discretized independently, following the procedure described above, yielding $B_x$ and $B_y$ bins respectively (with the same trimming and occupancy rules applied). The joint space is then partitioned into $B_x \times B_y$ cells. To encode these joint cells, we use a mixed-radix mapping, where each pair $(i,j)$ is mapped to a single index $z = i + B_x j$.
-
-% Let $c_{ij}$ denote the joint counts and $c_z$ the corresponding counts over the mapped indices. With KT smoothing, the joint code length is given by
-% \[
-% \widehat{K}_C(\mathbf{x},\mathbf{y})  
-% \;=\;  
-% -\sum_{z=1}^{B_x B_y} c_z \log_2\!\left(\frac{c_z+\tfrac12}{n+\tfrac{B_x B_y}{2}}\right).  
-% \]
-% By using the same per-axis binning for $\mathbf{x}$, $\mathbf{y}$, and their joint grid, we ensure comparability under a consistent encoding scheme (the same “machine”). In practice, the relation
-% \[
-% \widehat{K}_C(\mathbf{x},\mathbf{y}) \;\lesssim\; \widehat{K}_C(\mathbf{x}) + \widehat{K}_C(\mathbf{y})  
-% \]
-% holds up to small modeling constants, in accordance with the chain rule (see Section \ref{prop:kolmogorov_chain_rule}).
-% \end{example}
 
 %
 % Section: Miscoding
@@ -711,7 +589,7 @@ In Section \ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a descri
 \[
 \iota(d, r) = \frac{ \max\{ K \left(r \mid \Gamma(d) \right), K \left( \Gamma(d) \mid r \right) \} } { \max\{ K(r), K \left(\Gamma(d) \right) \} }
 \]
-Inaccuracy, being based on Kolmogorov complexity, is not computable in the general case and must be approximated in practice. In this section we show how this concept can be estimated for a model trained on a dataset. The approach parallels the one used for miscoding (see Section \ref{sec:approx-miscoding}).
+Inaccuracy, being based on Kolmogorov complexity, is not computable in the general case and must be approximated in practice. In this section we show how this concept can be estimated for a model trained on a dataset. The approach follows the approach described in Section \ref{sec:note_compression}.
 
 For discriminative models, which estimate $P(\mathbf{y} \mid \mathbb{X})$, the natural proxy compares predicted targets $\hat{\mathbf{y}}$ with true targets $\mathbf{y}$ via normalized compression distance.
 
@@ -724,18 +602,6 @@ Let $\mathbb{X}$ be a dataset, $\mathbf{y}$ a response variable, $m$ a model, an
 
 Intuitively, $\hat\iota(\hat{\mathbf{y}}, \mathbf{y})$ measures how far the predictions are from the true values. The lower this quantity, the better $m$ is as a predictor of $\mathbf{y}$. Unlike standard accuracy metrics, this measure accounts not only for how difficult it is to reconstruct $\mathbf{y}$ from $\hat{\mathbf{y}}$, but also for how much additional information $\hat{\mathbf{y}}$ contains that is unrelated to $\mathbf{y}$.
 
-For generative models, which aim to capture the joint distribution $P(\mathbb{X}, \mathbf{y})$, we compare the observed joint sample with a synthetic joint sample generated by the model.
-
-\begin{definition}
-Let $m$ be a generative model for $(\mathbb{X}, \mathbf{y})$. Let $(\hat{\mathbb{X}}, \hat{\mathbf{y}})$ be a synthetic sample of the same size as $(\mathbb{X}, \mathbf{y})$ generated by $m$ (after applying the same encoding/discretization scheme). The \emph{generative inaccuracy} of $m$ for $(\mathbb{X}, \mathbf{y})$ is:
-\[
-\hat\iota_g\!\left(m; \, (\mathbb{X}, \mathbf{y})\right)
-= \frac{ \hat{K}_C\!\left(\langle \mathbb{X}, \mathbf{y} \rangle , \langle \hat{\mathbb{X}}, \hat{\mathbf{y}} \rangle\right)
-- \min\!\left\{ \hat{K}_C\!\left(\langle \mathbb{X}, \mathbf{y} \rangle\right), \hat{K}_C\!\left(\langle \hat{\mathbb{X}}, \hat{\mathbf{y}} \rangle\right) \right\} }
-{ \max\!\left\{ \hat{K}_C\!\left(\langle \mathbb{X}, \mathbf{y} \rangle\right), \hat{K}_C\!\left(\langle \hat{\mathbb{X}}, \hat{\mathbf{y}} \rangle\right) \right\} } .
-\]
-\end{definition}
-
 When a model provides explicit probabilities, one may also define $\hat{K}$ using the model code length $-\sum \log_2 \hat{p}_m(\cdot)$; we keep the compression-based proxy here for consistency with the rest of the chapter.
 
 \begin{example}
@@ -744,7 +610,7 @@ According to the minimum nescience principle, inaccuracy is the normalized compr
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
-from fastautoml.fastautoml import Inaccuracy
+from mnplib.inaccuracy import Inaccuracy
 from sklearn.datasets import load_digits
 
 X, y = load_digits(return_X_y=True)
@@ -784,7 +650,7 @@ We compare $1-\text{accuracy}$ and inaccuracy. As shown in Figure \ref{figure:ma
 
 \end{example}
 
-In Example \ref{ex:machine_learning:inaccuracy:inaccuracy_DT} we observed that deeper trees yield smaller training error. Of course, larger depth increases the risk of overfitting\index{Overfitting}. However, within the nescience framework, overfitting is handled by \emph{surfeit} (see Section \ref{sec:machine_learning:surfeit}), so inaccuracy need not penalize complexity directly.
+In Example \ref{ex:machine_learning:inaccuracy:inaccuracy_DT} we observed that deeper trees yield smaller training error. Of course, larger depth increases the risk of overfitting\index{Overfitting}. However, within the nescience framework, overfitting is handled by \emph{surfeit} (see Section \ref{sec:machine_learning_surfeit}), so inaccuracy need not penalize complexity directly.
 
 We can interpret inaccuracy as the effort, measured in description length, required to \emph{fix} a model's predictions. Consequently, a model that makes one hundred \emph{identical} errors is easier to correct than a model that makes one hundred \emph{distinct} errors (see Example \ref{ex:machine_learning:inaccuracy:one_hundred_errors}).
 
@@ -898,26 +764,150 @@ We vary the minimum number of samples per leaf $i \in \{1,\ldots,100\}$. In Figu
 \section{Surfeit}
 \label{sec:machine_learning_surfeit}
 
-In Section \ref{sec:Definition_redundancy} we defined the surfeit of the model $m \in \mathcal{M}$ for a representation $r \in \mathcal{R}$ as:
+In Chapter \ref{chap:Surfeit} we defined the surfeit of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as
 \[
-\sigma (m, r) = 1 - \frac{K(r)}{l(m)}
+\sigma(d,r) = \frac{|l(d)-K(r)|}{l(d)}.
 \]
-Since the length $K(r)$ of the shortest possible description of $r$ (its Kolmogorov complexity) is in general unknown, we must approximate this concept in practice. In the setting of a training dataset $\mathbb{X}$ and a target variable $\mathbf{y}$, we approximate the surfeit of a model $m$ for the representation $\mathbf{y}$ by
+This quantity measures how much longer the description $d$ is than an ideal minimal description of the representation $r$. If $l(d)$ is close to $K(r)$, then the description contains little surplus. If $l(d)$ is much
+larger than $K(r)$, then the description contains unnecessary structure.
+
+In practice, however, $K(r)$ is not computable. Moreover, when we want to study the internal redundancy of a model description itself, it is useful to consider a representation-independent approximation. Instead of asking how far $d$ is from a shortest description of $r$, we ask how far $d$ is from a shortest description of itself. This gives the redundancy-based approximation
 \[
-\hat\sigma(m, \mathbf{y}) = 1 - \frac{\hat{K}_C(\mathbf{y})}{l(m)} ,
+\rho(d) = 1 - \frac{K(d)}{l(d)}.
 \]
-where $\hat{K}_C(\mathbf{y})$ is the length of the compressed version of the vector $\mathbf{y}$ using a minimal-length code $C$ determined by the empirical relative frequencies of the values observed in $\mathbf{y}$ (see Section \ref{sec:approx-miscoding}).
+Here $K(d)$ denotes the Kolmogorov complexity of the string $d$. A string with low redundancy has $K(d) \approx l(d)$, and therefore $\sigma(d) \approx 0$. A highly redundant string has $K(d) \ll l(d)$, and therefore $\sigma(d)$ is close to one.
+
+This formulation is particularly convenient in machine learning. A trained model $m$ is first converted into a string-based description $d_m$, and surfeit is then estimated from the redundancy of that description:
+\[
+\rho(m) = \sigma(d_m) = 1 - \frac{K(d_m)}{l(d_m)}.
+\]
+The model is therefore studied as a string of symbols. No reference to the training dataset or to the target variable is needed in the computation of surfeit. Surfeit measures the internal surplus of the model description, not the accuracy of the model with respect to observed data.
+
+The theoretical difficulty is that $K(d_m)$ is not computable. The \texttt{mnplib} library therefore approximates $K(d_m)$ using ordinary text compression. If $C(d_m)$ denotes the length of the compressed version of the
+model description, the practical approximation is
+\[
+\hat{\rho}(m) = 1 - \frac{C(d_m)}{l(d_m)}.
+\]
+This approximation is not intended to recover Kolmogorov complexity exactly. Rather, it provides a practical test for redundancy: if the model description contains repeated patterns, regularities, or unnecessary symbolic structure, a compressor should be able to encode it using fewer symbols.
+
+The current implementation uses \texttt{zlib} as the canonical compressor. This choice is deliberate. \texttt{zlib} is fast, deterministic, widely available, and has a small and well-understood format overhead. These properties are important because surfeit may be computed repeatedly during model comparison. Using a single compressor also makes the resulting values more reproducible: two users evaluating the same model description should not obtain different surfeit values merely because they selected different compression algorithms.
+
+A practical issue arises when the model description is very short. For short strings, the compressed string may be longer than the original one:
+\[
+C(d_m) > l(d_m).
+\]
+This does not mean that the model has negative redundancy. It usually means that the fixed overhead of the compression format dominates the compressed representation. In the case of the standard \texttt{zlib} format, the stream contains a small header and a checksum trailer. To avoid interpreting this format overhead as model complexity, \texttt{mnplib} applies an overhead correction.
+
+Let $h_{\mathrm{zlib}}$ be the assumed \texttt{zlib} overhead. The effective compressed length is defined as
+\[
+C_{\mathrm{eff}}(d_m) = \min \left\{l(d_m), \max\left\{0, C(d_m)-h_{\mathrm{zlib}}\right\} \right\}.
+\]
+The default value used by the library is
+\[
+h_{\mathrm{zlib}} = 6,
+\]
+corresponding to the usual two-byte header and four-byte checksum trailer. The clipping operation ensures that the effective compressed length is never negative and never larger than the original model description.
+
+There is a second practical adjustment. A model description should not be credited with a useful compressed length larger than the amount of information contained in the target it is intended to describe. If the target has empirical code length $\hat K_C(\mathbf{y})$, and if
+\[
+\hat K_C(\mathbf{y}) < C_{\mathrm{eff}}(d_m),
+\]
+then the implementation uses $\hat K_C(\mathbf{y})$ as the reference length instead of $C_{\mathrm{eff}}(d_m)$. In other words, the practical reference length is
+\[
+L_{\mathrm{ref}}(m,\mathbf{y}) = \min \left\{ C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y}) \right\}.
+\]
+This condition prevents a model description from being treated as more informative than the target itself. It is especially relevant when the model description is long, or only weakly compressible, while the target variable is
+simple.
 
 \begin{definition}
-Let $\mathbf{y}$ be a response variable, and $\mathbb{X}$ a dataset composed of $p$ features and $n$ samples. We define the surfeit of the model $m \in \mathcal{M}$ as a representation of $\mathbf{y}$, denoted by $\hat\sigma(m, \mathbf{y})$, as
+Let $m$ be a trained model, let $d_m$ be its string-based description, and let $\mathbf{y}$ be the target variable that the model is intended to describe. We define the practical surfeit of $m$ as
 \[
-\hat\sigma(m, \mathbf{y}) = 1 - \frac{\hat{K}_C(\mathbf{y})}{l(m)} .
+\hat{\rho}(m,\mathbf{y}) = 1 - \frac{ L_{\mathrm{ref}}(m,\mathbf{y}) }{ l(d_m) },
+\]
+where
+\[
+L_{\mathrm{ref}}(m,\mathbf{y}) = \min \left\{ C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y}) \right\}.
 \]
 \end{definition}
 
-This definition requires a method to encode models as strings of symbols so that their length $l(m)$ can be computed. Ideally, one would encode models as Turing machines and agree on a universal Turing machine to interpret them. However, this would make it very difficult to add new models to the \texttt{nescience} library. Instead, we use a restricted subset of the Python language as the model-encoding scheme: only a limited set of constructions is allowed, and third-party libraries are disallowed.
+Thus, the implementation follows two safeguards. First, it corrects the raw compressed length by subtracting the fixed \texttt{zlib} overhead. Second, it uses the empirical code length of the target as an upper bound on the useful reference length. A compact, non-redundant model description has low surfeit. A model whose description contains repeated or unnecessary structure has high surfeit. In this sense, surfeit acts as a practical approximation to descriptive surplus, while remaining bounded by the information content of the target being described.
+
+The implementation requires a way to encode models as strings of symbols. Ideally, descriptions would be encoded as Turing machines with respect to a fixed universal Turing machine. This would be the closest formulation to the theoretical definition. In practice, however, such an encoding would be difficult to implement and extend. The library therefore uses a restricted, Python-like textual representation of the predictive procedure. The intention is not to serialize the software object, but to produce a simplified program-like description of what the model computes. Third-party libraries, external state, and implementation-specific metadata are excluded from the description whenever possible.
+
+A typical usage of the \texttt{Surfeit} class is:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.surfeit import Surfeit
+
+sft = Surfeit()
+
+surfeit = sft.surfeit_model(model)
+print(surfeit)
+\end{verbatim}
+}
+\end{sourcecode}
+
+When the model description is already available as a string, surfeit can be computed directly from that string:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.surfeit import Surfeit
+
+model_string = """
+def model(X):
+    if X1 < 0.5:
+        return 0
+    else:
+        return 1
+"""
+
+sft = Surfeit()
+
+surfeit = sft.surfeit_string(model_string)
+print(surfeit)
+\end{verbatim}
+}
+\end{sourcecode}
+
+For diagnostic purposes, the detailed interface exposes the intermediate quantities used in the calculation:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+details = sft.surfeit_string_detailed(model_string)
+
+for key, value in details.items():
+    print(key, value)
+\end{verbatim}
+}
+\end{sourcecode}
+
+The detailed output includes the raw length of the model description, the raw \texttt{zlib}-compressed length, the overhead correction, the effective compressed length, and the final surfeit value.
+
+Surfeit is useful in machine learning because it penalizes unnecessary descriptive structure. A highly complex model may fit the training data well, but if its description contains large amounts of repeated or compressible structure, then its surfeit will be high. Conversely, a very simple model may have low surfeit, but this does not imply that it is accurate. Surfeit should therefore be interpreted together with inaccuracy. Inaccuracy measures how well the model describes the observed phenomenon; surfeit measures how much surplus there is in the model description itself. The preferred model is not necessarily the one with lowest inaccuracy or lowest surfeit in isolation, but one that achieves a good trade-off between both quantities.
+
+\begin{example}
+\label{ex:surfeit_overfit}
+Surfeit can help identify overfitted models. Suppose that polynomial regression models of increasing degree are fitted to the same phenomenon. As the degree increases, the model description usually becomes longer and may contain more repeated symbolic structure. A high-degree polynomial may achieve low inaccuracy on the training data, but it can also have high surfeit because its description contains unnecessary descriptive surplus.
+
+In such a case, surfeit acts as a counterbalance to inaccuracy. A low-degree model may be too simple and therefore inaccurate. A very high-degree model may be accurate on the training data but unnecessarily complex. The preferred model is one that achieves low inaccuracy with low surfeit.
+\end{example}
+
+Another advantage of surfeit is that it allows us to compare models from different families. If two models achieve similar inaccuracy, surfeit provides a way to prefer the model with the more economical description. For example, a small decision tree may have lower surfeit than a neural network when the decision boundary is simple. In a more complex problem, however, a neural network may provide a more compact description than a large decision tree with many branches. Surfeit therefore does not impose a fixed preference for one model family over another; it evaluates the descriptive surplus of the specific model description under consideration.
+
+When predictive performance differs substantially, surfeit should not be used alone. A model with very low surfeit may simply be underfitted. A model with very low inaccuracy may be overfitted. The role of nescience is to evaluate these quantities jointly, selecting models that provide an adequate description of the phenomenon without unnecessary descriptive surplus.
 
 Surfeit can help avoid overfitted models. The higher the surfeit of a model, the greater the risk that the model is an overfit to the training dataset, as Example \ref{ex:surfeit_overfit} illustrates.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{surfeit_vs_inaccuracy.png}
+\caption{Surfeit vs Inaccuracy}
+\label{figure:surfeit_vs_inaccuracy}
+\end{figure}
 
 \begin{example}
 \label{ex:surfeit_overfit}
@@ -928,8 +918,8 @@ We generate $900$ samples from a sinusoidal curve and fit $n$-degree polynomials
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
-from Nescience.Nescience import Surfeit
-from Nescience.Nescience import Inaccuracy
+from mnplib.surfeit import Surfeit
+from mnplib.inaccuracy import Inaccuracy
 
 n_samples = 900
 degrees = np.arange(1, 15)
@@ -960,14 +950,6 @@ for i in degrees:
 \end{sourcecode}
 
 In Figure \ref{figure:surfeit_vs_inaccuracy} we see that, as expected, higher-degree polynomials yield lower training error, but at the cost of higher surfeit. The preferred model is one achieving low inaccuracy \emph{and} low surfeit.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{surfeit_vs_inaccuracy.png}
-\caption{Surfeit vs Inaccuracy}
-\label{figure:surfeit_vs_inaccuracy}
-\end{figure}
-
 \end{example}
 
 Another advantage of surfeit is that it allows us to compare models from different families. For example, if two models have the same accuracy, should we prefer a decision tree to a neural network, or a naive Bayes classifier to a support vector machine? The next example shows how surfeit can guide such choices.
@@ -995,8 +977,8 @@ We compare a decision tree with a neural network on synthetic data consisting of
 {\scriptsize \begin{verbatim}
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
-from Nescience.Nescience import Surfeit
-from Nescience.Nescience import Inaccuracy
+from mnplib.surfeit import Surfeit
+from mnplib.inaccuracy import Inaccuracy
 from sklearn.datasets.samples_generator import make_blobs
 
 X, y = make_blobs(n_samples=1000, centers=2, n_features=2, cluster_std=1)
@@ -1844,7 +1826,31 @@ In Figure \ref{figure:cart_nescience_nodes} it is shown a comparison of the tota
 
 Finally, in Figure \ref{figure:cart_nescience_depth} we provide a comparison of the depth of the tree of the resulting models. Our algorithm always yields a shallower tree than the CART algorithm.
 
-We would like to mention that the nescience algorithm is hihgly robust with respect to the compressor selected or the nescience function implemented. In Table \ref{table:nescience_functions}, we have apply the nescience algorithm to the datasets described above, and evaluate different alternatives for the definition of the nescience function $N (X , M )$: arithmetic mean $(\mu(M , D) + \iota(X , M ) + \sigma(M, D))/3$, geometric mean $(\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3$ , harmonic mean $3 / (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) -1 )$, Euclidean distance $(\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3$, sum $\mu(M , D) + \iota(X , M ) + \sigma(M, D)$, and product $\mu(M , D) + \iota(X , M ) + \sigma(M, D)$. The table shows limited difference between the different functions. 
+We would like to mention that the nescience algorithm is hihgly robust with respect to the compressor selected or the nescience function implemented. In Table \ref{table:nescience_functions}, we have apply the nescience algorithm to the datasets described above, and evaluate different alternatives for the definition of the nescience function $N (X , M )$: arithmetic mean
+\[
+N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D))/3,
+\]
+geometric mean
+\[
+N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3,
+\]
+harmonic mean 
+\[
+N (X , M ) = 3 / (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) -1 ),
+\]
+Euclidean distance
+\[
+N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3,
+\]
+sum
+\[
+N (X , M ) = \mu(M , D) + \iota(X , M ) + \sigma(M, D),
+\]
+and product
+\[
+\mu(M , D) + \iota(X , M ) + \sigma(M, D).
+\]
+The table shows limited difference between the different functions. 
 
 \begin{table}[h]
 \label{table:nescience_functions}

@@ -19,11 +19,11 @@ Saki
 
 In Chapter \ref{chap:Mismodel}, we introduced mismodel as a theoretical measure of the discrepancy between a description currently available in scientific practice and an ideal description of the representation under study. In particular, the deficiency component of mismodel measures how much algorithmic information is still needed to transform a given description into a minimal description of the intended representation. From a formal point of view, this is the most natural way to quantify how incomplete or defective a description is.
 
-However, this quantity cannot usually be approximated in practice. The main obstacle is that its definition refers to minimal descriptions of the representation \(r\), and such descriptions are generally unknown. In ordinary scientific practice, we do not have access to the set \(\mathcal D_r^\star\) of minimal descriptions of \(r\), nor do we know which existing model, if any, is closest to that set. There is also a deeper theoretical obstruction: minimal descriptions are determined by Kolmogorov complexity, and Kolmogorov complexity is non-computable. We therefore need computable, or at least approximable, proxies.
+However, this quantity cannot usually be approximated in practice. The main obstacle is that its definition refers to minimal descriptions of the representation $r$, and such descriptions are generally unknown. In ordinary scientific practice, we do not have access to the set $\mathcal D_r^\star$ of minimal descriptions of $r$, nor do we know which existing model, if any, is closest to that set. There is also a deeper theoretical obstruction: minimal descriptions are determined by Kolmogorov complexity, and Kolmogorov complexity is non-computable. We therefore need computable, or at least approximable, proxies.
 
-In this book we use two complementary approximations of mismodel. The first approximation, studied in this chapter, compares the output produced by the current description with the representation that the description is intended to model. If \(d\) is a description and \(\delta(d)\) is the string produced by executing it, then inaccuracy measures how far \(\delta(d)\) is from the target representation \(r\). In this sense, inaccuracy does not ask whether \(d\) is close to a minimal description of \(r\). It asks whether the output of \(d\) is close to \(r\). It is therefore an output-level approximation to the deficiency of a description.
+In this book we use two complementary approximations of mismodel. The first approximation, studied in this chapter, compares the output produced by the current description with the representation that the description is intended to model. If $d$ is a description and $\Gamma(d)$ is the string produced by executing it, then inaccuracy measures how far $\Gamma(d)$ is from the target representation $r$. In this sense, inaccuracy does not ask whether $d$ is close to a minimal description of $r$. It asks whether the output of $d$ is close to $r$. It is therefore an output-level approximation to the deficiency of a description.
 
-The second approximation, studied in Chapter \ref{chap:Redundancy}, goes in a different direction. Instead of comparing the output of the description with the target representation, surfeit compares the description itself with the expected size of a minimal description. Thus, inaccuracy approximates the failure of a description to reproduce the intended representation, whereas surfeit approximates the failure of the description to be minimal as a description.
+The second approximation, studied in Chapter \ref{chap:Surfeit}, goes in a different direction. Instead of comparing the output of the description with the target representation, surfeit compares the description itself with the expected size of a minimal description. Thus, inaccuracy approximates the failure of a description to reproduce the intended representation, whereas surfeit approximates the failure of the description to be minimal as a description.
 
 These two approximations capture different aspects of mismodel. A description may have low inaccuracy because it reproduces the representation correctly, while still having high surfeit because it is unnecessarily long or overfitted. Conversely, a description may be compact and have low surfeit, while still being inaccurate because its output fails to reproduce the intended representation. This distinction is essential for the theory of nescience: a good scientific model should be both accurate and economical.
 
@@ -36,133 +36,73 @@ These two approximations capture different aspects of mismodel. A description ma
 \section{Inaccuracy}
 \label{sec:inaccuracy:inaccuracy}
 
-Let \(r \in \mathcal B^\ast\) be a representation and let \(d \in \mathcal D\) be a description. Since \(d\) is a valid description in the formal sense, executing it on the fixed universal Turing machine produces some finite string. We denote this output by
-\[
-r'=\delta(d).
-\]
-If \(r'=r\), then \(d\) is a valid description of \(r\). If \(r'\neq r\), then \(d\) is inaccurate with respect to \(r\).
+Let $r \in \mathcal{R}$ be a representation and let $d \in \mathcal D$ be a description. Since $d$ is a valid description in the formal sense, executing it on the fixed universal Turing machine produces some finite string. We denote this output by $r'= \Gamma(d)$. If $r'=r$, then $d$ is a exact description of $r$. If $r'\neq r$, then $d$ is inaccurate with respect to $r$.
 
-The concept of inaccurate description has already been introduced in Chapter \ref{chap:Descriptions}. Here we use it to define a quantitative measure. The main question is the following: if the current description produces \(r'\) instead of \(r\), how much algorithmic information is needed to correct this discrepancy?
+The concept of an inaccurate description was introduced in Chapter \ref{chap:Descriptions}. In the present chapter, we use that notion as the basis for a quantitative measure. The central problem can be formulated as follows: given a representation $r$ and a description $d$ whose execution produces a string $r'=\Gamma(d)$ different from $r$, how much algorithmic information is required to correct the discrepancy between the produced output and the intended representation?
 
-A first answer would be to measure \(K(r\mid r')\), the amount of information required to reconstruct the intended representation \(r\) from the output \(r'\) produced by the description. This captures missing information: the part of \(r\) that is not present in \(r'\). However, as in the case of miscoding, this one-sided measure is not sufficient. The output \(r'\) may also contain additional structure not present in \(r\). In that case, it is also relevant to consider \(K(r'\mid r)\), the amount of information needed to reconstruct the erroneous output from the intended representation.
+A first answer would be to measure $K(r\mid r')$, the amount of information required to reconstruct the intended representation $r$ from the output $r'$ produced by the description. This captures missing information: the part of $r$ that is not present in $r'$. However, as in the case of miscoding, this one-sided measure is not sufficient. The output $r'$ may also contain additional structure not present in $r$. In that case, it is also relevant to consider $K(r'\mid r)$, the amount of information needed to reconstruct the erroneous output from the intended representation.
 
-For this reason, inaccuracy is defined using a bidirectional information distance between \(r\) and \(\delta(d)\).
+For this reason, inaccuracy is defined using a bidirectional information distance between $r$ and $\Gamma(d)$.
 
 \begin{definition}[Inaccuracy]
 \label{def:inaccuracy:inaccuracy:inaccuracy}
-Let \(r \in \mathcal B^\ast\) be a representation, and let \(d \in \mathcal D\) be a description. We define the \emph{inaccuracy}\index{Inaccuracy} of \(d\) with respect to \(r\), denoted by \(\iota(d,r)\), as
+Let $r \in \mathcal{R}$ be a representation, and let $d \in \mathcal D$ be a description. We define the \emph{inaccuracy}\index{Inaccuracy} of $d$ with respect to $r$, denoted by $\iota(d,r)$, as
 \[
-\iota(d,r)
-=
-\frac{
-\max\left\{
-K\bigl(r\mid \delta(d)\bigr),
-K\bigl(\delta(d)\mid r\bigr)
-\right\}
-}{
-\max\left\{
-K(r),
-K\bigl(\delta(d)\bigr)
-\right\}
-}.
+\iota(d,r) = \frac{ \max\left\{K\bigl(r\mid \Gamma(d)\bigr), K\bigl(\Gamma(d)\mid r\bigr)\right\} }{
+\max\left\{K(r), K\bigl(\Gamma(d)\bigr) \right\}}.
 \]
 \end{definition}
 
-Thus, inaccuracy is the normalized information distance between the intended representation \(r\) and the representation \(\delta(d)\) produced by the description. The numerator measures the bidirectional correction cost between the two strings. The denominator normalizes this cost by the size of the larger of the two strings, so that inaccuracies associated with different representations can be compared on a common scale.
+Thus, inaccuracy is the normalized information distance between the intended representation $r$ and the representation $\Gamma(d)$ produced by the description. The numerator measures the bidirectional correction cost between the two strings. The denominator normalizes this cost by the size of the larger of the two strings, so that inaccuracies associated with different representations can be compared on a common scale.
 
-As usual in algorithmic information theory, equalities and inequalities involving Kolmogorov complexity should be understood up to additive constants independent of the particular strings under consideration. These constants depend on the choice of universal Turing machine and on the fixed encoding conventions.
+As usual in algorithmic information theory, equalities and inequalities involving Kolmogorov complexity should be understood up to additive constants independent of the particular strings under consideration. These constants depend on the choice of universal Turing machine $\Gamma$ and on the fixed encoding conventions.
 
-The definition above is theoretically natural, but it is not directly computable. In practice, we approximate it by using the identity
+The definition above is theoretically natural, but it is not directly computable. In practice (see Section \ref{sec:information_distance}), we approximate it by using the identity
 \[
-\max\{K(x\mid y),K(y\mid x)\}
-=
-K(x,y)-\min\{K(x),K(y)\}
-+ O(\log \max\{K(x),K(y)\}),
+\max\{K(x\mid y),K(y\mid x)\} = K(x,y)-\min\{K(x),K(y)\} + O(\log \max\{K(x),K(y)\}),
 \]
-which holds for finite strings \(x,y\). Ignoring the logarithmic term for sufficiently large strings, the inaccuracy of \(d\) with respect to \(r\) can be approximated by
+which holds for finite strings $x, y$. Ignoring the logarithmic term for sufficiently large strings, the inaccuracy of $d$ with respect to $r$ can be approximated by
 \[
-\iota(d,r)
-\approx
-\frac{
-K\bigl(r,\delta(d)\bigr)
--
-\min\left\{
-K(r),
-K\bigl(\delta(d)\bigr)
-\right\}
-}{
-\max\left\{
-K(r),
-K\bigl(\delta(d)\bigr)
-\right\}
-}.
+\iota(d,r) \approx \frac{ K\bigl(r,\Gamma(d)\bigr) - \min\left\{ K(r), K\bigl(\Gamma(d)\bigr) \right\} }{
+\max\left\{K(r), K\bigl(\Gamma(d)\bigr) \right\}}.
 \]
-Replacing \(K\) by a computable estimate \(\widehat K\), we obtain the practical approximation
+Replacing $K$ by a computable estimate $\hat K$, we obtain the practical approximation
 \[
-\widehat{\iota}(d,r)
-=
-\frac{
-\widehat K\bigl(r,\delta(d)\bigr)
--
-\min\left\{
-\widehat K(r),
-\widehat K\bigl(\delta(d)\bigr)
-\right\}
-}{
-\max\left\{
-\widehat K(r),
-\widehat K\bigl(\delta(d)\bigr)
-\right\}
-}.
+\hat{\iota}(d,r) = \frac{\hat K\bigl(r, \Gamma(d)\bigr) - \min\left\{\hat K(r), \hat K\bigl(\Gamma(d)\bigr) \right\} }{
+\max\left\{ \hat K(r), \hat K\bigl(\Gamma(d)\bigr) \right\}}.
 \]
-This is the form used in applications. Depending on the domain, \(\widehat K\) may be estimated by compression algorithms, empirical coding schemes, residual coding costs, or model-specific description lengths.
+This is the form used in applications (see Chapter \ref{chap:Machine-Learning}). Depending on the domain, $\hat K$ may be estimated by compression algorithms, empirical coding schemes, residual coding costs, or model-specific description lengths.
 
 \begin{example}
-Inaccuracy concerns the output of a description, not the internal form of the description itself.
-
-Suppose that a dataset is generated by a quadratic function, but we describe it using a linear model. The description \(d\) corresponding to the linear model produces a predicted dataset \(\delta(d)\). The inaccuracy of \(d\) with respect to the observed representation \(r\) measures how difficult it is to transform the predicted dataset into the observed dataset, and conversely.
-
-It does not measure how difficult it is to transform the linear model itself into the quadratic model. That second question belongs to the analysis of descriptions as descriptions, and is closer to the role played by surfeit in Chapter \ref{chap:Redundancy}.
+Inaccuracy concerns the output of a description, not the internal form of the description itself. Suppose that a dataset is generated by a quadratic function, but we describe it using a linear model. The description $d$ corresponding to the linear model produces a predicted dataset $\Gamma(d)$. The inaccuracy of $d$ with respect to the observed representation $r$ measures how difficult it is to transform the predicted dataset into the observed dataset, and conversely. It does not measure how difficult it is to transform the linear model itself into the quadratic model. That second question belongs to the analysis of descriptions as descriptions, and is closer to the role played by surfeit in Chapter \ref{chap:Surfeit}.
 \end{example}
 
 The normalized definition makes inaccuracy comparable across representations of different sizes.
 
 \begin{proposition}
 \label{prop:inaccuracy:inaccuracy:relative_range}
-For every representation \(r \in \mathcal B^\ast\) and every description \(d \in \mathcal D\),
+For every representation $r \in \mathcal{R}$ and every description $d \in \mathcal D$,
 \[
 0 \leq \iota(d,r) \leq 1 + o(1),
 \]
-where the \(o(1)\) term vanishes as
-\[
-\max\{K(r),K(\delta(d))\}
-\]
-tends to infinity.
+where the $o(1)$ term vanishes as $\max\{K(r),K(\Gamma(d))\}$ tends to infinity.
 \end{proposition}
-
 \begin{proof}
-The numerator is non-negative because Kolmogorov complexities are non-negative. Therefore \(\iota(d,r)\geq 0\).
+The numerator is non-negative because Kolmogorov complexities are non-negative. Therefore $\iota(d,r)\geq 0$.
 
-For the upper bound, let \(x=r\) and \(y=\delta(d)\). We use the standard inequalities
+For the upper bound, let $x=r$ and $y=\Gamma(d)$. We use the standard inequalities
 \[
-K(x\mid y) \leq K(x)+O(1),
-\qquad
-K(y\mid x) \leq K(y)+O(1).
+K(x\mid y) \leq K(x)+O(1), \quad K(y\mid x) \leq K(y)+O(1).
 \]
 Hence
 \[
-\max\{K(x\mid y),K(y\mid x)\}
-\leq
-\max\{K(x),K(y)\}+O(1).
+\max\{K(x\mid y),K(y\mid x)\} \leq \max\{K(x),K(y)\}+O(1).
 \]
 Dividing by \(\max\{K(x),K(y)\}\), we obtain
 \[
-\iota(d,r)
-\leq
-1+
-\frac{O(1)}{\max\{K(x),K(y)\}}.
+\iota(d,r) \leq 1+ \frac{O(1)}{\max\{K(x),K(y)\}}.
 \]
-For sufficiently complex strings, the additive term becomes negligible. Therefore \(0\leq \iota(d,r)\leq 1+o(1)\).
+For sufficiently complex strings, the additive term becomes negligible. Therefore $0 \leq \iota(d,r) \leq 1+o(1)$.
 \end{proof}
 
 In the rest of the book, and especially in applications, we treat inaccuracy as a normalized quantity in the interval \([0,1]\), ignoring machine-dependent additive constants.
@@ -171,72 +111,50 @@ Inaccuracy vanishes when the description produces the intended representation.
 
 \begin{proposition}
 \label{prop:inaccuracy_perfect_description}
-Let \(r \in \mathcal B^\ast\) be a representation and \(d \in \mathcal D\) a description. If \(d \in \mathcal D_r\), then
+Let $r \in \mathcal{R}$ be a representation and $d \in \mathcal D$ a description. If $d \in \mathcal D_r$, then
 \[
 \iota(d,r)=O\left(\frac{1}{K(r)}\right).
 \]
 In particular, inaccuracy is zero up to the usual additive constants of Kolmogorov complexity.
 \end{proposition}
-
 \begin{proof}
-If \(d \in \mathcal D_r\), then \(\delta(d)=r\). Therefore
+If $d \in \mathcal D_r$, then $\Gamma(d)=r$. Therefore
 \[
-K(r\mid \delta(d))=K(r\mid r)=O(1),
+K(r\mid \Gamma(d)) = K(r \mid r) = O(1),
 \]
 and
 \[
-K(\delta(d)\mid r)=K(r\mid r)=O(1).
+K(\Gamma(d)\mid r) = K(r\mid r) = O(1).
 \]
-Hence the numerator of \(\iota(d,r)\) is \(O(1)\), while the denominator is \(K(r)\). Therefore
+Hence the numerator of $\iota(d,r)$ is $O(1)$, while the denominator is $K(r)$. Therefore
 \[
-\iota(d,r)=O\left(\frac{1}{K(r)}\right).
+\iota(d,r) = O\left(\frac{1}{K(r)}\right).
 \]
 \end{proof}
 
-Conversely, if \(\iota(d,r)\) is close to zero, then \(r\) and \(\delta(d)\) are algorithmically close. This does not imply literal equality of the two strings, but it means that each can be reconstructed from the other using only a small amount of additional information.
+Conversely, if $\iota(d,r)$ is close to zero, then $r$ and $\Gamma(d)$ are algorithmically close. This does not imply literal equality of the two strings, but it means that each can be reconstructed from the other using only a small amount of additional information.
 
 \begin{proposition}
 \label{prop:small_inaccuracy_algorithmic_closeness}
-Let \(r \in \mathcal B^\ast\) and \(d \in \mathcal D\). If
+Let \(r \in \mathcal B^\ast\) and \(d \in \mathcal D\). If $\iota(d,r) \leq \varepsilon$, then
 \[
-\iota(d,r) \leq \varepsilon,
-\]
-then
-\[
-K(r\mid \delta(d))
-\leq
-\varepsilon
-\max\{K(r),K(\delta(d))\}
+K(r\mid \Gamma(d)) \leq \varepsilon \max\{K(r),K(\Gamma(d))\}
 \]
 and
 \[
-K(\delta(d)\mid r)
-\leq
-\varepsilon
-\max\{K(r),K(\delta(d))\}.
+K(\Gamma(d)\mid r) \leq \varepsilon \max\{K(r),K(\Gamma(d))\}.
 \]
 \end{proposition}
-
 \begin{proof}
-The result follows immediately from the definition of \(\iota(d,r)\), since the numerator is the maximum of the two conditional complexities.
+The result follows immediately from the definition of $\iota(d,r)$, since the numerator is the maximum of the two conditional complexities.
 \end{proof}
 
-This proposition clarifies the meaning of small inaccuracy. A description with low inaccuracy produces an output that is close to the target representation in both directions: the output contains almost all the algorithmic information needed to reconstruct \(r\), and it contains little independent information not already present in \(r\).
+This proposition clarifies the meaning of small inaccuracy. A description with low inaccuracy produces an output that is close to the target representation in both directions: the output contains almost all the algorithmic information needed to reconstruct $r$, and it contains little independent information not already present in $r$.
 
-Finally, inaccuracy extends immediately to joint representations. If \(r,s \in \mathcal B^\ast\), their joint representation is the concatenated or self-delimited string \(\langle r,s\rangle\). We then define
+Finally, inaccuracy extends immediately to joint representations. If $r,s \in \mathcal R$, their joint representation is the concatenated or self-delimited string $\langle r, s\rangle$. We then define
 \[
-\iota(d,\langle r,s\rangle)
-=
-\frac{
-\max\left\{
-K\bigl(\langle r,s\rangle\mid \delta(d)\bigr),
-K\bigl(\delta(d)\mid \langle r,s\rangle\bigr)
-\right\}
-}{
-\max\left\{
-K(\langle r,s\rangle),
-K\bigl(\delta(d)\bigr)
-\right\}
+\iota(d,\langle r,s\rangle) = \frac{ \max\left\{ K\bigl(\langle r,s\rangle\mid \Gamma(d)\bigr), K\bigl(\Gamma(d)\mid \langle r,s\rangle\bigr) \right\} }{
+\max\left\{K(\langle r,s\rangle), K\bigl(\Gamma(d)\bigr) \right\}
 }.
 \]
 No new concept is required: the joint representation is itself a finite string.
@@ -245,108 +163,91 @@ No new concept is required: the joint representation is itself a finite string.
 % Section: Inaccuracy and Description Deficiency
 %
 
-\section{Inaccuracy as an Approximation to Description Deficiency}
+\section{Inaccuracy and Description Deficiency}
 \label{sec:inaccuracy_deficiency_approximation}
 
-The main role of inaccuracy in the theory of nescience is to approximate the deficiency of a description. Recall that the deficiency of a description measures how much information must be added to a given description in order to obtain a minimal description of the target representation. If \(\mathcal D_r^\star\) denotes the set of minimal descriptions of \(r\), then the deficiency of \(d\) with respect to \(r\) is of the form
+The main role of inaccuracy in the theory of nescience is to approximate the deficiency of a description. Recall that the deficiency of a description measures how much information must be added to a given description in order to obtain a minimal description of the target representation (see Section \ref{sec:deficiency_description}
+). If $\mathcal D_r^\star$ denotes the set of minimal descriptions of $r$, then the deficiency of $d$ with respect to $r$ is of the form
 \[
-\operatorname{def}_r(d)
-=
-\min_{d^\star \in \mathcal D_r^\star}
-K(d^\star \mid d).
+d_D(r, d) = \min_{d^\star \in \mathcal D_r^\star} K(d^\star \mid d).
 \]
-This is a description-level quantity: it compares \(d\) with a minimal program for \(r\).
+This is a description-level quantity: it compares $d$ with a minimal program for $r$.
 
-By contrast, inaccuracy is an output-level quantity: it compares \(\delta(d)\) with \(r\). It does not ask whether the program \(d\) is close to a minimal program. It asks whether the output produced by \(d\) is close to the intended representation. Therefore, inaccuracy is not identical to description deficiency. It is a computable proxy for one of its observable consequences.
+By contrast, inaccuracy is an output-level quantity: it compares \(\Gamma(d)\) with \(r\). It does not ask whether the program \(d\) is close to a minimal program. It asks whether the output produced by \(d\) is close to the intended representation. Therefore, inaccuracy is not identical to description deficiency. It is a computable proxy for one of its observable consequences.
 
-The relation between the two quantities can be explained as follows. If the output \(\delta(d)\) is far from \(r\), then any description obtained by correcting \(d\) must somehow provide the missing information needed to recover \(r\). Thus, high inaccuracy is evidence of description deficiency. If \(\delta(d)\) is close to \(r\), then only a small amount of output-level correction is needed, and the description is accurate even if it may still be unnecessarily long.
+The relation between the two quantities can be explained as follows. If the output \(\Gamma(d)\) is far from \(r\), then any description obtained by correcting \(d\) must somehow provide the missing information needed to recover \(r\). Thus, high inaccuracy is evidence of description deficiency. If \(\Gamma(d)\) is close to \(r\), then only a small amount of output-level correction is needed, and the description is accurate even if it may still be unnecessarily long.
 
-The following proposition gives a simple upper bound on the cost of producing some valid description of \(r\) from \(d\).
+The following proposition gives a simple upper bound on the cost of producing some exact description of \(r\) from \(d\).
 
 \begin{proposition}
 \label{prop:inaccuracy_valid_description_bound}
-Let \(r \in \mathcal B^\ast\) and \(d \in \mathcal D\). There exists a valid description \(\tilde d \in \mathcal D_r\) such that
+Let $r \in \mathcal R$ and $d \in \mathcal D$. There exists a exact description $\bar d \in \mathcal D_r$ such that
 \[
-K(\tilde d \mid d)
-\leq
-K(r\mid \delta(d)) + O(1).
+K(\bar d \mid d) \leq K(r\mid \Gamma(d)) + O(1).
 \]
 \end{proposition}
-
 \begin{proof}
-Given \(d\), we can compute \(\delta(d)\). Let \(p\) be a shortest program that transforms \(\delta(d)\) into \(r\). Thus
+Given $d$, we can compute $\Gamma(d)$. Let $p$ be a shortest program that transforms $\Gamma(d)$ into $r$. Thus
 \[
-l(p)=K(r\mid \delta(d)).
+l(p) = K(r\mid \Gamma(d)).
 \]
-Construct a new description \(\tilde d\) that first executes \(d\), obtains \(\delta(d)\), then applies \(p\) to obtain \(r\), and finally outputs \(r\). This construction is computable from \(d\) and \(p\), up to a fixed overhead independent of \(r\) and \(d\). Therefore
+Construct a new description $\bar d$ that first executes $d$, obtains $\Gamma(d)$, then applies $p$ to obtain $r$, and finally outputs $r$. This construction is computable from $d$ and $p$, up to a fixed overhead independent of $r$ and $d$. Therefore
 \[
-K(\tilde d\mid d)
-\leq
-l(p)+O(1)
-=
-K(r\mid \delta(d))+O(1).
+K(\bar d\mid d) \leq l(p)+O(1) = K(r\mid \Gamma(d))+O(1).
 \]
-Since \(\tilde d\) outputs \(r\), we have \(\tilde d\in\mathcal D_r\).
+Since $\bar d$ outputs $r$, we have $\bar d \in \mathcal D_r$.
 \end{proof}
 
-This proposition shows that the one-sided correction term \(K(r\mid \delta(d))\) bounds the amount of information needed to transform the current description into some valid description of \(r\). However, it does not guarantee that the resulting description is minimal. The correction may produce a valid but highly redundant description.
+This proposition shows that the one-sided correction term \(K(r\mid \Gamma(d))\) bounds the amount of information needed to transform the current description into some exact description of \(r\). However, it does not guarantee that the resulting description is minimal. The correction may produce a exact but highly redundant description.
 
-This is precisely why inaccuracy cannot replace mismodel. It only measures whether the output is correct or nearly correct. It does not measure whether the description achieves the minimal form required for zero mismodel.
+This observation explains why inaccuracy cannot serve as a substitute for mismodel. Inaccuracy assesses only whether the output produced by a description coincides with, or is algorithmically close to, the intended representation. It does not assess whether the description itself attains the minimal form required for zero mismodel.
 
 \begin{proposition}
-\label{prop:zero_inaccuracy_not_zero_mismodel}
-A description may have zero inaccuracy with respect to a representation \(r\) while still having positive surfeit, and hence positive mismodel.
+A description may have zero inaccuracy with respect to a representation $r$ while still having positive description surplus, and hence positive mismodel.
 \end{proposition}
-
 \begin{proof}
-Let \(d\in\mathcal D_r\) be any valid description of \(r\) that is not minimal. Then \(\delta(d)=r\), so the inaccuracy of \(d\) with respect to \(r\) is zero up to the usual additive constants. However, because \(d\) is not minimal, there exists a shorter description \(d^\star \in \mathcal D_r^\star\). Hence \(d\) contains unnecessary descriptive content relative to a minimal description, and its surfeit is positive. Therefore its mismodel need not be zero.
+Let $d\in\mathcal D_r$ be any exact description of $r$ that is not minimal. Then $\Gamma(d)=r$, so the inaccuracy of $d$ with respect to $r$ is zero up to the usual additive constants. However, because $d$ is not minimal, there exists a minimal description $d^\star \in \mathcal D_r^\star$ that reconstructs the same representation using less descriptive information. Hence $d$ contains unnecessary descriptive content relative to a minimal description of $r$, and therefore its description surplus is positive. Since mismodel combines description deficiency and description surplus, the mismodel of $d$ need not be zero.
 \end{proof}
 
 This proposition is important for interpreting inaccuracy correctly. A highly accurate model may still be a poor scientific model if it achieves its accuracy through excessive complexity. This is the familiar problem of overfitting in machine learning, but the point is more general: correctness of output is not the same as economy of explanation.
 
-The next proposition gives the complementary observation. Low surfeit does not imply low inaccuracy.
+The next proposition gives the complementary observation. Low description surplus does not imply low inaccuracy.
 
 \begin{proposition}
-\label{prop:low_surfeit_not_low_inaccuracy}
-A description may have low surfeit while still having high inaccuracy.
+A description may have low description surplus while still having high inaccuracy.
 \end{proposition}
-
 \begin{proof}
-Let \(d\) be a very short description that outputs a simple string \(s\), and let \(r\) be a complex representation unrelated to \(s\). The description \(d\) may be close to minimal for its own output \(s\), and hence have low surfeit as a description of \(s\). Nevertheless, if \(s=\delta(d)\) is algorithmically far from \(r\), then
-\[
-K(r\mid s)
-\]
-will be large, and the inaccuracy \(\iota(d,r)\) will be high. Therefore low descriptive economy does not guarantee accuracy with respect to the intended representation.
+Let $d$ be a very short description that outputs a simple string $s$, and let $r$ be a complex representation unrelated to $s$. The description $d$ may be close to minimal, or even minimal, for producing its own output $s$. Hence, when considered as a description of $s$, it may have low description surplus. Nevertheless, if $s=\Gamma(d)$ is algorithmically far from the intended representation (r), then $K(r\mid s)$ will be large, and the inaccuracy $\iota(d,r)$ will be high. Therefore, the absence of substantial surplus in a description does not guarantee that its output is accurate with respect to the intended representation.
 \end{proof}
 
-Together, these propositions justify the separation between inaccuracy and surfeit. Inaccuracy estimates whether the current description produces the right representation. Surfeit estimates whether the description is unnecessarily complex. Both are required to approximate mismodel in practice.
+Inaccuracy and description surplus are therefore independent: a description may be accurate but unnecessarily complex, or economical while still failing to produce the intended representation.
 
 %
 % Section: Practical Approximation
 %
 
-\section{Practical Approximation of Inaccuracy}
+\section{Practical Approximation}
 \label{sec:practical_approximation_inaccuracy}
 
-The definition of inaccuracy relies on Kolmogorov complexity and is therefore non-computable. Nevertheless, it is more accessible in practice than mismodel deficiency, because it does not require identifying minimal descriptions. Instead, it only requires comparing two strings: the target representation \(r\) and the output \(\delta(d)\) produced by the description.
+The definition of inaccuracy relies on Kolmogorov complexity and is therefore non-computable. Nevertheless, it is more accessible in practice than mismodel deficiency, because it does not require identifying minimal descriptions. Instead, it only requires comparing two strings: the target representation \(r\) and the output \(\Gamma(d)\) produced by the description.
 
-In applications, we approximate Kolmogorov complexity by a computable function \(\widehat K\). This approximation depends on the domain. For textual representations, \(\widehat K\) may be the length of a compressed file. For empirical datasets, \(\widehat K\) may be the length of an empirical code. For predictive models, \(\widehat K(r\mid \delta(d))\) may be approximated by the amount of information needed to encode the residuals between the observed data and the model predictions.
+In applications, we approximate Kolmogorov complexity by a computable function \(\widehat K\). This approximation depends on the domain. For textual representations, \(\widehat K\) may be the length of a compressed file. For empirical datasets, \(\widehat K\) may be the length of an empirical code. For predictive models, \(\widehat K(r\mid \Gamma(d))\) may be approximated by the amount of information needed to encode the residuals between the observed data and the model predictions.
 
 The normalized approximation used throughout this book is
 \[
 \widehat{\iota}(d,r)
 =
 \frac{
-\widehat K\bigl(r,\delta(d)\bigr)
+\widehat K\bigl(r,\Gamma(d)\bigr)
 -
 \min\left\{
 \widehat K(r),
-\widehat K\bigl(\delta(d)\bigr)
+\widehat K\bigl(\Gamma(d)\bigr)
 \right\}
 }{
 \max\left\{
 \widehat K(r),
-\widehat K\bigl(\delta(d)\bigr)
+\widehat K\bigl(\Gamma(d)\bigr)
 \right\}
 }.
 \]
@@ -354,21 +255,21 @@ This expression is useful because it avoids the direct estimation of conditional
 
 \begin{definition}[Estimated Inaccuracy]
 \label{def:estimated_inaccuracy}
-Let \(r \in \mathcal B^\ast\) be a representation, \(d\in\mathcal D\) a description, and \(\widehat K\) a computable approximation of Kolmogorov complexity. We define the \emph{estimated inaccuracy}\index{Estimated inaccuracy} of \(d\) with respect to \(r\) as
+Let \(r \in \mathcal{R}\) be a representation, \(d\in\mathcal D\) a description, and \(\widehat K\) a computable approximation of Kolmogorov complexity. We define the \emph{estimated inaccuracy}\index{Estimated inaccuracy} of \(d\) with respect to \(r\) as
 \[
 \widehat{\iota}(d,r)
 =
 \frac{
-\widehat K\bigl(r,\delta(d)\bigr)
+\widehat K\bigl(r,\Gamma(d)\bigr)
 -
 \min\left\{
 \widehat K(r),
-\widehat K\bigl(\delta(d)\bigr)
+\widehat K\bigl(\Gamma(d)\bigr)
 \right\}
 }{
 \max\left\{
 \widehat K(r),
-\widehat K\bigl(\delta(d)\bigr)
+\widehat K\bigl(\Gamma(d)\bigr)
 \right\}
 }.
 \]
@@ -378,9 +279,9 @@ The quality of \(\widehat{\iota}\) depends on the quality of \(\widehat K\). If 
 
 \begin{proposition}
 \label{prop:estimated_inaccuracy_consistency}
-Suppose that \(\widehat K\) approximates \(K\) with error at most \(\varepsilon\) on the strings \(r\), \(\delta(d)\), and \(\langle r,\delta(d)\rangle\). Then the estimated inaccuracy \(\widehat{\iota}(d,r)\) differs from the ideal normalized information-distance form by a quantity bounded by a term depending on \(\varepsilon\) and on
+Suppose that \(\widehat K\) approximates \(K\) with error at most \(\varepsilon\) on the strings \(r\), \(\Gamma(d)\), and \(\langle r,\Gamma(d)\rangle\). Then the estimated inaccuracy \(\widehat{\iota}(d,r)\) differs from the ideal normalized information-distance form by a quantity bounded by a term depending on \(\varepsilon\) and on
 \[
-\max\{K(r),K(\delta(d))\}.
+\max\{K(r),K(\Gamma(d))\}.
 \]
 In particular, for large representations and small relative compression error, \(\widehat{\iota}(d,r)\) is a stable approximation.
 \end{proposition}
@@ -392,10 +293,10 @@ The estimated numerator differs from the ideal numerator only through the approx
 The practical interpretation is straightforward. Estimated inaccuracy is reliable only relative to a chosen encoding scheme. This is not a defect, but a necessary feature of the theory: in applications, every measurement of algorithmic information must be mediated by a concrete coding procedure.
 
 \begin{example}
-In a regression problem, the representation \(r\) may be a dataset of observed response values, while \(\delta(d)\) is the vector of predictions produced by a model. The inaccuracy of the model can be estimated by encoding the residuals between observations and predictions. If the residuals are small and structured, the correction cost is low. If the residuals are large or irregular, the correction cost is high.
+In a regression problem, the representation \(r\) may be a dataset of observed response values, while \(\Gamma(d)\) is the vector of predictions produced by a model. The inaccuracy of the model can be estimated by encoding the residuals between observations and predictions. If the residuals are small and structured, the correction cost is low. If the residuals are large or irregular, the correction cost is high.
+\end{example}
 
 This generalizes the ordinary notion of prediction error. Instead of measuring only numerical deviation, inaccuracy measures the amount of information needed to correct the model output into the observed representation.
-\end{example}
 
 %
 % Section: Conditional Inaccuracy
@@ -415,7 +316,7 @@ Building on the concept of inaccuracy introduced in Definition \ref{def:inaccura
 \begin{definition}
 Let \(r \in \mathcal{B}^\ast\) be a representation, \(s \in \mathcal{B}^\ast\) a background string, and \(d \mid s\) an inaccurate conditional description. We define the \emph{conditional inaccuracy}\index{Conditional inaccuracy} of the description \(d\) for the representation \(r\) given the string \(s\), denoted by \(\iota(d \mid s, r)\), as:
 \[
-\iota(d \mid s, r) = \frac{ \max\left\{ K \left(r \mid \delta(d \mid s) \right),\ K \left( \delta(d \mid s) \mid r \right) \right\} }{ \max\left\{ K(r),\ K \left( \delta(d \mid s) \right) \right\} }.
+\iota(d \mid s, r) = \frac{ \max\left\{ K \left(r \mid \Gamma(d \mid s) \right),\ K \left( \Gamma(d \mid s) \mid r \right) \right\} }{ \max\left\{ K(r),\ K \left( \Gamma(d \mid s) \right) \right\} }.
 \]
 \end{definition}
 
@@ -432,7 +333,7 @@ Let \(r \in \mathcal{B}^\ast\) be a representation, \(s \in \mathcal{B}^\ast\) a
 \end{proposition}
 
 \begin{proof}
-This follows directly from the same argument used in Proposition \ref{prop:inaccuracy:inaccuracy:relative_range}, applied to the strings \(r\) and \(\delta(d\mid s)\).
+This follows directly from the same argument used in Proposition \ref{prop:inaccuracy:inaccuracy:relative_range}, applied to the strings \(r\) and \(\Gamma(d\mid s)\).
 \end{proof}
 
 The conditional inaccuracy assumes a value of zero if the conditional description \(d \mid s\) correctly produces the representation \(r\).
@@ -450,13 +351,13 @@ then
 \end{proposition}
 
 \begin{proof}
-If \(TM \left(\langle a, s \rangle \right) = r\), then \(\delta(d \mid s) = r\), which implies that
+If \(TM \left(\langle a, s \rangle \right) = r\), then \(\Gamma(d \mid s) = r\), which implies that
 \[
-K \left( r \mid \delta(d \mid s) \right) = O(1)
+K \left( r \mid \Gamma(d \mid s) \right) = O(1)
 \]
 and
 \[
-K \left( \delta(d \mid s) \mid r \right) = O(1).
+K \left( \Gamma(d \mid s) \mid r \right) = O(1).
 \]
 The numerator is therefore \(O(1)\), while the denominator is \(K(r)\). Hence
 \[
@@ -480,9 +381,9 @@ Since \(\iota(d,r)\) is equivalent to \(\iota(d\mid \lambda,r)\), it is enough t
 
 If the conditional description can ignore irrelevant background information, then the computation using \(s\) can simulate the computation using \(\lambda\). Moreover, conditioning on additional information cannot increase Kolmogorov complexity beyond an additive constant:
 \[
-K(r\mid \langle \delta(d),s\rangle)
+K(r\mid \langle \Gamma(d),s\rangle)
 \leq
-K(r\mid \delta(d))+O(1).
+K(r\mid \Gamma(d))+O(1).
 \]
 Thus, when \(s\) is useful, it may reduce the correction cost; when it is not useful, it can be ignored. Therefore the conditional inaccuracy cannot exceed the unconditional inaccuracy, up to the usual constants.
 \end{proof}
@@ -499,13 +400,13 @@ Finally, conditional inaccuracy extends immediately to joint representations. Gi
 =
 \frac{
 \max\left\{
-K \left(\langle r,t\rangle \mid \delta(d \mid s) \right),
-K \left( \delta(d \mid s) \mid \langle r,t\rangle \right)
+K \left(\langle r,t\rangle \mid \Gamma(d \mid s) \right),
+K \left( \Gamma(d \mid s) \mid \langle r,t\rangle \right)
 \right\}
 }{
 \max\left\{
 K(\langle r,t\rangle),
-K \left(\delta(d \mid s) \right)
+K \left(\Gamma(d \mid s) \right)
 \right\}
 }.
 \]
@@ -521,22 +422,22 @@ Again, no new concept is needed, since \(\langle r,t\rangle\) is itself a finite
 The purpose of defining inaccuracy is not merely to measure the error of a description, but to guide its reduction. Given a target representation \(r\), we may compare two candidate descriptions \(d_1,d_2\in\mathcal D\) by examining whether the second produces an output closer to \(r\) than the first.
 
 \begin{definition}
-Let \(r \in \mathcal B^\ast\) be a representation, and let \(d_1,d_2\in\mathcal D\) be two descriptions. We define the \emph{absolute variation of inaccuracy}\index{Variation of inaccuracy} from \(d_1\) to \(d_2\), with respect to \(r\), as
+Let \(r \in \mathcal{R}\) be a representation, and let \(d_1,d_2\in\mathcal D\) be two descriptions. We define the \emph{absolute variation of inaccuracy}\index{Variation of inaccuracy} from \(d_1\) to \(d_2\), with respect to \(r\), as
 \[
-\Delta_{\iota}^{a}(d_1,d_2,r)
+\Gamma_{\iota}^{a}(d_1,d_2,r)
 =
 \iota(d_1,r)-\iota(d_2,r).
 \]
 \end{definition}
 
-If \(\Delta_{\iota}^{a}(d_1,d_2,r)>0\), then \(d_2\) is more accurate than \(d_1\) with respect to \(r\). If \(\Delta_{\iota}^{a}(d_1,d_2,r)<0\), then the new description is less accurate. Since inaccuracy is normalized, the absolute variation lies between \(-1\) and \(1\), up to the usual constants.
+If \(\Gamma_{\iota}^{a}(d_1,d_2,r)>0\), then \(d_2\) is more accurate than \(d_1\) with respect to \(r\). If \(\Gamma_{\iota}^{a}(d_1,d_2,r)<0\), then the new description is less accurate. Since inaccuracy is normalized, the absolute variation lies between \(-1\) and \(1\), up to the usual constants.
 
 It is often useful to express the improvement relative to the initial inaccuracy.
 
 \begin{definition}
-Let \(r \in \mathcal B^\ast\) be a representation, and let \(d_1,d_2\in\mathcal D\) be two descriptions with \(\iota(d_1,r)\neq 0\). We define the \emph{relative variation of inaccuracy}\index{Relative variation of inaccuracy} from \(d_1\) to \(d_2\), with respect to \(r\), as
+Let $r \in \mathcal{R}$ be a representation, and let \(d_1,d_2\in\mathcal D\) be two descriptions with \(\iota(d_1,r)\neq 0\). We define the \emph{relative variation of inaccuracy}\index{Relative variation of inaccuracy} from \(d_1\) to \(d_2\), with respect to \(r\), as
 \[
-\Delta_{\iota}^{r}(d_1,d_2,r)
+\Gamma_{\iota}^{r}(d_1,d_2,r)
 =
 \frac{\iota(d_1,r)-\iota(d_2,r)}
 {\iota(d_1,r)}.
@@ -550,9 +451,9 @@ Relative variation must be interpreted carefully. When \(\iota(d_1,r)\) is alrea
 A second way to reduce inaccuracy is to change the representation rather than the description. This may be useful when the current representation is difficult to model. However, changing the representation may also affect miscoding, since the new representation may encode the entity better or worse than the original one.
 
 \begin{definition}
-Let \(r_1,r_2 \in \mathcal B^\ast\) be two representations, and let \(d \in \mathcal D\) be a description. We define the \emph{absolute variation of inaccuracy} from \(r_1\) to \(r_2\), with respect to \(d\), as
+Let \(r_1,r_2 \in \mathcal{R}\) be two representations, and let \(d \in \mathcal D\) be a description. We define the \emph{absolute variation of inaccuracy} from \(r_1\) to \(r_2\), with respect to \(d\), as
 \[
-\Delta_{\iota}^{a}(d,r_1,r_2)
+\Gamma_{\iota}^{a}(d,r_1,r_2)
 =
 \iota(d,r_1)-\iota(d,r_2).
 \]
@@ -561,9 +462,9 @@ Let \(r_1,r_2 \in \mathcal B^\ast\) be two representations, and let \(d \in \mat
 A positive value means that the fixed description \(d\) is more accurate with respect to \(r_2\) than with respect to \(r_1\). This comparison does not say that \(r_2\) is a better representation of the entity. It only says that \(d\) models \(r_2\) more accurately. Whether this change is scientifically desirable also depends on the miscoding of the representations.
 
 \begin{definition}
-Let \(r_1,r_2 \in \mathcal B^\ast\) be two representations, and let \(d \in \mathcal D\) be a description with \(\iota(d,r_1)\neq 0\). We define the \emph{relative variation of inaccuracy} from \(r_1\) to \(r_2\), with respect to \(d\), as
+Let \(r_1,r_2 \in \mathcal{R}\) be two representations, and let \(d \in \mathcal D\) be a description with \(\iota(d,r_1)\neq 0\). We define the \emph{relative variation of inaccuracy} from \(r_1\) to \(r_2\), with respect to \(d\), as
 \[
-\Delta_{\iota}^{r}(d,r_1,r_2)
+\Gamma_{\iota}^{r}(d,r_1,r_2)
 =
 \frac{\iota(d,r_1)-\iota(d,r_2)}
 {\iota(d,r_1)}.
@@ -572,7 +473,7 @@ Let \(r_1,r_2 \in \mathcal B^\ast\) be two representations, and let \(d \in \mat
 
 This quantity measures the proportional reduction in inaccuracy obtained by replacing \(r_1\) with \(r_2\) while keeping the description fixed.
 
-Inaccuracy can always be reduced trivially by choosing the representation to be the output of the description. If \(r_2=\delta(d)\), then \(\iota(d,r_2)=0\). But such a move may dramatically increase miscoding, because \(r_2\) may be a poor representation of the entity. This observation illustrates why inaccuracy cannot be optimized in isolation.
+Inaccuracy can always be reduced trivially by choosing the representation to be the output of the description. If \(r_2=\Gamma(d)\), then \(\iota(d,r_2)=0\). But such a move may dramatically increase miscoding, because \(r_2\) may be a poor representation of the entity. This observation illustrates why inaccuracy cannot be optimized in isolation.
 
 \begin{proposition}
 \label{prop:trivial_inaccuracy_reduction}
@@ -584,7 +485,7 @@ up to additive constants.
 \end{proposition}
 
 \begin{proof}
-Take \(r=\delta(d)\). Then \(d\) outputs \(r\), so \(d\in\mathcal D_r\). By Proposition \ref{prop:inaccuracy_perfect_description}, the inaccuracy is zero up to additive constants.
+Take \(r=\Gamma(d)\). Then \(d\) outputs \(r\), so \(d\in\mathcal D_r\). By Proposition \ref{prop:inaccuracy_perfect_description}, the inaccuracy is zero up to additive constants.
 \end{proof}
 
 This proposition shows why the theory of nescience must consider miscoding, inaccuracy, and surfeit together. A model can be made perfectly accurate by redefining the target representation to match its output, but that does not mean that the resulting hypothesis represents the intended entity correctly.
@@ -593,7 +494,7 @@ This proposition shows why the theory of nescience must consider miscoding, inac
 % Section: Inaccuracy-Miscoding Rate of Change
 %
 
-\section{Inaccuracy-Miscoding Rate of Change}
+\section{Rate of Change}
 \label{sec:Inaccuracy_Miscoding_Rate_of_Change}
 
 In the previous section we considered two ways to reduce inaccuracy: changing the description while keeping the representation fixed, and changing the representation while keeping the description fixed. In scientific practice, both components may change simultaneously. A new hypothesis may introduce a new representation and a new description.
@@ -613,7 +514,7 @@ Let \(e \in \mathcal E\) be an entity, and let
 \]
 be two hypotheses. We define the \emph{inaccuracy-miscoding rate of change}\index{Inaccuracy-miscoding rate of change} from \(\mathbf{x}_1\) to \(\mathbf{x}_2\) as
 \[
-\Delta_{\iota\mu}(\mathbf{x}_1,\mathbf{x}_2)
+\Gamma_{\iota\mu}(\mathbf{x}_1,\mathbf{x}_2)
 =
 \frac{
 \iota(d_2,r_2)-\iota(d_1,r_1)
@@ -648,7 +549,7 @@ and
 \]
 Then inaccuracy decreases by \(0.20\), while miscoding increases by \(0.10\). The rate of change is
 \[
-\Delta_{\iota\mu}(\mathbf{x}_1,\mathbf{x}_2)
+\Gamma_{\iota\mu}(\mathbf{x}_1,\mathbf{x}_2)
 =
 \frac{0.20-0.40}{0.25-0.15}
 =
@@ -674,7 +575,7 @@ and
 \]
 Then
 \[
-\Delta_{\iota\mu}(\mathbf{x}_1,\mathbf{x}_2)
+\Gamma_{\iota\mu}(\mathbf{x}_1,\mathbf{x}_2)
 =
 \frac{0.30-0.35}{0.2001-0.20}
 =
@@ -719,13 +620,13 @@ and let \(d\in\mathcal D\) be a description. We define the \emph{inaccuracy of t
 =
 \frac{
 \max\left\{
-K\left(\langle r_1,r_2,\ldots,r_n\rangle \mid \delta(d)\right),
-K\left(\delta(d)\mid \langle r_1,r_2,\ldots,r_n\rangle\right)
+K\left(\langle r_1,r_2,\ldots,r_n\rangle \mid \Gamma(d)\right),
+K\left(\Gamma(d)\mid \langle r_1,r_2,\ldots,r_n\rangle\right)
 \right\}
 }{
 \max\left\{
 K(\langle r_1,r_2,\ldots,r_n\rangle),
-K(\delta(d))
+K(\Gamma(d))
 \right\}
 }.
 \]
@@ -754,7 +655,7 @@ The string \(\langle r_1,r_2,\ldots,r_n\rangle\) is an element of \(\mathcal B^\
 \]
 and
 \[
-\delta(d).
+\Gamma(d).
 \]
 \end{proof}
 
@@ -781,7 +682,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 
 
 
-% In Section \ref{sec:descriptions_models}, we introduced the notion of a description, or model, of an entity as a computer program. When executed, this program reproduces one of the representations encoding the entity in question. More precisely, a description $d$ for a representation $r$ of an entity $e$ is a Turing machine that produces the string $r$ when interpreted by a universal Turing machine $\delta$. However, due to our typically incomplete understanding of the entity $e$, the actual output of the description, denoted as $r' = \delta(d)$, will generally resemble but not exactly match $r$.
+% In Section \ref{sec:descriptions_models}, we introduced the notion of a description, or model, of an entity as a computer program. When executed, this program reproduces one of the representations encoding the entity in question. More precisely, a description $d$ for a representation $r$ of an entity $e$ is a Turing machine that produces the string $r$ when interpreted by a universal Turing machine $\Gamma$. However, due to our typically incomplete understanding of the entity $e$, the actual output of the description, denoted as $r' = \Gamma(d)$, will generally resemble but not exactly match $r$.
 
 % In this chapter, we investigate the error introduced by flawed models, specifically, how closely the output $r'$ approximates the intended representation $r$. We refer to this type of error as the \emph{inaccuracy} of the description $d$.
 
@@ -800,7 +701,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % \section{Inaccuracy}
 % \label{sec:inaccuracy:inaccuracy}
 
-% In the process of studying an entity $e \in \mathcal{E}$ through a representation $r \in \mathcal{R}_e$, we may encounter situations in which our proposed description $d$ fails to accurately produce $r$. That is, $d \notin \mathcal{D}_r$ (see Definition \ref{def:descriptions_model}). In such cases, when the universal Turing machine $\delta$ receives $d$ as input, it produces a string $r'$ that differs from the original representation $r$.
+% In the process of studying an entity $e \in \mathcal{E}$ through a representation $r \in \mathcal{R}_e$, we may encounter situations in which our proposed description $d$ fails to accurately produce $r$. That is, $d \notin \mathcal{D}_r$ (see Definition \ref{def:descriptions_model}). In such cases, when the universal Turing machine $\Gamma$ receives $d$ as input, it produces a string $r'$ that differs from the original representation $r$.
 
 % Intuitively, one might say that $d$ is an inaccurate description of the entity $e$. However, because descriptions refer to entities only indirectly, via representations, our formal notion of inaccuracy must be defined in terms of the representation, not the entity itself. Furthermore, we must account for the possibility that the representation $r$ is itself flawed, as previously discussed through the concept of miscoding.
 
@@ -818,7 +719,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % \label{def:inaccuracy:inaccuracy:inaccuracy}
 % Let $r \in \mathcal{B}^\ast$ be a representation, and let $d \in \mathcal{D}$ be a description, where $d = \langle TM, a \rangle$. We define the \emph{inaccuracy}\index{Inaccuracy} of the description $d$ with respect to the representation $r$, denoted by $\iota(d, r)$, as:
 % \[
-% \iota(d, r) = \frac{ \max\left\{ K \left(r \mid \delta(d) \right),\; K \left( \delta(d) \mid r \right) \right\} }{ \max\left\{ K(r),\; K \left(\delta(d) \right) \right\} }
+% \iota(d, r) = \frac{ \max\left\{ K \left(r \mid \Gamma(d) \right),\; K \left( \Gamma(d) \mid r \right) \right\} }{ \max\left\{ K(r),\; K \left(\Gamma(d) \right) \right\} }
 % \]
 % \end{definition}
 
@@ -859,18 +760,18 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % Given a description $d \in \mathcal{D}$ and a representation $r \in \mathcal{B}^\ast$, we have that $\iota(d, r) = 0$ if and only if $d \in \mathcal{D}_r$, i.e., $d$ is a valid description of $r$.
 % \end{proposition}
 % \begin{proof}
-% If $d \in \mathcal{D}_r$, then by definition, $\delta(d) = r$. Consequently, we have $K \left( r \mid \delta(d) \right) = K \left( \delta(d) \mid r \right) = 0$, and thus $\iota(d, r) = 0$.
+% If $d \in \mathcal{D}_r$, then by definition, $\Gamma(d) = r$. Consequently, we have $K \left( r \mid \Gamma(d) \right) = K \left( \Gamma(d) \mid r \right) = 0$, and thus $\iota(d, r) = 0$.
 
 % Conversely, suppose $\iota(d, r) = 0$. Then,
 % \[
-% \max\left\{ K \left( r \mid \delta(d) \right),\ K \left( \delta(d) \mid r \right) \right\} = 0,
+% \max\left\{ K \left( r \mid \Gamma(d) \right),\ K \left( \Gamma(d) \mid r \right) \right\} = 0,
 % \]
-% which implies that both conditional complexities are zero. Therefore, $r = \delta(d)$, and it follows that $d \in \mathcal{D}_r$.
+% which implies that both conditional complexities are zero. Therefore, $r = \Gamma(d)$, and it follows that $d \in \mathcal{D}_r$.
 % \end{proof}
 
 % Finally, given two representations $r$ and $s$, we may also be interested in evaluating the inaccuracy of a description $d$ when it is used to describe their joint representation $rs$. Since we require that $rs$ is itself a valid representation, the extension of the inaccuracy concept to joint representations is straightforward and does not require a new definition:
 % \[
-% \iota(d, rs) = \frac{ \max\left\{ K \left(rs \mid \delta(d) \right),\ K \left( \delta(d) \mid rs \right) \right\} }{ \max\left\{ K(rs),\ K \left(\delta(d) \right) \right\} }
+% \iota(d, rs) = \frac{ \max\left\{ K \left(rs \mid \Gamma(d) \right),\ K \left( \Gamma(d) \mid rs \right) \right\} }{ \max\left\{ K(rs),\ K \left(\Gamma(d) \right) \right\} }
 % \]
 % As a direct consequence of Proposition \ref{prop:inaccuracy:inaccuracy:range}, for any representations $r, s \in \mathcal{B}^\ast$ and any description $d \in \mathcal{D}$, we have:
 % \[
@@ -894,7 +795,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % \begin{definition}
 % Let $r \in \mathcal{B}^\ast$ be a representation, $s \in \mathcal{B}^\ast$ a background string, and $d \mid s$ an inaccurate conditional description. We define the \emph{conditional inaccuracy}\index{Conditional inaccuracy} of the description $d$ for the representation $r$ given the string $s$, denoted by $\iota(d \mid s, r)$, as:
 % \[
-% \iota(d \mid s, r) = \frac{ \max\left\{ K \left(r \mid \delta(d \mid s) \right),\ K \left( \delta(d \mid s) \mid r \right) \right\} }{ \max\left\{ K(r),\ K \left( \delta(d \mid s) \right) \right\} }
+% \iota(d \mid s, r) = \frac{ \max\left\{ K \left(r \mid \Gamma(d \mid s) \right),\ K \left( \Gamma(d \mid s) \mid r \right) \right\} }{ \max\left\{ K(r),\ K \left( \Gamma(d \mid s) \right) \right\} }
 % \]
 % \end{definition}
 
@@ -921,15 +822,15 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % Let $r \in \mathcal{B}^\ast$ be a representation, $s \in \mathcal{B}^\ast$ a string, and $d \mid s$ a conditional description of $r$ given $s$, where $d = \langle TM, a \rangle$. Then $\iota(d \mid s, r) = 0$ if and only if $TM \left(\langle a, s \rangle \right) = r$.
 % \end{proposition}
 % \begin{proof}
-% If $TM \left(\langle a, s \rangle \right) = r$, then $\delta(d \mid s) = r$, which implies that
+% If $TM \left(\langle a, s \rangle \right) = r$, then $\Gamma(d \mid s) = r$, which implies that
 % \[
-% K \left( r \mid \delta(d \mid s) \right) = K \left( \delta(d \mid s) \mid r \right) = 0.
+% K \left( r \mid \Gamma(d \mid s) \right) = K \left( \Gamma(d \mid s) \mid r \right) = 0.
 % \]
 % Hence, $\iota(d \mid s, r) = 0$. Conversely, if $\iota(d \mid s, r) = 0$, then
 % \[
-% \max\left\{ K \left( r \mid \delta(d \mid s) \right),\ K \left( \delta(d \mid s) \mid r \right) \right\} = 0,
+% \max\left\{ K \left( r \mid \Gamma(d \mid s) \right),\ K \left( \Gamma(d \mid s) \mid r \right) \right\} = 0,
 % \]
-% which implies both conditional complexities are zero. Therefore, $\delta(d \mid s) = r$, which means $TM \left(\langle a, s \rangle \right) = r$.
+% which implies both conditional complexities are zero. Therefore, $\Gamma(d \mid s) = r$, which means $TM \left(\langle a, s \rangle \right) = r$.
 % \end{proof}
 
 % Incorporating established prior knowledge into research does not increase the inaccuracy of a description. If this background knowledge is relevant to the representation being described, the oracle will use it accordingly. Conversely, if the prior knowledge is irrelevant, the oracle will simply disregard it. The following theorem formalizes this idea.
@@ -945,11 +846,11 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % \begin{proof}
 % Since $\iota(d, r)$ is equivalent to $\iota(d \mid \lambda, r)$, we need to prove that
 % \[
-% \frac{ \max\{ K \left(r \mid \delta(d \mid s) \right), K \left( \delta(d \mid s) \mid r \right) \} } { \max\{ K(r), K \left( \delta(d \mid s) \right) \} } \leq \frac{ \max\{ K \left(r \mid \delta(d \mid \lambda ) \right), K \left( \delta(d \mid \lambda ) \mid r \right) \} } { \max\{ K(r), K \left( \delta(d \mid \lambda ) \right) \} }.
+% \frac{ \max\{ K \left(r \mid \Gamma(d \mid s) \right), K \left( \Gamma(d \mid s) \mid r \right) \} } { \max\{ K(r), K \left( \Gamma(d \mid s) \right) \} } \leq \frac{ \max\{ K \left(r \mid \Gamma(d \mid \lambda ) \right), K \left( \Gamma(d \mid \lambda ) \mid r \right) \} } { \max\{ K(r), K \left( \Gamma(d \mid \lambda ) \right) \} }.
 % \]
 % This inequality follows from the fact that
 % \[
-% K \left(r \mid \langle \delta(d), s \rangle \right) \leq K \left(r \mid \delta(d) \right),
+% K \left(r \mid \langle \Gamma(d), s \rangle \right) \leq K \left(r \mid \Gamma(d) \right),
 % \]
 % as shown in Proposition \ref{prop:kolmogorov_conditional}.
 % \end{proof}
@@ -962,7 +863,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 
 % Finally, given two representations $r$ and $t$, the formalization of the concept of conditional inaccuracy, when applied to the joint representation $rt$, is straightforward and does not require a new definition:
 % \[
-% \iota(d \mid s) = \frac{ \max\{ K \left(rt \mid \delta(d \mid s) \right), K \left( \delta(d \mid s) \mid rt \right) \} } { \max\{ K(rt), K \left(\delta(d \mid s) \right) \} }
+% \iota(d \mid s) = \frac{ \max\{ K \left(rt \mid \Gamma(d \mid s) \right), K \left( \Gamma(d \mid s) \mid rt \right) \} } { \max\{ K(rt), K \left(\Gamma(d \mid s) \right) \} }
 % \]
 % As a normalized measure, $\iota(d \mid s)$ always takes a value in the interval $[0, 1]$.
 
@@ -975,20 +876,20 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % Our objective is to reduce the inaccuracy of the current description $d_1$, thereby improving our understanding of the original entity. This improvement may involve either modifying $d_1$ to correct or eliminate its inaccuracies, or developing a completely new description based on a different approach to modeling the entity. In either case, the result is a new description $d_2$. In this section, we aim to analyze how the introduction of a new description $d_2$ affects the inaccuracy compared to the original description $d_1$.
 
 % \begin{definition}
-% Let $r \in \mathcal{B}^\ast$ be a representation, and let $d_1, d_2 \in \mathcal{D}$ be two descriptions. We define the \emph{variation of inaccuracy}\index{Variation of inaccuracy} between the descriptions $d_1$ and $d_2$, with respect to $r$, denoted by $\Delta^{a}_{\iota} ( d_1, d_2, r )$, as:
+% Let $r \in \mathcal{B}^\ast$ be a representation, and let $d_1, d_2 \in \mathcal{D}$ be two descriptions. We define the \emph{variation of inaccuracy}\index{Variation of inaccuracy} between the descriptions $d_1$ and $d_2$, with respect to $r$, denoted by $\Gamma^{a}_{\iota} ( d_1, d_2, r )$, as:
 % \[
-% \Delta^{a}_{\iota} ( d_1, d_2, r ) = \iota(d_1, r) - \iota(d_2, r)
+% \Gamma^{a}_{\iota} ( d_1, d_2, r ) = \iota(d_1, r) - \iota(d_2, r)
 % \]
 % \end{definition}
 
-% Since inaccuracy is bounded between 0 and 1, the maximum possible variation in inaccuracy is $\pm 1$. A positive value of $\Delta_{\iota}$ indicates that description $d_2$ is preferable to $d_1$ in terms of accuracy. Conversely, a negative value suggests that $d_1$ is more accurate than $d_2$. It is important to note that the new description may also introduce a substantial increase in surfeit, potentially outweighing the improvement in inaccuracy. For a detailed discussion of surfeit, refer to Chapter \ref{chap:Redundancy}, and for an explanation of how inaccuracy and surfeit combine into the unified metric of nescience, see Chapter \ref{chap:Nescience}.
+% Since inaccuracy is bounded between 0 and 1, the maximum possible variation in inaccuracy is $\pm 1$. A positive value of $\Gamma_{\iota}$ indicates that description $d_2$ is preferable to $d_1$ in terms of accuracy. Conversely, a negative value suggests that $d_1$ is more accurate than $d_2$. It is important to note that the new description may also introduce a substantial increase in surfeit, potentially outweighing the improvement in inaccuracy. For a detailed discussion of surfeit, refer to Chapter \ref{chap:Redundancy}, and for an explanation of how inaccuracy and surfeit combine into the unified metric of nescience, see Chapter \ref{chap:Nescience}.
 
 % We can also introduce a relative measure of the variation in inaccuracy, when moving from description $d_1$ to $d_2$
 
 % \begin{definition}
-% Let $r \in \mathcal{B}^\ast$ be a representation, and $d_1, d_2 \in \mathcal{D}$ be two descriptions. We define the \emph{relative variation of inaccuracy}\index{Relative variation of inaccuracy} between descriptions $d_1$ and $d_2$, denoted by $\Delta^{r}_{\iota}(d_1, d_2, r)$, as:
+% Let $r \in \mathcal{B}^\ast$ be a representation, and $d_1, d_2 \in \mathcal{D}$ be two descriptions. We define the \emph{relative variation of inaccuracy}\index{Relative variation of inaccuracy} between descriptions $d_1$ and $d_2$, denoted by $\Gamma^{r}_{\iota}(d_1, d_2, r)$, as:
 % \[
-% \Delta^{r}_{\iota}(d_1, d_2, r) = \frac{\iota(d_1, r) - \iota(d_2, r)}{\iota(d_1, r)}
+% \Gamma^{r}_{\iota}(d_1, d_2, r) = \frac{\iota(d_1, r) - \iota(d_2, r)}{\iota(d_1, r)}
 % \]
 % provided that $\iota(d_1, r) \neq 0$.
 % \end{definition}
@@ -1000,25 +901,25 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % An alternative strategy for reducing uncertainty about an entity involves modifying its representation rather than altering its description. While such a change might increase the miscoding of the entity, the potential reduction in inaccuracy could outweigh this drawback.
 
 % \begin{definition}
-% Let $r_1, r_2 \in \mathcal{B}^\ast$ be two representations, and let $d \in \mathcal{D}$ be a description. We define the \emph{variation of inaccuracy}\index{Variation of inaccuracy} between representations $r_1$ and $r_2$, denoted by $\Delta^{a}_{\iota}(d, r_1, r_2)$, as:
+% Let $r_1, r_2 \in \mathcal{B}^\ast$ be two representations, and let $d \in \mathcal{D}$ be a description. We define the \emph{variation of inaccuracy}\index{Variation of inaccuracy} between representations $r_1$ and $r_2$, denoted by $\Gamma^{a}_{\iota}(d, r_1, r_2)$, as:
 % \[
-% \Delta^{a}_{\iota}(d, r_1, r_2) = \iota(d, r_1) - \iota(d, r_2)
+% \Gamma^{a}_{\iota}(d, r_1, r_2) = \iota(d, r_1) - \iota(d, r_2)
 % \]
 % \end{definition}
 
-% As before, since inaccuracy is bounded between 0 and 1, the maximum possible variation is 1. A positive value of $\Delta^{a}_{\iota}$ indicates a preference for representation $r_2$ over $r_1$ with respect to the fixed description $d$. Conversely, a negative value suggests that $r_1$ is more accurate than $r_2$. This comparison is based solely on inaccuracy, as miscoding is not considered here. Additionally, since the description remains unchanged, there is no risk of variation in surfeit.
+% As before, since inaccuracy is bounded between 0 and 1, the maximum possible variation is 1. A positive value of $\Gamma^{a}_{\iota}$ indicates a preference for representation $r_2$ over $r_1$ with respect to the fixed description $d$. Conversely, a negative value suggests that $r_1$ is more accurate than $r_2$. This comparison is based solely on inaccuracy, as miscoding is not considered here. Additionally, since the description remains unchanged, there is no risk of variation in surfeit.
 
 % Finally, we can also introduce a relative variation of inaccuracy with respect to a change in representation
 
 % \begin{definition}
-% Let $r_1, r_2 \in \mathcal{B}^\ast$ be two representations, and $d \in \mathcal{D}$ be a description. We define the \emph{relative variation of inaccuracy} of the representations $r_1, r_2$, denoted by $\Delta^{r}_{\iota} ( d, r_1, r_2 )$, as:
+% Let $r_1, r_2 \in \mathcal{B}^\ast$ be two representations, and $d \in \mathcal{D}$ be a description. We define the \emph{relative variation of inaccuracy} of the representations $r_1, r_2$, denoted by $\Gamma^{r}_{\iota} ( d, r_1, r_2 )$, as:
 % \[
-% \Delta^{r}_{\iota} ( d, r_1, r_2 ) = \frac{\iota(d, r_1) - \iota(d, r_2)}{\iota(d, r_1)}
+% \Gamma^{r}_{\iota} ( d, r_1, r_2 ) = \frac{\iota(d, r_1) - \iota(d, r_2)}{\iota(d, r_1)}
 % \]
 % provided that $\iota(d, r_1) \neq 0$.
 % \end{definition}
 
-% This quantity measures the proportional reduction in inaccuracy resulting from replacing representation $r_1$ with $r_2$, while keeping the description fixed. A value of $0$ indicates no change in inaccuracy, and a value of $1$ corresponds to a complete elimination of inaccuracy. However, $\Delta^{r}_{\iota}$ can also take negative values, potentially diverging to $-\infty$, when the new representation $r_2$ performs worse than $r_1$. As the inaccuracy of the initial representation $r_1$ approaches zero, even minor absolute changes in inaccuracy can lead to large swings in the relative variation, making it increasingly volatile.
+% This quantity measures the proportional reduction in inaccuracy resulting from replacing representation $r_1$ with $r_2$, while keeping the description fixed. A value of $0$ indicates no change in inaccuracy, and a value of $1$ corresponds to a complete elimination of inaccuracy. However, $\Gamma^{r}_{\iota}$ can also take negative values, potentially diverging to $-\infty$, when the new representation $r_2$ performs worse than $r_1$. As the inaccuracy of the initial representation $r_1$ approaches zero, even minor absolute changes in inaccuracy can lead to large swings in the relative variation, making it increasingly volatile.
 
 % %
 % % Section: Inaccuracy Rate of Change
@@ -1032,18 +933,18 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % The balance between the amount of miscoding we are willing to accept in order to achieve a reduction in inaccuracy is referred to as the \emph{miscoding-inaccuracy trade-off}. For a broader discussion of trade-offs in multi-objective optimization, refer to Section \ref{sec:trade_offs}.
 
 % \begin{definition}
-% Let $e \in \mathcal{E}$ be an entity, and $\mathbf{x}_1, \mathbf{x}_2 \in \mathcal{R}_e \times \mathcal{D}$ be two hypotheses, with $\mathbf{x}_1 = (r_1, d_1)$ and $\mathbf{x}_2 = (r_2, d_2)$. We define the \emph{rate of change between the inaccuracy and the miscoding} of the hypothesis $\mathbf{x}_1, \mathbf{x}_2$, denoted by $\Delta_{\mu \iota} ( \mathbf{x}_1, \mathbf{x}_2 )$ as:
+% Let $e \in \mathcal{E}$ be an entity, and $\mathbf{x}_1, \mathbf{x}_2 \in \mathcal{R}_e \times \mathcal{D}$ be two hypotheses, with $\mathbf{x}_1 = (r_1, d_1)$ and $\mathbf{x}_2 = (r_2, d_2)$. We define the \emph{rate of change between the inaccuracy and the miscoding} of the hypothesis $\mathbf{x}_1, \mathbf{x}_2$, denoted by $\Gamma_{\mu \iota} ( \mathbf{x}_1, \mathbf{x}_2 )$ as:
 % \[
-% \Delta_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{\iota(d_2, r_2) - \iota(d_1, r_1)}{\mu(r_2) - \mu(r_1)}
+% \Gamma_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{\iota(d_2, r_2) - \iota(d_1, r_1)}{\mu(r_2) - \mu(r_1)}
 % \] 
 % provided that $\mu(r_2) - \mu(r_1) \neq 0$.
 % \end{definition}
 
-% The ratio $\Delta_{\iota \mu}$ represents the rate of change between inaccuracy and miscoding when transitioning from the first hypothesis to the second. A positive value of $\Delta_{\iota \mu}$ implies that both quantities, miscoding and inaccuracy, either decrease (which is desirable) or increase (which is undesirable). The interpretation becomes more nuanced when $\Delta_{\iota \mu}$ is negative, indicating that one of the quantities decreases while the other increases. In such cases, two scenarios must be considered:
+% The ratio $\Gamma_{\iota \mu}$ represents the rate of change between inaccuracy and miscoding when transitioning from the first hypothesis to the second. A positive value of $\Gamma_{\iota \mu}$ implies that both quantities, miscoding and inaccuracy, either decrease (which is desirable) or increase (which is undesirable). The interpretation becomes more nuanced when $\Gamma_{\iota \mu}$ is negative, indicating that one of the quantities decreases while the other increases. In such cases, two scenarios must be considered:
 
 % \begin{enumerate}[label=(\roman*)]
-% \item Inaccuracy decreases and miscoding increases, we aim for $\Delta_{\iota \mu}(\mathbf{x}_1, \mathbf{x}_2) < M$, where $M < -1$, thereby ensuring that the reduction in inaccuracy compensates for the increase in miscoding.
-% \item Inaccuracy increases and miscoding decreases, we aim for $\Delta_{\iota \mu}(\mathbf{x}_1, \mathbf{x}_2) > M$, where $-1 < M < 0$, thereby ensuring that the reduction in miscoding justifies the increase in inaccuracy.
+% \item Inaccuracy decreases and miscoding increases, we aim for $\Gamma_{\iota \mu}(\mathbf{x}_1, \mathbf{x}_2) < M$, where $M < -1$, thereby ensuring that the reduction in inaccuracy compensates for the increase in miscoding.
+% \item Inaccuracy increases and miscoding decreases, we aim for $\Gamma_{\iota \mu}(\mathbf{x}_1, \mathbf{x}_2) > M$, where $-1 < M < 0$, thereby ensuring that the reduction in miscoding justifies the increase in inaccuracy.
 % \end{enumerate}
 
 % In both cases, caution is warranted when the change in miscoding is small, as it can disproportionately affect the ratio and potentially lead to misleading conclusions.
@@ -1051,7 +952,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % \begin{example}
 % Let $\mathbf{x}_1$ and $\mathbf{x}_2$ be two hypotheses. For $\mathbf{x}_1$, the inaccuracy $\iota(d_1, r_1)$ is 0.40, and the miscoding $\mu(r_1)$ is 0.15. For $\mathbf{x}_2$, the inaccuracy $\iota(d_2, r_2)$ is 0.20 (a decrease from 0.40), and the miscoding $\mu(r_2)$ is 0.25 (an increase from 0.15). Using the definition of the rate of change, we compute:
 % \[
-% \Delta_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{0.40 - 0.20}{0.15 - 0.25} = \frac{0.20}{-0.10} = -2
+% \Gamma_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{0.40 - 0.20}{0.15 - 0.25} = \frac{0.20}{-0.10} = -2
 % \]
 % In this case, transitioning from hypothesis $\mathbf{x}_1$ to $\mathbf{x}_2$ results in a decrease of inaccuracy by 0.20 units and an increase in miscoding by 0.10 units. The rate of change is $-2$.
 % \end{example}
@@ -1061,7 +962,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % \begin{example}
 % Let $\mathbf{x}_1$ be a hypothesis with an inaccuracy $\iota(d_1, r_1)$ of 0.35 and a miscoding $\mu(r_1)$ of 0.20. Let $\mathbf{x}_2$ be a second hypothesis with an inaccuracy $\iota(d_2, r_2)$ of 0.30 (a slight decrease from 0.35) and a miscoding $\mu(r_2)$ of 0.2001 (a very small increase from 0.20). Applying the definition of the rate of change:
 % \[
-% \Delta_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{0.35 - 0.30}{0.20 - 0.2001} = \frac{0.05}{-0.0001} = -500
+% \Gamma_{\iota \mu} ( \mathbf{x}_1, \mathbf{x}_2 ) = \frac{0.35 - 0.30}{0.20 - 0.2001} = \frac{0.05}{-0.0001} = -500
 % \]
 % The rate of change is $-500$, which may misleadingly suggest a dramatic shift. In reality, the inaccuracy only decreased by 0.05 units, and the miscoding increased by a negligible 0.0001 units. The extremely small denominator inflates the result, making the change appear far more significant than it actually is.
 % \end{example}
@@ -1078,7 +979,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 
 % In simpler terms, a hypothesis $\mathbf{x}$ is Pareto optimal if: (i) no other hypothesis is better in both inaccuracy and miscoding, and (ii) any improvement in one metric necessarily results in a worsening of the other.
 
-% The rate of change $\Delta_{\iota \mu}$ between any two Pareto optimal points provides insight into how the trade-off between inaccuracy and miscoding evolves along the Pareto frontier. If decision-makers are more sensitive to changes in inaccuracy than to miscoding, they may prefer configurations with a less negative $\Delta_{\iota \mu}$. Conversely, if miscoding is of greater concern, they may accept solutions where $\Delta_{\iota \mu}$ indicates a larger increase in inaccuracy in exchange for a smaller gain in miscoding.
+% The rate of change $\Gamma_{\iota \mu}$ between any two Pareto optimal points provides insight into how the trade-off between inaccuracy and miscoding evolves along the Pareto frontier. If decision-makers are more sensitive to changes in inaccuracy than to miscoding, they may prefer configurations with a less negative $\Gamma_{\iota \mu}$. Conversely, if miscoding is of greater concern, they may accept solutions where $\Gamma_{\iota \mu}$ indicates a larger increase in inaccuracy in exchange for a smaller gain in miscoding.
 
 % %
 % % Section: Inaccuracy of Areas
@@ -1096,7 +997,7 @@ From a philosophical perspective, Popper's work \cite{popper2014conjectures} rem
 % \begin{definition}
 % Let $\mathcal{A} \subset \mathcal{E}$ be an area with a known subset $\hat{\mathcal{A}} = {r_1, r_2, \ldots, r_n}$, and let $d \in \mathcal{D}$ be a description. We define the \emph{inaccuracy of the area} given the description $d$, denoted by $\iota(d, \hat{\mathcal{A}})$, as:
 % \[
-% \iota(d, \hat{\mathcal{A}}) = \frac{ \max\{ K \left( \langle r_1, r_2, \ldots, r_n \rangle \mid \delta(d) \right), K \left( \delta(d) \mid \langle r_1, r_2, \ldots, r_n \rangle \right) \} } { \max\{ K(\langle r_1, r_2, \ldots, r_n \rangle), K \left(\delta(d) \right) \} }
+% \iota(d, \hat{\mathcal{A}}) = \frac{ \max\{ K \left( \langle r_1, r_2, \ldots, r_n \rangle \mid \Gamma(d) \right), K \left( \Gamma(d) \mid \langle r_1, r_2, \ldots, r_n \rangle \right) \} } { \max\{ K(\langle r_1, r_2, \ldots, r_n \rangle), K \left(\Gamma(d) \right) \} }
 % \]
 % \end{definition}
 

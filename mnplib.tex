@@ -1,0 +1,2009 @@
+%
+% CHAPTER: Machine Learning
+%
+
+\chapterimage{Capek_play.pdf}
+
+\chapter{mnplib}
+\label{chap:mnplib}
+
+\begin{quote}
+\begin{flushright}
+\emph{There are no difficult problems,\\
+only lack of imagination.}\\
+Antonio García \\
+\end{flushright}
+\end{quote}
+\bigskip
+
+We have seen that the most challenging problems to which we can apply the results of the theory of nescience arise when the set of entities $\mathcal{E}$ under study is composed of abstract elements. The difficulty with abstract entities is that there is no straightforward way to encode them as finite strings of symbols from which they can be effectively reconstructed. Without such an encoding, it becomes impossible to measure their redundancy, accuracy, or any other property required by the theory of nescience.
+
+In practice, a common approach to overcome this limitation is to design an experiment and collect observable outcomes, as is typically done in physics or other empirical sciences. Another possible approach is to collect a set of indirect measurements that serve as observable proxies for the abstract entities, for example, by recording the behavior of users in an online social network to study social interaction patterns.
+
+This chapter is devoted to applying the concept of minimum nescience to the field of machine learning. We assume that the entities under study have been encoded as a dataset $\mathbb{X}$ consisting of $n$ training vectors, each with $p$ predictors (or features), and an associated response variable $\mathbf{y}$ (see Section \ref{sec:machine_learning}).
+
+We will begin by presenting practical approximations for the concepts of miscoding, inaccuracy, and surfeit when the entities are represented as datasets. We will then show how these quantities can be combined into the single measure of nescience. These approximations will allow us to introduce the minimum nescience principle, a method designed to automate the process of selecting optimal models in machine learning (a form of automated machine learning, or AutoML).
+
+In addition to introducing these approximations, we will demonstrate how to apply them to solve practical machine learning problems. The examples provided will be based on the \texttt{nescience}\footnote{\texttt{https://github.com/rleiva/nescience}} library, an open-source Python library that implements the ideas presented in this chapter.
+
+%
+% Section: Nescience Library
+%
+
+\section{Nescience Python Library}
+\label{sec:nescience_library}
+
+The \texttt{nescience} library is an open-source Python package that implements the ideas presented in this book, specifically their application to the field of machine learning. The library follows the API design and conventions of the widely used \texttt{scikit-learn} toolkit, which allows it to be seamlessly combined with the methods and workflows provided by that package.
+
+The \texttt{nescience} library can be installed with the \texttt{pip} utility:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+pip install nescience
+\end{verbatim}}
+\end{sourcecode}
+
+On the companion website for the library, the reader will find a collection of \texttt{jupyter-lab} notebooks that illustrate how the library works. Each subsection of this chapter is accompanied by a notebook containing implementations of all the examples discussed, so that the reader can reproduce the results and experiment with them interactively. Additional information about the \texttt{nescience} library, including a complete API reference, is also available on the library's website.
+
+%
+% Section: The Utility Interface
+%
+
+\section{The Utility Interface}
+\label{sec:utility_interface}
+
+The practical computation of the components of nescience requires a finite and computable way of measuring the amount of information contained in observed data. The theory is formulated in terms of description length and, ultimately, Kolmogorov complexity, which cannot be computed in general. The \texttt{mnplib} library therefore uses empirical code lengths as practical approximations. The tools to discretize and compress vectors are provided by the Utility Interface \texttt{utils}.
+
+The basic idea is simple. An attribute is represented by a vector of observed values. Equal values are treated as instances of the same symbol, the frequency of each symbol is counted, and the total code length is computed from those frequencies using the ideal coding scheme introduced in Section~\ref{sec:Optimal-Codes}. Numeric attributes require an additional step: before their frequencies can be counted, their values are discretized according to the procedure described in Section~\ref{sec:discretization_continuous_variables}.
+
+No actual compressed bit stream is produced. The resulting value is the ideal number of bits required to encode the observations according to their empirical frequencies.
+
+\subsection*{Encoding Categorical Attributes}
+
+Let $\mathbf{x}=(x_1,\ldots,x_n)$ be an attribute containing $n$ observations, and suppose that the distinct values appearing in the attribute are $g_1,\ldots,g_q$. Let $n_i$ denote the number of times that value $g_i$ occurs in the attribute, so that $\sum_{i=1}^{q} n_i=n$. The relative frequency of $g_i$ is $f_i=\frac{n_i}{n}$.
+
+As discussed in Section~\ref{sec:Optimal-Codes}, a value with relative frequency $f_i$ is assigned the ideal code length $-\log_2 f_i$. Since the value occurs $n_i$ times, the contribution of that value to the code length of the complete attribute is $-n_i\log_2 f_i$. The empirical code length used by \texttt{mnplib} is therefore
+$$
+\hat{K}_C(\mathbf{x})
+=
+-\sum_{i:n_i>0}
+n_i\log_2\left(\frac{n_i}{n}\right).
+$$
+This quantity depends only on the frequencies of the distinct values. The particular labels used to represent them are irrelevant. For example, replacing the categories $\{\texttt{red},\texttt{green},\texttt{blue}\}$ with $\{0,1,2\}$ does not modify their frequencies and therefore does not modify the resulting code length. For this reason, \texttt{mnplib} internally replaces categorical values with integer labels. The labels are assigned according to their order of first appearance, but their numerical values have no meaning. They serve only to identify which observations belong to the same category.
+
+Missing categorical values are rejected because they would otherwise introduce ambiguity about whether the missing value represents an actual category or the absence of an observation.
+
+\subsection*{Joint Encoding of Several Attributes}
+
+The same procedure can be applied to several attributes simultaneously. Consider $d$ attributes $\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(d)}$, each containing $n$ observations. For observation $j$, the values of all attributes are grouped into the tuple $\left(x^{(1)}_j,\ldots,x^{(d)}_j\right)$. Each distinct tuple is treated as a joint state. Only joint states that actually occur in the data are considered. The library does not construct the complete Cartesian product of all possible attribute values.
+
+\begin{example}
+Given two categorical attributes,
+$$
+\begin{array}{c|c}
+\text{Color} & \text{Shape}\\
+\hline
+\text{red} & \text{square}\\
+\text{red} & \text{circle}\\
+\text{blue} & \text{square}\\
+\text{red} & \text{square}
+\end{array}
+$$
+the observed joint states are $(\text{red},\text{square}), (\text{red},\text{circle}), (\text{blue},\text{square})$, with frequencies $2$, $1$, and $1$, respectively.
+\end{example}
+
+If the observed joint states are $s_1,\ldots,s_q$, with frequencies $n_1,\ldots,n_q$, their code length is computed exactly as for a single attribute:
+$$
+\hat{K}_C \left(\mathbf{x}^{(1)},\ldots,\mathbf{x}^{(d)} \right) =
+-\sum_{i:n_i>0} n_i \log_2 \left( \frac{n_i}{n} \right).
+$$
+
+Joint code lengths are particularly important in \texttt{mnplib}, because several components of nescience are computed by comparing the code lengths of individual attributes, subsets of attributes, targets, predictions, and their joint representations.
+
+\subsection*{Encoding Numeric Attributes}
+
+A numeric attribute may contain many different observed values. If every distinct value were treated as a separate symbol, the resulting representation would often contain almost as many states as observations and would not provide a useful description of the regularities in the data. Numeric attributes are therefore discretized before their frequencies are computed.
+
+Let $\mathbf{x}=(x_1,\ldots,x_n)$ be a numeric attribute. The discretization procedure described in Section~\ref{sec:discretization_continuous_variables} divides the interval between the minimum and maximum observed values into $b$ intervals of equal width. Each observation is replaced by the integer label of the interval containing it:
+$$
+\mathbf{x} \; \longrightarrow\; \tilde{\mathbf{x}} = (\tilde{x}_1,\ldots,\tilde{x}_n).
+$$
+The resulting labels form a finite set of states. Their frequencies are then counted and the code length is computed in exactly the same way as for a categorical attribute:
+$$
+\hat{K}_C(\mathbf{x}) \approx \hat{K}_C(\tilde{\mathbf{x}}) =
+-\sum_{i:n_i>0} n_i \log_2 \left(\frac{n_i}{n}\right).
+$$
+Discretization therefore determines the resolution at which numeric values are considered different. Values falling in the same interval are treated as equivalent for the purpose of computing their code length.
+
+\subsection*{Uniform Discretization}
+
+The current implementation of \texttt{mnplib} uses equal-width, or uniform, discretization. Given $b$ bins, the interval between the smallest and largest observed values is divided into $b$ intervals of equal width. Each numeric attribute is discretized independently, so different attributes generally have different interval boundaries even when the same number of bins is used.
+
+The use of equal-width intervals is deliberate. The objective is to preserve, at the selected resolution, differences in the density of observed values.
+
+\begin{example}
+Suppose an attribute in which one part of the range contains many observations while another contains only a few. Under equal-width discretization this difference remains visible in the frequencies of the corresponding bins. Those frequencies subsequently affect the code length.
+
+By contrast, an equal-frequency discretization deliberately places approximately the same number of observations in every bin. If all $b$ bins contained exactly $n/b$ observations, their relative frequencies would all be $1/b$, and the resulting code length would be
+$$
+-\sum_{i=1}^{b} \frac{n}{b} \log_2\left(\frac{1}{b}\right) = n\log_2 b.
+$$
+The result would then depend almost entirely on the number of bins and would contain little information about the original distribution of values.
+\end{example}
+
+For the computation of nescience, the behaviour of equal-frequency is undesirable. Differences in the frequencies of observed values are precisely what allow the code length to distinguish structured attributes from more uniformly distributed ones. Uniform discretization preserves these differences instead of deliberately removing them.
+
+When all observations of a numeric attribute have the same value, no actual discretization is necessary. \texttt{mnplib} assigns all observations to a single state. Its frequency is one and the resulting code length is zero.
+
+\subsection*{Number of Bins}
+
+The number of bins determines the resolution of the representation. Too few bins merge values that may contain relevant differences. Too many bins produce a large number of sparsely populated states and make the observed frequencies increasingly dependent on the particular sample. Section~\ref{sec:discretization_continuous_variables} discusses this trade-off and introduces the two automatic policies implemented by \texttt{mnplib}.
+
+For a single numeric attribute, the default policy is
+$$
+b_{\mathrm{auto}} = \max \left\{2, \left \lfloor 2n^{1/3} \right \rfloor \right\}.
+$$
+This rule is inspired by the Rice rule and increases the resolution as more observations become available. The increase is deliberately slower than the increase in sample size, so that both the number of bins and the average number of observations represented by each bin tend to increase with $n$. The minimum value of two prevents a nonconstant numeric attribute from being represented using fewer than two intervals.
+
+The user may also provide an explicit integer number of bins. In that case the supplied value is used directly and does not depend on the number of observations or attributes.
+
+\subsection*{Adaptive Discretization of Several Attributes}
+
+When several attributes are considered jointly, the number of possible combinations of their states grows rapidly with the number of attributes. Even if each attribute contains only a moderate number of states, their joint representation may become sparse. For this reason, \texttt{mnplib} provides an adaptive discretization policy for multidimensional empirical distributions.
+
+For $n$ observations and $d$ jointly supplied attributes, the number of bins assigned to each numeric attribute is
+$$
+b_{\mathrm{adaptive}} =
+\max \left\{2, \left\lfloor \frac{2n^{1/3}}{\log_2(d+1)} \right\rfloor \right\}.
+$$
+For a single attribute, $d=1$ and therefore $\log_2(d+1)=1$, so the adaptive rule reduces exactly to the ordinary automatic rule. As the number of jointly represented attributes increases, the number of bins assigned to each numeric attribute decreases. The purpose is to compensate, at least partially, for the increasing number of possible joint states and to reduce excessive sparsity. The value $d$ refers to the number of attributes participating in the joint representation, including categorical attributes. Categorical attributes are not themselves discretized, but they contribute additional dimensions to the joint state space and therefore influence the adaptive resolution.
+
+All numeric attributes participating in the same empirical distribution use the same resolved number of bins. Their interval boundaries, however, are computed independently from their own observed minimum and maximum values.
+
+\subsection*{Marginal and Joint Code Lengths}
+
+Care is required when code lengths of different representations are compared\footnote{The implementation Utility Interface is intentionally stateless. Discretization boundaries, encoded values, frequencies, and code lengths are computed from the values supplied to each call. No fitted discretizer or empirical distribution is retained between calls.}. Suppose, for example, that we want to compare the code length of a numeric attribute $\mathbf{x}$ with the joint code length of $\mathbf{x}$ and another attribute $\mathbf{y}$: $\hat{K}_C(\mathbf{x})$, and $\hat{K}_C(\mathbf{x},\mathbf{y})$. The representation of $\mathbf{x}$ should be the same in both computations. Otherwise, part of the observed difference in code length could be caused by using different discretizations rather than by adding $\mathbf{y}$.
+
+This becomes particularly relevant when adaptive discretization is used. A one-dimensional call and a multidimensional call have different values of $d$ and may therefore select different numbers of bins. Consequently, when marginal and joint code lengths are intended to be compared directly, \texttt{mnplib} resolves an appropriate bin count and uses the same explicit integer value for the shared numeric attributes involved in the comparison. Using the same number of bins for the same observed numeric vector produces the same discretization because its minimum and maximum values are unchanged. Different attributes still have their own interval boundaries, since each attribute is discretized independently.
+
+This consistency requirement is important for quantities based on differences or ratios of code lengths, including those used in the computation of miscoding, inaccuracy, and related components of nescience.
+
+%
+% Section: Miscoding
+%
+
+\section{Miscoding}
+\label{sec:machine_learning_miscoding}
+
+In Definition~\ref{def:relative_miscoding} we introduced miscoding as a measure of how inadequately a representation encodes an entity. Its theoretical definition is based on conditional Kolmogorov complexity and therefore cannot, in general, be computed. The \texttt{mnplib} library implements a practical supervised approximation for datasets in which a collection of features $\mathbf{X}$ is used as a representation of a target attribute $\mathbf{y}$.
+
+This setting corresponds to the labeled miscoding problem introduced earlier in Chapter \ref{chap:Labeled_Miscoding}. Each row of the dataset is associated with a target value, and the objective is to determine how much information about the target is missing from the available features, and how much information contained in those features is not recoverable from the target.
+
+The implementation replaces Kolmogorov complexity with the empirical code lengths described in Section~\ref{sec:utility_interface}. For an attribute $\mathbf{x}$, we denote its empirical code length by $\hat K_C(\mathbf{x})$, and the empirical code length of the jointly observed attributes $\mathbf{x}$ and $\mathbf{y}$ by $\hat K_C(\mathbf{x},\mathbf{y})$.
+
+Categorical attributes are encoded directly from the frequencies of their observed states. Numeric attributes are first discretized using the procedure described in Section~\ref{sec:utility_interface}. Consequently, all the quantities introduced in this section are finite and computable approximations of their algorithmic counterparts.
+
+The practical formulation is based on the approximations
+\[
+K(\mathbf{y}\mid\mathbf{x}) \approx \hat K_C(\mathbf{x},\mathbf{y}) - \hat K_C(\mathbf{x}),
+\]
+and
+\[
+K(\mathbf{x}\mid\mathbf{y}) \approx \hat K_C(\mathbf{x},\mathbf{y}) - \hat K_C(\mathbf{y}).
+\]
+These two quantities lead naturally to the notions of deficiency and surplus.
+
+% Feature level miscoding
+
+\subsection*{Feature-Level Miscoding}
+
+Let $\mathbf{X} = \left[\mathbf{x}_1,\ldots,\mathbf{x}_p\right]$ be a dataset composed of $p$ features and let $\mathbf{y}$ be its target attribute. For each individual feature $\mathbf{x}_j$, \texttt{mnplib} computes three
+quantities: the empirical \emph{deficiency} of $\mathbf{x}_j$ with respect to
+$\mathbf{y}$ is
+\[
+\hat d_j = \frac{\hat K_C(\mathbf{x}_j,\mathbf{y}) - \hat K_C(\mathbf{x}_j)}{\hat K_C(\mathbf{y})}.
+\]
+The empirical \emph{surplus} is
+\[
+\hat s_j = \frac{\hat K_C(\mathbf{x}_j,\mathbf{y}) - \hat K_C(\mathbf{y})}{\hat K_C(\mathbf{x}_j)}.
+\]
+Finally, the empirical \emph{miscoding} of the feature is
+\[
+\hat\mu_j = \max\{\hat d_j,\hat s_j\}.
+\]
+
+Deficiency approximates the fraction of the target information that still has to be supplied when the feature is known. A low deficiency therefore indicates that the feature contains most of the information required to reconstruct the target. Surplus measures the amount of information contained in the feature that is not relevant to describing the target. A feature may therefore have low deficiency but substantial surplus: it may contain all the information required to reconstruct the target while also carrying additional information that does not contribute to that description. Miscoding takes the largest of these two defects. A feature has low miscoding only when both directions are adequately represented.
+
+In the implementation, these values are constrained to the interval $[0,1]$. Feature-level quantities are computed during the call to \texttt{fit()} and can subsequently be obtained through
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+msd.deficiency_feature()
+msd.surplus_feature()
+msd.miscoding_feature()
+\end{verbatim}}
+\end{sourcecode}
+
+or together in tabular form with
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+msd.feature_analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+The latter returns the feature index, feature name, whether the feature was treated as numeric, its empirical code length, and its deficiency, surplus, and miscoding.
+
+\begin{example}
+\label{example:miscoding_synthetic}
+
+Consider a synthetic target composed of two independent categorical components $A$ and $B$. We construct five different features:
+
+\begin{itemize}
+    \item \texttt{perfect} contains exactly $(A,B)$;
+    \item \texttt{deficient} contains only $A$ and therefore lacks $B$;
+    \item \texttt{surplus} contains $(A,B,C)$, where $C$ is independent;
+    \item \texttt{irrelevant} is independent of the target.
+\end{itemize}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+import numpy as np
+import pandas as pd
+
+from sklearn.utils import check_random_state
+from mnplib.miscoding import Miscoding
+
+rng = check_random_state(42)
+
+A = rng.randint(0, 4, size=6000)
+B = rng.randint(0, 4, size=6000)
+C = rng.randint(0, 4, size=6000)
+D = rng.randint(0, 16, size=6000)
+
+Y = np.array([f"{a}_{b}" for a, b in zip(A, B)])
+
+perfect = np.array([f"{a}_{b}" for a, b in zip(A, B)])
+
+X = pd.DataFrame({
+    "perfect"    : perfect,
+    "deficient"  : A.astype(str),
+    "surplus"    : np.array(
+        [f"{a}_{b}_{c}" for a, b, c in zip(A, B, C)]
+    ),
+    "irrelevant" : D.astype(str)
+})
+
+msd = Miscoding().fit(X, Y)
+
+msd.feature_analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+A representative result is
+
+\begin{center}
+\begin{tabular}{lrrr}
+\hline
+Feature & Deficiency & Surplus & Miscoding \\
+\hline
+perfect    & 0.000 & 0.000 & 0.000 \\
+surplus    & 0.000 & 0.333 & 0.333 \\
+deficient  & 0.500 & 0.000 & 0.500 \\
+irrelevant & 0.992 & 0.992 & 0.992 \\
+\hline
+\end{tabular}
+\end{center}
+
+The example illustrates the different meanings of the two components. The deficient feature contains only half of the information required to reconstruct the target, but it introduces essentially no surplus. The \texttt{surplus} feature contains all target information, but approximately one third of its own information is not related to the target. The irrelevant feature is poor in both directions.
+
+\end{example}
+
+Redundancy should not be confused with surplus. Consider a feature that contains many repeated or highly similar samples. These samples are redundant because they do not add much new information, but they are not necessarily irrelevant to the target and therefore should not be penalized as surplus. Such redundancy may even be useful in practice, for example by providing repeated evidence that helps some learning algorithms, such as neural networks, estimate patterns more robustly. Surplus is intended to capture information that is unrelated to describing the target, not information that is merely repeated.
+
+The same interface can be used without knowing in advance which features are useful.
+
+\begin{example}
+Consider the Iris dataset included in \texttt{scikit-learn}.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.datasets import load_iris
+from mnplib.miscoding import Miscoding
+
+iris = load_iris(as_frame=True)
+X = iris.data
+y = iris.target
+
+msd = Miscoding().fit(X, y)
+
+msd.feature_analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+A representative result is
+
+\begin{center}
+\begin{tabular}{lrrr}
+\hline
+Feature & Deficiency & Surplus & Miscoding \\
+\hline
+petal width (cm)  & 0.109 & 0.506 & 0.506 \\
+petal length (cm) & 0.148 & 0.525 & 0.525 \\
+sepal length (cm) & 0.543 & 0.767 & 0.767 \\
+sepal width (cm)  & 0.725 & 0.847 & 0.847 \\
+\hline
+\end{tabular}
+\end{center}
+
+According to miscoding, features "petal width" and "petal length" provide the best individual representations of the target. The important point is not only their final miscoding value. Their separate deficiency and surplus values show why they are preferable.
+\end{example}
+
+Individual feature miscoding does not reveal whether two useful features encode essentially the same information. The library therefore also computes a symmetric pairwise miscoding measure, defined for any two features $\mathbf{x}_i$ and $\mathbf{x}_j$ as
+\[
+\hat\mu(\mathbf{x}_i,\mathbf{x}_j) = \frac{ \hat K_C(\mathbf{x}_i,\mathbf{x}_j)
+- \min\{\hat K_C(\mathbf{x}_i), \hat K_C(\mathbf{x}_j) \} }{
+\max\{\hat K_C(\mathbf{x}_i), \hat K_C(\mathbf{x}_j)\}}.
+\]
+Thus, $\hat\mu(\mathbf{x}_i,\mathbf{x}_j) \approx 1$ indicates indicates little common information, whereas $\hat\mu(\mathbf{x}_i,\mathbf{x}_j) \approx 0$ that the two attributes contain largely the same information. The complete matrix can be obtained with
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+msd.pairwise_miscoding_matrix()
+\end{verbatim}}
+\end{sourcecode}
+
+For the Iris dataset the smallest off-diagonal value is obtained for \texttt{petal length} and \texttt{petal width}, with a pairwise miscoding of approximately $0.84$. This is consistent with the fact that these two petal measurements contain a little amount of overlapping information.
+
+\begin{example}
+
+A useful property of empirical code-length miscoding is that it is not restricted to linear relations. Consider $y=x^2$,  with $x$ uniformly distributed over $[-1,1]$. Pearson correlation is close to zero because positive and negative values cancel in the covariance, despite the fact that $x$ determines $y$ exactly.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.feature_selection import r_regression
+from sklearn.utils import check_random_state
+from mnplib.miscoding import Miscoding
+
+X = check_random_state(42).uniform(
+    -1.0, 1.0, size=(5000, 1)
+)
+y = X[:, 0] ** 2
+
+correlation = r_regression(X, y)[0]
+
+msd = Miscoding().fit(X, y)
+miscoding = msd.miscoding_feature(0)
+
+print("Pearson correlation:", correlation)
+print("Miscoding:", miscoding)
+\end{verbatim}}
+\end{sourcecode}
+
+A representative result is
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Pearson correlation: -0.0201
+Miscoding:            0.2993
+\end{verbatim}}
+\end{sourcecode}
+
+Pearson correlation suggests almost no linear relation. Miscoding, in contrast, detects that the two attributes are strongly related.
+\end{example}
+
+The miscoding is not exactly zero. Although $x$ completely determines $y$, the converse transformation is not unique: $x=\pm\sqrt{y}$. Consequently, additional information is needed to reconstruct the actual sequence of signs of $x$ from $y$. This contributes to surplus.
+
+Mutual information provides a more general measure of dependence than correlation and is also capable of detecting nonlinear relations. However, it produces a single quantity measuring the information shared by two variables. Miscoding separates the remaining information into two directional components. The distinction can be illustrated with a simple discrete example.
+
+\begin{example}
+Let $\mathbf{y}=(A,B)$, where $A$ and $B$ are independent balanced binary attributes. Let the representation be $\mathbf{x}=(A,Z_1,Z_2,Z_3)$, where $Z_1,Z_2,Z_3$ are independent balanced binary attributes unrelated to the target. The feature shares the component $A$ with the target, but it lacks $B$ and contains three additional independent components.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+import itertools
+import numpy as np
+
+from sklearn.metrics import mutual_info_score
+from mnplib.miscoding import Miscoding
+
+rows = np.array(
+    list(itertools.product([0, 1], repeat=5)),
+    dtype=int,
+)
+rows = np.tile(rows, (32, 1))
+
+a, b, z1, z2, z3 = rows.T
+
+X = 8*a + 4*z1 + 2*z2 + z3
+y = 2*a + b
+
+mi = mutual_info_score(X, y) / np.log(2)
+
+msd = Miscoding(
+    X_type="categorical",
+    y_type="categorical",
+).fit(X[:, None], y)
+
+deficiency = msd.deficiency_feature(0)
+surplus    = msd.surplus_feature(0)
+
+print("Mutual information:", mi)
+print("Deficiency:", deficiency)
+print("Surplus:", surplus)
+\end{verbatim}}
+\end{sourcecode}
+
+The result is
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Mutual information: 1.00
+Deficiency:         0.50
+Surplus:            0.75
+\end{verbatim}}
+\end{sourcecode}
+
+The mutual information correctly reports that $\mathbf{x}$ and $\mathbf{y}$ share one bit. Miscoding provides additional diagnostic information. The deficiency $\hat d=0.5$ shows that half of the information required to reconstruct the target is missing from $\mathbf{x}$, namely the bit $B$. At the same time, $\hat s=0.75$ shows that three quarters of the information in $\mathbf{x}$ must still be supplied when $\mathbf{y}$ is known, corresponding here to the independent attributes $Z_1,Z_2,Z_3$.
+
+Thus mutual information tells us \emph{how much} information the two attributes share, whereas the decomposition used by miscoding also tells us \emph{how the representation fails}.
+\end{example}
+
+It is important to distinguish this conceptual comparison from the interface provided by \texttt{scikit-learn}. Mutual information itself is mathematically defined between a multidimensional vector and a target. However, \texttt{mutual\_info\_classif()} and \texttt{mutual\_info\_regression()} compute one mutual-information value for each individual feature. They do not directly return $I((X_1,\ldots,X_m);Y)$ for an arbitrary selected subset. For discrete data, a joint state may be constructed explicitly, as in the example above; continuous multivariate estimation requires a dedicated estimator. In contrast, as it is shown in the next section, \texttt{Miscoding.subset\_analysis()} directly evaluates selected feature subsets.
+
+\subsection*{Subset-level Miscoding}
+
+Feature-level diagnostics are insufficient when several features are used
+jointly. Two individually useful features may contain almost the same
+information, while two individually weak features may become highly
+informative when considered together.
+
+Let $S\subseteq\{1,\ldots,p\}$ be a subset of feature indices and let $\mathbf{X}_S$ denote the joint attribute formed by the selected features. The empirical deficiency of a feature subset $S$ with respect to the target
+$\mathbf{y}$ is
+\[
+\hat d(S) = \frac{\hat K_C(\mathbf{X}_S,\mathbf{y}) - \hat K_C(\mathbf{X}_S)}{\hat K_C(\mathbf{y})}.
+\]
+Its empirical surplus is
+\[
+\hat s(S) = \frac{\hat K_C(\mathbf{X}_S,\mathbf{y}) - \hat K_C(\mathbf{y})}{\hat K_C(\mathbf{X}_S)},
+\]
+and its empirical miscoding is
+\[
+\hat\mu(S) = \max\{\hat d(S),\hat s(S)\}.
+\]
+These quantities are computed directly from the joint empirical distribution. They are not obtained by adding or averaging the individual feature miscodings. This distinction is essential. The information supplied by several attributes depends on their joint structure. In particular, duplicated or strongly redundant features need not improve the representation even when each of them has a low individual miscoding.
+
+Subset diagnostics are available through
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+msd.subset_analysis([0, 2, 3])
+
+msd.deficiency_subset([0, 2, 3])
+msd.surplus_subset([0, 2, 3])
+msd.miscoding_subset([0, 2, 3])
+\end{verbatim}}
+\end{sourcecode}
+
+For numeric attributes, all marginal and joint code lengths involved in a particular subset calculation use the same resolved number of bins. This is important because otherwise $\hat K_C(\mathbf{X}_S)$, $\hat K_C(\mathbf{y})$, $\hat K_C(\mathbf{X}_S,\mathbf{y})$ could refer to different discretization resolutions and their differences would not be directly comparable. The number of bins is resolved adaptively as described in Section \ref{sec:utility_interface}.
+
+The number of possible joint states grows rapidly as additional features are introduced. With a finite sample, a joint empirical distribution may eventually become so sparse that its code lengths are no longer considered sufficiently reliable. For this reason, \texttt{mnplib} evaluates the observed joint states before returning subset deficiency, surplus, and miscoding.
+
+Let $n$ be the number of observations and $q$ the number of distinct joint states that actually occur. The mean occupancy is $\bar o = n /q$. Let $q_1$ be the number of observed joint states that occur exactly once. The
+singleton fraction is $f_1 = q_1 / q$ . The current implementation regards the empirical joint distribution as
+reliable when $\bar o \geq 2$ and $f_1\leq 0.5$. If the joint distribution does not satisfy the reliability condition, the subset deficiency, surplus, and miscoding are returned as \texttt{NaN} rather than presenting an unstable estimate as a meaningful result.
+
+The reliability check is deliberately applied to the joint representation $(\mathbf{X}_S,\mathbf{y})$, because this is the distribution on which the conditional code-length approximations ultimately depend.
+
+\subsection*{Feature Selection}
+
+The subset formulation makes it possible to use miscoding directly for feature selection. The method \texttt{select\_features()} implements greedy forward selection. Starting with the empty subset, it evaluates every possible one-feature extension and selects the candidate that produces the smallest reliable subset miscoding. A feature is accepted only if it reduces the current miscoding by more than the requested value of \texttt{min\_improvement}. Selection stops when no reliable candidate remains, when no candidate provides the required improvement, or when \texttt{max\_features} is reached.
+
+Although pairwise miscoding is available separately through \texttt{pairwise\_miscoding\_matrix()}, feature selection does not need to add a separate miscoding penalty. Miscoding is already reflected in the joint code
+length of the selected subset: adding a feature that merely repeats information already present in the subset provides little or no reduction in deficiency and may increase surplus. This distinguishes subset miscoding from feature-selection methods that rank features independently.
+
+Strict feature selection is not always appropriate. When constructing a model, we may want an ordering of the available features even after additional features stop reducing subset miscoding. The method \texttt{rank\_features()} therefore follows a related but different greedy procedure. At every step it evaluates the reliable one-feature extensions of the current subset and adds the best candidate. Unlike \texttt{select\_features()}, it does not require the newly added feature to reduce the current miscoding. Ranking continues until the requested number of features has been reached or no reliable extension remains.
+
+The distinction is useful in automatic model construction. Feature selection answers the question "Which features can be justified by an actual reduction of miscoding?" whereas feature ranking answers "In which order should additional features be considered?" The latter is particularly useful when another criterion, such as inaccuracy, surfeit, or total nescience, will ultimately decide how many of the ranked features should be used by the model.
+
+\begin{example}
+Let $A$ and $B$ be two binary attributes, and let $Y=2A+B$. The dataset contains $A$, an exact copy of $A$, and $B$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+import numpy as np
+
+from functools import partial
+from sklearn.feature_selection import (
+    SelectKBest,
+    mutual_info_classif,
+)
+from sklearn.utils import check_random_state
+from mnplib.miscoding import Miscoding
+
+rng = check_random_state(42)
+
+A = rng.randint(0, 2, size=6000)
+B = rng.binomial(1, 0.1, size=6000)
+
+X = np.column_stack((A, A, B))
+y = 2 * A + B
+
+names = np.array(["A", "A copy", "B"])
+
+mi = partial(
+    mutual_info_classif,
+    discrete_features=True,
+    random_state=42,
+)
+
+selector = SelectKBest(mi, k=2).fit(X, y)
+
+print(
+    "Mutual information:",
+    names[selector.get_support()]
+)
+
+msd = Miscoding(
+    X_type="categorical",
+    y_type="categorical",
+).fit(X, y)
+
+selected = msd.select_features(max_features=2)
+
+print("Miscoding:", names[selected])
+\end{verbatim}}
+\end{sourcecode}
+
+A representative output is
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Mutual information: ['A' 'A copy']
+Miscoding:          ['A' 'B']
+\end{verbatim}}
+\end{sourcecode}
+
+Individually, $A$ and its copy have exactly the same relation with the target, so a univariate mutual-information selector ranks both highly. Selecting both, however, provides no additional target information. Subset miscoding detects this because the second copy does not improve the joint representation. Adding $B$, on the other hand, completes the information required to reconstruct the target.
+\end{example}
+
+\subsection*{Miscoding of a Fitted Model}
+
+The class can also evaluate the representation effectively used by a fitted machine-learning model \texttt{miscoding\_model(model)}. The library first identifies the subset of fitted features effectively used by
+the model through its canonical model representation and then applies the same subset miscoding calculation described above. More detailed information can be obtained through \texttt{model\_analysis(model)}. This operation does not refit the model. It evaluates the representation selected by the fitted model relative to the dataset on which the \texttt{Miscoding} object was fitted. If the corresponding joint empirical distribution is unreliable, \texttt{miscoding\_model()} returns \texttt{NaN} and emits a warning rather
+than returning a potentially misleading numerical value.
+
+%
+% Section: Inaccuracy
+%
+
+\section{Inaccuracy}
+\label{sec:machine_learning_inaccuracy}
+
+In Section \ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as the normalized information distance between the representation $r$ and the string $\Gamma(d)$ printed out by a universal Turing machine when given the description as input:
+\[
+\iota(d, r) = \frac{ \max\{ K \left(r \mid \Gamma(d) \right), K \left( \Gamma(d) \mid r \right) \} } { \max\{ K(r), K \left(\Gamma(d) \right) \} }
+\]
+Inaccuracy, being based on Kolmogorov complexity, is not computable in the general case and must be approximated in practice. In this section we show how this concept can be estimated for a model trained on a dataset. The approach follows the approach described in Section \ref{sec:note_compression}.
+
+For discriminative models, which estimate $P(\mathbf{y} \mid \mathbb{X})$, the natural proxy compares predicted targets $\hat{\mathbf{y}}$ with true targets $\mathbf{y}$ via normalized compression distance.
+
+\begin{definition}
+Let $\mathbb{X}$ be a dataset, $\mathbf{y}$ a response variable, $m$ a model, and $\mathbf{\hat{y}} = m(\mathbb{X})$ the predicted values by $m$ given $\mathbb{X}$. We define the \emph{inaccuracy}\index{Inaccuracy} of the model $m$ for the target values $\mathbf{y}$, denoted by $\hat\iota(\mathbf{\hat{y}}, \mathbf{y})$, as:
+\[
+\hat\iota(\mathbf{\hat{y}}, \mathbf{y}) = \frac{ \hat{K}_C(\mathbf{\hat{y}}, \mathbf{y}) - \min\{ \hat{K}_C(\mathbf{\hat{y}}), \hat{K}_C(\mathbf{y}) \} } { \max\{ \hat{K}_C(\mathbf{\hat{y}}), \hat{K}_C(\mathbf{y}) \} }
+\]
+\end{definition}
+
+Intuitively, $\hat\iota(\hat{\mathbf{y}}, \mathbf{y})$ measures how far the predictions are from the true values. The lower this quantity, the better $m$ is as a predictor of $\mathbf{y}$. Unlike standard accuracy metrics, this measure accounts not only for how difficult it is to reconstruct $\mathbf{y}$ from $\hat{\mathbf{y}}$, but also for how much additional information $\hat{\mathbf{y}}$ contains that is unrelated to $\mathbf{y}$.
+
+When a model provides explicit probabilities, one may also define $\hat{K}$ using the model code length $-\sum \log_2 \hat{p}_m(\cdot)$; we keep the compression-based proxy here for consistency with the rest of the chapter.
+
+\begin{example}
+\label{ex:machine_learning:inaccuracy:inaccuracy_DT}
+According to the minimum nescience principle, inaccuracy is the normalized compression distance between the actual targets $\mathbf{y}$ and the predicted targets $\hat{\mathbf{y}}$. We compare our inaccuracy metric with a classical score (we use $1 - \text{accuracy}$) on the MNIST\index{MNIST} digits dataset.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from mnplib.inaccuracy import Inaccuracy
+from sklearn.datasets import load_digits
+
+X, y = load_digits(return_X_y=True)
+
+inacc = Inaccuracy()
+inacc.fit(X, y)
+\end{verbatim}}
+\end{sourcecode}
+
+We train a decision-tree classifier with maximum depth $i \in \{1,\ldots,20\}$:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.tree import DecisionTreeClassifier
+
+scores       = list()
+inaccuracies = list()
+
+for i in range(20):
+    
+    tree = DecisionTreeClassifier(max_depth=i, random_state=42)
+    tree.fit(X, y)
+    
+    scores.append(1 - tree.score(X, y))
+    inaccuracies.append(inacc.inaccuracy_model(tree))
+\end{verbatim}}
+\end{sourcecode}
+
+We compare $1-\text{accuracy}$ and inaccuracy. As shown in Figure \ref{figure:machine_learning:inaccuracy:inaccuracy_DT}, both behave similarly, with inaccuracy typically taking larger values due to its stronger emphasis on incorrectly predicted values.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{inaccuracy_DT.png}
+\caption{Inaccuracy vs. Score of Decison Trees}
+\label{figure:machine_learning:inaccuracy:inaccuracy_DT}
+\end{figure}
+
+\end{example}
+
+In Example \ref{ex:machine_learning:inaccuracy:inaccuracy_DT} we observed that deeper trees yield smaller training error. Of course, larger depth increases the risk of overfitting\index{Overfitting}. However, within the nescience framework, overfitting is handled by \emph{surfeit} (see Section \ref{sec:machine_learning_surfeit}), so inaccuracy need not penalize complexity directly.
+
+We can interpret inaccuracy as the effort, measured in description length, required to \emph{fix} a model's predictions. Consequently, a model that makes one hundred \emph{identical} errors is easier to correct than a model that makes one hundred \emph{distinct} errors (see Example \ref{ex:machine_learning:inaccuracy:one_hundred_errors}).
+
+\begin{example}
+\label{ex:machine_learning:inaccuracy:one_hundred_errors}
+
+We again use a decision-tree classifier, now with the hyperparameter \texttt{min\_samples\_leaf}=5 (a common regularization to reduce overfitting).
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+tree = DecisionTreeClassifier(min_samples_leaf=5)
+tree.fit(X, y)
+\end{verbatim}}
+\end{sourcecode}
+
+The inaccuracy of this new trained model is $0.17$, and its score $0.08$. Next we will artificially introduce one hundred errors in the dataset, simulating the case that the tree is not able to model correctly these data points. In this particular case all the errors are exactly the same.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+X2 = X.copy()
+y2 = y.copy()
+for i in range(100):
+    X2 = np.append(X2, [X[0]], axis=0)
+    y2 = np.append(y2, (y[0]+1) % 10)
+\end{verbatim}}
+\end{sourcecode}
+
+The inaccuracy of the decision tree, given this new dataset, has increased\footnote{Note that we had to \texttt{fit()} again the class Inaccuracy in order to use the new dataset. Normally this is not the way we use this class; instead what we should do is to fit once a dataset, and then compute the inaccuracy of different models. We are doing here in this way to demonstrate an interesting property of the concept of inaccuracy.} from $0.17$ to $0.21$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+inacc.fit(X2, y2)
+inacc.inaccuracy_predictions(pred)
+\end{verbatim}}
+\end{sourcecode}
+
+Score has also increased, in this case from $0.08$ to $0.13$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+1 - tree.score(X2, y2)
+\end{verbatim}}
+\end{sourcecode}
+
+Finally, we are going to repeat exactly the same experiment, but this time instead of adding one hundred times the same error, adding one hundred different errors.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+X3 = X.copy()
+y3 = y.copy()
+for i in arange(100):
+    index = np.random.randint(X.shape[0])
+    X3    = np.append(X3, [X[index]], axis=0)
+    y3    = np.append(y3, (y[index]+1) % 10)
+\end{verbatim}}
+\end{sourcecode}
+
+In this last case the inaccuracy of the model has increased up to $0.25$, meanwhile score remained the same.
+\end{example}
+
+In line with Example \ref{ex:machine_learning:inaccuracy:one_hundred_errors}, consider an extreme binary case: a model that always flips the label (predicts False when the truth is True, and vice versa). Classical accuracy deems this the worst possible model; our inaccuracy, however, is low because the predictions can be perfectly "fixed" by a simple transformation. In some applications (e.g., a hedge fund\index{Stock market} trading strategy), such a model would be extremely valuable.
+
+In highly imbalanced datasets\index{Imbalanced dataset}, standard accuracy can be misleading: a high score may simply reflect correct classification of the majority class while failing on the minority class. Practitioners address this with specialized metrics. With our inaccuracy metric, as Example \ref{ex:machine_learning:inaccuracy:unbalanced_dataset} shows, a model that fails to classify the minority class is penalized even if that class has few samples.
+
+\begin{example}
+\label{ex:machine_learning:inaccuracy:unbalanced_dataset}
+We create a synthetic dataset with two classes, using the \texttt{make\_classification} utility of scikit-learn, where one has $95\%$ of the samples and the other $5\%$:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.datasets import make_classification
+
+depth = list()
+score = list()
+inacc = list()
+
+inaccuracy = Inaccuracy()
+
+for i in np.arange(1, 100):
+                    
+    X, y = make_classification(n_samples=1000, n_features=2,
+                               n_informative=2, n_redundant=0,
+                               class_sep=2, flip_y=0, weights=[0.95,0.05])
+
+    inaccuracy.fit(X, y)
+        
+    tree = DecisionTreeClassifier(min_samples_leaf=i)
+    tree.fit(X, y)
+
+    depth.append(i)        
+    score.append(1 - tree.score(X, y))
+    inacc.append(inaccuracy.inaccuracy_model(tree))
+\end{verbatim}}
+\end{sourcecode}
+
+We vary the minimum number of samples per leaf $i \in \{1,\ldots,100\}$. In Figure \ref{figure:machine_learning:inaccuracy:inaccuracy_DT2}, for large $i$ the accuracy-based error (i.e., $1-\text{accuracy}$) may stay near $0.05$, yet the inaccuracy remains high because the model effectively ignores the minority class.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{inaccuracy_DT2.png}
+\caption{Inaccuracy of Decision Tree.}
+\label{figure:machine_learning:inaccuracy:inaccuracy_DT2}
+\end{figure}
+
+\end{example}
+
+%
+% Section: Surfeit
+%
+
+\section{Surfeit}
+\label{sec:machine_learning_surfeit}
+
+In Chapter \ref{chap:Surfeit} we defined the surfeit of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as
+\[
+\sigma(d,r) = \frac{|l(d)-K(r)|}{l(d)}.
+\]
+This quantity measures how much longer the description $d$ is than an ideal minimal description of the representation $r$. If $l(d)$ is close to $K(r)$, then the description contains little surplus. If $l(d)$ is much
+larger than $K(r)$, then the description contains unnecessary structure.
+
+In practice, however, $K(r)$ is not computable. Moreover, when we want to study the internal redundancy of a model description itself, it is useful to consider a representation-independent approximation. Instead of asking how far $d$ is from a shortest description of $r$, we ask how far $d$ is from a shortest description of itself. This gives the redundancy-based approximation
+\[
+\rho(d) = 1 - \frac{K(d)}{l(d)}.
+\]
+Here $K(d)$ denotes the Kolmogorov complexity of the string $d$. A string with low redundancy has $K(d) \approx l(d)$, and therefore $\sigma(d) \approx 0$. A highly redundant string has $K(d) \ll l(d)$, and therefore $\sigma(d)$ is close to one.
+
+This formulation is particularly convenient in machine learning. A trained model $m$ is first converted into a string-based description $d_m$, and surfeit is then estimated from the redundancy of that description:
+\[
+\rho(m) = \sigma(d_m) = 1 - \frac{K(d_m)}{l(d_m)}.
+\]
+The model is therefore studied as a string of symbols. No reference to the training dataset or to the target variable is needed in the computation of surfeit. Surfeit measures the internal surplus of the model description, not the accuracy of the model with respect to observed data.
+
+The theoretical difficulty is that $K(d_m)$ is not computable. The \texttt{mnplib} library therefore approximates $K(d_m)$ using ordinary text compression. If $C(d_m)$ denotes the length of the compressed version of the
+model description, the practical approximation is
+\[
+\hat{\rho}(m) = 1 - \frac{C(d_m)}{l(d_m)}.
+\]
+This approximation is not intended to recover Kolmogorov complexity exactly. Rather, it provides a practical test for redundancy: if the model description contains repeated patterns, regularities, or unnecessary symbolic structure, a compressor should be able to encode it using fewer symbols.
+
+The current implementation uses \texttt{zlib} as the canonical compressor. This choice is deliberate. \texttt{zlib} is fast, deterministic, widely available, and has a small and well-understood format overhead. These properties are important because surfeit may be computed repeatedly during model comparison. Using a single compressor also makes the resulting values more reproducible: two users evaluating the same model description should not obtain different surfeit values merely because they selected different compression algorithms.
+
+A practical issue arises when the model description is very short. For short strings, the compressed string may be longer than the original one:
+\[
+C(d_m) > l(d_m).
+\]
+This does not mean that the model has negative redundancy. It usually means that the fixed overhead of the compression format dominates the compressed representation. In the case of the standard \texttt{zlib} format, the stream contains a small header and a checksum trailer. To avoid interpreting this format overhead as model complexity, \texttt{mnplib} applies an overhead correction.
+
+Let $h_{\mathrm{zlib}}$ be the assumed \texttt{zlib} overhead. The effective compressed length is defined as
+\[
+C_{\mathrm{eff}}(d_m) = \min \left\{l(d_m), \max\left\{0, C(d_m)-h_{\mathrm{zlib}}\right\} \right\}.
+\]
+The default value used by the library is
+\[
+h_{\mathrm{zlib}} = 6,
+\]
+corresponding to the usual two-byte header and four-byte checksum trailer. The clipping operation ensures that the effective compressed length is never negative and never larger than the original model description.
+
+There is a second practical adjustment. A model description should not be credited with a useful compressed length larger than the amount of information contained in the target it is intended to describe. If the target has empirical code length $\hat K_C(\mathbf{y})$, and if
+\[
+\hat K_C(\mathbf{y}) < C_{\mathrm{eff}}(d_m),
+\]
+then the implementation uses $\hat K_C(\mathbf{y})$ as the reference length instead of $C_{\mathrm{eff}}(d_m)$. In other words, the practical reference length is
+\[
+L_{\mathrm{ref}}(m,\mathbf{y}) = \min \left\{ C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y}) \right\}.
+\]
+This condition prevents a model description from being treated as more informative than the target itself. It is especially relevant when the model description is long, or only weakly compressible, while the target variable is
+simple.
+
+\begin{definition}
+Let $m$ be a trained model, let $d_m$ be its string-based description, and let $\mathbf{y}$ be the target variable that the model is intended to describe. We define the practical surfeit of $m$ as
+\[
+\hat{\rho}(m,\mathbf{y}) = 1 - \frac{ L_{\mathrm{ref}}(m,\mathbf{y}) }{ l(d_m) },
+\]
+where
+\[
+L_{\mathrm{ref}}(m,\mathbf{y}) = \min \left\{ C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y}) \right\}.
+\]
+\end{definition}
+
+Thus, the implementation follows two safeguards. First, it corrects the raw compressed length by subtracting the fixed \texttt{zlib} overhead. Second, it uses the empirical code length of the target as an upper bound on the useful reference length. A compact, non-redundant model description has low surfeit. A model whose description contains repeated or unnecessary structure has high surfeit. In this sense, surfeit acts as a practical approximation to descriptive surplus, while remaining bounded by the information content of the target being described.
+
+The implementation requires a way to encode models as strings of symbols. Ideally, descriptions would be encoded as Turing machines with respect to a fixed universal Turing machine. This would be the closest formulation to the theoretical definition. In practice, however, such an encoding would be difficult to implement and extend. The library therefore uses a restricted, Python-like textual representation of the predictive procedure. The intention is not to serialize the software object, but to produce a simplified program-like description of what the model computes. Third-party libraries, external state, and implementation-specific metadata are excluded from the description whenever possible.
+
+A typical usage of the \texttt{Surfeit} class is:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.surfeit import Surfeit
+
+sft = Surfeit()
+
+surfeit = sft.surfeit_model(model)
+print(surfeit)
+\end{verbatim}
+}
+\end{sourcecode}
+
+When the model description is already available as a string, surfeit can be computed directly from that string:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.surfeit import Surfeit
+
+model_string = """
+def model(X):
+    if X1 < 0.5:
+        return 0
+    else:
+        return 1
+"""
+
+sft = Surfeit()
+
+surfeit = sft.surfeit_string(model_string)
+print(surfeit)
+\end{verbatim}
+}
+\end{sourcecode}
+
+For diagnostic purposes, the detailed interface exposes the intermediate quantities used in the calculation:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+details = sft.surfeit_string_detailed(model_string)
+
+for key, value in details.items():
+    print(key, value)
+\end{verbatim}
+}
+\end{sourcecode}
+
+The detailed output includes the raw length of the model description, the raw \texttt{zlib}-compressed length, the overhead correction, the effective compressed length, and the final surfeit value.
+
+Surfeit is useful in machine learning because it penalizes unnecessary descriptive structure. A highly complex model may fit the training data well, but if its description contains large amounts of repeated or compressible structure, then its surfeit will be high. Conversely, a very simple model may have low surfeit, but this does not imply that it is accurate. Surfeit should therefore be interpreted together with inaccuracy. Inaccuracy measures how well the model describes the observed phenomenon; surfeit measures how much surplus there is in the model description itself. The preferred model is not necessarily the one with lowest inaccuracy or lowest surfeit in isolation, but one that achieves a good trade-off between both quantities.
+
+\begin{example}
+\label{ex:surfeit_overfit}
+Surfeit can help identify overfitted models. Suppose that polynomial regression models of increasing degree are fitted to the same phenomenon. As the degree increases, the model description usually becomes longer and may contain more repeated symbolic structure. A high-degree polynomial may achieve low inaccuracy on the training data, but it can also have high surfeit because its description contains unnecessary descriptive surplus.
+
+In such a case, surfeit acts as a counterbalance to inaccuracy. A low-degree model may be too simple and therefore inaccurate. A very high-degree model may be accurate on the training data but unnecessarily complex. The preferred model is one that achieves low inaccuracy with low surfeit.
+\end{example}
+
+Another advantage of surfeit is that it allows us to compare models from different families. If two models achieve similar inaccuracy, surfeit provides a way to prefer the model with the more economical description. For example, a small decision tree may have lower surfeit than a neural network when the decision boundary is simple. In a more complex problem, however, a neural network may provide a more compact description than a large decision tree with many branches. Surfeit therefore does not impose a fixed preference for one model family over another; it evaluates the descriptive surplus of the specific model description under consideration.
+
+When predictive performance differs substantially, surfeit should not be used alone. A model with very low surfeit may simply be underfitted. A model with very low inaccuracy may be overfitted. The role of nescience is to evaluate these quantities jointly, selecting models that provide an adequate description of the phenomenon without unnecessary descriptive surplus.
+
+Surfeit can help avoid overfitted models. The higher the surfeit of a model, the greater the risk that the model is an overfit to the training dataset, as Example \ref{ex:surfeit_overfit} illustrates.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{surfeit_vs_inaccuracy.png}
+\caption{Surfeit vs Inaccuracy}
+\label{figure:surfeit_vs_inaccuracy}
+\end{figure}
+
+\begin{example}
+\label{ex:surfeit_overfit}
+We generate $900$ samples from a sinusoidal curve and fit $n$-degree polynomials with $n \in \{1,\ldots,15\}$.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
+from mnplib.surfeit import Surfeit
+from mnplib.inaccuracy import Inaccuracy
+
+n_samples = 900
+degrees = np.arange(1, 15)
+
+X = np.sort(np.random.rand(n_samples) * 3)
+y = np.cos(1.5 * np.pi * X)
+
+linacc   = list()
+lsurfeit = list()
+
+for i in degrees:
+        
+    poly = PolynomialFeatures(degree=i, include_bias=False)
+    newX = poly.fit_transform(X[:, np.newaxis])
+    
+    linear_regression = LinearRegression()
+    linear_regression.fit(newX, y)
+
+    inacc.fit(newX, y)
+    inaccuracy = inacc.inaccuracy_model(linear_regression)
+    
+    sft.fit(newX, y)
+    surfeit = sft.surfeit_model(linear_regression)
+    
+    linacc.append(inaccuracy)
+    lsurfeit.append(surfeit)
+\end{verbatim}}
+\end{sourcecode}
+
+In Figure \ref{figure:surfeit_vs_inaccuracy} we see that, as expected, higher-degree polynomials yield lower training error, but at the cost of higher surfeit. The preferred model is one achieving low inaccuracy \emph{and} low surfeit.
+\end{example}
+
+Another advantage of surfeit is that it allows us to compare models from different families. For example, if two models have the same accuracy, should we prefer a decision tree to a neural network, or a naive Bayes classifier to a support vector machine? The next example shows how surfeit can guide such choices.
+
+\begin{example}
+\label{ex:dt_vs_nn}
+
+We compare a decision tree with a neural network on synthetic data consisting of two isotropic Gaussian blobs. First, with standard deviation $1$ and two dimensions, the two clusters are easily separable (Table \ref{tab:isotropic_gaussian_blobs}, left).
+
+\begin{table}
+\begin{center}
+
+\begin{tabular}{ c c }
+
+\includegraphics[scale=0.4]{blobs_easy_split} & \includegraphics[scale=0.4]{blobs_difficult_split}
+
+\end{tabular}
+\end{center}
+\caption{\label{tab:isotropic_gaussian_blobs}Isotropic Gaussian blobs.}
+\end{table}
+
+% \raisebox{.4\height}{\includegraphics[scale=0.4]{blobs_difficult_split}}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from mnplib.surfeit import Surfeit
+from mnplib.inaccuracy import Inaccuracy
+from sklearn.datasets.samples_generator import make_blobs
+
+X, y = make_blobs(n_samples=1000, centers=2, n_features=2, cluster_std=1)
+
+tree = DecisionTreeClassifier()
+tree.fit(X, y)
+tree.score(X, y)
+
+nn = MLPClassifier()
+nn.fit(X, y)
+nn.score(X, y)
+
+sft = Surfeit()
+sft.fit(X, y)
+
+sft.surfeit_model(tree)
+sft.surfeit_model(nn)
+
+\end{verbatim}}
+\end{sourcecode}
+
+If we run the code, both models typically achieve accuracy $1$. However, the decision tree often has substantially lower surfeit than the neural network (e.g., $0.25$ vs.\ $0.73$ in one run), so we would prefer the decision tree in this setting.
+
+If we repeat the experiment with standard deviation $3$ and higher dimensionality (Table \ref{tab:isotropic_gaussian_blobs}, right), the situation can change:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+X, y = make_blobs(n_samples=10000, centers=2, n_features=8, cluster_std=3)
+\end{verbatim}}
+\end{sourcecode}
+
+In this second case, both models can again achieve very high accuracy, but the surfeit of the decision tree typically increases markedly (e.g., to $\approx 0.82$), while the neural network's surfeit may remain similar (e.g., $\approx 0.76$). For this dataset, we would then prefer the neural network.
+
+\end{example}
+
+In Example \ref{ex:dt_vs_nn} we assumed equal accuracy. When accuracies differ, we must appeal to the overall concept of \emph{nescience} to decide between models, jointly considering inaccuracy and surfeit (and, where relevant, miscoding).
+
+%
+% Section: Nescience
+%
+
+\section{Nescience}
+\label{sec:machine_learning_nescience}
+
+In Chapter \ref{chap:Nescience} we defined the concept of nescience as the solution to a nonlinear multiobjective optimization problem, in which we minimize the miscoding, inaccuracy, and surfeit of representations and models. The solution to this problem is, in general, not unique: we can often find multiple pairs (representation, model) such that none of the three quantities can be improved without degrading at least one of the others (Pareto optimality). However, in practice we expect a machine-learning library to provide a single solution when training a model on a dataset. To provide a unique solution, we resort to a utility function that selects one element from the Pareto-optimal set. The \texttt{nescience} library offers several utility functions; the default is the arithmetic mean of the three metrics.
+
+\begin{remark}
+The \texttt{nescience} library implements the following utility functions to approximate the concept of nescience, i.e., to compute $\hat\nu\!\left(\mathbb{Z}, m, \mathbf{y} \right)$:
+
+\begin{itemize}
+\item Euclidean distance: $\left( \hat\mu(\mathbb{Z}, \mathbf{y})^2 + \hat\iota(\hat{y}, \mathbf{y})^2  + \hat\sigma(m, \mathbf{y})^2 \right)^{1/2}$
+\item Arithmetic mean: $\frac{\hat\mu(\mathbb{Z}, \mathbf{y}) + \hat\iota(\hat{y}, \mathbf{y}) + \hat\sigma(m, \mathbf{y})}{3}$
+\item Geometric mean: $\left( \hat\mu(\mathbb{Z}, \mathbf{y}) \times \hat\iota(\hat{y}, \mathbf{y}) \times \hat\sigma(m, \mathbf{y}) \right)^{1/3}$
+\item Product: $\hat\mu(\mathbb{Z}, \mathbf{y}) \times \hat\iota(\hat{y}, \mathbf{y}) \times \hat\sigma(m, \mathbf{y})$
+\item Addition: $\hat\mu(\mathbb{Z}, \mathbf{y}) + \hat\iota(\hat{y}, \mathbf{y}) + \hat\sigma(m, \mathbf{y})$
+\item Weighted mean: $w_\mu \hat\mu(\mathbb{Z}, \mathbf{y}) + w_\iota \hat\iota(\hat{y}, \mathbf{y}) + w_\sigma \hat\sigma(m, \mathbf{y})$
+\item Harmonic mean: $\frac{3}{ \hat\mu(\mathbb{Z}, \mathbf{y})^{-1} + \hat\iota(\hat{y}, \mathbf{y})^{-1} + \hat\sigma(m, \mathbf{y})^{-1} }$
+\end{itemize}
+
+Euclidean distance and addition can produce nescience values greater than one, which conflicts with the intended $[0,1]$ range. The geometric mean, product, and harmonic mean have the issue that the resulting nescience is zero (or undefined, in the harmonic case) whenever any of the three components is zero. The weighted mean introduces three additional hyperparameters $(w_\mu, w_\iota, w_\sigma)$ that must be chosen (often subject to $w_\mu + w_\iota + w_\sigma = 1$). It remains an open question which utility function is most appropriate in general; by default we use the arithmetic mean.
+\end{remark}
+
+Example \ref{ex:nescience_decisiontree} shows how to use the \texttt{nescience} library to compute the nescience of a dataset and a model.
+
+\begin{example}
+\label{ex:nescience_decisiontree}
+
+We compute the nescience of a decision-tree classifier on the \texttt{digits} dataset (MNIST handwritten digits) from \texttt{sklearn}.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_digits
+from Nescience.Nescience import Nescience
+
+data = load_digits()
+
+tree = DecisionTreeClassifier()
+tree.fit(data.data, data.target)
+tree.score(data.data, data.target
+[ ] 1
+
+nescience = Nescience()
+nescience.fit(data.data, data.target)
+
+nescience.nescience(tree)
+[ ] 0.5895603819965907
+\end{verbatim}}
+\end{sourcecode}
+
+The training accuracy of the decision tree is $1.0$, meaning all samples are correctly classified on the training set. This is symptomatic of overfitting. In practice we would use a train/test split or cross-validation. Nonetheless, the nescience value of about $0.59$ flags that something is wrong with the model-data pairing.
+
+\end{example}
+
+As Example \ref{ex:nescience_decisiontree} illustrates, a key advantage of nescience is that it can evaluate model quality without requiring computationally expensive procedures such as cross-validation or holding out a test set. Another advantage is that nescience allows comparisons across different model families, as shown next.
+
+\begin{example}
+\label{ex:nescience_comparison}
+
+We compare two model families on the Breast Cancer Wisconsin (Diagnostic) dataset from \texttt{sklearn}: a decision tree and a neural network.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.datasets import load_breast_cancer
+from Nescience.Nescience import Nescience
+
+data = load_breast_cancer()
+X = data.data
+y = data.target
+
+tree = DecisionTreeClassifier(max_depth=3)
+tree.fit(X, y)
+tree.score(X, y)
+[ ] 0.9789103690685413
+
+nescience = Nescience()
+nescience.fit(X, y)
+nescience.nescience(tree)
+[ ] 0.5945936419010083
+
+nn = MLPClassifier()
+nn.fit(X, y)
+nn.score(X, y)
+[ ] 0.9261862917398945
+
+nescience.nescience(nn)
+[ ] 0.7860523786210711
+\end{verbatim}}
+\end{sourcecode}
+
+In one run, both models achieve high and broadly similar training accuracy. In this case, not only does the decision tree achieve the better score, but its nescience is also much lower than that of the multilayer perceptron; hence we should prefer the former to the latter.
+
+\end{example}
+
+Nescience can also be used to optimize hyperparameters within a (parametric) family of models. A practical advantage is that we can adopt a greedy search for a hyperparameter that is monotone with accuracy: select the value at which nescience stops decreasing and starts to increase, since this is the point at which we are no longer learning anything new from the dataset (see Example \ref{ex:nescence_hyperparameter}).
+
+\begin{example}
+\label{ex:nescence_hyperparameter}
+
+We revisit a decision tree on the breast cancer dataset. We train $10$ trees with \texttt{max\_depth} from $1$ to $10$. The deeper the tree, the higher the training accuracy, but also the higher the risk of overfitting. For each tree we compute the model's nescience and compare it to a cross-validation score. Figure \ref{figure:nescience_cancer} shows typical behavior: both nescience and the cross-validation error decrease as depth increases, up to an inflection point after which they increase, indicating overfitting. The \texttt{nescience} library suggests a maximum depth of $7$, whereas cross-validation indicates an optimum near $6$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{nescience_cancer.png}
+\caption{Evolution of Nescience with Tree Depth.}
+\label{figure:nescience_cancer}
+\end{figure}
+
+\end{example}
+
+It is instructive to examine the three components in Figure \ref{figure:nescience_cancer}. As expected, deeper trees reduce inaccuracy and increase surfeit. By contrast, miscoding can evolve nonmonotonically because each candidate tree may use a different subset of features at internal nodes. It would be desirable to have a tree-building algorithm that accounts for miscoding when selecting split features; such an algorithm is described in Section \ref{sec:decision_trees}.
+
+Finally, we consider hyperparameter searches where a greedy approach is not applicable—for example, when searching over multiple (often conflicting) hyperparameters. Grid search can be computationally expensive due to the number of combinations, and even more so if each candidate requires cross-validation. Since nescience can flag overfitting without cross-validation, it can substantially speed up hyperparameter search. Example \ref{ex:hyper_search} shows how to integrate nescience into \texttt{GridSearchCV}.
+
+\begin{example}
+\label{ex:hyper_search}
+
+In this example we are going to see how we can use the \texttt{nescience} library to find the optimal hyperparameters for a model using a grid search. In particular, we are going to select the best hyperparameters for a multilayer perceptron classifer, including the number of hidden layers, and the size of those layers (what it is called Neural Architecture Search). The procedure will be demonstrated using the \texttt{digits} dataset.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from Nescience.Nescience import Nescience
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+\end{verbatim}}
+\end{sourcecode}
+
+First of all we have to provide a custom loss function based on the concept of nescience to be integrated with the search procedure. The next code shows how to implement such a function.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+def my_custom_loss_func(estimator, X, y):
+    
+    nsc = Nescience()
+    nsc.fit(X, y)
+    nescience = nsc.nescience(estimator)
+    
+    # scikit-learn expect that higher numbers are better
+    score = -nescience
+    
+    return score
+\end{verbatim}}
+\end{sourcecode}
+
+Second, we have to define the grid of hyperparameters over which we are going to do the search. The larger the grid, the better the result, but also, the more computer time is required to evaluate all possible combinations.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+parameters = {'solver': ['lbfgs'],
+              'max_iter': [1000, 1500, 2000 ], 
+              'alpha': 10.0 ** -np.arange(1, 10, 3),
+              'hidden_layer_sizes':[(60,), (100,), (60, 60,), (100, 100,), 
+                                    (60, 60, 60,), (100, 100, 100,)]}
+\end{verbatim}}
+\end{sourcecode}
+
+Next code show how to do a classical grid search using the score of the models. The search will be evaluated using a train/test split of the dataset.
+ 
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+clf_std = GridSearchCV(estimator=MLPClassifier(), param_grid=parameters,
+                       cv=3, iid=True, n_jobs=-1)
+clf_std.fit(X_train, y_train)
+clf_std.best_params_
+
+[] {'alpha': 0.1,
+[]  'hidden_layer_sizes': (100,),
+[]  'max_iter': 1000,
+[]  'solver': 'lbfgs'}
+
+y_true, y_pred = y_test, clf_std.predict(X_test)
+print(classification_report(y_true, y_pred))
+
+[] precision    recall  f1-score   support
+[] avg / total       0.98      0.97      0.97       540
+\end{verbatim}}
+\end{sourcecode}
+
+Next code show how to perform exactly the same search, but using the concept of nescience instead of the metric score.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+clf_nsc = GridSearchCV(estimator=MLPClassifier(), param_grid=parameters,
+                       cv=3, scoring=my_custom_loss_func, iid=True)
+clf_nsc.fit(X_train, y_train)
+clf_nsc.best_params_
+
+{'alpha': 0.1,
+ 'hidden_layer_sizes': (60,),
+ 'max_iter': 1500,
+ 'solver': 'lbfgs'}
+
+y_true, y_pred = y_test, clf_nsc.predict(X_test)
+print(classification_report(y_true, y_pred))
+
+                  precision    recall    f1-score    support
+avg / total       0.98         0.98      0.98        540
+\end{verbatim}}
+\end{sourcecode}
+
+In a typical run, both searches yield strong generalization. Notably, the nescience-based search selects a \emph{smaller} model (e.g., a single hidden layer with $60$ neurons instead of $100$) and compensates with a higher \texttt{max\_iter}. This reflects the role of surfeit: nescience tends to select the smallest model that attains high accuracy without overfitting the training data.
+
+\end{example}
+
+%
+% Section: Auto Classification
+%
+
+\section{Auto Classification}
+\label{sec:machine_learning_classification}
+
+The \texttt{nescience} library also includes a module for automated machine learning (for both classification and regression problems). The AutoML module returns the single model, chosen from a collection of model families, that yields the smallest nescience. For each family, the class performs a greedy search over the hyperparameters required by that family, using nescience as the objective.
+
+The next example shows how to apply the AutoML tools.
+
+\begin{example}
+\label{ex:automl}
+
+In this example we use the \texttt{nescience} library to find the model that best describes the \texttt{digits} dataset.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
+
+from Nescience.Nescience import AutoClassifier
+
+(X, y) = load_digits(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
+
+model = AutoClassifier()
+model.fit(X_train, y_train)
+
+model.score(X_test, y_test)
+[] 0.9622222222222222
+\end{verbatim}}
+
+\end{sourcecode}
+\end{example}
+
+If we evaluate \texttt{type(model.model)}, we will see that the library has selected a linear support vector machine as the best model for this dataset.
+
+A key difference between the \texttt{nescience} library and other AutoML libraries is that it returns a \emph{single} model as the best candidate, rather than an ensemble of models. In this way, the data scientist can directly reuse the result of \texttt{AutoClassifier} and proceed with the subsequent analysis.
+
+%
+% Section: Auto Regression
+%
+
+\section{Auto Regression}
+
+The \texttt{AutoRegressor} class automatically selects the best model for a regression problem. In particular, it (i) computes an optimal subset of features, (ii) selects the most suitable family of models, and (iii) tunes the model's hyperparameters—using nescience as the objective. 
+
+\begin{example}
+\label{ex:auto_regression}
+
+In this example we apply our auto-regression class to estimating house prices, using the \texttt{boston} dataset included with \texttt{scikit-learn}.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.fastautoml import AutoRegressor
+from sklearn.datasets import load_boston
+from sklearn.model_selection import train_test_split
+
+(X, y) = load_boston(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
+
+model = AutoRegressor()
+model.fit(X_train, y_train)
+AutoRegressor()
+
+model.score(X_test, y_test)
+0.8763987309111113
+\end{verbatim}}
+
+\end{sourcecode}
+\end{example}
+
+If we evaluate \texttt{type(model.model)}, we see that the library has selected a linear support vector machine or a decision tree (depending on the run and dataset version) as the best model for this dataset.
+
+A key difference between the \texttt{nescience} library and other AutoML libraries is that it returns a single model as the best candidate, rather than an ensemble of models. In this way, the data scientist can directly reuse the result of \texttt{AutoRegressor} and proceed with the analysis.
+
+%
+% Section: Time Series
+%
+
+\section{Time Series}
+
+In this section we study the application of the concept of miscoding to a time series and a delayed version of itself, or to a delayed version of a second time series.
+
+Automiscoding applies miscoding to a time series and a lagged version of itself, as a function of the lag. Automiscoding estimates to what \emph{extent} past observations of the series can explain (or help forecast) future observations. In this sense, automiscoding has a similar objective to autocorrelation in classical time-series analysis (see Section \ref{sub:autocorrelation}).
+
+\begin{definition}
+Let $\{\mathbf{x}_t\}$ be a time series composed by $n$ samples. We define lag $k$ \emph{regular automiscoding} of $\{\mathbf{x}_t\}$ as $\hat\mu(\mathbf{x}_{x_{k+1}, x_{k+2}, \ldots, x_n}, \mathbf{x}_{x_0, x_1, \ldots, x_{(n-k)}})$. We define in the same way the concepts of \emph{adjusted automiscoding} and \emph{partial automiscoding}.
+\end{definition}
+
+In contrast to autocorrelation, automiscoding is defined for all time series, including those with a trend. Moreover, automiscoding remains interpretable in the presence of trends and can reveal seasonal components without requiring prior decomposition.
+
+\begin{example}
+We examine cycles in the number of passengers of a US airline. Figure \ref{figure:air_passengers} shows monthly passengers from 1949 to 1960 (AirPassengers dataset, see References below). There is a clear yearly cycle. We apply automiscoding to confirm this analytically.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{airpassengers.png}
+\caption{Air Passengers.}
+\label{figure:air_passengers}
+\end{figure}
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from nescience.timeseries import TimeSeries
+
+data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"],
+                    parse_dates=True)
+X = np.array(data["#Passengers"]).reshape(-1, 1)
+
+ts = TimeSeries(auto=False)
+ts.fit(data)
+mscd = ts.auto_miscoding(max_lag=36)
+\end{verbatim}}
+\end{sourcecode}
+
+As shown in Figure \ref{figure:auto-miscoding}, the adjusted automiscoding exhibits a prominent peak every twelve months: the distance between the aligned sequences is minimized when the lag is a multiple of one year.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{auto-miscoding.png}
+\caption{Auto-miscoding of Air Passengers.}
+\label{figure:auto-miscoding}
+\end{figure}
+
+\end{example}
+
+Crossmiscoding measures the relationship between a time series and a lagged version of a second time series. The objective is to detect whether the first series has temporal predictive power over the second.
+
+\begin{definition}
+Let $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ be two time series composed by $n$ samples each. We define lag $k$ \emph{regular crossmiscoding} of $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ as $\hat\mu(\mathbf{x}_{x_{k+1}, x_{k+2}, \ldots, x_n}, \mathbf{y}_{x_0, x_1, \ldots, x_{(n-k)}})$. We define in the same way the concepts of \emph{adjusted crossmiscoding} and \emph{partial crossmiscoding}.
+\end{definition}
+
+\begin{example}
+We investigate whether it is possible to predict household appliance energy consumption. The dataset (Appliances Energy Prediction; see References) contains temperature and humidity measurements from rooms every ten minutes, the appliance energy consumption, and weather variables from a nearby station.
+
+For each feature we compute the lag in $[1,30]$ that maximizes crossmiscoding with the target:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from fastautoml.fastautoml import Miscoding
+
+X = pd.read_csv("../data/energydata_complete.csv", parse_dates=["date"],
+                index_col="date")
+y = X["Appliances"]
+X = X.drop(["Appliances", "lights"], axis=1)
+
+miscoding = Miscoding()
+miscoding.fit(X, y)
+
+best_lag  = list()
+for i in np.arange(X.shape[1]):
+    mscd = miscoding.cross_miscoding(attribute1=i, min_lag=1, max_lag=30)
+    best_lag.append(np.where(mscd == np.max(mscd))[0][0] + 1)
+\end{verbatim}}
+\end{sourcecode}
+
+Figure \ref{figure:cross-miscoding} shows the results. In general, indoor measurements favor small lags, whereas weather variables (which influence indoor conditions with delay) favor larger lags.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{cross_miscoding_lag.png}
+\caption{Cross Miscoding Lag}
+\label{figure:cross-miscoding}
+\end{figure}
+
+\end{example}
+
+\begin{remark}
+The approximation to miscoding introduced in this chapter estimates (i) the quality of individual features as predictors of a target and (ii) the quality of the training dataset as a whole. However, it does not explicitly account for redundancy among the features themselves. For instance, two features $\mathbf{x}_i$ and $\mathbf{x}_j$ may each have low miscoding with respect to $\mathbf{y}$ yet be largely redundant with one another. It remains an open question how to extend miscoding to incorporate feature redundancy in a way that stays close to the theoretical definition, is computationally efficient, and does not require prohibitively large samples.
+\end{remark}
+
+% Auto Time Series
+
+% \subsection{Auto Time Series}
+
+% {\color{red} TODO: Introduce the auto-time series models, and clearly state what it can be expect from such models (short story: nothing)}
+
+% {\color{red} TODO: Introduce structural time series models, the state space representation, and the Kalman filter}
+
+% {\color{red} structura approach [...] different unobserved components or building blocks responsible for the dynamics of the series such as trend, seasonal, cycle, and the effects of explanatory and intervention variables are identified separately before being put together in a state space model.}
+
+% {\color{red} State space methods originated in the eld of control engineering, starting with the groundbreaking
+% paper of Kalman (1960). They were initially (and still are) deployed for the purpose
+% of accurately tracking the position and velocity of moving objects such as ships, airplanes,
+% missiles, and rockets [...] these ideas could well be applied to time series analysis
+% generally as well.}
+
+% {\color{red} In a state space
+% analysis the time series observations are assumed to depend linearly on a state vector that
+% is unobserved and is generated by a stochastically time-varying process (a dynamic system).
+% The observations are further assumed to be subject to measurement error that is independent
+% of the state vector. The state vector can be estimated or identified once a sufficient set of
+% observations becomes available.}
+
+% \begin{definition}
+% A linear Gaussian state space model for the multivariate time series $\mathbf{y} = \mathbf{y}_1, \ldots, \mathbf{y_n}$, where each observiation is a $p$ dimensional vector $\mathbf{y}_i = \{ y_{i1}, \ldots, y_{ip} \}$, is given by
+% \begin{equation}
+% \mathbf{y}_t = \mathbf{Z}_t \mathbf{\alpha}_t + \mathbf{d}_t + \mathbf{\epsilon}_t \quad \mathbf{\epsilon}_t \sim N \left( 0, \mathbf{H}_t \right)
+% \end{equation}
+% called {\color{red} space?} \emph{orbservation or measurement equation}, and
+% \begin{equation}
+% \mathbf{\alpha}_t = \mathbf{T}_t \mathbf{\alpha}_{t-1} + \mathbf{c}_t + \mathbf{R}_t \mathbf{\eta}_t \quad \mathbf{\eta}_t \sim N \left( 0, \mathbf{Q}_t \right)
+% \end{equation}
+% called \emph{state or transition equation}, where the individual summands correspond to:
+% \begin{align*}
+%  & \mathbf{y}_t \quad \text{observed or measured values,} \\
+%  & \mathbf{Z}_t \quad \text{design matrix,} \\
+%  & \mathbf{\alpha}_t \quad \text{unobserved state,} \\
+%  & \mathbf{d}_t \quad \text{observation intercept,} \\
+%  & \mathbf{\epsilon}_t \quad \text{observational disturbance,} \\
+%  & \mathbf{H}_t \quad \text{observational disturbance covariance matrix,} \\
+%  & \mathbf{T}_t \quad \text{transition matrix,} \\
+%  & \mathbf{c}_t \quad \text{state intercept,} \\
+%  & \mathbf{R}_t \quad \text{selection matrix,}  \\
+%  & \mathbf{\eta}_t \quad \text{state disturbance, and} \\
+%  & \mathbf{Q}_t \quad \text{state disturbance covariance matrix}
+% \end{align*}
+% \end{definition}
+
+% {\color{red} The $p \times m$ matrix $Z_t$ links the observation vector $y_t$ with the unobservable state vector $\alpha_t$ and may consist of regression variables.  The $m \times m$ transition matrix $T_t$ determines the dynamic evolution fo the state vector [...] the observation and state disturbances $\epsilon_t$ and $eta_t$ are assumed to be serially independent and independent of each other at all time points [...] matrix $R_t$ is an $m \times r$ selection matrix with $r < m$.}
+
+% {\color{red} The initial state vector $\alpha_1$ is assumed to be generated as $\alpha_1 \sim NID \left( a_1, P_1 \right)$, independen of the observation and estate disturbances $\epsilon_t$ and $\eta_t$. Mean $a_1$ and variance $P_1$ can be treated as given konw.}
+
+% {\color{red} Talk about initialization?}
+
+% For example, if the time series $\mathbf{y}$ is unidimensional and the state space model is time invariant (only $\mathbf{y}_t$ and $\mathbf{\alpha}_t$ depends on $t$, being the rest of the summands constant), a model with $m$ unobserved stares will be given by
+% \[
+% y_t = [ z_1 \ldots z_m ]
+% \begin{bmatrix}
+%   z_{1} \\
+%   \vdots \\
+%   z_{n}
+% \end{bmatrix}
+% + d_{t} + \epsilon_{t}
+% \]
+
+% Some of the most common time series models are particular cases of the state-space model (see Example XX).
+
+% \begin{example}
+% \end{example}
+
+% {\color{red} TODO: Explain the Kalman filter}
+
+% The \emph{Kalman filter} is a recursive formula that provides an optimal estimate for the unknown state in a state space model. At each time step $t$, the Kalman filter computes the predicted state conditional to the observations up to time $t-1$.
+
+% {\color{red} Kalman filter can be use for filtering, prediction and smoothing. Here we are only interested in prediction [...] forward pass [...] recursive formulas}
+
+% \begin{definition}
+% \begin{equation}
+% \begin{split}
+%   & \mathbf{a}_{t+1} = \mathbf{T}_t \mathbf{a}_t + \mathbf{K}_t \mathbf{v}_t  \\
+%   & \mathbf{K}_t = \mathbf{T}_t \mathbf{P}_t \mathbf{Z}_t^T \mathbf{F}_t^{1} \\
+%   & \mathbf{v}_t = \mathbf{y}_t  - \mathbf{Z}_t \mathbf{a}_t
+% \end{split}
+% \end{equation}
+% called \emph{prediction equations}, and
+% \begin{equation}
+% \begin{split}
+%   & \mathbf{F}_t = \mathbf{Z}_t \mathbf{P}_t \mathbf{Z}_t^T + \mathbf{H}_t \\
+%   & \mathbf{L}_t = \mathbf{T}_t - \mathbf{K}_t \mathbf{Z}_t \\
+%   & \mathbf{P}_{t+1} = \mathbf{T}_t \mathbf{P}_t \mathbf{L}_t^T + \mathbf{R}_t \mathbf{Q}_t \mathbf{R}_t^T
+% \end{split}
+% \end{equation}
+% called \emph{updating equations}.
+% \end{definition}
+
+% \begin{example}
+% {\color{red} TODO: Provide an example where we can see how the Kalman filter integrates the predicted probability distribution and observed probability distribution to make a prediction}
+% \end{example}
+
+% {\color{red} TODO: Examplain the space search algorithm}
+
+% \begin{example}
+% {\color{red} TODO: Provide an example of auto-time series}
+% \end{example}
+
+%
+% Section: Anomaly Detection
+%
+
+\section{Anomaly Detection}
+
+As we have seen in Section XXX, the main problem in anomaly detection is that we do not have a precise mathematical definition of what an anomaly is. In this book we propose to equate \emph{abnormal} samples with \emph{incompressible} samples, and to study the consequences. The essence is that learning is about finding regularities in a dataset, and data compression is about exploiting regularities. We have also seen that the best model minimizes the sum of the length of the model plus the length of the data given the model. This optimal model partitions the dataset into two disjoint subsets: a compressible part and an incompressible part. It is the latter that interests us here: being incompressible means the samples cannot be explained by the model, i.e., they are model-based anomalies under the best available model.
+
+\begin{definition}
+Let $\emph{X}$ be a dataset composed by $p$ features and $n$ samples, $\mathbf{y}$ the target variable, and $\mathit{M}$ a model such that the nescience $N \left( \mathbf{X}, \mathit{M} \right)$ is minimal. Let $\hat{y} = \mathit{M} \left( \mathbf{X} \right)$ be the predicitons made by the model $\mathit{M}$ over the vectors of $\mathbf{X}$. We define the \emph{anomaly subset} of $\mathbf{X}$, denoted by $\mathcal{A}_\mathit{M}^\mathbf{X}$, to the set of $X$ such that $y \neq \hat{y}$.
+\end{definition}
+
+The class \texttt{nescience.anomalies} allows us to identify the anomaly subset, i.e., the samples that do not match the regularity patterns found in the rest of the dataset. In Example \ref{ex-abnormal_boston_houses} we apply this class to identify houses with abnormally low prices and to explain why they are cheaper.
+
+\begin{example}
+\label{ex-abnormal_boston_houses}
+We use the Boston House Prices dataset from \texttt{scikit-learn}. The dataset contains 13 predictive features (both numeric and categorical) describing different characteristics of the houses (number of rooms, age, etc.) and the target is the median value of owner-occupied homes. The dataset has 506 samples. We aim to identify houses whose prices are \emph{abnormally low}, i.e., houses that, given their characteristics, should have a higher price.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.datasets import load_boston
+
+data = load_boston()
+X    = data.data
+y    = data.target
+\end{verbatim}}
+\end{sourcecode}
+
+We first train a "knowledge model," i.e., the best model that explains the target variable given the predictors, without overfitting. By default, the \texttt{anomalies} class uses the AutoML capabilities provided by the \texttt{nescience} library.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from nescience.anomalies import Anomalies
+
+model = Anomalies(X_type="mixed", y_type="numeric")
+model.fit(X, y)
+\end{verbatim}}
+\end{sourcecode}
+
+Finally, we select those samples for which the actual price is smaller than the price predicted by the model.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+anomalies = model.get_anomalies("smaller")
+X.shape, anomalies.shape
+((506, 13), (25,))
+\end{verbatim}}
+\end{sourcecode}
+
+Thus, there are 25 houses with abnormally low price.
+
+\end{example}
+
+The \texttt{anomalies} class also allows us to group the identified anomalies according to shared characteristics.
+
+Let us examine which attributes best describe those abnormal houses.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+model.get_classes(n_dims=1, an_type="smaller", filter_balancedness=True,
+                  filter_redundancy=False, filter_repeated_attrs=False)
+
+Attribute1	Attribute2	Inertia	        N Class 0	N Class 1	Ratio
+2	        None	        154.953975	9	        16	        0.36
+4	        None   	        0.090593	6	        19	        0.24
+5	        None	        5.002437	17	        8	        0.68
+7	        None	        20.352117	6	        19	        0.24
+8	        None	        77.611111	18	        7	        0.72
+9	        None	        41737.11111	7	        18	        0.28
+10	        None	        26.577436	13	        12	        0.52
+12	        None	        430.294828	18	        7	        0.72
+\end{verbatim}}
+\end{sourcecode}
+
+According to the inertia, the best attribute to classify the anomalies is attribute 4 (nitric oxides concentration). This attribute divides the abnormal houses into two clusters of sizes 6 and 19. Let us examine how price varies with this dimension.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+        
+lr = LinearRegression()
+lr.fit(X[:,4].reshape(-1, 1), y)
+        
+plt.scatter(X[:,4].reshape(-1, 1), y)
+plt.plot(X[:,4], lr.intercept_ + lr.coef_ * X[:,4], color="red")
+plt.xlabel(data.feature_names[4])
+plt.ylabel("Price")
+\end{verbatim}}
+\end{sourcecode}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{nox_price.png}
+\caption{Price as a function of NOX.}
+\label{figure:nox_vs_price}
+\end{figure}
+
+The regression line suggests that house prices are lower in areas with higher nitric oxides concentration. Let us see how the anomalies split along this dimension.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+class0, class1 = model.get_class_points(attribute1=4, attribute2=None,
+                 an_type="smaller")
+
+plt.hist(class0)
+plt.hist(class1)
+plt.ylabel("Count")
+plt.xlabel(data.feature_names[4])
+plt.show()
+\end{verbatim}}
+\end{sourcecode}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{nox_histogram.png}
+\caption{Histogram of anomalies NOX.}
+\label{figure:nox_histogram}
+\end{figure}
+
+The analysis suggests that six of the houses have abnormally low prices because they are located in areas with high pollution levels. We can repeat the same analysis with the other attributes; however, their higher inertia indicates that class separation will be less evident. Note that there may be multiple reasons why a house's price is abnormally low. 
+
+%
+% Section: Decision Trees
+%
+
+\section{Decision Trees}
+\label{sec:decision_trees}
+
+In the last sections we have seen how to use the concepts of miscoding, inaccuracy, surfeit and nescience to evaluate the quality of datasets and models, and to automatically select a family of models and search over its hyperparameters to find the best possible description of a topic. In particular, we have studied in detail the family of binary decision trees. The procedure used in the \texttt{fastautoml} library with trees was a mix between a classical approach (a CART algorithm combined with a cost-complexity pruning), and an evaluation of candidate trees using the minimum nescience principle. In this section we are going to see a new algorithm to derive optimal trees, both for classification and regression problems, that is entirely based on the theory of nescience. The new algorithm, by design, avoids the overfitting of the training dataset without losing accuracy, it does not require the optimization of hyperparameters, thus significantly reducing the training time, and it produces much smaller and more shallow trees than traditional algorithms, facilitating the interpretability of the results.
+
+\subsection{Algorithm Description}
+\label{sub:tree_algorithm_description}
+
+The following pseudocode shows the proposed algorithm to build a decision tree given a training dataset $(\mathbf{X}, \mathbf{y})$. The procedure is based on a breadth first traversal of trees combined with a greedy approach. It requires a function called \textsc{bestSplit()} that returns the best split of a given subset of the data into two subsets; and a second function, called \textsc{Nescience()} that provides an estimation of the nescience of the current tree. The algorithm is based on two nested loops: the external \textbf{while} loop keeps a list of the candidate nodes to grow, whereas the internal \textbf{for} loop finds the best node to grow the tree. The latter operation requires to check all possible growing options and select the one that minimizes the nescience. The exit point of the algorithm is when there are no more branches to grow. We keep track of the best nescience achieved during the building process and return the associated tree.
+
+\begin{sourcecode}
+\label{algorithm:decision_tree}
+{\scriptsize \begin{verbatim}
+
+def BUILD_TREE(data)
+
+    nodesList <- list()
+    tree <- BESTSPLIT(data)
+    bestNescience <- NESCIENCE(tree)
+    nodesList.append(tree)
+
+    while not nodesList.empty()
+    
+        nescience <- bestNescience
+        bestNode <- None
+        childNode <- None
+        
+        for i <- 1, nodesList.length()
+
+            node <- nodesList[i]
+            
+            node.child <- BESTSPLIT(node.ldata)
+            tmp <- NESCIENCE(tree)
+            if tmp < nescience
+                nescience <- tmp
+                bestNode <- i
+                
+            node.left <- None
+
+        if nescience < bestNescience
+            node <- nodeList[bestNode]
+            bestNescience <- nescience
+            nodesList.append(node.left)
+                        
+            if not node.left.empty() and not node.right.empty()
+                nodesList.remove(bestNode)
+    
+    return tree
+\end{verbatim}}
+\end{sourcecode}
+
+The main difference of our algorithm from other decision tree building algorithms is in the way the tree is evaluated. Instead of using only accuracy as most of the algorithms do, in addition, we take into account the complexity of the tree (surfeit) to avoid overfitting, and the quality of the subset of data used during the training process (miscoding).
+
+\subsubsection*{Nescience}
+\label{sub:tree_nescience}
+
+The calculation of the nescience implemented in the algorithm is based on a Euclidean distance utility function (see Section \ref{sec:machine_learning_nescience}), because that one was the one that produced the best results in the tests we have performed. For the computation of miscoding and inaccuracy, we use the same techniques that the one used in the \texttt{fastautoml} library, described in Section \ref{sec:machine_learning_miscoding} and Section \ref{sec:machine_learning_inaccuracy} respectively. For the implementation of surfeit, we use the same template to describe trees that was used in the \texttt{DecisionTreeClassifier} of the \texttt{AutoClassifier} class, and that was described in Section \ref{subsec:surfeit_decision_trees}. The only difference is that we also allow equalities in the nodes (\texttt{if [attr] = [thresh]}), something not supported by the \texttt{DecisionTreeClassifier} algorithm of the \texttt{scikit-learn} library.
+
+The generic problem of the instability of inaccuracy due to very short models, also applies to this algorithm (see Section \ref{sec:machine_learning_surfeit}), and the particular problem of the algorithms to build decision trees, in which the best local split might not be that one that minimizes the error (see Section \ref{sec:sec:machine_learning_classification}) is also relevant in this case.
+
+The concept of nescience is used in two different ways in our algorithm. For every iteration of the \texttt{for} loop we have to decide which one of the candidate branches of the tree we should develop. Recall that the order in which we develop the branches is important, since it might happens that one branch does not get develped because that would mean increase the sufeit without a sufficiently large decrease of the inaccuracy. The second place is a the end of the \texttt{while} loop, we we keep trac of the nescience of the different building steps, to decide at the end of the algorithm with wich tree we return.
+
+We treat regression problems as classification problems in which we discretizes the continuous target variable $\mathbf{y}$ into $n$ intervals given the number of samples, and using a uniform discretization (see Section \label{sec:codes_continuous_data}). Once the target variable has been discretized, we train a regular classification tree.
+
+\subsubsection*{Splitting Criteria}
+\label{sub:tree_splitting_criteria}
+
+Given a subset $\mathbf{Q} \subseteq \mathbf{X}$ we have to find an split for $\mathbf{Q}$ such that the values of $\textbf{y}$ are grouped together. Recall that a split is a pair $\theta = (j,w)$, were $1 \leq j \leq p$ is a feature index and $w$ is the partition point (see Section \ref{subsec:learning_decision_trees}). A split divides the set $\mathbf{Q}$ into two disjoint subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r = \mathbf{Q} \backslash \mathbf{Q}_l$. In case of a continuous variable we have that $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} \leq w\}$, and if the feature is categorical we define $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} = w\}$\footnote{Ideally, for the categorical case, instead of a single feature $w$ we should search over all the elements of the power set of the set of features $\mathcal{P} \{1, 2, \ldots, p \}$. Unfortunately, that would imply to check $2^p$ cases, something that is time-expensive from the computational point of view.}.
+
+In Section \ref{subsec:learning_decision_trees} we saw that a common splitting criteria used in practice is to minimize the weighted entropy $\tilde{H}$ of the subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r$, that is, to find an split that it is minimal $\theta^\star = \argmin_\theta \tilde{H}(\mathbf{Q},\theta)$. More explicitly, if $\mathbf{y}$ is a target vector taking values from a set of $k$ labels $\mathcal{G} = \{g_1, \ldots, g_k \}$ (either because is a categorical target or a continuous target that has been discretized into $k$ intervals), and denoting the subsets of $\mathbf{y}$ as $\mathbf{y}^l = \{y_i : \mathbf{x}_i \in \mathbf{Q}_l \}$ and $\mathbf{y}^r = \{y_i : \mathbf{x}_i \in \mathbf{Q}_r \}$, and $n_l$ and $n_r$ are the number of elements of $\mathbf{y}^l$ and $\mathbf{y}^r$ respectively, we have that
+\begin{multline}
+\tilde{H}(\mathbf{Q},\theta) = \frac{n_l}{n} \left( - \sum_{i=1}^k \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} \log_2{ \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} } \right) \\
++ \frac{n_r}{n} \left( - \sum_{i=1}^k \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} \log_2{ \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} } \right)
+\end{multline}
+
+In our nescience based decision tree algorithm, the splitting criteria is to minimize the total length of encoding the subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r$ using optimal codes. We have to find the optimal split $ \theta^\star = \argmin_\theta \hat{K}_C(\mathbf{Q} \mid \theta) = \argmin_\theta \{ \hat{K}_{C_l}(\mathbf{Q}_l) + \hat{K}_{C_r}(\mathbf{Q}_r) \}$ where $C_l$ and $C_r$ are the optimal codes given the relative frequencies of the observed values of $\mathbf{y}^l$ and $\mathbf{y}^r$ respectively. The quantity $\hat{K}_C(\mathbf{Q} \mid \theta)$ is computed as:
+\begin{multline}
+\hat{K}_C(\mathbf{Q} \mid \theta) = \hat{K}_{C_l}(\mathbf{Q}_l) + \hat{K}_{C_r}(\mathbf{Q}_r) = \\
+- \sum_{i=1}^k \log_2{ \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} } - \sum_{i=1}^k \log_2{ \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} }
+\end{multline}
+I this particular case (if we use as compression algorithm a code with optimal lengths, and continuous variables have been discretized) it turns out that both expressions are equivalent given the following relation:
+\[
+\tilde{H}(\mathbf{Q},\theta) = \frac{1}{n} \hat{K}_C(\mathbf{Q} \mid \theta)
+\]
+We prefer to talk of encoding length instead of weighted entropy because it has an easier interpretation in the context of the theory of nescience.
+
+\begin{remark}
+Strictly speaking, if we want to implement a decision trees search algorithm fully compliant with the minimum nescience principle, instead of using a total length encoding as splitting criteria, we should had computed the nescience at each split and select that one that makes it minimal. However, early experiments have shown that at local level it works better to group the values of $y$ than to reduce the nescience. Further research is required to confirm and explain this point.
+\end{remark}
+
+\subsubsection*{Practical Implementation}
+
+In the web page that accompanies this book\footnote{http://www.mathematicsunknown.com} we provide an open-source implementation of our algorithm in Python. Our software can be used together with other machine learning tools from the \texttt{scikit-learn} library, since we adhere to the their API guidelines. For example, our algorithm can be used as part of an ensemble of classifiers, like the \texttt{BaggingClassifier} meta-estimator, or the results of the classification could be cross-validated with tools like \texttt{cross\_val\_score}. As an example, to provide a model for the breast cancer dataset, we could do something like the following:
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+from NescienceDecisionTree import NescienceDecisionTreeClassifier
+from sklearn.datasets import load_breast_cancer
+
+data = load_breast_cancer()
+
+model = NescienceDecisionTreeClassifier()
+model.fit(data.data, data.target)
+print("Score: ", model.score(data.data, data.target))
+\end{verbatim}}
+\end{sourcecode}
+
+\subsection{Algorithm Evaluation}
+\label{sub:algorithm_evaluation}
+
+In this section we are going to evaluate our new algorithm, and compare its performance against the well-known algorithm CART. CART, \emph{Classification and Regression Trees}, is the de-facto standard algorithm used in the machine learning industry for the derivation of decision trees. For this particular experiment we have used the CART implementation provided by \texttt{scikit-learn}.
+
+Figure \ref{figure:data_error_cart} shows a synthetic dataset consisting of $1000$ random points lying on a two dimensional plane, where all the points with an $X1$ attribute less than $50$ are colored blue, and the rest as red. We have artificially introduced a red point, simulating a measurement error, in the blue area. The black lines correspond to the decisions performed by CART. Since the CART algorithm will not stop until all the points have been properly classified, we have to specify an expected count condition to limit the number of splits. The figure correspond to the tree generated by CART setting the \texttt{min\_samples\_leaf} hyperparameter to $5$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{data_error_cart.jpg}
+\caption{Synthetic dataset with CART algorithm splits.}
+\label{figure:data_error_cart}
+\end{figure}
+
+The tree obtained by applying our algorithm to the dataset of Figigure \ref{figure:data_error_cart} can be seen in Figure \ref{figure:data_error_nes}. The nescience based algorithm does not try to model the error point, since the gain due to an increment in the accuracy does not compensate the surfeit introduced in the model. Recall that the algorithm stops when the total nescience of the tree, based on the measures of miscoding, inaccuracy and surfeit, does not decrease when adding new nodes to the tree. Our algorithm presents a lower sensitivity to the errors found in datasets, at least if the number of errors is small compared with the number of valid points.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.4\textwidth]{small_error.jpg}
+\caption{Decision tree obtained by the nescience algorithm.}
+\label{figure:data_error_nes}
+\end{figure}
+
+Our second experiment, again with synthetic dataset, is depicted in Figure \ref{figure:blobs}. There, we create two isotropic Gaussian blobs that partially overlap. We start with a standard deviation of $2.5$ for each cluster, so they are easy to separate, and we increase the standard deviation in increments of $0.01$, until we reach $4.5$, which causes significant overlaps. For each value of the standard deviation, we run the experiment $100$ times and we compute the average accuracy for the two algorithms using different datasets for training (70\% of the data) and testing (30\% of the data). The results of this experiment are shown in Figure \ref{figure:accuracy_blobs}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{blobs.png}
+\caption{Isotropic Gaussian Blobs.}
+\label{figure:blobs}
+\end{figure}
+
+As we can see, the performance of both algorithms, in terms of accuracy, is similar. However we should note that the hyperparameter \texttt{minimum\_leaf\_size} of the CART algorithm has been optimized to achieve the best accuracy. For this particular experiment, the best value was achieved with a minimum leaf size of 26 points. By definition, given the fact that CART has one degree of freedom more than the nescicence algorithm, it should produce better accuracy; something that it is not observed (both algorithms have a mean accuracy of $0.87$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{accuracy_blobs.png}
+\caption{Accuracy of Isotropic Gaussian Blobs.}
+\label{figure:accuracy_blobs}
+\end{figure}
+
+For each iteration of the experiment, we have also computed the average number of nodes, including internal and leaf nodes, required by the models to properly classify the clouds in the dataset. The results of this measurement are show in Figure \ref{figure:length_nodes}. Our algorithm requires an average of $4$ nodes compared to $23$ nodes for the CART algorithm. Moreover, our algorithm is more stable than CART, in the sense that it produces models of similar complexity when it gets similar input datasets (a standard deviation of $0.31$ compared to $3.77$ for CART).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{nodes_blobs.png}
+\caption{Number of Nodes.}
+\label{figure:length_nodes}
+\end{figure}
+
+In Figure \ref{figure:blob_max_depth} we show the maximum depth of the tree, defined as the longest path from the root of the tree to any of its leaves. The maximum depth of the tree is a good measure of the average time it will require for the model to provide a classification. The nescience algorithm has an average depth of $1.6$ nodes, whereas the average depth yielded by the CART algorithm is $4.8$ nodes.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{max_depth.png}
+\caption{Maximum depth of the model.}
+\label{figure:blob_max_depth}
+\end{figure}
+
+The last part of the evaluation consists in comparing the performance of our algorithm and CART with a collection real datasets. More specifically, we have selected $12$ well known datasets from the UCI Machine Learning Repository. The selected datasets are: diagnosis of breast cancer (\texttt{cancer}), optical recognition of handwritten digits (\texttt{digits}), predicting protein localization sites in gram-negative bacteria (\texttt{yeast}), classification of NASA space shuttle data (\texttt{shuttle}), classification of blocks in web pages (\texttt{page}), segmentation of outdoor images (\texttt{image}), predicting the age of abalones from physical measurements (\texttt{abalone}), predicting the quality of red and white variants of Portuguese wine (\texttt{wine}), filter spam emails (\texttt{spam}), wall-following robot navigation (\texttt{wall}), classification of land use based on Landsat satellite images (\texttt{landsat}), and distinguishing signals from background noise in the MAGIC gamma telescope images (\texttt{magic}). For each dataset, we have repeated the experiment 100 times, by randomly selecting the training (70\%) and testing (30\%) subsets at each iteration.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{cart_nescience_accuracy.png}
+\caption{Maximum depth of the model.}
+\label{figure:cart_nescience_accuracy}
+\end{figure}
+
+In Figure \ref{figure:cart_nescience_accuracy} we compare the accuracy of the resulting models obtained by applying the CART algorithm and the nescience algorithm to the above datasets. In $4$ of the $12$ datasets, our algorithm provides better accuracy than CART. In the remaining $8$ cases, the accuracy is, on average, less than $1\%$ smaller.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{cart_nescience_nodes.png}
+\caption{Maximum depth of the model.}
+\label{figure:cart_nescience_nodes}
+\end{figure}
+
+In Figure \ref{figure:cart_nescience_nodes} it is shown a comparison of the total number nodes (internal nodes plus leaf nodes) of the resulting models. Only for one of the datasets (\texttt{digits}), our model produces a slightly more complex tree that those generated by CART. In the rest of the cases, the number of nodes in the trees generated by the nescience algorithm have between two and three orders of magnitude fewer nodes (in this figure the $y$ axis is in logarithmic scale).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{cart_nescience_depth.png}
+\caption{Maximum depth of the model.}
+\label{figure:cart_nescience_depth}
+\end{figure}
+
+Finally, in Figure \ref{figure:cart_nescience_depth} we provide a comparison of the depth of the tree of the resulting models. Our algorithm always yields a shallower tree than the CART algorithm.
+
+We would like to mention that the nescience algorithm is hihgly robust with respect to the compressor selected or the nescience function implemented. In Table \ref{table:nescience_functions}, we have apply the nescience algorithm to the datasets described above, and evaluate different alternatives for the definition of the nescience function $N (X , M )$: arithmetic mean
+\[
+N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D))/3,
+\]
+geometric mean
+\[
+N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3,
+\]
+harmonic mean 
+\[
+N (X , M ) = 3 / (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) -1 ),
+\]
+Euclidean distance
+\[
+N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3,
+\]
+sum
+\[
+N (X , M ) = \mu(M , D) + \iota(X , M ) + \sigma(M, D),
+\]
+and product
+\[
+\mu(M , D) + \iota(X , M ) + \sigma(M, D).
+\]
+The table shows limited difference between the different functions. 
+
+\begin{table}[h]
+\label{table:nescience_functions}
+\centering
+\begin{tabular}{l l l l l l l l}
+\toprule
+ & \small{\textbf{Euclid}} & \small{\textbf{Arithm.}} & \small{\textbf{Geometric}} & \small{\textbf{Product}} & \small{\textbf{Addition}} & \small{\textbf{Harmonic}} \\
+\midrule
+Acc. & 0.758 & 0.784 & 0.803 & 0.803 & 0.784 & 0.81 \\
+Stdev. & 0.051 & 0.041 & 0.033 & 0.033 & 0.041 & 0.038 \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of nescience functions}
+\end{table}
+
+Similarly, Table \ref{table:compressor} shows the performance of our algorithm when using the LZMA, zlib, and bz2 compressors. We observe that all of them yield similar performance. The above results suggest that the performance our algorithm is independent of the specific choice made for either implementation aspect.
+
+\begin{table}[h]
+\label{table:compressor}
+\centering
+\begin{tabular}{l l l l}
+\toprule
+ & \textbf{bz2} & \textbf{lzma} & \textbf{zlib} \\
+\midrule
+Accuracy & 0.813 & 0.804 & 0.81 \\
+Stdev & 0.03 & 0.045 & 0.038 \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of compressors}
+\end{table}
+
+We emphasize that the CART algorithm requires to optimize a configuration hyperparameter in order to obtain good results, whereas the algorithm proposed in this book does not require from this optimization.
+
+Shallower trees means faster forecasting times when the models used in production, since the number of \texttt{if-else} conditions to be evaluated is smaller. Moreover, smaller trees makes easier to interpret the results by human analysts. and much shorter training times, something very relevant in case of training ensembles of trees, like random forest or boosted trees (although the use of ensembles of models is highly discouraged by the theory of nescience, given their high surfeit).
+
+%
+% Section: Algebraic Model Selection
+%
+
+\section{Algebraic Model Selection}
+
+As it was the case for the definition of nescience based on the encyclopedic description of research topics, the nescience of structured datasets can be used to evaluate alternative descriptions of research topics (mathematical models), and to identify how far these descriptions are from an ideal perfect knowledge. This evaluation could be used to identify those topics which require further research. Moreover, the same methodology could be applied to collections of datasets to identify our current knowledge of research areas (collections of topics).
+
+If we combine the concept of nescience of a model, with our concepts of relevance and applicability of research topics, we could apply our methodology for the assisted discovery of interesting questions to collections of datasets; a very useful methodology now that big datasets are becoming widely available.
+
+In order to evaluate the methodology developed, we are going to apply it to a particular research topic: \emph{Multipath Wave Propagation and Fading}. The problem at hand is to understand the effect of a propagation environment on a radio signal, such as the one used by wireless devices. The signals reaching the receiving antenna could follow multiple paths, due to atmospheric reflection and refraction, and reflection from water and objects such as buildings. The effects of these multiple wave paths include constructive and destructive interference (fading), and phase shifting of the original signal, resulting a highly complex received signal (see Figure \ref{fig:Multipath-Signal-Propagation}).
+
+\begin{figure}[h]
+\centering\includegraphics[scale=0.5]{fading}
+\caption{\label{fig:Multipath-Signal-Propagation}Multipath Signal Propagation}
+\end{figure}
+
+In many circumstances, it is too complicated to describe all reflection, diffraction and scattering processes that determine the different paths the signal will follow. Rather, it is preferable to describe the probability (stochastic model) that the received signal attains a certain value. We are interested in to analyze how well these stochastic models (our current knowledge) are able to describe what happen in reality.
+
+The \emph{Rayleigh fading model} assumes that the magnitude of a signal will vary randomly, or fade, according to a Rayleigh distribution (the radial component of the sum of two uncorrelated Gaussian random variables). The Rayleigh probability density function of the power signal is given by:
+
+\[
+P_{\sigma}\left(x\right)=\frac{1}{\sigma}\exp\left[-\frac{x}{\sigma}\right]
+\]
+
+where $\sigma$ is the mean of the received signals. Rayleigh fading is viewed as a reasonable model for the effect of heavily built-up urban environments, when there is no dominant propagation along a line of sight between the transmitter and receiver.
+
+The Rice or \emph{Rician distribution} describes the power of the received signal when the target consists in many small scatterers of approximately equal strength, plus one dominant scatterer whose individual received signal equals all that of all the small scatterers combined (there is a dominant line of sight). The probability density function of the power of the received signal is given by:
+
+\[
+P(x)=\frac{1}{\bar{\sigma}}\left(1+a^{2}\right)\exp\left[-a^{2}-\frac{x}{\bar{\sigma}}\left(1+a^{2}\right)\right]I_{0}\left[2a\sqrt{\left(1+a^{2}\right)\frac{x}{\bar{\sigma}}}\right]
+\]
+
+
+where $\bar{\sigma}$ is the mean of the received signals, and it is equal to $\bar{\sigma}=\left(1+a^{2}\right)\bar{\sigma}_{R}$, being $a^{2}\bar{\sigma}_{R}$ the power of the dominant scatterer, and $I_{0}$ is the modified zeroth order Bessel function of the first kind.
+
+An experiment (see Figure \ref{fig:Experimental-Set-Up}) was set up to collect a real dataset to analyze. The experiment was run on a $135 m^2$ office full of obstacles (interacting objects). The transmitter was an Odroid C1 Linux computer with a Ralink RT5370 USB Wifi adapter. The receiver was a (fixed in space) Motorla Moto G mobile phone. Data was collected using the Kismet \footnote{https://www.kismetwireless.net/index.shtml} platform (an 802.11 layer2 wireless network detector, sniffer, and intrusion detection system), with some ad hoc, home made, software extensions, mostly for data aggregation. A total of 3,177 samples (power level measured in dBm) were collected during one hour experiment.
+
+\begin{figure}[h]
+\centering\includegraphics[scale=0.2]{experiment}
+\caption{\label{fig:Experimental-Set-Up}Experimental Set Up}
+\end{figure}
+
+Next table summarizes the results of applying the three considered models (uniform, Raylegh and Rice) and the optimal encoding using a Huffman code:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l l l}
+\toprule
+\textbf{Model} & \textbf{LDM} & \textbf{Nescience} \\
+\midrule
+Uniform & 17,351 & 1.30 \\
+Rayleigh & 13,229 & 0.75 \\
+Rice & 11,118 & 0.47 \\
+Huffman & 7,541 & - \\
+\bottomrule
+\end{tabular}
+\caption{Nescience of Models}
+\end{table}
+
+The uniform model, that is, assuming zero knowledge about the topic covered by the dataset, has a nescience of 1.30. This value is a kind of upper level for the nescience associated with that particular topic and dataset; any model with a higher nescience should be classified as zero knowledge model. If we introduce the knowledge that in a environment with multiple obstacles the signal propagation can be described as a Gaussian process (Rayleigh distribution), we are able to decrease our nescience to 0.75, that is, there were a 43\% improvement in our understanding of the topic. If we add the knowledge that there is usually a strongly dominant signal seen at the receiver caused by a line of sight between the antenna and the mobile phone (Rician distribution), the nescience decreases to 0.47, and so, we have achieved an additional 23\% gain in our understanding. Given that numbers we can conclude that the Rayleigh model increases our knowledge with respect to the uniform model, and that the Rice model does so with respect to Rayleigh. However, the nescience of this last model is 0.47. That means that there still patterns in the dataset that are not explained by the Rice model, or what it is equivalent according to our methodology, there is still some knowledge to discover and learn.
+
+The methodology has been applied to a dataset gathered in a single experiment under a controlled environment, since the goal of this Chapter was to provide a methodology to quantify the nescience of structured datasets, not to evaluate models for signal propagation and fading. In order to to conclude that, in general, the Rice model is an improvement over Rayleigh, a more realistic experiment is required, with multiple datasets gathered in real environments.
+
+%
+% Section: The Analysis of the Incompressible
+%
+
+% \section{The Analysis of the Incompressible}
+
+% As we have said in Chapter {chap:Introduction}, one of the reasons to understand how things work is to understand the cause-effect relation in systems. We are interested in this cause/effect relation in two ways. That is, if we want to see an effect in a system, we want to understand wich causes trigger that effect. Also, and perhaps more interesting, if we have observed an (probably undesired effect) in a system we would like to discover what has caused that effect, so we can fix it, and revert the normal situation.
+
+% We could use the theory of nescience to model, and modify, those uncommon effect, by means of training a model and looking at the incompressible part of the data.
+
+
+% A model $\mathcal{M}$ for a dataset $\mathcal{D} = (X, y)$ is a compressed version of that dataset, since the length of the dataset given the model $l(\mathcal{D} \mid \mathcal{M})$ is smaller that then length of the original dataset $l(\mathcal{D})$. The model $\mathcal{M}$ is composed by the regularities found in the dataset (subject to the algorithm used and the families of models considered). What it is left, $\mathcal{D} \mid \mathcal{M}$ is the incompressible part of the dataset, that is, those samples that have no regularity at all, or present a regularity that requires a description longer than the length of the raw data.
+
+% In this section we are going to show the practical applications of analyzing what it is left, that is, the incrompressible samples of a dataset. An element that is incompressible represents a very unlikely, or uncommon, situation of the entity being studied. A incompressible element does not necessarily means a problem, since if a problem is sufficiently common, it can be compressed. An incompressible element is something than cannot be explained given the normal behaviour of the system. Of course, all of this is assuming that our dataset has no errors.
+
+% Once we have found a model that has the lowest possible nescience for a dataset, we could separate those elements that have not been compresed, denoted by XX, and fit a second model. We could argue that it does not make any sense to model the incompressible part, since, it is incompressible. However, the incompressible part is incompressible with respect to the original entity under study, that is, the global systen. And in this new case, we are studying a different entity, namely, the uncommon parts of an entity. It might happen that we can find regularities in this new entity.
+
+
+
+%
+% Section: References
+%
+
+\section*{References}
+\label{sec:ML_references}
+
+% TODO: Fix this reference
+% The quantity $1 - I(\mathbf{x};\mathbf{y}) / \max\left\{ H(\mathbf{x}),H(\mathbf{y})\right\}$ has previously been proposed in~\cite{ferri2009experimental} as a candidate definition of \emph{normalized mutual information}. However, to the best of our knowledge, it has not been used in practice.
+
+A insightful description of the differences between explanation models and predictive models, how these models are used in different scientific disciplines, and what are the implications for the process of statistical modeling can be found in \cite{shmueli2010explain}.
+
+The application of the minimum description length principle to the identification of optimal decision trees have been proposed in \cite{quinlan1989inferring}, further refined and clarified in \cite{wallace1993coding}; however the coding method proposed by those authors is different from the one used in this book.
+
+The Minimum Description Length \cite{grunwald2007minimum} and the Minimum Message Length \cite{wallace2005statistical} techniques have been applied to the problem of inferring decision trees in \cite{quinlan1989inferring}, later on clarified and extended in~\cite{wallace1993coding}, in \cite{mehta1995mdl} as a technique for pruning, and in \cite{rastogi1998public}, among others. Although the underlining concepts behind the cost function proposed in this chapter are the same (namely, that learning is equivalent to the capability to compress), our approach is very different from the ones described in these works.
+
+
+% {\color{red} TODO: Find the original reference of the AirPassengers dataset.}
+
+% {\color{red} TODO: Find the original reference of the Appliance energy consumption dataset. https://archive.ics.uci.edu/ml/datasets/Appliances+energy+prediction}
+
+
+% \begin{verbatim}
+
+% The normalized compression distance of two vectors $x$ and $y$ computed using a compressor based on optimal codes is equivalent to the normalized mutual information of these two vectors, that is:
+% \[
+% NCD_C\left(\mathbf{x},\mathbf{y}\right)=1-\frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }
+% \]
+% The quantity $1 - \frac{I\left(\mathbf{x};\mathbf{y}\right)}{\max\left\{ H\left(\mathbf{x}\right),H\left(\mathbf{y}\right)\right\} }$ has been already proposed in~\cite{ferri2009experimental} as a candidate definition of the concept of Normalized Mutual Information. However, to the best of our knowledge, it has not been used in practice.
+
+% \end{verbatim}
+
+The practical approximations to deficiency and surplus implemented in the `mnplib` library have close precedents in information theory. For discrete random variables, the information about a target \(Y\) that is not provided by \(X\) is quantified by the conditional entropy \(H(Y\mid X)\), whereas \(H(X\mid Y)\) quantifies the information contained in \(X\) that is not determined by \(Y\) (Cover and Thomas, 2006). When normalized by the corresponding marginal entropies, these quantities are the complements of the two directional uncertainty coefficients, or Theil's \(U\) (Theil, 1967): \(1-I(X;Y)/H(Y)=H(Y\mid X)/H(Y)\) and \(1-I(X;Y)/H(X)=H(X\mid Y)/H(X)\). The two directions also appear jointly in the *variation of information*, \(H(X\mid Y)+H(Y\mid X)\), introduced as an information-theoretic distance between partitions (Meilă, 2007). A related distinction is present in the information bottleneck principle, which seeks representations that retain information relevant to a target while discarding information from the input that is irrelevant to it (Tishby, Pereira, and Bialek, 1999). The estimators used by `mnplib` provide a practical approximation to the theoretical notions of deficiency and surplus: deficiency approximates the proportion of information required to describe the target that is absent from the available data, while surplus approximates the proportion of information contained in the data that is unnecessary for describing the target. Their separation therefore provides a diagnostic interpretation that mutual information alone does not provide, distinguishing between insufficient relevant information and excessive irrelevant information.
+
+% **References**
+
+% Cover, T. M., and Thomas, J. A. (2006). *Elements of Information Theory*, 2nd ed. Wiley.
+
+% Theil, H. (1967). *Economics and Information Theory*. North-Holland Publishing Company.
+
+% Meilă, M. (2007). “Comparing clusterings—An information based distance.” *Journal of Multivariate Analysis*, 98(5), 873–895.
+
+% Tishby, N., Pereira, F. C., and Bialek, W. (1999). “The Information Bottleneck Method.” *Proceedings of the 37th Annual Allerton Conference on Communication, Control, and Computing*, 368–377.

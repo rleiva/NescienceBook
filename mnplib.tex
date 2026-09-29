@@ -580,177 +580,317 @@ than returning a potentially misleading numerical value.
 \section{Inaccuracy}
 \label{sec:machine_learning_inaccuracy}
 
-In Section \ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as the normalized information distance between the representation $r$ and the string $\Gamma(d)$ printed out by a universal Turing machine when given the description as input:
+In Section~\ref{sec:inaccuracy:inaccuracy} we defined the inaccuracy of a description $d\in\mathcal{D}$ with respect to a representation $r\in\mathcal{R}$ as the normalized information distance between the intended representation $r$ and the representation $\Gamma(d)$ produced by the description:
 \[
-\iota(d, r) = \frac{ \max\{ K \left(r \mid \Gamma(d) \right), K \left( \Gamma(d) \mid r \right) \} } { \max\{ K(r), K \left(\Gamma(d) \right) \} }
+\iota(d,r) = \frac{\max\{K(r\mid\Gamma(d)), K(\Gamma(d)\mid r)\}}{\max\{K(r), K(\Gamma(d))\}}.
 \]
-Inaccuracy, being based on Kolmogorov complexity, is not computable in the general case and must be approximated in practice. In this section we show how this concept can be estimated for a model trained on a dataset. The approach follows the approach described in Section \ref{sec:note_compression}.
+Inaccuracy measures how much information is required to transform the output produced by a description into the intended representation, and conversely. A value close to zero means that the two representations can be transformed into each other using little additional information. A value close to one indicates that substantial information is required.
 
-For discriminative models, which estimate $P(\mathbf{y} \mid \mathbb{X})$, the natural proxy compares predicted targets $\hat{\mathbf{y}}$ with true targets $\mathbf{y}$ via normalized compression distance.
+As with the other quantities based on Kolmogorov complexity, inaccuracy cannot be computed exactly in the general case. The \texttt{mnplib} library therefore replaces Kolmogorov complexity with the empirical code lengths introduced in Section~\ref{sec:utility_interface}.
 
-\begin{definition}
-Let $\mathbb{X}$ be a dataset, $\mathbf{y}$ a response variable, $m$ a model, and $\mathbf{\hat{y}} = m(\mathbb{X})$ the predicted values by $m$ given $\mathbb{X}$. We define the \emph{inaccuracy}\index{Inaccuracy} of the model $m$ for the target values $\mathbf{y}$, denoted by $\hat\iota(\mathbf{\hat{y}}, \mathbf{y})$, as:
+In machine learning, the intended representation is the observed target vector $\mathbf{y} = (y_1,\ldots,y_n)$, while the output of the description is the vector of predictions produced by a fitted model, $\hat{\mathbf{y}} = (\hat y_1,\ldots,\hat y_n)$. The practical problem is therefore to measure how much information separates the observed targets from the predictions.
+
+\subsection*{Empirical Inaccuracy}
+
+Let $\hat K_C(\mathbf{y})$, $\hat K_C(\hat{\mathbf{y}})$, denote the empirical code lengths of the target and prediction vectors, and let $\hat K_C(\mathbf{y},\hat{\mathbf{y}})$ denote the empirical code length of their joint representation. As discussed in Section~\ref{sec:utility_interface}, these quantities are computed from the frequencies of the observed states. They do not correspond to an actual compressed bit stream. Using the usual approximation to normalized information distance, we obtain the practical inaccuracy used by \texttt{mnplib}.
+
+Let $\mathbf{y}$ be a target vector and $\hat{\mathbf{y}}$ a vector of predictions of the same length. We define their empirical \emph{inaccuracy}\index{Inaccuracy} as
 \[
-\hat\iota(\mathbf{\hat{y}}, \mathbf{y}) = \frac{ \hat{K}_C(\mathbf{\hat{y}}, \mathbf{y}) - \min\{ \hat{K}_C(\mathbf{\hat{y}}), \hat{K}_C(\mathbf{y}) \} } { \max\{ \hat{K}_C(\mathbf{\hat{y}}), \hat{K}_C(\mathbf{y}) \} }
+\hat\iota(\mathbf{y},\hat{\mathbf{y}}) = \frac{ \hat K_C(\mathbf{y},\hat{\mathbf{y}})
+- \min\{ \hat K_C(\mathbf{y}), \hat K_C(\hat{\mathbf{y}}) \} }{
+\max\{ \hat K_C(\mathbf{y}), \hat K_C(\hat{\mathbf{y}}) \} }.
 \]
-\end{definition}
 
-Intuitively, $\hat\iota(\hat{\mathbf{y}}, \mathbf{y})$ measures how far the predictions are from the true values. The lower this quantity, the better $m$ is as a predictor of $\mathbf{y}$. Unlike standard accuracy metrics, this measure accounts not only for how difficult it is to reconstruct $\mathbf{y}$ from $\hat{\mathbf{y}}$, but also for how much additional information $\hat{\mathbf{y}}$ contains that is unrelated to $\mathbf{y}$.
+The quantity is constrained in practice to the interval $[0,1]$. Lower values indicate that the predictions are informationally close to the observed target.
 
-When a model provides explicit probabilities, one may also define $\hat{K}$ using the model code length $-\sum \log_2 \hat{p}_m(\cdot)$; we keep the compression-based proxy here for consistency with the rest of the chapter.
+The expression is symmetric, $\hat\iota(\mathbf{y},\hat{\mathbf{y}}) = \hat\iota(\hat{\mathbf{y}},\mathbf{y})$, and therefore does not merely count how much information is required to correct the predictions into the target. It also considers how much information would be required in the converse direction. This distinguishes inaccuracy from conventional predictive metrics. Classification accuracy counts how many labels agree. Regression metrics such as mean squared error measure the magnitude of numerical residuals. Inaccuracy instead evaluates the information structure of the relationship between the complete target and prediction vectors.
 
-\begin{example}
-\label{ex:machine_learning:inaccuracy:inaccuracy_DT}
-According to the minimum nescience principle, inaccuracy is the normalized compression distance between the actual targets $\mathbf{y}$ and the predicted targets $\hat{\mathbf{y}}$. We compare our inaccuracy metric with a classical score (we use $1 - \text{accuracy}$) on the MNIST\index{MNIST} digits dataset.
+The target determines how empirical code lengths are computed. If the target is categorical, both the target and predictions are treated as categorical attributes. Their distinct observed values are encoded as states,
+their frequencies are counted, and the corresponding empirical code lengths are computed directly. If the target is numeric, the target and prediction vectors must first be discretized. The current implementation uses the automatic one-dimensional resolution introduced in Section~\ref{sec:utility_interface}.
+
+The same resolved number of bins $b$ is used to compute $\hat K_C(\mathbf{y})$, $\hat K_C(\hat{\mathbf{y}})$, $\hat K_C(\mathbf{y},\hat{\mathbf{y}})$. This consistency is important because these quantities are subsequently
+subtracted and divided. Using different resolutions would make part of the measured difference an artefact of discretization. 
+
+When a prediction vector is already available, no feature matrix is required. The target can be fitted directly with
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
 from mnplib.inaccuracy import Inaccuracy
-from sklearn.datasets import load_digits
 
-X, y = load_digits(return_X_y=True)
+metric = Inaccuracy().fit_y(y)
 
-inacc = Inaccuracy()
-inacc.fit(X, y)
+value = metric.inaccuracy_predictions(predictions)
 \end{verbatim}}
 \end{sourcecode}
 
-We train a decision-tree classifier with maximum depth $i \in \{1,\ldots,20\}$:
+The method \texttt{fit\_y()} stores the target, infers its type, computes its empirical code length, and prepares the estimator for comparison with one or more prediction vectors.
+
+When a fitted machine-learning model is to be evaluated instead, the feature matrix is also required:
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
-from sklearn.tree import DecisionTreeClassifier
+metric = Inaccuracy().fit(X, y)
 
-scores       = list()
-inaccuracies = list()
-
-for i in range(20):
-    
-    tree = DecisionTreeClassifier(max_depth=i, random_state=42)
-    tree.fit(X, y)
-    
-    scores.append(1 - tree.score(X, y))
-    inaccuracies.append(inacc.inaccuracy_model(tree))
+value = metric.inaccuracy_model(model)
 \end{verbatim}}
 \end{sourcecode}
 
-We compare $1-\text{accuracy}$ and inaccuracy. As shown in Figure \ref{figure:machine_learning:inaccuracy:inaccuracy_DT}, both behave similarly, with inaccuracy typically taking larger values due to its stronger emphasis on incorrectly predicted values.
+The model is not fitted again. It must provide a \texttt{predict()} method, which is called on the evaluation data stored by the \texttt{Inaccuracy} object.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{inaccuracy_DT.png}
-\caption{Inaccuracy vs. Score of Decison Trees}
-\label{figure:machine_learning:inaccuracy:inaccuracy_DT}
-\end{figure}
+A more detailed report is available through
 
-\end{example}
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+metric.prediction_analysis(predictions)
+metric.model_analysis(model)
+\end{verbatim}}
+\end{sourcecode}
 
-In Example \ref{ex:machine_learning:inaccuracy:inaccuracy_DT} we observed that deeper trees yield smaller training error. Of course, larger depth increases the risk of overfitting\index{Overfitting}. However, within the nescience framework, overfitting is handled by \emph{surfeit} (see Section \ref{sec:machine_learning_surfeit}), so inaccuracy need not penalize complexity directly.
+\subsection*{The Structure of Prediction Errors}
 
-We can interpret inaccuracy as the effort, measured in description length, required to \emph{fix} a model's predictions. Consequently, a model that makes one hundred \emph{identical} errors is easier to correct than a model that makes one hundred \emph{distinct} errors (see Example \ref{ex:machine_learning:inaccuracy:one_hundred_errors}).
+Two prediction vectors may contain exactly the same number of incorrect predictions while differing substantially in the structure of those errors. This is an important difference between inaccuracy and the standar classification accuracy. Accuracy considers only whether each prediction is equal to the corresponding target. Inaccuracy considers the complete empirical relation between target and prediction states.
 
 \begin{example}
-\label{ex:machine_learning:inaccuracy:one_hundred_errors}
+\label{ex:machine_learning:inaccuracy:structured_errors}
 
-We again use a decision-tree classifier, now with the hyperparameter \texttt{min\_samples\_leaf}=5 (a common regularization to reduce overfitting).
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-tree = DecisionTreeClassifier(min_samples_leaf=5)
-tree.fit(X, y)
-\end{verbatim}}
-\end{sourcecode}
-
-The inaccuracy of this new trained model is $0.17$, and its score $0.08$. Next we will artificially introduce one hundred errors in the dataset, simulating the case that the tree is not able to model correctly these data points. In this particular case all the errors are exactly the same.
+Consider a balanced four-class target. We construct two predictors that misclassify exactly $20\%$ of the observations. In the first predictor, every error follows the same rule: $\hat y=(y+1)\bmod 4$. In the second predictor, each erroneous prediction is replaced by a randomly selected incorrect class.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
-X2 = X.copy()
-y2 = y.copy()
-for i in range(100):
-    X2 = np.append(X2, [X[0]], axis=0)
-    y2 = np.append(y2, (y[0]+1) % 10)
+import numpy as np
+import pandas as pd
+
+from sklearn.metrics import accuracy_score
+from mnplib.inaccuracy import Inaccuracy
+
+rng = np.random.default_rng(42)
+
+n = 4000
+y = np.tile(np.arange(4), n // 4)
+
+wrong = np.zeros(n, dtype=bool)
+wrong[::5] = True
+
+systematic = y.copy()
+systematic[wrong] = (y[wrong] + 1) % 4
+
+random = y.copy()
+for i in np.flatnonzero(wrong):
+    random[i] = rng.choice(np.delete(np.arange(4), y[i]))
+
+metric = Inaccuracy().fit_y(y)
+
+print("Systematic bias",
+      "Accuracy:", 1 - accuracy_score(y, systematic),
+      "Inaccuracy:", metric.inaccuracy_predictions(systematic))
+
+print("Random noise",
+      "Accuracy:", 1 - accuracy_score(y, random),
+      "Inaccuracy:", metric.inaccuracy_predictions(random))
 \end{verbatim}}
 \end{sourcecode}
 
-The inaccuracy of the decision tree, given this new dataset, has increased\footnote{Note that we had to \texttt{fit()} again the class Inaccuracy in order to use the new dataset. Normally this is not the way we use this class; instead what we should do is to fit once a dataset, and then compute the inaccuracy of different models. We are doing here in this way to demonstrate an interesting property of the concept of inaccuracy.} from $0.17$ to $0.21$.
+A representative result is
 
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-inacc.fit(X2, y2)
-inacc.inaccuracy_predictions(pred)
-\end{verbatim}}
-\end{sourcecode}
+\begin{center}
+\begin{tabular}{lrr}
+\hline
+Predictions & Error rate & Inaccuracy \\
+\hline
+systematic & 0.20 & 0.36 \\
+random     & 0.20 & 0.52 \\
+\hline
+\end{tabular}
+\end{center}
 
-Score has also increased, in this case from $0.08$ to $0.13$.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-1 - tree.score(X2, y2)
-\end{verbatim}}
-\end{sourcecode}
-
-Finally, we are going to repeat exactly the same experiment, but this time instead of adding one hundred times the same error, adding one hundred different errors.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-X3 = X.copy()
-y3 = y.copy()
-for i in arange(100):
-    index = np.random.randint(X.shape[0])
-    X3    = np.append(X3, [X[index]], axis=0)
-    y3    = np.append(y3, (y[index]+1) % 10)
-\end{verbatim}}
-\end{sourcecode}
-
-In this last case the inaccuracy of the model has increased up to $0.25$, meanwhile score remained the same.
+Both predictors have exactly the same error rate. However, the systematic errors have a simpler empirical correction structure, and therefore produce a lower inaccuracy.
 \end{example}
 
-In line with Example \ref{ex:machine_learning:inaccuracy:one_hundred_errors}, consider an extreme binary case: a model that always flips the label (predicts False when the truth is True, and vice versa). Classical accuracy deems this the worst possible model; our inaccuracy, however, is low because the predictions can be perfectly "fixed" by a simple transformation. In some applications (e.g., a hedge fund\index{Stock market} trading strategy), such a model would be extremely valuable.
+A second consequence of using empirical joint code lengths is that inaccuracy has a finer granularity than classification accuracy. For a dataset containing $n$ observations, classification accuracy depends only
+on the number $c$ of correct predictions, $\operatorname{accuracy} = c/n$, since $c\in\{0,1,\ldots,n\}$, accuracy can assume at most $n+1$ distinct values. All prediction vectors containing the same number of correct labels therefore receive exactly the same accuracy, regardless of how their incorrect predictions are distributed among the possible classes. Inaccuracy is based instead on the empirical frequencies of the joint states $(y_i,\hat y_i)$. Consequently, different patterns of errors may produce different inaccuracy values even when the number of errors remains unchanged.
 
-In highly imbalanced datasets\index{Imbalanced dataset}, standard accuracy can be misleading: a high score may simply reflect correct classification of the majority class while failing on the minority class. Practitioners address this with specialized metrics. With our inaccuracy metric, as Example \ref{ex:machine_learning:inaccuracy:unbalanced_dataset} shows, a model that fails to classify the minority class is penalized even if that class has few samples.
+\begin{example}
+\label{ex:machine_learning:inaccuracy:granularity}
+
+Consider five balanced classes. We keep the classification error fixed at $20\%$, but progressively distribute the erroneous predictions among an increasing number of different wrong classes.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+import numpy as np
+import pandas as pd
+
+from sklearn.metrics import accuracy_score
+from mnplib.inaccuracy import Inaccuracy
+
+n_classes        = 5
+samples_per_class = 600
+n_errors          = 120
+
+y = np.repeat(np.arange(n_classes), samples_per_class)
+
+metric = Inaccuracy().fit_y(y)
+
+results = []
+
+for n_error_types in range(1, n_classes):
+
+    predictions = y.copy()
+
+    for cls in range(n_classes):
+
+        indices = np.flatnonzero(y == cls)[:n_errors]
+        groups  = np.array_split(indices, n_error_types)
+
+        for offset, group in enumerate(groups, start=1):
+            predictions[group] = (cls + offset) % n_classes
+
+    report = metric.prediction_analysis(predictions)
+
+    results.append({
+        "error_types": n_error_types,
+        "accuracy": accuracy_score(y, predictions),
+        "joint_states": report["n_observed_joint_states"],
+        "inaccuracy": report["inaccuracy"],
+    })
+
+pd.DataFrame(results)
+\end{verbatim}}
+\end{sourcecode}
+
+The result is approximately
+
+\begin{center}
+\begin{tabular}{rrrr}
+\hline
+Error types & Accuracy & Joint states & Inaccuracy \\
+\hline
+1 & 0.80 & 10 & 0.311 \\
+2 & 0.80 & 15 & 0.397 \\
+3 & 0.80 & 20 & 0.447 \\
+4 & 0.80 & 25 & 0.483 \\
+\hline
+\end{tabular}
+\end{center}
+
+The number of incorrect predictions never changes, and therefore accuracy remains exactly $0.80$ throughout the experiment. What changes is the structure of the errors. With one error type, each true class is associated with only one additional incorrect prediction state. As more error types are introduced, the same errors are distributed among a larger number of target--prediction pairs. The joint empirical representation therefore requires a longer description, and inaccuracy increases.
+\end{example}
+
+Classical accuracy can also be misleading when the target distribution is strongly imbalanced. A model may achieve high accuracy simply by predicting the majority class while containing little information about the minority class.
 
 \begin{example}
 \label{ex:machine_learning:inaccuracy:unbalanced_dataset}
-We create a synthetic dataset with two classes, using the \texttt{make\_classification} utility of scikit-learn, where one has $95\%$ of the samples and the other $5\%$:
+
+We create a binary classification problem in which $95\%$ of the observations belong to one class and $5\%$ to the other.
 
 \begin{sourcecode}
 {\scriptsize \begin{verbatim}
+import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.datasets import make_classification
+from sklearn.tree import DecisionTreeClassifier
+from mnplib.inaccuracy import Inaccuracy
 
-depth = list()
-score = list()
-inacc = list()
+X, y = make_classification(
+    n_samples=1000,
+    n_features=2,
+    n_informative=2,
+    n_redundant=0,
+    class_sep=2,
+    flip_y=0,
+    weights=[0.95, 0.05],
+    random_state=42,
+)
 
-inaccuracy = Inaccuracy()
+metric = Inaccuracy().fit(X, y)
 
-for i in np.arange(1, 100):
-                    
-    X, y = make_classification(n_samples=1000, n_features=2,
-                               n_informative=2, n_redundant=0,
-                               class_sep=2, flip_y=0, weights=[0.95,0.05])
+error = []
+inacc = []
 
-    inaccuracy.fit(X, y)
-        
-    tree = DecisionTreeClassifier(min_samples_leaf=i)
-    tree.fit(X, y)
+for size in np.arange(1, 100):
 
-    depth.append(i)        
-    score.append(1 - tree.score(X, y))
-    inacc.append(inaccuracy.inaccuracy_model(tree))
+    model = DecisionTreeClassifier(
+        min_samples_leaf=size,
+        random_state=42,
+    ).fit(X, y)
+
+    error.append(1 - model.score(X, y))
+    inacc.append(metric.inaccuracy_model(model))
+
+plt.plot(np.arange(1, 100), error,
+         label="1 - accuracy")
+plt.plot(np.arange(1, 100), inacc,
+         label="inaccuracy")
+plt.xlabel("Minimum samples per leaf")
+plt.ylabel("Error")
+plt.legend()
+plt.show()
 \end{verbatim}}
 \end{sourcecode}
 
-We vary the minimum number of samples per leaf $i \in \{1,\ldots,100\}$. In Figure \ref{figure:machine_learning:inaccuracy:inaccuracy_DT2}, for large $i$ the accuracy-based error (i.e., $1-\text{accuracy}$) may stay near $0.05$, yet the inaccuracy remains high because the model effectively ignores the minority class.
+As \texttt{min\_samples\_leaf} increases, the tree becomes less able to isolate the minority class. The ordinary classification error may remain close to the minority proportion because most observations still belong to the majority class. Inaccuracy, however, reflects the fact that the resulting prediction vector contains insufficient information to identify the minority observations.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.6\textwidth]{inaccuracy_DT2.png}
-\caption{Inaccuracy of Decision Tree.}
-\label{figure:machine_learning:inaccuracy:inaccuracy_DT2}
+\includegraphics[width=0.6\textwidth]{inaccuracy_imbalanced.png}
+\caption{Accuracy-based error and inaccuracy on an imbalanced dataset.}
+\label{figure:machine_learning:inaccuracy:imbalanced}
 \end{figure}
 
 \end{example}
+
+The same principle applies to regression. Metrics such as mean squared error and root mean squared error measure the numerical magnitude of residuals, but do not distinguish between residual patterns that have different informational structure.
+
+\begin{example}
+\label{ex:machine_learning:inaccuracy:same_rmse}
+
+Consider two prediction vectors with exactly the same root mean squared error. The first has a constant systematic offset, $\hat y_i=y_i+1$, whereas the second adds irregular random noise having the same root mean
+squared magnitude.
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+import numpy as np
+
+from sklearn.metrics import mean_squared_error
+from mnplib.inaccuracy import Inaccuracy
+
+rng = np.random.default_rng(42)
+
+n = 5000
+y = rng.normal(0, 2, n)
+
+biased = y + 1.0
+
+noise  = rng.normal(size=n)
+noise /= np.sqrt(np.mean(noise ** 2))
+noisy  = y + noise
+
+metric = Inaccuracy().fit_y(y)
+
+print("Constant bias",
+      "RMSE:", np.sqrt(mean_squared_error(y, biased)),
+      "Inaccuracy:", metric.inaccuracy_predictions(biased))
+
+print("Random noise",
+      "RMSE:", np.sqrt(mean_squared_error(y, noisy)),
+      "Inaccuracy:", metric.inaccuracy_predictions(noisy))
+\end{verbatim}}
+\end{sourcecode}
+
+A representative result is
+
+\begin{sourcecode}
+{\scriptsize \begin{verbatim}
+Constant bias RMSE: 1.0 Inaccuracy: 0.0
+Random noise  RMSE: 1.0 Inaccuracy: 0.73
+\end{verbatim}}
+\end{sourcecode}
+
+RMSE assigns the same value to both prediction vectors by construction. The constant offset, however, preserves the complete structure of the target. Under the equal-width discretization used by \texttt{mnplib}, translating all values by the same constant also translates the interval boundaries. The target and prediction vectors therefore receive the same sequence of discrete states and their empirical inaccuracy is zero. Random noise behaves differently. Different observations require different corrections, the target and prediction states no longer coincide, and the joint code length increases substantially.
+\end{example}
+
+This example illustrates a fundamental difference between the metrics. RMSE measures the magnitude of numerical errors. Inaccuracy measures how much information separates the prediction representation from the observed target.
+
 
 %
 % Section: Surfeit

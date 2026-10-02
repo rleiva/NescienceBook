@@ -891,7 +891,6 @@ RMSE assigns the same value to both prediction vectors by construction. The cons
 
 This example illustrates a fundamental difference between the metrics. RMSE measures the magnitude of numerical errors. Inaccuracy measures how much information separates the prediction representation from the observed target.
 
-
 %
 % Section: Surfeit
 %
@@ -899,257 +898,438 @@ This example illustrates a fundamental difference between the metrics. RMSE meas
 \section{Surfeit}
 \label{sec:machine_learning_surfeit}
 
-In Chapter \ref{chap:Surfeit} we defined the surfeit of a description $d \in \mathcal{D}$ for a representation $r \in \mathcal{R}$ as
+In Chapter~\ref{chap:Surfeit} we introduced surfeit as a practical approximation to the surplus of a description. Let $d\in\mathcal{D}$ be a description. Its theoretical surfeit is
 \[
-\sigma(d,r) = \frac{|l(d)-K(r)|}{l(d)}.
+\sigma(d) = 1 - \frac{K(d)}{l(d)},
 \]
-This quantity measures how much longer the description $d$ is than an ideal minimal description of the representation $r$. If $l(d)$ is close to $K(r)$, then the description contains little surplus. If $l(d)$ is much
-larger than $K(r)$, then the description contains unnecessary structure.
+where $l(d)$ is the length of the description and $K(d)$ is its Kolmogorov complexity. Surfeit measures how much of the description can, in principle, be removed by a shorter description of the description itself. If $K(d)\approx l(d)$, then the description is close to incompressible and its surfeit is close to zero. If, on the other hand, $K(d)\ll l(d)$, then the description contains substantial compressible structure and its surfeit
+is high.
 
-In practice, however, $K(r)$ is not computable. Moreover, when we want to study the internal redundancy of a model description itself, it is useful to consider a representation-independent approximation. Instead of asking how far $d$ is from a shortest description of $r$, we ask how far $d$ is from a shortest description of itself. This gives the redundancy-based approximation
-\[
-\rho(d) = 1 - \frac{K(d)}{l(d)}.
-\]
-Here $K(d)$ denotes the Kolmogorov complexity of the string $d$. A string with low redundancy has $K(d) \approx l(d)$, and therefore $\sigma(d) \approx 0$. A highly redundant string has $K(d) \ll l(d)$, and therefore $\sigma(d)$ is close to one.
+Surfeit should not be confused with the theoretical surplus of a description. The latter is relative to the representation being described and asks how much information in a description is unnecessary with respect to a minimal description of that representation. Surfeit asks a weaker, but operationally useful, question: how much compressible structure remains in the description itself?
 
-This formulation is particularly convenient in machine learning. A trained model $m$ is first converted into a string-based description $d_m$, and surfeit is then estimated from the redundancy of that description:
-\[
-\rho(m) = \sigma(d_m) = 1 - \frac{K(d_m)}{l(d_m)}.
-\]
-The model is therefore studied as a string of symbols. No reference to the training dataset or to the target variable is needed in the computation of surfeit. Surfeit measures the internal surplus of the model description, not the accuracy of the model with respect to observed data.
+This distinction is particularly useful in machine learning. A trained model $m$ is represented by a finite description $d_m$. The model may predict the target accurately while still containing unnecessary branches, parameters, rules, repeated structures, or other descriptive machinery. Surfeit attempts to detect this remaining descriptive excess.
 
-The theoretical difficulty is that $K(d_m)$ is not computable. The \texttt{mnplib} library therefore approximates $K(d_m)$ using ordinary text compression. If $C(d_m)$ denotes the length of the compressed version of the
-model description, the practical approximation is
-\[
-\hat{\rho}(m) = 1 - \frac{C(d_m)}{l(d_m)}.
-\]
-This approximation is not intended to recover Kolmogorov complexity exactly. Rather, it provides a practical test for redundancy: if the model description contains repeated patterns, regularities, or unnecessary symbolic structure, a compressor should be able to encode it using fewer symbols.
+Unlike inaccuracy, surfeit does not evaluate the predictions produced by the model. Inaccuracy evaluates the relation between the model output and the observed target; surfeit evaluates the model description itself. Consequently, the two quantities are complementary. A very simple model may have low surfeit and high inaccuracy, while a highly elaborate model may have low inaccuracy and high surfeit.
 
-The current implementation uses \texttt{zlib} as the canonical compressor. This choice is deliberate. \texttt{zlib} is fast, deterministic, widely available, and has a small and well-understood format overhead. These properties are important because surfeit may be computed repeatedly during model comparison. Using a single compressor also makes the resulting values more reproducible: two users evaluating the same model description should not obtain different surfeit values merely because they selected different compression algorithms.
+% Practical Surfeit
 
-A practical issue arises when the model description is very short. For short strings, the compressed string may be longer than the original one:
-\[
-C(d_m) > l(d_m).
-\]
-This does not mean that the model has negative redundancy. It usually means that the fixed overhead of the compression format dominates the compressed representation. In the case of the standard \texttt{zlib} format, the stream contains a small header and a checksum trailer. To avoid interpreting this format overhead as model complexity, \texttt{mnplib} applies an overhead correction.
+\subsection*{Practical Surfeit}
 
-Let $h_{\mathrm{zlib}}$ be the assumed \texttt{zlib} overhead. The effective compressed length is defined as
-\[
-C_{\mathrm{eff}}(d_m) = \min \left\{l(d_m), \max\left\{0, C(d_m)-h_{\mathrm{zlib}}\right\} \right\}.
-\]
-The default value used by the library is
-\[
-h_{\mathrm{zlib}} = 6,
-\]
-corresponding to the usual two-byte header and four-byte checksum trailer. The clipping operation ensures that the effective compressed length is never negative and never larger than the original model description.
+Kolmogorov complexity cannot be computed in the general case. The \texttt{mnplib} library therefore approximates $K(d_m)$ by compressing a canonical string representation of the model. Let $L(d_m)$ denote the length, in bits, of the UTF-8 representation of the model description, and let $C(d_m)$ denote the length, also in bits, obtained after compressing that representation with \texttt{zlib}. The current implementation uses a fixed compression level of $9$. Keeping the compressor and its configuration fixed is important: practical surfeit is relative to the compression procedure, and changing the compressor may change the regularities that are detected.
 
-There is a second practical adjustment. A model description should not be credited with a useful compressed length larger than the amount of information contained in the target it is intended to describe. If the target has empirical code length $\hat K_C(\mathbf{y})$, and if
+A practical complication arises for short descriptions. The compressed string may be longer than the original one because a \texttt{zlib} stream contains a fixed wrapper overhead. Thus, we may observe $C(d_m)>L(d_m)$ even for a description containing some redundancy. The implementation assumes a fixed \texttt{zlib} overhead of six bytes, or $h_{\mathrm{zlib}}=48$ bits. It therefore defines the effective compressed length as
 \[
-\hat K_C(\mathbf{y}) < C_{\mathrm{eff}}(d_m),
+C_{\mathrm{eff}}(d_m) = \min\left\{L(d_m), \max\left\{0, C(d_m)-h_{\mathrm{zlib}}\right\}\right\}.
 \]
-then the implementation uses $\hat K_C(\mathbf{y})$ as the reference length instead of $C_{\mathrm{eff}}(d_m)$. In other words, the practical reference length is
-\[
-L_{\mathrm{ref}}(m,\mathbf{y}) = \min \left\{ C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y}) \right\}.
-\]
-This condition prevents a model description from being treated as more informative than the target itself. It is especially relevant when the model description is long, or only weakly compressible, while the target variable is
-simple.
+The first clipping operation prevents the corrected compressed length from becoming negative. The second ensures that compression is never treated as making the description longer than its original representation.
 
-\begin{definition}
-Let $m$ be a trained model, let $d_m$ be its string-based description, and let $\mathbf{y}$ be the target variable that the model is intended to describe. We define the practical surfeit of $m$ as
+The \texttt{mnplib} implementation introduces an additional target-dependent safeguard. Let $\hat K_C(\mathbf{y})$ be the empirical code length of the target attribute, computed using the procedures introduced in Section~\ref{sec:utility_interface}. The reference description length is defined as
 \[
-\hat{\rho}(m,\mathbf{y}) = 1 - \frac{ L_{\mathrm{ref}}(m,\mathbf{y}) }{ l(d_m) },
+L_{\mathrm{ref}}(m,\mathbf{y}) = \min\left\{C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y}) \right\}.
+\]
+This condition prevents the compressed model description from being credited with more useful descriptive information than is present in the target that the model is intended to describe.
+
+The theoretical surfeit $\sigma(d)$ depends only on the description. The quantity implemented by \texttt{mnplib} is therefore a target-calibrated practical approximation: the internal compressibility of the model remains the primary quantity, but the useful reference length is bounded by the empirical information contained in the target.
+
+Let $m$ be a fitted model, let $d_m$ be its canonical model description, and let $\mathbf{y}$ be the target attribute. We define the empirical \emph{surfeit}\index{Surfeit} of $m$ with respect to $\mathbf{y}$ as
+\[
+\hat\sigma(m,\mathbf{y}) = 1 - \frac{L_{\mathrm{ref}}(m,\mathbf{y})}{L(d_m)},
 \]
 where
 \[
-L_{\mathrm{ref}}(m,\mathbf{y}) = \min \left\{ C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y}) \right\}.
+L_{\mathrm{ref}}(m,\mathbf{y}) = \min\left\{C_{\mathrm{eff}}(d_m), \hat K_C(\mathbf{y})\right\}.
 \]
-\end{definition}
+The resulting value belongs to the interval $[0,1]$. Low values indicate that the model description contains little compressible excess relative to the chosen coding and compression procedures. High values indicate that a substantial fraction of the description is either compressible or excessive relative to the information contained in the target. For categorical targets, $\hat K_C(\mathbf{y})$ is computed directly from the frequencies of the observed target states. Numeric targets are discretized using the automatic one-dimensional resolution introduced in Section~\ref{sec:utility_interface}.
 
-Thus, the implementation follows two safeguards. First, it corrects the raw compressed length by subtracting the fixed \texttt{zlib} overhead. Second, it uses the empirical code length of the target as an upper bound on the useful reference length. A compact, non-redundant model description has low surfeit. A model whose description contains repeated or unnecessary structure has high surfeit. In this sense, surfeit acts as a practical approximation to descriptive surplus, while remaining bounded by the information content of the target being described.
-
-The implementation requires a way to encode models as strings of symbols. Ideally, descriptions would be encoded as Turing machines with respect to a fixed universal Turing machine. This would be the closest formulation to the theoretical definition. In practice, however, such an encoding would be difficult to implement and extend. The library therefore uses a restricted, Python-like textual representation of the predictive procedure. The intention is not to serialize the software object, but to produce a simplified program-like description of what the model computes. Third-party libraries, external state, and implementation-specific metadata are excluded from the description whenever possible.
-
-A typical usage of the \texttt{Surfeit} class is:
+The most direct use of the Surfeit class is to evaluate a fitted estimator:
 
 \begin{sourcecode}
 {\scriptsize
 \begin{verbatim}
 from mnplib.surfeit import Surfeit
 
-sft = Surfeit()
+sft = Surfeit().fit(X, y)
 
 surfeit = sft.surfeit_model(model)
-print(surfeit)
 \end{verbatim}
 }
 \end{sourcecode}
 
-When the model description is already available as a string, surfeit can be computed directly from that string:
+The method \texttt{surfeit\_model()} does not serialize the Python object using \texttt{str()}, \texttt{repr()}, or a binary object serializer. Instead, the estimator is passed through the model adapter layer, which produces its canonical description string. The resulting string is then evaluated using exactly the same procedure as any explicit description.
+
+When the model description is already available, the feature matrix is not required:
 
 \begin{sourcecode}
 {\scriptsize
 \begin{verbatim}
 from mnplib.surfeit import Surfeit
 
-model_string = """
-def model(X):
-    if X1 < 0.5:
-        return 0
-    else:
-        return 1
-"""
-
-sft = Surfeit()
+sft = Surfeit().fit_y(y)
 
 surfeit = sft.surfeit_string(model_string)
-print(surfeit)
 \end{verbatim}
 }
 \end{sourcecode}
 
-For diagnostic purposes, the detailed interface exposes the intermediate quantities used in the calculation:
+Thus, \texttt{surfeit\_string()} is the primitive metric operation, while \texttt{surfeit\_model()} adds the model-serialization step.
+
+A detailed explanation of an explicit description is available through
 
 \begin{sourcecode}
 {\scriptsize
 \begin{verbatim}
-details = sft.surfeit_string_detailed(model_string)
-
-for key, value in details.items():
-    print(key, value)
+details = sft.description_analysis(model_string)
 \end{verbatim}
 }
 \end{sourcecode}
 
-The detailed output includes the raw length of the model description, the raw \texttt{zlib}-compressed length, the overhead correction, the effective compressed length, and the final surfeit value.
+The returned dictionary contains
 
-Surfeit is useful in machine learning because it penalizes unnecessary descriptive structure. A highly complex model may fit the training data well, but if its description contains large amounts of repeated or compressible structure, then its surfeit will be high. Conversely, a very simple model may have low surfeit, but this does not imply that it is accurate. Surfeit should therefore be interpreted together with inaccuracy. Inaccuracy measures how well the model describes the observed phenomenon; surfeit measures how much surplus there is in the model description itself. The preferred model is not necessarily the one with lowest inaccuracy or lowest surfeit in isolation, but one that achieves a good trade-off between both quantities.
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+surfeit
+model_code_length_bits
+compressed_code_length_bits
+effective_compressed_code_length_bits
+target_code_length_bits
+reference_code_length_bits
+compression_ratio
+reference_source
+\end{verbatim}
+}
+\end{sourcecode}
+
+The field \texttt{compression\_ratio} is the ratio between the raw \texttt{zlib}-compressed size and the raw model size before overhead correction. It may therefore be greater than one for short descriptions. The field \texttt{reference\_source} indicates which quantity limits the reference length. Its value is \texttt{"compression"} when the corrected compressed description is shorter than the target code length, \texttt{"target"} when the target code length is shorter, and \texttt{"both"} when they coincide.
+
+For a fitted estimator,
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+details = sft.model_analysis(model)
+\end{verbatim}
+}
+\end{sourcecode}
+
+returns the same surfeit diagnostics together with the canonical model string, the model type, the selected feature indices, and the number of selected features.
+
+A functional interface is also provided:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.surfeit import surfeit_model
+
+value = surfeit_model(model, X=X, y=y)
+\end{verbatim}
+}
+\end{sourcecode}
+
+% A Minimal Language for Model Descriptions
+
+\subsection*{A Minimal Language for Model Descriptions}
+
+Computing surfeit requires converting a trained model into a string. This step is more important than it may initially appear. Suppose that the same model is encoded using two different languages. One language may provide compact operators for a particular model family, while another may require a verbose representation of the same computation. The resulting description lengths and compression ratios could differ even though the underlying predictive procedure is identical. This problem becomes particularly important when comparing models from different families. A decision tree, a linear model, and a neural network must not be compared using unrelated serialization formats. Otherwise, the measured difference in surfeit might reflect the serialization conventions rather than the models themselves.
+
+For this reason, \texttt{mnplib} uses a model adapter layer that converts supported fitted estimators into canonical textual descriptions. We assume that these descriptions are expressed in a common restricted Python-like language. A proposed grammar for this language is
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+<program>   ::= <function> | <function> <program>
+<function>  ::= "def" NAME "(" <params> ")" ":" <suite>
+<params>    ::= epsilon | NAME | NAME "," <params>
+<suite>     ::= NEWLINE INDENT <block> DEDENT
+<block>     ::= <statement> | <statement> <block>
+
+<statement> ::= <ref> "=" <expr> NEWLINE
+              | <ref> ".append(" <expr> ")" NEWLINE
+              | "return" <expr> NEWLINE
+              | "if" <test> ":" <suite> <else>
+              | "for" NAME "in" "range(" <expr> "):" <suite>
+
+<else>      ::= epsilon | "else:" <suite>
+
+<expr>      ::= NUMBER | <ref> | "[" <args> "]" | "-" <expr>
+              | "(" <expr> <op> <expr> ")"
+              | NAME "(" <args> ")"
+
+<args>      ::= epsilon | <expr> | <expr> "," <args>
+<ref>       ::= NAME | <ref> "[" <expr> "]"
+<test>      ::= <expr> <comparison> <expr>
+
+<op>        ::= "+" | "-" | "*" | "/"
+<comparison> ::= "<" | "<=" | ">" | ">=" | "==" | "!="
+\end{verbatim}
+}
+\end{sourcecode}
+
+The language contains only the constructs required to express predictive procedures: functions, assignments, arrays, arithmetic expressions, function calls, conditionals, loops, indexing, and return statements. It deliberately excludes implementation details that are irrelevant to the predictive procedure, such as library-specific object metadata, memory addresses, caches, training history, or debugging information.
+
+The grammar alone, however, is not sufficient to guarantee comparable model descriptions. The serializer should also use deterministic conventions for variable names, numerical precision, statement ordering, indentation, and whitespace. Otherwise, two equivalent implementations could receive different surfeit values merely because of superficial syntactic differences.
+
+The resulting surfeit should therefore always be interpreted relative to this common description language. This is analogous to fixing a reference universal Turing machine when discussing Kolmogorov complexity: the exact numerical value depends on the coding convention, but comparisons become meaningful once that convention is held fixed.
+
+\subsection*{Models from the Same Family}
+
+Surfeit can distinguish between models from the same family that obtain similar predictive performance but have substantially different descriptive complexity.
 
 \begin{example}
-\label{ex:surfeit_overfit}
-Surfeit can help identify overfitted models. Suppose that polynomial regression models of increasing degree are fitted to the same phenomenon. As the degree increases, the model description usually becomes longer and may contain more repeated symbolic structure. A high-degree polynomial may achieve low inaccuracy on the training data, but it can also have high surfeit because its description contains unnecessary descriptive surplus.
+\label{ex:machine_learning:surfeit:same_family}
 
-In such a case, surfeit acts as a counterbalance to inaccuracy. A low-degree model may be too simple and therefore inaccurate. A very high-degree model may be accurate on the training data but unnecessarily complex. The preferred model is one that achieves low inaccuracy with low surfeit.
+Consider the Breast Cancer Wisconsin dataset included in \texttt{scikit-learn}. We train two decision trees, one restricted to a maximum depth of two and another allowed to grow to depth five.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+from mnplib.surfeit import surfeit_model
+
+X, y = load_breast_cancer(return_X_y=True)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+simple = DecisionTreeClassifier(
+    max_depth=2,
+    random_state=42,
+).fit(X_train, y_train)
+
+complex_ = DecisionTreeClassifier(
+    max_depth=5,
+    random_state=42,
+).fit(X_train, y_train)
+
+print("Simple accuracy:", simple.score(X_test, y_test))
+print("Complex accuracy:", complex_.score(X_test, y_test))
+
+print(
+    "Simple surfeit:",
+    surfeit_model(simple, X=X_train, y=y_train),
+)
+print(
+    "Complex surfeit:",
+    surfeit_model(complex_, X=X_train, y=y_train),
+)
+\end{verbatim}}
+\end{sourcecode}
+
+A representative result is
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+Simple accuracy:  0.930
+Complex accuracy: 0.947
+
+Simple surfeit:   0.560
+Complex surfeit:  0.895
+\end{verbatim}}
+\end{sourcecode}
+
+The deeper tree improves the test accuracy by less than two percentage points, but its surfeit is substantially larger. Conventional predictive performance alone does not expose this difference in descriptive economy.
 \end{example}
 
-Another advantage of surfeit is that it allows us to compare models from different families. If two models achieve similar inaccuracy, surfeit provides a way to prefer the model with the more economical description. For example, a small decision tree may have lower surfeit than a neural network when the decision boundary is simple. In a more complex problem, however, a neural network may provide a more compact description than a large decision tree with many branches. Surfeit therefore does not impose a fixed preference for one model family over another; it evaluates the descriptive surplus of the specific model description under consideration.
+This example also illustrates why surfeit is not simply the number of parameters, tree nodes, or model depth. Those quantities are useful within a particular model family, but they are not directly comparable across different kinds of models. Surfeit evaluates the resulting descriptions through the same coding principle.
 
-When predictive performance differs substantially, surfeit should not be used alone. A model with very low surfeit may simply be underfitted. A model with very low inaccuracy may be overfitted. The role of nescience is to evaluate these quantities jointly, selecting models that provide an adequate description of the phenomenon without unnecessary descriptive surplus.
+% The Inaccuracy--Surfeit Trade-off
 
-Surfeit can help avoid overfitted models. The higher the surfeit of a model, the greater the risk that the model is an overfit to the training dataset, as Example \ref{ex:surfeit_overfit} illustrates.
+\subsection*{The Inaccuracy--Surfeit Trade-off}
+
+Increasing model complexity often decreases inaccuracy because a more flexible model can reproduce a larger fraction of the structure present in the target. At the same time, the resulting description generally becomes more elaborate. The two effects can therefore move in opposite directions.
+
+\begin{example}
+\label{ex:machine_learning:surfeit:polynomial}
+
+We generate $900$ observations from the sinusoidal relation $y=\cos(1.5\pi x)$ and fit polynomial models of increasing degree. Each polynomial model is implemented as a linear regression over polynomial features.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
+from mnplib.inaccuracy import Inaccuracy
+from mnplib.surfeit import Surfeit
+
+rng = np.random.default_rng(42)
+
+X = np.sort(
+    rng.uniform(0.0, 3.0, size=900)
+).reshape(-1, 1)
+
+y = np.cos(1.5 * np.pi * X[:, 0])
+
+inacc = Inaccuracy().fit_y(y)
+
+rows = []
+
+for degree in range(1, 8):
+
+    poly = PolynomialFeatures(
+        degree=degree,
+        include_bias=False,
+    )
+    X_poly = poly.fit_transform(X)
+
+    model = LinearRegression().fit(X_poly, y)
+    predictions = model.predict(X_poly)
+
+    sft = Surfeit().fit(X_poly, y)
+
+    rows.append({
+        "degree": degree,
+        "inaccuracy":
+            inacc.inaccuracy_predictions(predictions),
+        "surfeit":
+            sft.surfeit_model(model),
+    })
+
+results = pd.DataFrame(rows)
+
+plt.plot(
+    results["degree"],
+    results["inaccuracy"],
+    label="Inaccuracy",
+)
+
+plt.plot(
+    results["degree"],
+    results["surfeit"],
+    label="Surfeit",
+)
+
+plt.xlabel("Polynomial degree")
+plt.ylabel("Metric")
+plt.legend()
+plt.show()
+\end{verbatim}}
+\end{sourcecode}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.6\textwidth]{surfeit_vs_inaccuracy.png}
-\caption{Surfeit vs Inaccuracy}
-\label{figure:surfeit_vs_inaccuracy}
+\caption{Inaccuracy and surfeit for polynomial models of increasing degree.}
+\label{figure:machine_learning:surfeit:tradeoff}
 \end{figure}
 
+Low-degree polynomials are too restrictive to reproduce the sinusoidal relation and consequently have relatively high inaccuracy. As the degree increases, inaccuracy decreases because the polynomial becomes more expressive.
+
+At the same time, the fitted description becomes increasingly elaborate and surfeit tends to increase. Beyond some point, additional complexity may produce only a small reduction in inaccuracy while introducing a substantial increase in surfeit.
+\end{example}
+
+The example illustrates the role of the two quantities. Inaccuracy encourages descriptions capable of reconstructing the observed target. Surfeit encourages descriptions that do so economically. Neither metric should be minimized in isolation; their trade-off is one of the problems addressed by the nescience criterion introduced in the following section.
+
+% Subsection: Comparing Different Model Families
+
+\subsection*{Comparing Different Model Families}
+
+A particularly useful property of surfeit is that it provides a common description-based criterion for models whose conventional complexity measures are not comparable. The depth of a decision tree cannot be directly compared with the number of weights in a neural network, nor with the number of coefficients in a linear model. Once the models are expressed in the same canonical language, however, their descriptions can be analyzed using the same surfeit calculation.
+
 \begin{example}
-\label{ex:surfeit_overfit}
-We generate $900$ samples from a sinusoidal curve and fit $n$-degree polynomials with $n \in \{1,\ldots,15\}$.
+\label{ex:machine_learning:surfeit:model_families}
+
+Consider a binary classification problem consisting of two approximately separable Gaussian clusters. We train a logistic regression model, a decision tree, and a neural network.
 
 \begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
+{\scriptsize
+\begin{verbatim}
+from sklearn.datasets import make_blobs
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 from mnplib.surfeit import Surfeit
-from mnplib.inaccuracy import Inaccuracy
 
-n_samples = 900
-degrees = np.arange(1, 15)
+X, y = make_blobs(
+    n_samples=2000,
+    centers=2,
+    cluster_std=2,
+    n_features=2,
+    random_state=42,
+)
 
-X = np.sort(np.random.rand(n_samples) * 3)
-y = np.cos(1.5 * np.pi * X)
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.5,
+    stratify=y,
+    random_state=42,
+)
 
-linacc   = list()
-lsurfeit = list()
+linear = LogisticRegression().fit(X_train, y_train)
 
-for i in degrees:
-        
-    poly = PolynomialFeatures(degree=i, include_bias=False)
-    newX = poly.fit_transform(X[:, np.newaxis])
-    
-    linear_regression = LinearRegression()
-    linear_regression.fit(newX, y)
+tree = DecisionTreeClassifier(
+    random_state=42,
+).fit(X_train, y_train)
 
-    inacc.fit(newX, y)
-    inaccuracy = inacc.inaccuracy_model(linear_regression)
-    
-    sft.fit(newX, y)
-    surfeit = sft.surfeit_model(linear_regression)
-    
-    linacc.append(inaccuracy)
-    lsurfeit.append(surfeit)
+neural = MLPClassifier(
+    hidden_layer_sizes=(20,),
+    max_iter=2000,
+    random_state=42,
+).fit(X_train, y_train)
+
+sft = Surfeit().fit(X_train, y_train)
+
+print(
+    "Linear:",
+    linear.score(X_test, y_test),
+    sft.surfeit_model(linear),
+)
+
+print(
+    "Decision tree:",
+    tree.score(X_test, y_test),
+    sft.surfeit_model(tree),
+)
+
+print(
+    "Neural network:",
+    neural.score(X_test, y_test),
+    sft.surfeit_model(neural),
+)
 \end{verbatim}}
 \end{sourcecode}
 
-In Figure \ref{figure:surfeit_vs_inaccuracy} we see that, as expected, higher-degree polynomials yield lower training error, but at the cost of higher surfeit. The preferred model is one achieving low inaccuracy \emph{and} low surfeit.
-\end{example}
+A representative result is
 
-Another advantage of surfeit is that it allows us to compare models from different families. For example, if two models have the same accuracy, should we prefer a decision tree to a neural network, or a naive Bayes classifier to a support vector machine? The next example shows how surfeit can guide such choices.
-
-\begin{example}
-\label{ex:dt_vs_nn}
-
-We compare a decision tree with a neural network on synthetic data consisting of two isotropic Gaussian blobs. First, with standard deviation $1$ and two dimensions, the two clusters are easily separable (Table \ref{tab:isotropic_gaussian_blobs}, left).
-
-\begin{table}
 \begin{center}
-
-\begin{tabular}{ c c }
-
-\includegraphics[scale=0.4]{blobs_easy_split} & \includegraphics[scale=0.4]{blobs_difficult_split}
-
+\begin{tabular}{lrr}
+\hline
+Model & Accuracy & Surfeit \\
+\hline
+Linear model   & 0.993 & 0.163 \\
+Decision tree  & 0.991 & 0.636 \\
+Neural network & 0.986 & 0.889 \\
+\hline
 \end{tabular}
 \end{center}
-\caption{\label{tab:isotropic_gaussian_blobs}Isotropic Gaussian blobs.}
-\end{table}
 
-% \raisebox{.4\height}{\includegraphics[scale=0.4]{blobs_difficult_split}}
+All three models solve the classification problem with very similar predictive performance. Their descriptions, however, differ substantially.
 
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPClassifier
-from mnplib.surfeit import Surfeit
-from mnplib.inaccuracy import Inaccuracy
-from sklearn.datasets.samples_generator import make_blobs
-
-X, y = make_blobs(n_samples=1000, centers=2, n_features=2, cluster_std=1)
-
-tree = DecisionTreeClassifier()
-tree.fit(X, y)
-tree.score(X, y)
-
-nn = MLPClassifier()
-nn.fit(X, y)
-nn.score(X, y)
-
-sft = Surfeit()
-sft.fit(X, y)
-
-sft.surfeit_model(tree)
-sft.surfeit_model(nn)
-
-\end{verbatim}}
-\end{sourcecode}
-
-If we run the code, both models typically achieve accuracy $1$. However, the decision tree often has substantially lower surfeit than the neural network (e.g., $0.25$ vs.\ $0.73$ in one run), so we would prefer the decision tree in this setting.
-
-If we repeat the experiment with standard deviation $3$ and higher dimensionality (Table \ref{tab:isotropic_gaussian_blobs}, right), the situation can change:
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-X, y = make_blobs(n_samples=10000, centers=2, n_features=8, cluster_std=3)
-\end{verbatim}}
-\end{sourcecode}
-
-In this second case, both models can again achieve very high accuracy, but the surfeit of the decision tree typically increases markedly (e.g., to $\approx 0.82$), while the neural network's surfeit may remain similar (e.g., $\approx 0.76$). For this dataset, we would then prefer the neural network.
-
+For this simple decision boundary, the linear model provides the most economical description under the common model language. The decision tree requires a more elaborate set of rules, while the neural network requires a substantially larger collection of parameters and operations.
 \end{example}
 
-In Example \ref{ex:dt_vs_nn} we assumed equal accuracy. When accuracies differ, we must appeal to the overall concept of \emph{nescience} to decide between models, jointly considering inaccuracy and surfeit (and, where relevant, miscoding).
+
+The conclusion is specific to the fitted models and the problem under study. Surfeit does not impose a general preference for linear models over decision trees or neural networks. On a sufficiently complex problem, a neural network may provide a more economical description than a very large tree or an elaborate collection of linear pieces.
+
+The validity of this comparison depends critically on the use of the same canonical description language. If each model family were serialized according to unrelated conventions, the resulting surfeit values would partly measure the verbosity of those conventions rather than the descriptive complexity of the models themselves.
+
+Surfeit is related to model complexity, and excessive model complexity is often associated with overfitting. Nevertheless, a high surfeit should not be interpreted as a statistical test for overfitting.
+
+Surfeit analyzes the compressibility of the model description. It does not directly measure generalization error, and it does not compare training and test performance. A model may have high surfeit and nevertheless generalize well if the phenomenon genuinely requires a complex description. Conversely, a model may have low surfeit simply because it is too simple to describe the phenomenon.
+
+What surfeit can identify is a situation in which increasing descriptive complexity appears difficult to justify by the corresponding reduction in inaccuracy. Such a pattern is often associated with overfitting, but the interpretation must be made jointly with the predictive behavior of the model.
 
 %
 % Section: Nescience

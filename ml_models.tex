@@ -1,0 +1,686 @@
+%
+% CHAPTER: Machine Learning Models
+%
+
+\chapterimage{Capek_play.pdf}
+
+\chapter{Machine Learning Models}
+\label{chap:ml_models}
+
+\begin{quote}
+\begin{flushright}
+\emph{There are no difficult problems,\\
+only lack of imagination.}\\
+Antonio García \\
+\end{flushright}
+\end{quote}
+\bigskip
+
+\section{Linear Regression}
+\label{subsec:automl_linear_regression}
+
+\index{Linear regression}
+\index{Ordinary least squares}
+\index{Feature selection}
+\index{Miscoding!feature selection}
+
+Linear regression is one of the simplest families of predictive models and
+therefore provides a useful starting point for illustrating the AutoML strategy
+implemented in \texttt{mnplib}. Given a representation with \(p\) numerical
+attributes
+\[
+X=(X_1,\ldots,X_p)
+\]
+and a numerical target \(Y\), a linear regression model assumes a prediction of
+the form
+\[
+\widehat{Y}
+=
+\beta_0
++
+\sum_{j=1}^{p}\beta_j X_j,
+\]
+where \(\beta_0\) is the intercept and
+\(\beta_1,\ldots,\beta_p\) are coefficients estimated from the available
+observations.
+
+The implementation used by \texttt{mnplib} is the
+\texttt{LinearRegression} estimator provided by scikit-learn. Its coefficients
+are fitted by ordinary least squares. Consequently, once the set of input
+features has been fixed, there is little model structure left to search:
+the coefficients and intercept are determined directly from the data.
+
+This makes linear regression particularly interesting from the point of view of
+nescience. The principal AutoML decision is not how to fit the coefficients,
+but rather \emph{which representation of the entity should be supplied to the
+model}. A representation containing too few relevant attributes may suffer from
+deficiency, whereas one containing unnecessary attributes may introduce
+surplus and produce a more complicated description. The search procedure
+therefore concentrates on the subset of features used by the model.
+
+\subsubsection{Model description}
+
+A fitted linear regression model is translated into the restricted model
+language described previously in this chapter. The serializer first constructs
+an abstract syntax tree corresponding to
+\[
+\beta_0
++
+\beta_1 X_1
++
+\cdots
++
+\beta_p X_p.
+\]
+
+The AST is initialized with a node representing the intercept. For every
+non-zero coefficient \(\beta_j\), the serializer then constructs a
+multiplication node containing the absolute value of the coefficient and the
+corresponding feature:
+\[
+|\beta_j| X_j.
+\]
+This term is attached to the current expression using addition when
+\(\beta_j>0\) and subtraction when \(\beta_j<0\).
+
+Coefficients that are exactly zero are not included in the AST. Thus, if
+\[
+\widehat{Y}
+=
+3.2
++
+1.5X_1
++
+0X_2
+-
+2.1X_3,
+\]
+the resulting semantic expression contains only \(X_1\) and \(X_3\):
+\[
+3.2+1.5X_1-2.1X_3.
+\]
+
+After normalization and canonical rendering, the same model may be represented
+by the string
+\begin{verbatim}
+3.20e+00+1.50e+00*x0-2.10e+00*x2
+\end{verbatim}
+
+where features are represented by their canonical identifiers
+\texttt{x0}, \texttt{x1}, \ldots, and numerical constants use the canonical
+scientific notation defined by the model-description language.
+
+The canonical description contains only information required to reproduce the
+prediction rule. Training observations, optimization information, estimator
+configuration, and other scikit-learn implementation details are excluded.
+
+The serializer also records the number of non-zero coefficients,
+\[
+n_{\mathrm{terms}}
+=
+\#\{j:\beta_j\neq0\},
+\]
+as model metadata. The effective feature subset of the model is likewise
+defined by the features whose fitted coefficients are non-zero.
+
+The current serializer assumes a one-dimensional target. Multi-output linear
+regression is therefore outside the model family considered here.
+
+\subsubsection{Search space}
+
+Ordinary least squares does not require a search over parameters such as tree
+depth, number of estimators, or learning rate. In the current implementation,
+\texttt{mnplib} instead searches over the number of selected features.
+
+Let
+\[
+(j_1,j_2,\ldots,j_p)
+\]
+be the ordering of the available attributes produced by the miscoding-based
+feature-ranking procedure, from the most promising attribute to the least
+promising one. The search considers the nested feature sets
+\[
+S_k
+=
+\{j_1,\ldots,j_k\},
+\qquad
+k=1,\ldots,p.
+\]
+
+Thus, instead of evaluating all
+\[
+2^p-1
+\]
+non-empty subsets of features, the search evaluates at most \(p\) candidate
+representations:
+\[
+S_1\subset S_2\subset\cdots\subset S_p.
+\]
+
+For each prefix \(S_k\), a new linear regression model is fitted using only the
+selected columns:
+\[
+\widehat{Y}_k
+=
+\beta_{0,k}
++
+\sum_{j\in S_k}\beta_{j,k}X_j.
+\]
+
+The fitted model is then evaluated using nescience. The candidate with the
+lowest nescience is preferred.
+
+This strategy makes the effective hyperparameter of the linear-regression
+family the number of features included from the miscoding ranking:
+\[
+k\in\{1,\ldots,p\}.
+\]
+
+The search can optionally be restricted to a maximum number of feature prefixes.
+It can also use an early-stopping rule based on a patience parameter. If a
+specified number of consecutive candidates fail to improve the best nescience
+observed so far, the search terminates without evaluating the remaining,
+larger feature prefixes.
+
+\subsubsection{Role of nescience}
+
+The search combines several elements of the theory of nescience, each of which
+plays a different role.
+
+First, \emph{miscoding} guides the exploration of the representation space.
+Rather than considering feature subsets in an arbitrary order, the attributes
+are ranked according to their contribution to the supervised representation.
+The search therefore begins with attributes that are expected to encode the
+target effectively and progressively introduces less useful information.
+
+Second, \emph{inaccuracy} measures the discrepancy between the observed target
+and the predictions produced by each fitted linear model. In general, adding
+features gives the regression model additional freedom and may reduce this
+component.
+
+Third, \emph{surfeit} evaluates the description of the fitted model. Additional
+features generally introduce additional coefficients and arithmetic terms into
+the canonical model description. Unless those terms contribute useful
+predictive structure, they tend to make the description more redundant.
+
+These effects are combined through mismodel and nescience. A very small feature
+set may give a compact description but fail to reproduce the target adequately.
+Conversely, a large representation may reduce prediction error while
+introducing unnecessary attributes and additional model structure. Nescience
+provides a single criterion for balancing these alternatives.
+
+The resulting search can be represented schematically as
+\[
+\begin{array}{c}
+\text{rank features by miscoding}
+\\[2mm]
+\downarrow
+\\[2mm]
+S_1,S_2,\ldots,S_p
+\\[2mm]
+\downarrow
+\\[2mm]
+\text{fit one linear model for each }S_k
+\\[2mm]
+\downarrow
+\\[2mm]
+\text{compute miscoding, inaccuracy, surfeit, and nescience}
+\\[2mm]
+\downarrow
+\\[2mm]
+\underset{k}{\operatorname{arg\,min}}\;
+\operatorname{Nescience}(M_k).
+\end{array}
+\]
+
+An important consequence is that feature selection is not performed as an
+independent preprocessing stage. The quality of a representation is evaluated
+together with the quality of the model fitted from that representation.
+A feature is therefore valuable only insofar as the information it contributes
+justifies its effect on the final model.
+
+\subsubsection{Comparison with conventional hyperparameter search}
+
+The procedure differs from the usual interpretation of hyperparameter
+optimization. Conventional AutoML systems frequently define a grid or
+probability distribution over estimator parameters and evaluate combinations
+through cross-validation. For ordinary least squares there are few meaningful
+structural parameters of this kind.
+
+In \texttt{mnplib}, the representation itself becomes part of the search
+space. The candidate models are not distinguished primarily by an optimizer
+parameter, but by the information supplied to the model:
+\[
+M_1=M(X_{S_1}),
+\quad
+M_2=M(X_{S_2}),
+\quad\ldots\quad,
+M_p=M(X_{S_p}).
+\]
+
+This illustrates a more general principle of nescience-based AutoML: model
+selection should consider not only the predictive mechanism but also the
+representation on which that mechanism operates.
+
+For linear regression, this principle leads to a particularly simple and
+interpretable search. Miscoding provides an informed ordering of attributes,
+ordinary least squares determines the best coefficients for each candidate
+representation, and nescience determines when the reduction in prediction
+error no longer compensates for the additional information and model
+complexity introduced by more features.
+
+%
+% Logistic Regression
+%
+
+\section{Logistic Regression}
+\label{subsec:automl_logistic_regression}
+
+\index{Logistic regression}
+\index{Classification}
+\index{Feature selection}
+\index{Miscoding!feature selection}
+
+Logistic regression is a linear classification model. Although its name
+contains the term regression, its usual purpose is to estimate the probability
+of membership in one or more discrete classes and, from those probabilities,
+produce a class prediction.
+
+For binary classification, let
+\[
+X=(X_1,\ldots,X_p)
+\]
+be the available attributes. Logistic regression first computes the linear
+score
+\[
+z
+=
+\beta_0
++
+\sum_{j=1}^{p}\beta_j X_j.
+\]
+
+The score is transformed into a probability using the logistic function
+\[
+P(Y=1\mid X)
+=
+\frac{1}{1+\exp(-z)}.
+\]
+
+A conventional decision threshold of \(1/2\) then assigns one of the two
+classes. Since the logistic function is strictly increasing,
+\[
+\frac{1}{1+\exp(-z)}>\frac{1}{2}
+\quad\Longleftrightarrow\quad
+z>0.
+\]
+Consequently, when the objective is to reproduce the predicted class rather
+than the estimated probability, the exponential function does not need to be
+included in the model description. The complete classification rule can be
+expressed directly in terms of the linear score:
+\[
+\widehat{Y}
+=
+\begin{cases}
+c_1, & z>0,\\
+c_0, & \text{otherwise}.
+\end{cases}
+\]
+
+This simplification is particularly useful for \texttt{mnplib}, because the
+canonical model language is deliberately restricted to a small set of
+arithmetic operations, comparisons, and conditional expressions.
+
+\subsubsection{Model description}
+
+The logistic-regression serializer reuses the same arithmetic representation
+used for linear regression. A linear score
+\[
+z
+=
+\beta_0
++
+\beta_1X_1
++
+\cdots
++
+\beta_pX_p
+\]
+is first translated into an abstract syntax tree.
+
+The tree starts with the intercept \(\beta_0\). For each non-zero coefficient
+\(\beta_j\), the serializer creates the term
+\[
+|\beta_j|X_j
+\]
+and joins it to the current expression using addition or subtraction according
+to the sign of the coefficient.
+
+For example, the score
+\[
+z
+=
+-0.8
++
+1.5X_1
+-
+2.3X_3
+\]
+may be serialized as
+\begin{verbatim}
+-8.00e-01+1.50e+00*x0-2.30e+00*x2
+\end{verbatim}
+
+using the canonical numerical notation and feature identifiers of the model
+language.
+
+For a binary problem with classes \(c_0\) and \(c_1\), this score is embedded
+inside a conditional expression:
+\begin{verbatim}
+label(c1) if -8.00e-01+1.50e+00*x0-2.30e+00*x2>0.00e+00
+else label(c0)
+\end{verbatim}
+
+The exact textual representation of class labels depends on their encoded
+values, but the semantic structure is always the same: evaluate the linear
+score, compare it with zero, and select the corresponding class.
+
+This representation intentionally omits the logistic function. The objective
+of the canonical description is to reproduce
+\[
+\operatorname{predict}(X),
+\]
+not necessarily
+\[
+\operatorname{predict\_proba}(X).
+\]
+Since the sigmoid transformation does not alter the binary decision boundary,
+including it would introduce computational structure that does not affect the
+predicted representation.
+
+\subsubsection{Multiclass classification}
+
+For \(K>2\) classes, logistic regression associates one linear score with each
+class:
+\[
+z_k
+=
+\beta_{k0}
++
+\sum_{j=1}^{p}\beta_{kj}X_j,
+\qquad
+k=1,\ldots,K.
+\]
+
+The probabilities may be obtained through the softmax transformation,
+\[
+P(Y=c_k\mid X)
+=
+\frac{\exp(z_k)}
+{\sum_{\ell=1}^{K}\exp(z_\ell)}.
+\]
+
+However, because the exponential function is strictly increasing and the
+denominator is shared by all classes,
+\[
+\operatorname*{arg\,max}_k
+P(Y=c_k\mid X)
+=
+\operatorname*{arg\,max}_k z_k.
+\]
+
+Therefore, neither exponentiation nor probability normalization is necessary
+to reproduce the predicted class.
+
+The model description instead compares the linear scores explicitly. For
+three classes with scores \(z_0,z_1,z_2\), an equivalent rule is
+\[
+\widehat{Y}
+=
+\begin{cases}
+c_0,
+&
+z_0\geq z_1
+\land
+z_0\geq z_2,
+\\
+c_1,
+&
+z_1\geq z_2,
+\\
+c_2,
+&
+\text{otherwise}.
+\end{cases}
+\]
+
+In the restricted Python-like language this corresponds conceptually to
+\begin{verbatim}
+c0 if z0>=z1 and z0>=z2 else
+c1 if z1>=z2 else
+c2
+\end{verbatim}
+
+The conditions are represented by nested conditional expressions. Earlier
+classes use non-strict comparisons so that ties are resolved consistently with
+the first-maximum convention used by the underlying estimator.
+
+This explicit representation is preferred to introducing a special
+\texttt{argmax} or \texttt{classify} primitive. The comparison logic therefore
+remains visible in the model description rather than being hidden inside a
+powerful operation of the description language.
+
+\subsubsection{Effective feature subset}
+
+The effective subset of a logistic-regression model consists of the features
+having at least one non-zero coefficient.
+
+For binary classification, this is simply
+\[
+S
+=
+\{j:\beta_j\neq0\}.
+\]
+
+For multiclass classification, a feature is considered active whenever it has
+a non-zero coefficient for at least one class:
+\[
+S
+=
+\left\{
+j:
+\exists k,\;
+\beta_{kj}\neq0
+\right\}.
+\]
+
+The serializer records this subset independently of the full input
+representation. This is important for the computation of miscoding, since the
+representation actually used by the model may contain fewer attributes than
+the original dataset.
+
+\subsubsection{Search space}
+
+The logistic-regression search implemented in \texttt{mnplib} deliberately
+avoids regularization. Each candidate uses an unregularized
+\texttt{LogisticRegression} estimator.
+
+The search therefore does not explore the conventional regularization
+hyperparameter \(C\), nor does it compare \(L_1\), \(L_2\), or elastic-net
+penalties. Model complexity is controlled instead through the representation
+provided to the model and through the nescience of the resulting candidate.
+
+The available attributes are first ordered using the miscoding-based feature
+ranking:
+\[
+(j_1,j_2,\ldots,j_p).
+\]
+
+The search then evaluates the nested prefixes
+\[
+S_k
+=
+\{j_1,\ldots,j_k\},
+\qquad
+k=1,\ldots,p.
+\]
+
+For every prefix, exactly one unregularized logistic-regression model is fitted:
+\[
+M_k
+=
+\operatorname{LogisticRegression}(X_{S_k},Y).
+\]
+
+Thus the effective search parameter is again the number of selected features:
+\[
+k\in\{1,\ldots,p\}.
+\]
+
+Instead of examining the complete power set of attributes, containing
+\[
+2^p-1
+\]
+non-empty subsets, the search evaluates at most \(p\) nested candidate
+representations.
+
+The search can also be restricted to a maximum number of feature prefixes. The
+optimization algorithm uses the \texttt{lbfgs} solver. The parameter
+\texttt{max\_iter} limits the number of optimization iterations, but it is not
+treated as a model-selection hyperparameter. It is only a safeguard to allow
+the numerical optimization to converge.
+
+If fitting fails for a candidate, the failure is recorded as a diagnostic and
+the search proceeds with the remaining feature prefixes. Convergence warnings
+are likewise retained as diagnostics rather than being silently ignored.
+
+\subsubsection{Why regularization is omitted}
+
+Conventional logistic regression often introduces regularization by minimizing
+an objective of the general form
+\[
+L(\beta)
++
+\lambda R(\beta),
+\]
+where \(L\) is the logistic loss and \(R\) penalizes the size or number of
+coefficients.
+
+Regularization serves several purposes, including controlling overfitting,
+shrinking coefficients, and sometimes producing sparse models. However,
+introducing the regularization strength as an additional hyperparameter would
+partially duplicate the role that nescience is intended to play in the AutoML
+procedure.
+
+In the current implementation, complexity is controlled through the combined
+effect of:
+
+\begin{itemize}
+    \item the miscoding of the selected representation;
+    \item the inaccuracy of the resulting predictions; and
+    \item the surfeit of the serialized prediction rule.
+\end{itemize}
+
+The search therefore allows nescience itself to determine whether additional
+features and coefficients provide enough useful explanatory information to
+justify the increased description.
+
+This should not be interpreted as a general claim that regularization is
+unnecessary for logistic regression. It is a deliberate design choice of the
+nescience-based AutoML search: the objective is to study model selection under
+the information-theoretic criteria of the theory rather than to combine those
+criteria with a second, independent complexity penalty.
+
+\subsubsection{Role of nescience}
+
+Logistic regression illustrates how the different components of nescience can
+cooperate during model search.
+
+First, \emph{miscoding} determines the order in which attributes enter the
+model. Features expected to provide useful information about the target are
+considered first, while attributes contributing mostly surplus information are
+postponed.
+
+Second, \emph{inaccuracy} evaluates the class predictions generated by each
+candidate model. A representation containing too few relevant attributes may
+not permit a suitable linear decision boundary and therefore produces high
+inaccuracy.
+
+Third, \emph{surfeit} measures the redundancy of the canonical model
+description. Adding features introduces additional coefficients and arithmetic
+terms into the linear scores. In multiclass problems, a feature may contribute
+one coefficient to each class score, so additional features can increase the
+description substantially.
+
+The combination of inaccuracy and surfeit produces mismodel, while miscoding
+captures the quality of the representation itself. Nescience finally balances
+these two dimensions:
+\[
+\operatorname{Nescience}(M_k)
+=
+\operatorname{Nescience}
+\left(
+\operatorname{Miscoding}(S_k),
+\operatorname{Mismodel}(M_k)
+\right).
+\]
+
+The selected logistic-regression candidate is therefore
+\[
+k^\star
+=
+\operatorname*{arg\,min}_k
+\operatorname{Nescience}(M_k).
+\]
+
+The search can be summarized as
+\[
+\begin{array}{c}
+\text{rank attributes using miscoding}
+\\[2mm]
+\downarrow
+\\[2mm]
+S_1,S_2,\ldots,S_p
+\\[2mm]
+\downarrow
+\\[2mm]
+\text{fit an unregularized logistic model for each }S_k
+\\[2mm]
+\downarrow
+\\[2mm]
+\text{serialize its explicit classification rule}
+\\[2mm]
+\downarrow
+\\[2mm]
+\text{compute miscoding, inaccuracy, surfeit, and nescience}
+\\[2mm]
+\downarrow
+\\[2mm]
+\underset{k}{\operatorname{arg\,min}}\;
+\operatorname{Nescience}(M_k).
+\end{array}
+\]
+
+As with linear regression, feature selection is therefore not treated as an
+independent preprocessing operation. The representation and the resulting
+model are evaluated jointly.
+
+\subsubsection{Interpretation}
+
+The logistic-regression family also illustrates an important principle of
+model serialization in \texttt{mnplib}. The canonical description should
+contain the computation required to generate the representation being
+evaluated, rather than every mathematical operation appearing in the
+statistical formulation of the estimator.
+
+The sigmoid and softmax functions are essential for interpreting logistic
+regression probabilistically and for fitting the estimator. They are not,
+however, required to reproduce its final class prediction. Removing them from
+the serialized description is therefore not an approximation of the prediction
+rule. It is a reduction of the description to the computation relevant to the
+effective representation.
+
+This distinction allows the canonical language to remain small while still
+representing logistic-regression classifiers exactly. It also ensures that
+surfeit is computed from the predictive structure of the model rather than from
+operations that are irrelevant to the output being evaluated.

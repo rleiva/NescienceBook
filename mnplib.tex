@@ -1542,6 +1542,589 @@ In a typical run, both searches yield strong generalization. Notably, the nescie
 
 \end{example}
 
+
+
+
+
+
+
+
+%
+% Section: Model Serialization
+%
+
+\section{Model Serialization}
+\label{sec:mnplib_model_serialization}
+
+\index{Model serialization}
+\index{Canonical description}
+\index{Abstract syntax tree}
+\index{Model-description language}
+
+The practical computation of surfeit requires an explicit representation of
+the model being evaluated. Machine-learning libraries, however, normally store
+trained models as complex programming-language objects containing parameters,
+metadata, caches, and implementation-specific state. The string returned by
+\texttt{repr(model)} or \texttt{str(model)} is therefore not an adequate
+description for the purposes of nescience. It may omit learned parameters,
+include irrelevant implementation details, or change between versions of the
+underlying library.
+
+To address this problem, \texttt{mnplib} translates every supported model into
+a small executable description language. The resulting description specifies
+only the computation required to produce the model predictions. Training
+metadata, implementation details, and presentation information are deliberately
+excluded.
+
+The serialization process follows four stages:
+\[
+M
+\;\xrightarrow{\;S\;}\;
+A_M
+\;\xrightarrow{\;N\;}\;
+\overline{A}_M
+\;\xrightarrow{\;R\;}\;
+d_M,
+\]
+where \(M\) is a fitted model, \(S\) is a model-specific serializer, \(A_M\)
+is an abstract syntax tree, \(N\) is a normalization procedure,
+\(\overline{A}_M\) is the canonical abstract syntax tree, \(R\) is the
+canonical renderer, and \(d_M\) is the resulting model description.
+
+The same canonical abstract syntax tree can also be exported as a structured
+JSON-compatible object. This representation is intended for applications such
+as Cajal, which may render the model using mathematical notation, diagrams,
+rule lists, or natural language. The graphical presentation is not part of
+\texttt{mnplib}: the library provides the computational meaning of the model,
+whereas the user interface determines how that meaning is displayed.
+
+\subsection{A Restricted Description Language}
+
+The model-description language is a deliberately small subset of Python
+expressions. It supports numeric constants, feature references, arithmetic
+operations, comparisons, conditional expressions, string literals, and a small
+collection of explicitly authorized mathematical functions. It does not support
+assignments, loops, imports, mutable state, arbitrary function calls, or access
+to Python objects.
+
+The restricted language has three purposes. First, it provides a common
+description format for models originating from different machine-learning
+families. Second, it ensures that every description can be executed
+mechanically. Third, it reduces the influence of arbitrary implementation and
+formatting choices on the estimation of surfeit.
+
+The following grammar is used by the current implementation. It is expressed
+using the syntax of the \texttt{Lark} parsing library.
+
+\begin{verbatim}
+?start: expression
+
+?expression: conditional
+
+?conditional: comparison
+            | comparison "if" comparison "else" conditional
+
+?comparison: sum
+           | sum COMPARATOR sum
+
+?sum: product
+    | sum "+" product       -> add
+    | sum "-" product       -> subtract
+
+?product: factor
+        | product "*" factor -> multiply
+        | product "/" factor -> divide
+
+?factor: "-" factor         -> negate
+       | power
+
+?power: atom
+      | atom "**" factor    -> power
+
+?atom: NUMBER
+     | FEATURE
+     | STRING
+     | function_call
+     | "(" expression ")"
+
+function_call: FUNCTION "(" expression ")"
+
+COMPARATOR: "<=" | "<" | ">=" | ">" | "=="
+
+FUNCTION: "abs"
+        | "sqrt"
+        | "exp"
+        | "log"
+        | "sin"
+        | "cos"
+
+FEATURE: /x(?:0|[1-9][0-9]*)/
+
+NUMBER: /(?:0\.00e\+00|[1-9]\.[0-9]{2}e[+-][0-9]{2,})/
+
+STRING: ESCAPED_STRING
+
+%import common.ESCAPED_STRING
+%import common.WS_INLINE
+%ignore WS_INLINE
+\end{verbatim}
+
+Feature variables are represented by the symbols
+\[
+x_0,x_1,x_2,\ldots.
+\]
+Human-readable column names are retained as metadata, but they are not included
+in the canonical description. This prevents changes in column labels from
+changing the measured model description.
+
+Conditional expressions use the Python form
+\[
+e_1\ \texttt{if}\ c\ \texttt{else}\ e_2,
+\]
+where \(c\) is a comparison and \(e_1\) and \(e_2\) are the expressions
+evaluated when the comparison is true and false, respectively. Nested
+conditional expressions are sufficient to represent binary decision trees.
+
+For example, the description
+\begin{verbatim}
+0.00e+00 if x2<=2.45e+00 else
+1.00e+00 if x3<=1.75e+00 else 2.00e+00
+\end{verbatim}
+represents a classification tree with three possible class codes. The mapping
+from these codes to the original class labels is stored in the model metadata.
+
+A linear regression model may be represented as
+\begin{verbatim}
+2.50e+00*x0-7.50e-01*x2+1.00e+00
+\end{verbatim}
+which denotes
+\[
+\widehat{y}
+=
+2.50x_0-0.75x_2+1.
+\]
+
+Only model families whose prediction procedure can be expressed in the
+restricted language are supported. A serializer must not produce an
+approximate informal summary of a model and present it as an executable
+description. If a model requires an operation not defined by the language, the
+language must be extended explicitly or the model must be reported as
+unsupported.
+
+\subsection{Abstract Syntax Tree}
+
+\index{Abstract syntax tree}
+
+The textual description is not constructed directly by concatenating strings.
+Each model-specific serializer first produces an abstract syntax tree, or AST.
+The tree consists of immutable Python data classes representing the semantic
+operations performed by the model.
+
+The principal node types are:
+
+\begin{itemize}
+    \item \texttt{Constant}, representing a numeric constant;
+    \item \texttt{StringConstant}, representing a categorical value;
+    \item \texttt{Feature}, representing an input feature;
+    \item \texttt{Negate}, representing unary negation;
+    \item \texttt{Add}, \texttt{Subtract}, \texttt{Multiply},
+          \texttt{Divide}, and \texttt{Power}, representing arithmetic
+          operations;
+    \item \texttt{Less}, \texttt{LessEqual}, \texttt{Greater},
+          \texttt{GreaterEqual}, and \texttt{Equal}, representing comparisons;
+    \item \texttt{Conditional}, representing a conditional expression; and
+    \item \texttt{Function}, representing a call to one of the mathematical
+          functions explicitly authorized by the language.
+\end{itemize}
+
+For example, the expression
+\[
+2.5x_0+1
+\]
+is represented conceptually by
+\[
+\operatorname{Add}\left(
+    \operatorname{Multiply}\left(
+        \operatorname{Constant}(2.5),
+        \operatorname{Feature}(0)
+    \right),
+    \operatorname{Constant}(1)
+\right).
+\]
+
+The AST is independent of scikit-learn and of any particular model class.
+Model-specific serializers are responsible only for translating the
+computation implemented by a trained estimator into these semantic nodes.
+They do not determine whitespace, parentheses, constant formatting, or other
+textual conventions.
+
+This separation ensures that linear models, decision trees, ensembles, and
+other supported estimators use the same language and the same rendering rules.
+
+\subsection{Canonical Representation of Constants}
+
+\index{Numeric constants}
+\index{Scientific notation}
+
+Every numeric constant is rendered using normalized scientific notation. The
+canonical form is
+\[
+s\,d.dd\,\texttt{e}\,e_see,
+\]
+where \(s\) is an optional negative sign, \(d.dd\) contains one digit before
+the decimal point and exactly two digits after it, \(e_s\) is the explicit sign
+of the exponent, and the exponent contains at least two digits.
+
+Examples include:
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+Value & Canonical representation \\
+\hline
+\(1\)       & \texttt{1.00e+00} \\
+\(2.5\)     & \texttt{2.50e+00} \\
+\(49.7\)    & \texttt{4.97e+01} \\
+\(0.497\)   & \texttt{4.97e-01} \\
+\(0.00497\) & \texttt{4.97e-03} \\
+\(-49.7\)   & \texttt{-4.97e+01} \\
+\(0\)       & \texttt{0.00e+00} \\
+\hline
+\end{tabular}
+\end{center}
+
+Negative zero is always normalized to \texttt{0.00e+00}. Exponents with an
+absolute value greater than \(99\) retain all their digits; the two-digit
+requirement is a minimum rather than a maximum. Thus \(10^{100}\) is rendered
+as \texttt{1.00e+100}.
+
+This notation is not intended to imply that the written numeral is the shortest
+possible description of the corresponding number. In the theoretical framework,
+a constant would be described by a program that produces it. Finding the
+shortest such program is another instance of the non-computability of
+Kolmogorov complexity.
+
+The practical model language instead defines a fixed effective description
+machine. Within this machine, a numeric literal is an instruction that produces
+the corresponding constant. Uniform scientific notation prevents a number from
+receiving an accidental advantage merely because it has an unusually short
+representation in decimal notation.
+
+The simplicity of constants such as zero and one is captured structurally. For
+example, the normalization rules remove multiplicative and additive identities:
+\[
+1x\longrightarrow x,
+\qquad
+x+0\longrightarrow x.
+\]
+Consequently, a coefficient equal to one can make a model description shorter
+because it is algebraically unnecessary, not because the character string
+\texttt{1} happens to be short.
+
+The use of exactly two decimal places in the coefficient quantizes constants to
+three significant digits. The quantized value becomes part of the canonical AST:
+the library does not display a rounded constant while secretly executing a
+higher-precision value. The AST, canonical string, parser, interpreter, and
+JSON representation therefore agree on the same value.
+
+Serialization fidelity is checked by comparing the predictions generated by
+the canonical description with the predictions of the source estimator. For
+regression, a documented numerical tolerance is used. For classification,
+predicted classes must normally agree exactly. If a model cannot be represented
+with the required fidelity, its serializer must report this limitation rather
+than silently generating an inaccurate description.
+
+\subsection{Normalization}
+
+Before rendering, the AST is passed through a small normalization procedure.
+Its purpose is to eliminate obvious syntactic redundancy introduced by
+model-specific serializers. It is not intended to be a symbolic algebra
+system.
+
+The current normalization rules include:
+\[
+\begin{aligned}
+1e &\longrightarrow e,
+&
+e1 &\longrightarrow e,
+\\
+0e &\longrightarrow 0,
+&
+e0 &\longrightarrow 0,
+\\
+e+0 &\longrightarrow e,
+&
+0+e &\longrightarrow e,
+\\
+e-0 &\longrightarrow e,
+&
+-(-e) &\longrightarrow e.
+\end{aligned}
+\]
+
+Here juxtaposition denotes multiplication. The rules are applied recursively
+to the children of each node and then locally to the resulting parent node.
+
+The normalizer does not perform polynomial expansion, factorization,
+common-subexpression elimination, associative regrouping, or general
+expression-equivalence analysis. In particular, it does not reorder
+floating-point additions or multiplications. Deterministic ordering is instead
+the responsibility of each serializer when it constructs the AST. For example,
+a linear-model serializer emits terms in increasing feature-index order.
+
+The normalization rules assume finite feature values. This is consistent with
+the input validation applied by the library before model evaluation. Algebraic
+transformations such as \(0e\rightarrow0\) would not preserve the propagation
+of special floating-point values such as \texttt{NaN}; such values therefore
+fall outside the normal domain of the canonical model language.
+
+Normalization is idempotent:
+\[
+N(N(A))=N(A).
+\]
+This property ensures that repeatedly serializing an already canonical model
+does not continue to change its description.
+
+\subsection{Canonical Rendering and Parsing}
+
+The canonical renderer converts the normalized AST into the unique textual
+description accepted by the grammar. It uses no optional whitespace except
+where required to separate the keywords \texttt{if} and \texttt{else}.
+Parentheses are introduced only when required by operator precedence or by the
+association of nested conditional expressions.
+
+The renderer is deterministic:
+\[
+\overline{A}_1=\overline{A}_2
+\quad\Longrightarrow\quad
+R(\overline{A}_1)=R(\overline{A}_2).
+\]
+
+The inverse operation is implemented by a parser generated from the Lark
+grammar. The parser converts a valid textual description back into an AST.
+After normalization, rendering and parsing satisfy the round-trip property
+\[
+N\!\left(P\!\left(R(\overline{A})\right)\right)=\overline{A},
+\]
+where \(P\) denotes the parser.
+
+Equivalently, every canonical description satisfies
+\[
+R\!\left(
+N\!\left(P(d)\right)
+\right)=d.
+\]
+
+These properties are tested for every supported model serializer. They make
+the model language a genuine serialization format rather than a one-way
+pretty-printer.
+
+\subsection{Execution}
+
+\index{Executable description}
+
+Canonical descriptions are executable. Execution is performed directly over
+the AST by a restricted interpreter:
+\[
+E(\overline{A}_M,X)=\widehat{Y}_M,
+\]
+where \(X\) is the feature matrix and \(\widehat{Y}_M\) is the prediction
+vector produced by the serialized model.
+
+The interpreter evaluates feature nodes as columns of \(X\), applies arithmetic
+operations recursively, and evaluates conditional nodes using their comparison
+and branch expressions. Where possible, operations are vectorized using NumPy.
+
+The library does not execute canonical descriptions through unrestricted
+Python \texttt{eval} or \texttt{exec}. Only AST nodes and mathematical
+functions explicitly defined by the language can be evaluated. This restriction
+ensures that a model description cannot import modules, access arbitrary
+objects, read files, or execute unrelated code.
+
+For every supported serializer, mnplib checks the fidelity condition
+\[
+E(\overline{A}_M,X)\simeq M(X),
+\]
+where \(M(X)\) denotes the predictions produced by the source estimator. The
+symbol \(\simeq\) denotes numerical agreement within the declared tolerance
+for regression, and exact equality of predicted classes for classification.
+
+The prediction vector used by the nescience metrics is generated from the
+canonical AST. This ensures that inaccuracy and surfeit refer to the same
+description. The source estimator is used to construct the AST and to verify
+serialization fidelity, but no hidden model behavior is used during the
+subsequent evaluation.
+
+\subsection{Model Descriptions and Model Artifacts}
+
+The library distinguishes the semantic description of a model from the
+artifacts required to evaluate it.
+
+A \texttt{ModelDescription} contains:
+
+\begin{itemize}
+    \item the canonical model type;
+    \item the normalized AST;
+    \item the canonical model string;
+    \item the indices and names of the features used by the model; and
+    \item computational metadata, such as the depth and number of leaves of a
+          decision tree.
+\end{itemize}
+
+A \texttt{ModelArtifacts} object additionally contains the information required
+by the nescience metrics:
+
+\begin{itemize}
+    \item the effective feature subset;
+    \item the predictions produced by the canonical description; and
+    \item the canonical model string.
+\end{itemize}
+
+The three quantities correspond to the practical components of nescience.
+The feature subset is evaluated by \texttt{Miscoding}; the predictions are
+evaluated by \texttt{Inaccuracy}; and the canonical model string is evaluated
+by \texttt{Surfeit}.
+
+Presentation information is not included. Colors, fonts, layout coordinates,
+expanded or collapsed branches, and other graphical properties do not belong
+to the computational model and must not influence its surfeit.
+
+\subsection{JSON-Compatible Representation}
+
+\index{JSON model representation}
+
+The normalized AST can be exported as a versioned JSON-compatible structure.
+For example, part of a decision-tree description may be exported as follows:
+
+\begin{verbatim}
+{
+  "schema": "mnplib-model",
+  "schema_version": 1,
+  "model_type": "decision_tree_classifier",
+  "ast": {
+    "type": "conditional",
+    "condition": {
+      "type": "less_equal",
+      "left": {
+        "type": "feature",
+        "index": 2,
+        "name": "petal length (cm)"
+      },
+      "right": {
+        "type": "constant",
+        "value": 2.45,
+        "canonical": "2.45e+00"
+      }
+    },
+    "if_true": {
+      "type": "constant",
+      "value": 0.0,
+      "canonical": "0.00e+00"
+    },
+    "if_false": {
+      "type": "constant",
+      "value": 1.0,
+      "canonical": "1.00e+00"
+    }
+  },
+  "metadata": {
+    "depth": 1,
+    "n_nodes": 3,
+    "n_leaves": 2,
+    "features_used": [2]
+  }
+}
+\end{verbatim}
+
+The external representation contains only JSON-compatible values and does not
+expose internal Python class names or module paths. Its schema is versioned so
+that applications can detect incompatible changes.
+
+A graphical application such as Cajal consumes this semantic representation
+rather than parsing the canonical string or inspecting the original
+scikit-learn estimator. Cajal may then present the same model as a mathematical
+formula, a tree diagram, a rule list, or a natural-language explanation.
+
+The pretty-printed representation produced by the user interface is not used
+to compute surfeit. Otherwise, changes in typography or layout would change the
+measured nescience of an otherwise identical model. Surfeit is always computed
+from the canonical computational description generated by mnplib.
+
+\subsection{Relation to Theoretical Descriptions}
+
+The restricted model language provides a computable approximation to the set
+of descriptions introduced in the theoretical part of this book. The language
+and its interpreter jointly define a reference description machine
+\[
+\Gamma_{\mathrm{mnplib}}.
+\]
+For a canonical program \(d_M\) and feature representation \(X\),
+\[
+\Gamma_{\mathrm{mnplib}}(d_M,X)
+=
+E(P(d_M),X)
+=
+\widehat{Y}_M.
+\]
+
+The canonical description is therefore not an informal summary of the model:
+it is an effective procedure for producing its predictions.
+
+The library does not claim that \(d_M\) is the shortest possible description of
+the model or its output. Finding such a description would require solving a
+non-computable minimization problem. Instead, mnplib fixes a small reference
+language, uses one deterministic serializer for each supported model family,
+and applies the same rules to all candidate models.
+
+Consequently, model-description length and surfeit must be interpreted relative
+to:
+
+\begin{itemize}
+    \item the version of the model-description language;
+    \item the available AST node types;
+    \item the constant-quantization policy;
+    \item the normalization rules; and
+    \item the canonical renderer.
+\end{itemize}
+
+This dependence is unavoidable in any computable approximation of
+Kolmogorov complexity. What is required for meaningful comparison is not an
+encoding-free description, but a fixed, general, deterministic, and
+model-independent description system.
+
+\subsection{Limitations}
+
+The serialization process introduces several practical limitations.
+
+First, only model families whose prediction procedure can be represented in the
+restricted language can be serialized. Supporting a new model family may
+require a new serializer or, in some cases, a carefully delimited extension of
+the grammar.
+
+Second, numeric constants are quantized. This may cause the serialized model to
+differ slightly from the original estimator. The library therefore validates
+serialization fidelity and exposes the resulting discrepancy rather than
+assuming perfect equivalence.
+
+Third, the canonical representation is not a proof of minimality. A different
+description language may provide a shorter valid description of the same
+computation. The purpose of the canonical language is to make comparisons
+reproducible and operational, not to compute exact Kolmogorov complexity.
+
+Finally, the textual description should not be confused with its visual
+presentation. mnplib is responsible for constructing, validating, executing,
+and measuring model descriptions. External applications remain free to present
+the same semantic AST in whatever form is most suitable for their users.
+
+
+
+
+
+
+
+
+
+
 %
 % Section: Auto Classification
 %
@@ -1942,328 +2525,6 @@ plt.show()
 
 The analysis suggests that six of the houses have abnormally low prices because they are located in areas with high pollution levels. We can repeat the same analysis with the other attributes; however, their higher inertia indicates that class separation will be less evident. Note that there may be multiple reasons why a house's price is abnormally low. 
 
-%
-% Section: Decision Trees
-%
-
-\section{Decision Trees}
-\label{sec:decision_trees}
-
-In the last sections we have seen how to use the concepts of miscoding, inaccuracy, surfeit and nescience to evaluate the quality of datasets and models, and to automatically select a family of models and search over its hyperparameters to find the best possible description of a topic. In particular, we have studied in detail the family of binary decision trees. The procedure used in the \texttt{fastautoml} library with trees was a mix between a classical approach (a CART algorithm combined with a cost-complexity pruning), and an evaluation of candidate trees using the minimum nescience principle. In this section we are going to see a new algorithm to derive optimal trees, both for classification and regression problems, that is entirely based on the theory of nescience. The new algorithm, by design, avoids the overfitting of the training dataset without losing accuracy, it does not require the optimization of hyperparameters, thus significantly reducing the training time, and it produces much smaller and more shallow trees than traditional algorithms, facilitating the interpretability of the results.
-
-\subsection{Algorithm Description}
-\label{sub:tree_algorithm_description}
-
-The following pseudocode shows the proposed algorithm to build a decision tree given a training dataset $(\mathbf{X}, \mathbf{y})$. The procedure is based on a breadth first traversal of trees combined with a greedy approach. It requires a function called \textsc{bestSplit()} that returns the best split of a given subset of the data into two subsets; and a second function, called \textsc{Nescience()} that provides an estimation of the nescience of the current tree. The algorithm is based on two nested loops: the external \textbf{while} loop keeps a list of the candidate nodes to grow, whereas the internal \textbf{for} loop finds the best node to grow the tree. The latter operation requires to check all possible growing options and select the one that minimizes the nescience. The exit point of the algorithm is when there are no more branches to grow. We keep track of the best nescience achieved during the building process and return the associated tree.
-
-\begin{sourcecode}
-\label{algorithm:decision_tree}
-{\scriptsize \begin{verbatim}
-
-def BUILD_TREE(data)
-
-    nodesList <- list()
-    tree <- BESTSPLIT(data)
-    bestNescience <- NESCIENCE(tree)
-    nodesList.append(tree)
-
-    while not nodesList.empty()
-    
-        nescience <- bestNescience
-        bestNode <- None
-        childNode <- None
-        
-        for i <- 1, nodesList.length()
-
-            node <- nodesList[i]
-            
-            node.child <- BESTSPLIT(node.ldata)
-            tmp <- NESCIENCE(tree)
-            if tmp < nescience
-                nescience <- tmp
-                bestNode <- i
-                
-            node.left <- None
-
-        if nescience < bestNescience
-            node <- nodeList[bestNode]
-            bestNescience <- nescience
-            nodesList.append(node.left)
-                        
-            if not node.left.empty() and not node.right.empty()
-                nodesList.remove(bestNode)
-    
-    return tree
-\end{verbatim}}
-\end{sourcecode}
-
-The main difference of our algorithm from other decision tree building algorithms is in the way the tree is evaluated. Instead of using only accuracy as most of the algorithms do, in addition, we take into account the complexity of the tree (surfeit) to avoid overfitting, and the quality of the subset of data used during the training process (miscoding).
-
-\subsubsection*{Nescience}
-\label{sub:tree_nescience}
-
-The calculation of the nescience implemented in the algorithm is based on a Euclidean distance utility function (see Section \ref{sec:machine_learning_nescience}), because that one was the one that produced the best results in the tests we have performed. For the computation of miscoding and inaccuracy, we use the same techniques that the one used in the \texttt{fastautoml} library, described in Section \ref{sec:machine_learning_miscoding} and Section \ref{sec:machine_learning_inaccuracy} respectively. For the implementation of surfeit, we use the same template to describe trees that was used in the \texttt{DecisionTreeClassifier} of the \texttt{AutoClassifier} class, and that was described in Section \ref{subsec:surfeit_decision_trees}. The only difference is that we also allow equalities in the nodes (\texttt{if [attr] = [thresh]}), something not supported by the \texttt{DecisionTreeClassifier} algorithm of the \texttt{scikit-learn} library.
-
-The generic problem of the instability of inaccuracy due to very short models, also applies to this algorithm (see Section \ref{sec:machine_learning_surfeit}), and the particular problem of the algorithms to build decision trees, in which the best local split might not be that one that minimizes the error (see Section \ref{sec:sec:machine_learning_classification}) is also relevant in this case.
-
-The concept of nescience is used in two different ways in our algorithm. For every iteration of the \texttt{for} loop we have to decide which one of the candidate branches of the tree we should develop. Recall that the order in which we develop the branches is important, since it might happens that one branch does not get develped because that would mean increase the sufeit without a sufficiently large decrease of the inaccuracy. The second place is a the end of the \texttt{while} loop, we we keep trac of the nescience of the different building steps, to decide at the end of the algorithm with wich tree we return.
-
-We treat regression problems as classification problems in which we discretizes the continuous target variable $\mathbf{y}$ into $n$ intervals given the number of samples, and using a uniform discretization (see Section \label{sec:codes_continuous_data}). Once the target variable has been discretized, we train a regular classification tree.
-
-\subsubsection*{Splitting Criteria}
-\label{sub:tree_splitting_criteria}
-
-Given a subset $\mathbf{Q} \subseteq \mathbf{X}$ we have to find an split for $\mathbf{Q}$ such that the values of $\textbf{y}$ are grouped together. Recall that a split is a pair $\theta = (j,w)$, were $1 \leq j \leq p$ is a feature index and $w$ is the partition point (see Section \ref{subsec:learning_decision_trees}). A split divides the set $\mathbf{Q}$ into two disjoint subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r = \mathbf{Q} \backslash \mathbf{Q}_l$. In case of a continuous variable we have that $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} \leq w\}$, and if the feature is categorical we define $\mathbf{Q}_l = \{\mathbf{x}_i \in \mathbf{Q} : x_{ij} = w\}$\footnote{Ideally, for the categorical case, instead of a single feature $w$ we should search over all the elements of the power set of the set of features $\mathcal{P} \{1, 2, \ldots, p \}$. Unfortunately, that would imply to check $2^p$ cases, something that is time-expensive from the computational point of view.}.
-
-In Section \ref{subsec:learning_decision_trees} we saw that a common splitting criteria used in practice is to minimize the weighted entropy $\tilde{H}$ of the subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r$, that is, to find an split that it is minimal $\theta^\star = \argmin_\theta \tilde{H}(\mathbf{Q},\theta)$. More explicitly, if $\mathbf{y}$ is a target vector taking values from a set of $k$ labels $\mathcal{G} = \{g_1, \ldots, g_k \}$ (either because is a categorical target or a continuous target that has been discretized into $k$ intervals), and denoting the subsets of $\mathbf{y}$ as $\mathbf{y}^l = \{y_i : \mathbf{x}_i \in \mathbf{Q}_l \}$ and $\mathbf{y}^r = \{y_i : \mathbf{x}_i \in \mathbf{Q}_r \}$, and $n_l$ and $n_r$ are the number of elements of $\mathbf{y}^l$ and $\mathbf{y}^r$ respectively, we have that
-\begin{multline}
-\tilde{H}(\mathbf{Q},\theta) = \frac{n_l}{n} \left( - \sum_{i=1}^k \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} \log_2{ \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} } \right) \\
-+ \frac{n_r}{n} \left( - \sum_{i=1}^k \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} \log_2{ \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} } \right)
-\end{multline}
-
-In our nescience based decision tree algorithm, the splitting criteria is to minimize the total length of encoding the subsets $\mathbf{Q}_l$ and $\mathbf{Q}_r$ using optimal codes. We have to find the optimal split $ \theta^\star = \argmin_\theta \hat{K}_C(\mathbf{Q} \mid \theta) = \argmin_\theta \{ \hat{K}_{C_l}(\mathbf{Q}_l) + \hat{K}_{C_r}(\mathbf{Q}_r) \}$ where $C_l$ and $C_r$ are the optimal codes given the relative frequencies of the observed values of $\mathbf{y}^l$ and $\mathbf{y}^r$ respectively. The quantity $\hat{K}_C(\mathbf{Q} \mid \theta)$ is computed as:
-\begin{multline}
-\hat{K}_C(\mathbf{Q} \mid \theta) = \hat{K}_{C_l}(\mathbf{Q}_l) + \hat{K}_{C_r}(\mathbf{Q}_r) = \\
-- \sum_{i=1}^k \log_2{ \frac{ \sum_{j=1}^{n_l} I(y^l_j = g_i)} {n_l} } - \sum_{i=1}^k \log_2{ \frac{ \sum_{j=1}^{n_r} I(y^r_j = g_i)} {n_r} }
-\end{multline}
-I this particular case (if we use as compression algorithm a code with optimal lengths, and continuous variables have been discretized) it turns out that both expressions are equivalent given the following relation:
-\[
-\tilde{H}(\mathbf{Q},\theta) = \frac{1}{n} \hat{K}_C(\mathbf{Q} \mid \theta)
-\]
-We prefer to talk of encoding length instead of weighted entropy because it has an easier interpretation in the context of the theory of nescience.
-
-\begin{remark}
-Strictly speaking, if we want to implement a decision trees search algorithm fully compliant with the minimum nescience principle, instead of using a total length encoding as splitting criteria, we should had computed the nescience at each split and select that one that makes it minimal. However, early experiments have shown that at local level it works better to group the values of $y$ than to reduce the nescience. Further research is required to confirm and explain this point.
-\end{remark}
-
-\subsubsection*{Practical Implementation}
-
-In the web page that accompanies this book\footnote{http://www.mathematicsunknown.com} we provide an open-source implementation of our algorithm in Python. Our software can be used together with other machine learning tools from the \texttt{scikit-learn} library, since we adhere to the their API guidelines. For example, our algorithm can be used as part of an ensemble of classifiers, like the \texttt{BaggingClassifier} meta-estimator, or the results of the classification could be cross-validated with tools like \texttt{cross\_val\_score}. As an example, to provide a model for the breast cancer dataset, we could do something like the following:
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from NescienceDecisionTree import NescienceDecisionTreeClassifier
-from sklearn.datasets import load_breast_cancer
-
-data = load_breast_cancer()
-
-model = NescienceDecisionTreeClassifier()
-model.fit(data.data, data.target)
-print("Score: ", model.score(data.data, data.target))
-\end{verbatim}}
-\end{sourcecode}
-
-\subsection{Algorithm Evaluation}
-\label{sub:algorithm_evaluation}
-
-In this section we are going to evaluate our new algorithm, and compare its performance against the well-known algorithm CART. CART, \emph{Classification and Regression Trees}, is the de-facto standard algorithm used in the machine learning industry for the derivation of decision trees. For this particular experiment we have used the CART implementation provided by \texttt{scikit-learn}.
-
-Figure \ref{figure:data_error_cart} shows a synthetic dataset consisting of $1000$ random points lying on a two dimensional plane, where all the points with an $X1$ attribute less than $50$ are colored blue, and the rest as red. We have artificially introduced a red point, simulating a measurement error, in the blue area. The black lines correspond to the decisions performed by CART. Since the CART algorithm will not stop until all the points have been properly classified, we have to specify an expected count condition to limit the number of splits. The figure correspond to the tree generated by CART setting the \texttt{min\_samples\_leaf} hyperparameter to $5$.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{data_error_cart.jpg}
-\caption{Synthetic dataset with CART algorithm splits.}
-\label{figure:data_error_cart}
-\end{figure}
-
-The tree obtained by applying our algorithm to the dataset of Figigure \ref{figure:data_error_cart} can be seen in Figure \ref{figure:data_error_nes}. The nescience based algorithm does not try to model the error point, since the gain due to an increment in the accuracy does not compensate the surfeit introduced in the model. Recall that the algorithm stops when the total nescience of the tree, based on the measures of miscoding, inaccuracy and surfeit, does not decrease when adding new nodes to the tree. Our algorithm presents a lower sensitivity to the errors found in datasets, at least if the number of errors is small compared with the number of valid points.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.4\textwidth]{small_error.jpg}
-\caption{Decision tree obtained by the nescience algorithm.}
-\label{figure:data_error_nes}
-\end{figure}
-
-Our second experiment, again with synthetic dataset, is depicted in Figure \ref{figure:blobs}. There, we create two isotropic Gaussian blobs that partially overlap. We start with a standard deviation of $2.5$ for each cluster, so they are easy to separate, and we increase the standard deviation in increments of $0.01$, until we reach $4.5$, which causes significant overlaps. For each value of the standard deviation, we run the experiment $100$ times and we compute the average accuracy for the two algorithms using different datasets for training (70\% of the data) and testing (30\% of the data). The results of this experiment are shown in Figure \ref{figure:accuracy_blobs}.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{blobs.png}
-\caption{Isotropic Gaussian Blobs.}
-\label{figure:blobs}
-\end{figure}
-
-As we can see, the performance of both algorithms, in terms of accuracy, is similar. However we should note that the hyperparameter \texttt{minimum\_leaf\_size} of the CART algorithm has been optimized to achieve the best accuracy. For this particular experiment, the best value was achieved with a minimum leaf size of 26 points. By definition, given the fact that CART has one degree of freedom more than the nescicence algorithm, it should produce better accuracy; something that it is not observed (both algorithms have a mean accuracy of $0.87$.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{accuracy_blobs.png}
-\caption{Accuracy of Isotropic Gaussian Blobs.}
-\label{figure:accuracy_blobs}
-\end{figure}
-
-For each iteration of the experiment, we have also computed the average number of nodes, including internal and leaf nodes, required by the models to properly classify the clouds in the dataset. The results of this measurement are show in Figure \ref{figure:length_nodes}. Our algorithm requires an average of $4$ nodes compared to $23$ nodes for the CART algorithm. Moreover, our algorithm is more stable than CART, in the sense that it produces models of similar complexity when it gets similar input datasets (a standard deviation of $0.31$ compared to $3.77$ for CART).
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{nodes_blobs.png}
-\caption{Number of Nodes.}
-\label{figure:length_nodes}
-\end{figure}
-
-In Figure \ref{figure:blob_max_depth} we show the maximum depth of the tree, defined as the longest path from the root of the tree to any of its leaves. The maximum depth of the tree is a good measure of the average time it will require for the model to provide a classification. The nescience algorithm has an average depth of $1.6$ nodes, whereas the average depth yielded by the CART algorithm is $4.8$ nodes.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{max_depth.png}
-\caption{Maximum depth of the model.}
-\label{figure:blob_max_depth}
-\end{figure}
-
-The last part of the evaluation consists in comparing the performance of our algorithm and CART with a collection real datasets. More specifically, we have selected $12$ well known datasets from the UCI Machine Learning Repository. The selected datasets are: diagnosis of breast cancer (\texttt{cancer}), optical recognition of handwritten digits (\texttt{digits}), predicting protein localization sites in gram-negative bacteria (\texttt{yeast}), classification of NASA space shuttle data (\texttt{shuttle}), classification of blocks in web pages (\texttt{page}), segmentation of outdoor images (\texttt{image}), predicting the age of abalones from physical measurements (\texttt{abalone}), predicting the quality of red and white variants of Portuguese wine (\texttt{wine}), filter spam emails (\texttt{spam}), wall-following robot navigation (\texttt{wall}), classification of land use based on Landsat satellite images (\texttt{landsat}), and distinguishing signals from background noise in the MAGIC gamma telescope images (\texttt{magic}). For each dataset, we have repeated the experiment 100 times, by randomly selecting the training (70\%) and testing (30\%) subsets at each iteration.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{cart_nescience_accuracy.png}
-\caption{Maximum depth of the model.}
-\label{figure:cart_nescience_accuracy}
-\end{figure}
-
-In Figure \ref{figure:cart_nescience_accuracy} we compare the accuracy of the resulting models obtained by applying the CART algorithm and the nescience algorithm to the above datasets. In $4$ of the $12$ datasets, our algorithm provides better accuracy than CART. In the remaining $8$ cases, the accuracy is, on average, less than $1\%$ smaller.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{cart_nescience_nodes.png}
-\caption{Maximum depth of the model.}
-\label{figure:cart_nescience_nodes}
-\end{figure}
-
-In Figure \ref{figure:cart_nescience_nodes} it is shown a comparison of the total number nodes (internal nodes plus leaf nodes) of the resulting models. Only for one of the datasets (\texttt{digits}), our model produces a slightly more complex tree that those generated by CART. In the rest of the cases, the number of nodes in the trees generated by the nescience algorithm have between two and three orders of magnitude fewer nodes (in this figure the $y$ axis is in logarithmic scale).
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{cart_nescience_depth.png}
-\caption{Maximum depth of the model.}
-\label{figure:cart_nescience_depth}
-\end{figure}
-
-Finally, in Figure \ref{figure:cart_nescience_depth} we provide a comparison of the depth of the tree of the resulting models. Our algorithm always yields a shallower tree than the CART algorithm.
-
-We would like to mention that the nescience algorithm is hihgly robust with respect to the compressor selected or the nescience function implemented. In Table \ref{table:nescience_functions}, we have apply the nescience algorithm to the datasets described above, and evaluate different alternatives for the definition of the nescience function $N (X , M )$: arithmetic mean
-\[
-N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D))/3,
-\]
-geometric mean
-\[
-N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3,
-\]
-harmonic mean 
-\[
-N (X , M ) = 3 / (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) -1 ),
-\]
-Euclidean distance
-\[
-N (X , M ) = (\mu(M , D) + \iota(X , M ) + \sigma(M, D)) 1/3,
-\]
-sum
-\[
-N (X , M ) = \mu(M , D) + \iota(X , M ) + \sigma(M, D),
-\]
-and product
-\[
-\mu(M , D) + \iota(X , M ) + \sigma(M, D).
-\]
-The table shows limited difference between the different functions. 
-
-\begin{table}[h]
-\label{table:nescience_functions}
-\centering
-\begin{tabular}{l l l l l l l l}
-\toprule
- & \small{\textbf{Euclid}} & \small{\textbf{Arithm.}} & \small{\textbf{Geometric}} & \small{\textbf{Product}} & \small{\textbf{Addition}} & \small{\textbf{Harmonic}} \\
-\midrule
-Acc. & 0.758 & 0.784 & 0.803 & 0.803 & 0.784 & 0.81 \\
-Stdev. & 0.051 & 0.041 & 0.033 & 0.033 & 0.041 & 0.038 \\
-\bottomrule
-\end{tabular}
-\caption{Comparison of nescience functions}
-\end{table}
-
-Similarly, Table \ref{table:compressor} shows the performance of our algorithm when using the LZMA, zlib, and bz2 compressors. We observe that all of them yield similar performance. The above results suggest that the performance our algorithm is independent of the specific choice made for either implementation aspect.
-
-\begin{table}[h]
-\label{table:compressor}
-\centering
-\begin{tabular}{l l l l}
-\toprule
- & \textbf{bz2} & \textbf{lzma} & \textbf{zlib} \\
-\midrule
-Accuracy & 0.813 & 0.804 & 0.81 \\
-Stdev & 0.03 & 0.045 & 0.038 \\
-\bottomrule
-\end{tabular}
-\caption{Comparison of compressors}
-\end{table}
-
-We emphasize that the CART algorithm requires to optimize a configuration hyperparameter in order to obtain good results, whereas the algorithm proposed in this book does not require from this optimization.
-
-Shallower trees means faster forecasting times when the models used in production, since the number of \texttt{if-else} conditions to be evaluated is smaller. Moreover, smaller trees makes easier to interpret the results by human analysts. and much shorter training times, something very relevant in case of training ensembles of trees, like random forest or boosted trees (although the use of ensembles of models is highly discouraged by the theory of nescience, given their high surfeit).
-
-%
-% Section: Algebraic Model Selection
-%
-
-\section{Algebraic Model Selection}
-
-As it was the case for the definition of nescience based on the encyclopedic description of research topics, the nescience of structured datasets can be used to evaluate alternative descriptions of research topics (mathematical models), and to identify how far these descriptions are from an ideal perfect knowledge. This evaluation could be used to identify those topics which require further research. Moreover, the same methodology could be applied to collections of datasets to identify our current knowledge of research areas (collections of topics).
-
-If we combine the concept of nescience of a model, with our concepts of relevance and applicability of research topics, we could apply our methodology for the assisted discovery of interesting questions to collections of datasets; a very useful methodology now that big datasets are becoming widely available.
-
-In order to evaluate the methodology developed, we are going to apply it to a particular research topic: \emph{Multipath Wave Propagation and Fading}. The problem at hand is to understand the effect of a propagation environment on a radio signal, such as the one used by wireless devices. The signals reaching the receiving antenna could follow multiple paths, due to atmospheric reflection and refraction, and reflection from water and objects such as buildings. The effects of these multiple wave paths include constructive and destructive interference (fading), and phase shifting of the original signal, resulting a highly complex received signal (see Figure \ref{fig:Multipath-Signal-Propagation}).
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.5]{fading}
-\caption{\label{fig:Multipath-Signal-Propagation}Multipath Signal Propagation}
-\end{figure}
-
-In many circumstances, it is too complicated to describe all reflection, diffraction and scattering processes that determine the different paths the signal will follow. Rather, it is preferable to describe the probability (stochastic model) that the received signal attains a certain value. We are interested in to analyze how well these stochastic models (our current knowledge) are able to describe what happen in reality.
-
-The \emph{Rayleigh fading model} assumes that the magnitude of a signal will vary randomly, or fade, according to a Rayleigh distribution (the radial component of the sum of two uncorrelated Gaussian random variables). The Rayleigh probability density function of the power signal is given by:
-
-\[
-P_{\sigma}\left(x\right)=\frac{1}{\sigma}\exp\left[-\frac{x}{\sigma}\right]
-\]
-
-where $\sigma$ is the mean of the received signals. Rayleigh fading is viewed as a reasonable model for the effect of heavily built-up urban environments, when there is no dominant propagation along a line of sight between the transmitter and receiver.
-
-The Rice or \emph{Rician distribution} describes the power of the received signal when the target consists in many small scatterers of approximately equal strength, plus one dominant scatterer whose individual received signal equals all that of all the small scatterers combined (there is a dominant line of sight). The probability density function of the power of the received signal is given by:
-
-\[
-P(x)=\frac{1}{\bar{\sigma}}\left(1+a^{2}\right)\exp\left[-a^{2}-\frac{x}{\bar{\sigma}}\left(1+a^{2}\right)\right]I_{0}\left[2a\sqrt{\left(1+a^{2}\right)\frac{x}{\bar{\sigma}}}\right]
-\]
-
-
-where $\bar{\sigma}$ is the mean of the received signals, and it is equal to $\bar{\sigma}=\left(1+a^{2}\right)\bar{\sigma}_{R}$, being $a^{2}\bar{\sigma}_{R}$ the power of the dominant scatterer, and $I_{0}$ is the modified zeroth order Bessel function of the first kind.
-
-An experiment (see Figure \ref{fig:Experimental-Set-Up}) was set up to collect a real dataset to analyze. The experiment was run on a $135 m^2$ office full of obstacles (interacting objects). The transmitter was an Odroid C1 Linux computer with a Ralink RT5370 USB Wifi adapter. The receiver was a (fixed in space) Motorla Moto G mobile phone. Data was collected using the Kismet \footnote{https://www.kismetwireless.net/index.shtml} platform (an 802.11 layer2 wireless network detector, sniffer, and intrusion detection system), with some ad hoc, home made, software extensions, mostly for data aggregation. A total of 3,177 samples (power level measured in dBm) were collected during one hour experiment.
-
-\begin{figure}[h]
-\centering\includegraphics[scale=0.2]{experiment}
-\caption{\label{fig:Experimental-Set-Up}Experimental Set Up}
-\end{figure}
-
-Next table summarizes the results of applying the three considered models (uniform, Raylegh and Rice) and the optimal encoding using a Huffman code:
-
-\begin{table}[h]
-\centering
-\begin{tabular}{l l l}
-\toprule
-\textbf{Model} & \textbf{LDM} & \textbf{Nescience} \\
-\midrule
-Uniform & 17,351 & 1.30 \\
-Rayleigh & 13,229 & 0.75 \\
-Rice & 11,118 & 0.47 \\
-Huffman & 7,541 & - \\
-\bottomrule
-\end{tabular}
-\caption{Nescience of Models}
-\end{table}
-
-The uniform model, that is, assuming zero knowledge about the topic covered by the dataset, has a nescience of 1.30. This value is a kind of upper level for the nescience associated with that particular topic and dataset; any model with a higher nescience should be classified as zero knowledge model. If we introduce the knowledge that in a environment with multiple obstacles the signal propagation can be described as a Gaussian process (Rayleigh distribution), we are able to decrease our nescience to 0.75, that is, there were a 43\% improvement in our understanding of the topic. If we add the knowledge that there is usually a strongly dominant signal seen at the receiver caused by a line of sight between the antenna and the mobile phone (Rician distribution), the nescience decreases to 0.47, and so, we have achieved an additional 23\% gain in our understanding. Given that numbers we can conclude that the Rayleigh model increases our knowledge with respect to the uniform model, and that the Rice model does so with respect to Rayleigh. However, the nescience of this last model is 0.47. That means that there still patterns in the dataset that are not explained by the Rice model, or what it is equivalent according to our methodology, there is still some knowledge to discover and learn.
-
-The methodology has been applied to a dataset gathered in a single experiment under a controlled environment, since the goal of this Chapter was to provide a methodology to quantify the nescience of structured datasets, not to evaluate models for signal propagation and fading. In order to to conclude that, in general, the Rice model is an improvement over Rayleigh, a more realistic experiment is required, with multiple datasets gathered in real environments.
 
 %
 % Section: The Analysis of the Incompressible

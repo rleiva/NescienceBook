@@ -2,272 +2,668 @@
 % CHAPTER: Machine Learning Models
 %
 
-\chapterimage{Capek_play.pdf}
+\chapterimage{Perceptron_processed.jpg}
 
 \chapter{Machine Learning Models}
 \label{chap:ml_models}
 
 \begin{quote}
 \begin{flushright}
-\emph{There are no difficult problems,\\
-only lack of imagination.}\\
-Antonio García \\
+\emph{All models are wrong,\\
+but some are useful.}\\
+George E. P. Box \\
 \end{flushright}
 \end{quote}
 \bigskip
 
+Machine-learning algorithms differ not only in the functions they can represent, but also in the way they trade predictive accuracy against model complexity. A linear model describes the target through a small collection of coefficients; a decision tree expresses it as a hierarchy of conditional rules; a support-vector machine represents it through separating functions; and a multilayer perceptron composes many simple transformations into a nonlinear predictor. From the perspective of the Theory of Nescience, these are different families of descriptions of the same underlying supervised learning problem.
+
+The purpose of this chapter is to describe the model families currently used by the \texttt{mnplib} AutoML subsystem and, more importantly, to explain how they are incorporated into a common nescience-based framework. Each family is considered from three complementary perspectives: the mathematical form of the predictive model, its canonical serialization into the restricted model-description language introduced in Chapter~\ref{chap:mnplib}, and the search strategy used to explore alternative representations or hyperparameters.
+
+The following sections examine each supported model family in turn. For every family we introduce the predictive rule, describe how fitted models are translated into the canonical language, and explain how the corresponding search procedure exploits miscoding, mismodel, and nescience to navigate the space of candidate solutions.
+
+%
+% Section: Model Serialization
+%
+
+\section{Model Serialization}
+\label{sec:mnplib_model_serialization}
+
+\index{Model serialization}
+\index{Canonical description}
+\index{Abstract syntax tree}
+\index{Model-description language}
+
+The practical computation of surfeit requires an explicit representation of
+the model being evaluated. Machine-learning libraries, however, normally store
+trained models as complex programming-language objects containing parameters,
+metadata, caches, and implementation-specific state. The string returned by
+\texttt{repr(model)} or \texttt{str(model)} is therefore not an adequate
+description for the purposes of nescience. It may omit learned parameters,
+include irrelevant implementation details, or change between versions of the
+underlying library.
+
+To address this problem, \texttt{mnplib} translates every supported model into
+a small executable description language. The resulting description specifies
+only the computation required to produce the model predictions. Training
+metadata, implementation details, and presentation information are deliberately
+excluded.
+
+The serialization process follows four stages:
+\[
+M
+\;\xrightarrow{\;S\;}\;
+A_M
+\;\xrightarrow{\;N\;}\;
+\overline{A}_M
+\;\xrightarrow{\;R\;}\;
+d_M,
+\]
+where \(M\) is a fitted model, \(S\) is a model-specific serializer, \(A_M\)
+is an abstract syntax tree, \(N\) is a normalization procedure,
+\(\overline{A}_M\) is the canonical abstract syntax tree, \(R\) is the
+canonical renderer, and \(d_M\) is the resulting model description.
+
+The same canonical abstract syntax tree can also be exported as a structured
+JSON-compatible object. This representation is intended for applications such
+as Cajal, which may render the model using mathematical notation, diagrams,
+rule lists, or natural language. The graphical presentation is not part of
+\texttt{mnplib}: the library provides the computational meaning of the model,
+whereas the user interface determines how that meaning is displayed.
+
+\subsection{A Restricted Description Language}
+
+The model-description language is a deliberately small subset of Python
+expressions. It supports numeric constants, feature references, arithmetic
+operations, comparisons, conditional expressions, string literals, and a small
+collection of explicitly authorized mathematical functions. It does not support
+assignments, loops, imports, mutable state, arbitrary function calls, or access
+to Python objects.
+
+The restricted language has three purposes. First, it provides a common
+description format for models originating from different machine-learning
+families. Second, it ensures that every description can be executed
+mechanically. Third, it reduces the influence of arbitrary implementation and
+formatting choices on the estimation of surfeit.
+
+The following grammar is used by the current implementation. It is expressed
+using the syntax of the \texttt{Lark} parsing library.
+
+\begin{verbatim}
+?start: expression
+
+?expression: conditional
+
+?conditional: comparison
+            | comparison "if" comparison "else" conditional
+
+?comparison: sum
+           | sum COMPARATOR sum
+
+?sum: product
+    | sum "+" product       -> add
+    | sum "-" product       -> subtract
+
+?product: factor
+        | product "*" factor -> multiply
+        | product "/" factor -> divide
+
+?factor: "-" factor         -> negate
+       | power
+
+?power: atom
+      | atom "**" factor    -> power
+
+?atom: NUMBER
+     | FEATURE
+     | STRING
+     | function_call
+     | "(" expression ")"
+
+function_call: FUNCTION "(" expression ")"
+
+COMPARATOR: "<=" | "<" | ">=" | ">" | "=="
+
+FUNCTION: "abs"
+        | "sqrt"
+        | "exp"
+        | "log"
+        | "sin"
+        | "cos"
+
+FEATURE: /x(?:0|[1-9][0-9]*)/
+
+NUMBER: /(?:0\.00e\+00|[1-9]\.[0-9]{2}e[+-][0-9]{2,})/
+
+STRING: ESCAPED_STRING
+
+%import common.ESCAPED_STRING
+%import common.WS_INLINE
+%ignore WS_INLINE
+\end{verbatim}
+
+Feature variables are represented by the symbols
+\[
+x_0,x_1,x_2,\ldots.
+\]
+Human-readable column names are retained as metadata, but they are not included
+in the canonical description. This prevents changes in column labels from
+changing the measured model description.
+
+Conditional expressions use the Python form
+\[
+e_1\ \texttt{if}\ c\ \texttt{else}\ e_2,
+\]
+where \(c\) is a comparison and \(e_1\) and \(e_2\) are the expressions
+evaluated when the comparison is true and false, respectively. Nested
+conditional expressions are sufficient to represent binary decision trees.
+
+For example, the description
+\begin{verbatim}
+0.00e+00 if x2<=2.45e+00 else
+1.00e+00 if x3<=1.75e+00 else 2.00e+00
+\end{verbatim}
+represents a classification tree with three possible class codes. The mapping
+from these codes to the original class labels is stored in the model metadata.
+
+A linear regression model may be represented as
+\begin{verbatim}
+2.50e+00*x0-7.50e-01*x2+1.00e+00
+\end{verbatim}
+which denotes
+\[
+\widehat{y}
+=
+2.50x_0-0.75x_2+1.
+\]
+
+Only model families whose prediction procedure can be expressed in the
+restricted language are supported. A serializer must not produce an
+approximate informal summary of a model and present it as an executable
+description. If a model requires an operation not defined by the language, the
+language must be extended explicitly or the model must be reported as
+unsupported.
+
+\subsection{Abstract Syntax Tree}
+
+\index{Abstract syntax tree}
+
+The textual description is not constructed directly by concatenating strings.
+Each model-specific serializer first produces an abstract syntax tree, or AST.
+The tree consists of immutable Python data classes representing the semantic
+operations performed by the model.
+
+The principal node types are:
+
+\begin{itemize}
+    \item \texttt{Constant}, representing a numeric constant;
+    \item \texttt{StringConstant}, representing a categorical value;
+    \item \texttt{Feature}, representing an input feature;
+    \item \texttt{Negate}, representing unary negation;
+    \item \texttt{Add}, \texttt{Subtract}, \texttt{Multiply},
+          \texttt{Divide}, and \texttt{Power}, representing arithmetic
+          operations;
+    \item \texttt{Less}, \texttt{LessEqual}, \texttt{Greater},
+          \texttt{GreaterEqual}, and \texttt{Equal}, representing comparisons;
+    \item \texttt{Conditional}, representing a conditional expression; and
+    \item \texttt{Function}, representing a call to one of the mathematical
+          functions explicitly authorized by the language.
+\end{itemize}
+
+For example, the expression
+\[
+2.5x_0+1
+\]
+is represented conceptually by
+\[
+\operatorname{Add}\left(
+    \operatorname{Multiply}\left(
+        \operatorname{Constant}(2.5),
+        \operatorname{Feature}(0)
+    \right),
+    \operatorname{Constant}(1)
+\right).
+\]
+
+The AST is independent of scikit-learn and of any particular model class.
+Model-specific serializers are responsible only for translating the
+computation implemented by a trained estimator into these semantic nodes.
+They do not determine whitespace, parentheses, constant formatting, or other
+textual conventions.
+
+This separation ensures that linear models, decision trees, ensembles, and
+other supported estimators use the same language and the same rendering rules.
+
+\subsection{Canonical Representation of Constants}
+
+\index{Numeric constants}
+\index{Scientific notation}
+
+Every numeric constant is rendered using normalized scientific notation. The
+canonical form is
+\[
+s\,d.dd\,\texttt{e}\,e_see,
+\]
+where \(s\) is an optional negative sign, \(d.dd\) contains one digit before
+the decimal point and exactly two digits after it, \(e_s\) is the explicit sign
+of the exponent, and the exponent contains at least two digits.
+
+Examples include:
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+Value & Canonical representation \\
+\hline
+\(1\)       & \texttt{1.00e+00} \\
+\(2.5\)     & \texttt{2.50e+00} \\
+\(49.7\)    & \texttt{4.97e+01} \\
+\(0.497\)   & \texttt{4.97e-01} \\
+\(0.00497\) & \texttt{4.97e-03} \\
+\(-49.7\)   & \texttt{-4.97e+01} \\
+\(0\)       & \texttt{0.00e+00} \\
+\hline
+\end{tabular}
+\end{center}
+
+Negative zero is always normalized to \texttt{0.00e+00}. Exponents with an
+absolute value greater than \(99\) retain all their digits; the two-digit
+requirement is a minimum rather than a maximum. Thus \(10^{100}\) is rendered
+as \texttt{1.00e+100}.
+
+This notation is not intended to imply that the written numeral is the shortest
+possible description of the corresponding number. In the theoretical framework,
+a constant would be described by a program that produces it. Finding the
+shortest such program is another instance of the non-computability of
+Kolmogorov complexity.
+
+The practical model language instead defines a fixed effective description
+machine. Within this machine, a numeric literal is an instruction that produces
+the corresponding constant. Uniform scientific notation prevents a number from
+receiving an accidental advantage merely because it has an unusually short
+representation in decimal notation.
+
+The simplicity of constants such as zero and one is captured structurally. For
+example, the normalization rules remove multiplicative and additive identities:
+\[
+1x\longrightarrow x,
+\qquad
+x+0\longrightarrow x.
+\]
+Consequently, a coefficient equal to one can make a model description shorter
+because it is algebraically unnecessary, not because the character string
+\texttt{1} happens to be short.
+
+The use of exactly two decimal places in the coefficient quantizes constants to
+three significant digits. The quantized value becomes part of the canonical AST:
+the library does not display a rounded constant while secretly executing a
+higher-precision value. The AST, canonical string, parser, interpreter, and
+JSON representation therefore agree on the same value.
+
+Serialization fidelity is checked by comparing the predictions generated by
+the canonical description with the predictions of the source estimator. For
+regression, a documented numerical tolerance is used. For classification,
+predicted classes must normally agree exactly. If a model cannot be represented
+with the required fidelity, its serializer must report this limitation rather
+than silently generating an inaccurate description.
+
+\subsection{Normalization}
+
+Before rendering, the AST is passed through a small normalization procedure.
+Its purpose is to eliminate obvious syntactic redundancy introduced by
+model-specific serializers. It is not intended to be a symbolic algebra
+system.
+
+The current normalization rules include:
+\[
+\begin{aligned}
+1e &\longrightarrow e,
+&
+e1 &\longrightarrow e,
+\\
+0e &\longrightarrow 0,
+&
+e0 &\longrightarrow 0,
+\\
+e+0 &\longrightarrow e,
+&
+0+e &\longrightarrow e,
+\\
+e-0 &\longrightarrow e,
+&
+-(-e) &\longrightarrow e.
+\end{aligned}
+\]
+
+Here juxtaposition denotes multiplication. The rules are applied recursively
+to the children of each node and then locally to the resulting parent node.
+
+The normalizer does not perform polynomial expansion, factorization,
+common-subexpression elimination, associative regrouping, or general
+expression-equivalence analysis. In particular, it does not reorder
+floating-point additions or multiplications. Deterministic ordering is instead
+the responsibility of each serializer when it constructs the AST. For example,
+a linear-model serializer emits terms in increasing feature-index order.
+
+The normalization rules assume finite feature values. This is consistent with
+the input validation applied by the library before model evaluation. Algebraic
+transformations such as \(0e\rightarrow0\) would not preserve the propagation
+of special floating-point values such as \texttt{NaN}; such values therefore
+fall outside the normal domain of the canonical model language.
+
+Normalization is idempotent:
+\[
+N(N(A))=N(A).
+\]
+This property ensures that repeatedly serializing an already canonical model
+does not continue to change its description.
+
+\subsection{Canonical Rendering and Parsing}
+
+The canonical renderer converts the normalized AST into the unique textual
+description accepted by the grammar. It uses no optional whitespace except
+where required to separate the keywords \texttt{if} and \texttt{else}.
+Parentheses are introduced only when required by operator precedence or by the
+association of nested conditional expressions.
+
+The renderer is deterministic:
+\[
+\overline{A}_1=\overline{A}_2
+\quad\Longrightarrow\quad
+R(\overline{A}_1)=R(\overline{A}_2).
+\]
+
+The inverse operation is implemented by a parser generated from the Lark
+grammar. The parser converts a valid textual description back into an AST.
+After normalization, rendering and parsing satisfy the round-trip property
+\[
+N\!\left(P\!\left(R(\overline{A})\right)\right)=\overline{A},
+\]
+where \(P\) denotes the parser.
+
+Equivalently, every canonical description satisfies
+\[
+R\!\left(
+N\!\left(P(d)\right)
+\right)=d.
+\]
+
+These properties are tested for every supported model serializer. They make
+the model language a genuine serialization format rather than a one-way
+pretty-printer.
+
+\subsection{Execution}
+
+\index{Executable description}
+
+Canonical descriptions are executable. Execution is performed directly over
+the AST by a restricted interpreter:
+\[
+E(\overline{A}_M,X)=\widehat{Y}_M,
+\]
+where \(X\) is the feature matrix and \(\widehat{Y}_M\) is the prediction
+vector produced by the serialized model.
+
+The interpreter evaluates feature nodes as columns of \(X\), applies arithmetic
+operations recursively, and evaluates conditional nodes using their comparison
+and branch expressions. Where possible, operations are vectorized using NumPy.
+
+The library does not execute canonical descriptions through unrestricted
+Python \texttt{eval} or \texttt{exec}. Only AST nodes and mathematical
+functions explicitly defined by the language can be evaluated. This restriction
+ensures that a model description cannot import modules, access arbitrary
+objects, read files, or execute unrelated code.
+
+For every supported serializer, mnplib checks the fidelity condition
+\[
+E(\overline{A}_M,X)\simeq M(X),
+\]
+where \(M(X)\) denotes the predictions produced by the source estimator. The
+symbol \(\simeq\) denotes numerical agreement within the declared tolerance
+for regression, and exact equality of predicted classes for classification.
+
+The prediction vector used by the nescience metrics is generated from the
+canonical AST. This ensures that inaccuracy and surfeit refer to the same
+description. The source estimator is used to construct the AST and to verify
+serialization fidelity, but no hidden model behavior is used during the
+subsequent evaluation.
+
+\subsection{Model Descriptions and Model Artifacts}
+
+The library distinguishes the semantic description of a model from the
+artifacts required to evaluate it.
+
+A \texttt{ModelDescription} contains:
+
+\begin{itemize}
+    \item the canonical model type;
+    \item the normalized AST;
+    \item the canonical model string;
+    \item the indices and names of the features used by the model; and
+    \item computational metadata, such as the depth and number of leaves of a
+          decision tree.
+\end{itemize}
+
+A \texttt{ModelArtifacts} object additionally contains the information required
+by the nescience metrics:
+
+\begin{itemize}
+    \item the effective feature subset;
+    \item the predictions produced by the canonical description; and
+    \item the canonical model string.
+\end{itemize}
+
+The three quantities correspond to the practical components of nescience.
+The feature subset is evaluated by \texttt{Miscoding}; the predictions are
+evaluated by \texttt{Inaccuracy}; and the canonical model string is evaluated
+by \texttt{Surfeit}.
+
+Presentation information is not included. Colors, fonts, layout coordinates,
+expanded or collapsed branches, and other graphical properties do not belong
+to the computational model and must not influence its surfeit.
+
+\subsection{JSON-Compatible Representation}
+
+\index{JSON model representation}
+
+The normalized AST can be exported as a versioned JSON-compatible structure.
+For example, part of a decision-tree description may be exported as follows:
+
+\begin{verbatim}
+{
+  "schema": "mnplib-model",
+  "schema_version": 1,
+  "model_type": "decision_tree_classifier",
+  "ast": {
+    "type": "conditional",
+    "condition": {
+      "type": "less_equal",
+      "left": {
+        "type": "feature",
+        "index": 2,
+        "name": "petal length (cm)"
+      },
+      "right": {
+        "type": "constant",
+        "value": 2.45,
+        "canonical": "2.45e+00"
+      }
+    },
+    "if_true": {
+      "type": "constant",
+      "value": 0.0,
+      "canonical": "0.00e+00"
+    },
+    "if_false": {
+      "type": "constant",
+      "value": 1.0,
+      "canonical": "1.00e+00"
+    }
+  },
+  "metadata": {
+    "depth": 1,
+    "n_nodes": 3,
+    "n_leaves": 2,
+    "features_used": [2]
+  }
+}
+\end{verbatim}
+
+The external representation contains only JSON-compatible values and does not
+expose internal Python class names or module paths. Its schema is versioned so
+that applications can detect incompatible changes.
+
+A graphical application such as Cajal consumes this semantic representation
+rather than parsing the canonical string or inspecting the original
+scikit-learn estimator. Cajal may then present the same model as a mathematical
+formula, a tree diagram, a rule list, or a natural-language explanation.
+
+The pretty-printed representation produced by the user interface is not used
+to compute surfeit. Otherwise, changes in typography or layout would change the
+measured nescience of an otherwise identical model. Surfeit is always computed
+from the canonical computational description generated by mnplib.
+
+\subsection{Relation to Theoretical Descriptions}
+
+The restricted model language provides a computable approximation to the set
+of descriptions introduced in the theoretical part of this book. The language
+and its interpreter jointly define a reference description machine
+\[
+\Gamma_{\mathrm{mnplib}}.
+\]
+For a canonical program \(d_M\) and feature representation \(X\),
+\[
+\Gamma_{\mathrm{mnplib}}(d_M,X)
+=
+E(P(d_M),X)
+=
+\widehat{Y}_M.
+\]
+
+The canonical description is therefore not an informal summary of the model:
+it is an effective procedure for producing its predictions.
+
+The library does not claim that \(d_M\) is the shortest possible description of
+the model or its output. Finding such a description would require solving a
+non-computable minimization problem. Instead, mnplib fixes a small reference
+language, uses one deterministic serializer for each supported model family,
+and applies the same rules to all candidate models.
+
+Consequently, model-description length and surfeit must be interpreted relative
+to:
+
+\begin{itemize}
+    \item the version of the model-description language;
+    \item the available AST node types;
+    \item the constant-quantization policy;
+    \item the normalization rules; and
+    \item the canonical renderer.
+\end{itemize}
+
+This dependence is unavoidable in any computable approximation of
+Kolmogorov complexity. What is required for meaningful comparison is not an
+encoding-free description, but a fixed, general, deterministic, and
+model-independent description system.
+
+\subsection{Limitations}
+
+The serialization process introduces several practical limitations.
+
+First, only model families whose prediction procedure can be represented in the
+restricted language can be serialized. Supporting a new model family may
+require a new serializer or, in some cases, a carefully delimited extension of
+the grammar.
+
+Second, numeric constants are quantized. This may cause the serialized model to
+differ slightly from the original estimator. The library therefore validates
+serialization fidelity and exposes the resulting discrepancy rather than
+assuming perfect equivalence.
+
+Third, the canonical representation is not a proof of minimality. A different
+description language may provide a shorter valid description of the same
+computation. The purpose of the canonical language is to make comparisons
+reproducible and operational, not to compute exact Kolmogorov complexity.
+
+Finally, the textual description should not be confused with its visual
+presentation. mnplib is responsible for constructing, validating, executing,
+and measuring model descriptions. External applications remain free to present
+the same semantic AST in whatever form is most suitable for their users.
+
+%
+% Section: Linear Regression
+%
+
 \section{Linear Regression}
 \label{subsec:automl_linear_regression}
-
 \index{Linear regression}
 \index{Ordinary least squares}
-\index{Feature selection}
-\index{Miscoding!feature selection}
 
-Linear regression is one of the simplest families of predictive models and
-therefore provides a useful starting point for illustrating the AutoML strategy
-implemented in \texttt{mnplib}. Given a representation with \(p\) numerical
-attributes
+Linear regression is one of the simplest families of predictive models and therefore provides a useful starting point for illustrating the AutoML strategy implemented in \texttt{mnplib}. Given a representation with \(p\) numerical attributes
 \[
 X=(X_1,\ldots,X_p)
 \]
-and a numerical target \(Y\), a linear regression model assumes a prediction of
-the form
+and a numerical target \(Y\), a linear regression model assumes a prediction of the form
 \[
-\widehat{Y}
-=
-\beta_0
-+
-\sum_{j=1}^{p}\beta_j X_j,
+\widehat{Y} = \beta_0 + \sum_{j=1}^{p}\beta_j X_j,
 \]
-where \(\beta_0\) is the intercept and
-\(\beta_1,\ldots,\beta_p\) are coefficients estimated from the available
+where \(\beta_0\) is the intercept and \(\beta_1,\ldots,\beta_p\) are coefficients estimated from the available
 observations.
 
-The implementation used by \texttt{mnplib} is the
-\texttt{LinearRegression} estimator provided by scikit-learn. Its coefficients
-are fitted by ordinary least squares. Consequently, once the set of input
-features has been fixed, there is little model structure left to search:
-the coefficients and intercept are determined directly from the data.
+The implementation used by \texttt{mnplib} is the \texttt{LinearRegression} estimator provided by scikit-learn. Its coefficients are fitted by ordinary least squares. Consequently, once the set of input features has been fixed, there is little model structure left to search: the coefficients and intercept are determined directly from the data.
 
-This makes linear regression particularly interesting from the point of view of
-nescience. The principal AutoML decision is not how to fit the coefficients,
-but rather \emph{which representation of the entity should be supplied to the
-model}. A representation containing too few relevant attributes may suffer from
-deficiency, whereas one containing unnecessary attributes may introduce
-surplus and produce a more complicated description. The search procedure
-therefore concentrates on the subset of features used by the model.
+This makes linear regression particularly interesting from the point of view of nescience. The principal AutoML decision is not how to fit the coefficients, but rather which representation of the entity should be supplied to the model. A representation containing too few relevant attributes may suffer from deficiency, whereas one containing unnecessary attributes may introduce surplus and produce a more complicated description. The search procedure therefore concentrates on the subset of features used by the model.
 
 \subsubsection{Model description}
 
-A fitted linear regression model is translated into the restricted model
-language described previously in this chapter. The serializer first constructs
-an abstract syntax tree corresponding to
+A fitted linear regression model is translated into the restricted model language described in Chapter \ref{chap:mnplib}. The serializer first constructs an abstract syntax tree corresponding to
 \[
-\beta_0
-+
-\beta_1 X_1
-+
-\cdots
-+
-\beta_p X_p.
+\beta_0 + \beta_1 X_1 + \cdots + \beta_p X_p.
 \]
+The AST is initialized with a node representing the intercept. For every non-zero coefficient \(\beta_j\), the serializer then constructs a multiplication node containing the absolute value of the coefficient and the
+corresponding feature $|\beta_j| X_j$. This term is attached to the current expression using addition when
+\(\beta_j>0\) and subtraction when \(\beta_j<0\). Coefficients that are exactly zero are not included in the AST.
 
-The AST is initialized with a node representing the intercept. For every
-non-zero coefficient \(\beta_j\), the serializer then constructs a
-multiplication node containing the absolute value of the coefficient and the
-corresponding feature:
+\begin{example}
+Consider the fitted linear model
 \[
-|\beta_j| X_j.
+\widehat{Y} = 3.2 + 1.5X_1 + 0X_2 - 2.1X_3
 \]
-This term is attached to the current expression using addition when
-\(\beta_j>0\) and subtraction when \(\beta_j<0\).
-
-Coefficients that are exactly zero are not included in the AST. Thus, if
-\[
-\widehat{Y}
-=
-3.2
-+
-1.5X_1
-+
-0X_2
--
-2.1X_3,
-\]
-the resulting semantic expression contains only \(X_1\) and \(X_3\):
+the resulting semantic expression contains only $X_1$ and $X_3$:
 \[
 3.2+1.5X_1-2.1X_3.
 \]
-
-After normalization and canonical rendering, the same model may be represented
-by the string
+After normalization and canonical rendering, the same model may be represented by the string
 \begin{verbatim}
 3.20e+00+1.50e+00*x0-2.10e+00*x2
 \end{verbatim}
+where features are represented by their canonical identifiers \texttt{x0}, \texttt{x1}, \ldots, and numerical constants use the canonical scientific notation defined by the model-description language.
+\end{example}
 
-where features are represented by their canonical identifiers
-\texttt{x0}, \texttt{x1}, \ldots, and numerical constants use the canonical
-scientific notation defined by the model-description language.
+The canonical description contains only information required to reproduce the prediction rule. Training observations, optimization information, estimator configuration, and other scikit-learn implementation details are excluded.
 
-The canonical description contains only information required to reproduce the
-prediction rule. Training observations, optimization information, estimator
-configuration, and other scikit-learn implementation details are excluded.
+The serializer also records the number of non-zero coefficients as model metadata. The effective feature subset of the model is likewise defined by the features whose fitted coefficients are non-zero.
 
-The serializer also records the number of non-zero coefficients,
-\[
-n_{\mathrm{terms}}
-=
-\#\{j:\beta_j\neq0\},
-\]
-as model metadata. The effective feature subset of the model is likewise
-defined by the features whose fitted coefficients are non-zero.
-
-The current serializer assumes a one-dimensional target. Multi-output linear
-regression is therefore outside the model family considered here.
+The current serializer assumes a one-dimensional target. Multi-output linear regression is therefore outside the model family considered here.
 
 \subsubsection{Search space}
 
-Ordinary least squares does not require a search over parameters such as tree
-depth, number of estimators, or learning rate. In the current implementation,
-\texttt{mnplib} instead searches over the number of selected features.
+Ordinary least squares does not require a search over parameters such as tree depth, number of estimators, or learning rate. In the current implementation, \texttt{mnplib} instead searches over the number of selected features.
 
-Let
+\emph{Miscoding} guides the exploration of the representation space. Rather than considering feature subsets in an arbitrary order, the attributes are ranked according to their contribution to the supervised representation. The search therefore begins with attributes that are expected to encode the target effectively and progressively introduces less useful information.
+
+Let $(j_1,j_2,\ldots,j_p)$ be the ordering of the available attributes produced by the miscoding-based feature-ranking procedure, from the most promising attribute to the least promising one. The search considers the nested feature sets $S_k = \{j_1,\ldots,j_k\}$, $k=1,\ldots,p$. Thus, instead of evaluating all $2^p-1$ non-empty subsets of features, the search evaluates at most $p$ candidate representations:
 \[
-(j_1,j_2,\ldots,j_p)
+S_1\subset S_2\subset \cdots \subset S_p.
 \]
-be the ordering of the available attributes produced by the miscoding-based
-feature-ranking procedure, from the most promising attribute to the least
-promising one. The search considers the nested feature sets
+For each prefix $S_k$, a new linear regression model is fitted using only the selected columns:
 \[
-S_k
-=
-\{j_1,\ldots,j_k\},
-\qquad
-k=1,\ldots,p.
+\widehat{Y}_k = \beta_{0,k} + \sum_{j\in S_k}\beta_{j,k}X_j.
 \]
+The fitted model is then evaluated using nescience. The candidate with the lowest nescience is preferred.
 
-Thus, instead of evaluating all
-\[
-2^p-1
-\]
-non-empty subsets of features, the search evaluates at most \(p\) candidate
-representations:
-\[
-S_1\subset S_2\subset\cdots\subset S_p.
-\]
+This strategy makes the effective hyperparameter of the linear-regression family the number of features included from the miscoding ranking: $k \in \{1,\ldots,p\}$. The search can optionally be restricted to a maximum number of feature prefixes. It can also use an early-stopping rule based on a patience parameter. If a specified number of consecutive candidates fail to improve the best nescience observed so far, the search terminates without evaluating the remaining, larger feature prefixes.
 
-For each prefix \(S_k\), a new linear regression model is fitted using only the
-selected columns:
-\[
-\widehat{Y}_k
-=
-\beta_{0,k}
-+
-\sum_{j\in S_k}\beta_{j,k}X_j.
-\]
-
-The fitted model is then evaluated using nescience. The candidate with the
-lowest nescience is preferred.
-
-This strategy makes the effective hyperparameter of the linear-regression
-family the number of features included from the miscoding ranking:
-\[
-k\in\{1,\ldots,p\}.
-\]
-
-The search can optionally be restricted to a maximum number of feature prefixes.
-It can also use an early-stopping rule based on a patience parameter. If a
-specified number of consecutive candidates fail to improve the best nescience
-observed so far, the search terminates without evaluating the remaining,
-larger feature prefixes.
-
-\subsubsection{Role of nescience}
-
-The search combines several elements of the theory of nescience, each of which
-plays a different role.
-
-First, \emph{miscoding} guides the exploration of the representation space.
-Rather than considering feature subsets in an arbitrary order, the attributes
-are ranked according to their contribution to the supervised representation.
-The search therefore begins with attributes that are expected to encode the
-target effectively and progressively introduces less useful information.
-
-Second, \emph{inaccuracy} measures the discrepancy between the observed target
-and the predictions produced by each fitted linear model. In general, adding
-features gives the regression model additional freedom and may reduce this
-component.
-
-Third, \emph{surfeit} evaluates the description of the fitted model. Additional
-features generally introduce additional coefficients and arithmetic terms into
-the canonical model description. Unless those terms contribute useful
-predictive structure, they tend to make the description more redundant.
-
-These effects are combined through mismodel and nescience. A very small feature
-set may give a compact description but fail to reproduce the target adequately.
-Conversely, a large representation may reduce prediction error while
-introducing unnecessary attributes and additional model structure. Nescience
-provides a single criterion for balancing these alternatives.
-
-The resulting search can be represented schematically as
-\[
-\begin{array}{c}
-\text{rank features by miscoding}
-\\[2mm]
-\downarrow
-\\[2mm]
-S_1,S_2,\ldots,S_p
-\\[2mm]
-\downarrow
-\\[2mm]
-\text{fit one linear model for each }S_k
-\\[2mm]
-\downarrow
-\\[2mm]
-\text{compute miscoding, inaccuracy, surfeit, and nescience}
-\\[2mm]
-\downarrow
-\\[2mm]
-\underset{k}{\operatorname{arg\,min}}\;
-\operatorname{Nescience}(M_k).
-\end{array}
-\]
-
-An important consequence is that feature selection is not performed as an
-independent preprocessing stage. The quality of a representation is evaluated
-together with the quality of the model fitted from that representation.
-A feature is therefore valuable only insofar as the information it contributes
-justifies its effect on the final model.
-
-\subsubsection{Comparison with conventional hyperparameter search}
-
-The procedure differs from the usual interpretation of hyperparameter
-optimization. Conventional AutoML systems frequently define a grid or
-probability distribution over estimator parameters and evaluate combinations
-through cross-validation. For ordinary least squares there are few meaningful
-structural parameters of this kind.
-
-In \texttt{mnplib}, the representation itself becomes part of the search
-space. The candidate models are not distinguished primarily by an optimizer
-parameter, but by the information supplied to the model:
-\[
-M_1=M(X_{S_1}),
-\quad
-M_2=M(X_{S_2}),
-\quad\ldots\quad,
-M_p=M(X_{S_p}).
-\]
-
-This illustrates a more general principle of nescience-based AutoML: model
-selection should consider not only the predictive mechanism but also the
-representation on which that mechanism operates.
-
-For linear regression, this principle leads to a particularly simple and
-interpretable search. Miscoding provides an informed ordering of attributes,
-ordinary least squares determines the best coefficients for each candidate
-representation, and nescience determines when the reduction in prediction
-error no longer compensates for the additional information and model
-complexity introduced by more features.
+An important consequence of this approach is that feature selection is not performed as an independent preprocessing stage. The quality of a representation is evaluated together with the quality of the model fitted from that representation. A feature is therefore valuable only insofar as the information it contributes justifies its effect on the final model.
 
 %
 % Logistic Regression
@@ -275,412 +671,778 @@ complexity introduced by more features.
 
 \section{Logistic Regression}
 \label{subsec:automl_logistic_regression}
-
 \index{Logistic regression}
-\index{Classification}
-\index{Feature selection}
-\index{Miscoding!feature selection}
 
-Logistic regression is a linear classification model. Although its name
-contains the term regression, its usual purpose is to estimate the probability
-of membership in one or more discrete classes and, from those probabilities,
-produce a class prediction.
+Logistic regression is a linear classification model. Although its name contains the term regression, its usual purpose is to estimate the probability of membership in one or more discrete classes and, from those probabilities, produce a class prediction.
 
 For binary classification, let
 \[
 X=(X_1,\ldots,X_p)
 \]
-be the available attributes. Logistic regression first computes the linear
-score
+be the available attributes. Logistic regression first computes the linear score
 \[
-z
-=
-\beta_0
-+
-\sum_{j=1}^{p}\beta_j X_j.
+z = \beta_0 + \sum_{j=1}^{p}\beta_j X_j.
 \]
-
 The score is transformed into a probability using the logistic function
 \[
-P(Y=1\mid X)
-=
-\frac{1}{1+\exp(-z)}.
+P(Y=1\mid X) = \frac{1}{1+\exp(-z)}.
 \]
-
-A conventional decision threshold of \(1/2\) then assigns one of the two
-classes. Since the logistic function is strictly increasing,
+A conventional decision threshold of $1/2$ then assigns one of the two classes. Since the logistic function is strictly increasing,
 \[
-\frac{1}{1+\exp(-z)}>\frac{1}{2}
-\quad\Longleftrightarrow\quad
-z>0.
+\frac{1}{1+\exp(-z)}>\frac{1}{2} \quad\Longleftrightarrow\quad z>0.
 \]
-Consequently, when the objective is to reproduce the predicted class rather
-than the estimated probability, the exponential function does not need to be
-included in the model description. The complete classification rule can be
-expressed directly in terms of the linear score:
+Consequently, when the objective is to reproduce the predicted class rather than the estimated probability, the exponential function does not need to be included in the model description. The complete classification rule can be expressed directly in terms of the linear score:
 \[
-\widehat{Y}
-=
+\widehat{Y} =
 \begin{cases}
 c_1, & z>0,\\
 c_0, & \text{otherwise}.
 \end{cases}
 \]
-
-This simplification is particularly useful for \texttt{mnplib}, because the
-canonical model language is deliberately restricted to a small set of
-arithmetic operations, comparisons, and conditional expressions.
+This simplification is particularly useful for \texttt{mnplib}, because the canonical model language is deliberately restricted to a small set of arithmetic operations, comparisons, and conditional expressions.
 
 \subsubsection{Model description}
 
-The logistic-regression serializer reuses the same arithmetic representation
-used for linear regression. A linear score
+The logistic-regression serializer reuses the same arithmetic representation used for linear regression. A linear score
 \[
-z
-=
-\beta_0
-+
-\beta_1X_1
-+
-\cdots
-+
-\beta_pX_p
+z = \beta_0 + \beta_1X_1 + \cdots + \beta_pX_p
 \]
-is first translated into an abstract syntax tree.
+is first translated into an abstract syntax tree. The tree starts with the intercept $\beta_0$. For each non-zero coefficient $\beta_j$, the serializer creates the term $|\beta_j|X_j$ and joins it to the current expression using addition or subtraction according to the sign of the coefficient.
 
-The tree starts with the intercept \(\beta_0\). For each non-zero coefficient
-\(\beta_j\), the serializer creates the term
+\begin{example}
+The score
 \[
-|\beta_j|X_j
-\]
-and joins it to the current expression using addition or subtraction according
-to the sign of the coefficient.
-
-For example, the score
-\[
-z
-=
--0.8
-+
-1.5X_1
--
-2.3X_3
+z = -0.8 + 1.5X_1 - 2.3X_3
 \]
 may be serialized as
 \begin{verbatim}
 -8.00e-01+1.50e+00*x0-2.30e+00*x2
 \end{verbatim}
+using the canonical numerical notation and feature identifiers of the model language.
 
-using the canonical numerical notation and feature identifiers of the model
-language.
-
-For a binary problem with classes \(c_0\) and \(c_1\), this score is embedded
-inside a conditional expression:
+For a binary problem with classes $c_0$ and $c_1$, this score is embedded inside a conditional expression:
 \begin{verbatim}
 label(c1) if -8.00e-01+1.50e+00*x0-2.30e+00*x2>0.00e+00
 else label(c0)
 \end{verbatim}
+\end{example}
 
-The exact textual representation of class labels depends on their encoded
-values, but the semantic structure is always the same: evaluate the linear
-score, compare it with zero, and select the corresponding class.
+The exact textual representation of class labels depends on their encoded values, but the semantic structure is always the same: evaluate the linear score, compare it with zero, and select the corresponding class.
 
-This representation intentionally omits the logistic function. The objective
-of the canonical description is to reproduce
+This representation intentionally omits the logistic function. The objective of the canonical description is to reproduce \texttt{predict}(X), not necessarily \texttt{predict\_proba}(X). Since the sigmoid transformation does not alter the binary decision boundary, including it would introduce computational structure that does not affect the predicted representation.
+
+For $K>2$ classes, logistic regression associates one linear score with each class:
 \[
-\operatorname{predict}(X),
+z_k = \beta_{k0} + \sum_{j=1}^{p}\beta_{kj}X_j, \qquad k=1,\ldots,K.
 \]
-not necessarily
-\[
-\operatorname{predict\_proba}(X).
-\]
-Since the sigmoid transformation does not alter the binary decision boundary,
-including it would introduce computational structure that does not affect the
-predicted representation.
-
-\subsubsection{Multiclass classification}
-
-For \(K>2\) classes, logistic regression associates one linear score with each
-class:
-\[
-z_k
-=
-\beta_{k0}
-+
-\sum_{j=1}^{p}\beta_{kj}X_j,
-\qquad
-k=1,\ldots,K.
-\]
-
 The probabilities may be obtained through the softmax transformation,
 \[
-P(Y=c_k\mid X)
-=
-\frac{\exp(z_k)}
-{\sum_{\ell=1}^{K}\exp(z_\ell)}.
+P(Y=c_k\mid X) = \frac{\exp(z_k)} {\sum_{\ell=1}^{K}\exp(z_\ell)}.
 \]
-
-However, because the exponential function is strictly increasing and the
-denominator is shared by all classes,
+However, because the exponential function is strictly increasing and the denominator is shared by all classes,
 \[
-\operatorname*{arg\,max}_k
-P(Y=c_k\mid X)
-=
-\operatorname*{arg\,max}_k z_k.
+\operatorname*{arg\,max}_k P(Y=c_k\mid X) = \operatorname*{arg\,max}_k z_k.
 \]
+Therefore, neither exponentiation nor probability normalization is necessary to reproduce the predicted class. The model description instead compares the linear scores explicitly.
 
-Therefore, neither exponentiation nor probability normalization is necessary
-to reproduce the predicted class.
-
-The model description instead compares the linear scores explicitly. For
-three classes with scores \(z_0,z_1,z_2\), an equivalent rule is
+\begin{example}
+For the case of three classes with scores $z_0,z_1,z_2$, the equivalent rule would be
 \[
-\widehat{Y}
-=
+\widehat{Y} =
 \begin{cases}
-c_0,
-&
-z_0\geq z_1
-\land
-z_0\geq z_2,
-\\
-c_1,
-&
-z_1\geq z_2,
-\\
-c_2,
-&
-\text{otherwise}.
+c_0, & z_0\geq z_1 \land z_0\geq z_2, \\
+c_1, & z_1\geq z_2, \\
+c_2, & \text{otherwise}.
 \end{cases}
 \]
-
 In the restricted Python-like language this corresponds conceptually to
 \begin{verbatim}
 c0 if z0>=z1 and z0>=z2 else
 c1 if z1>=z2 else
 c2
 \end{verbatim}
+\end{example}
 
-The conditions are represented by nested conditional expressions. Earlier
-classes use non-strict comparisons so that ties are resolved consistently with
-the first-maximum convention used by the underlying estimator.
+The conditions are represented by nested conditional expressions. This explicit representation is preferred to introducing a special \texttt{argmax} or \texttt{classify} primitive. The comparison logic therefore remains visible in the model description rather than being hidden inside a powerful operation of the description language.
 
-This explicit representation is preferred to introducing a special
-\texttt{argmax} or \texttt{classify} primitive. The comparison logic therefore
-remains visible in the model description rather than being hidden inside a
-powerful operation of the description language.
+The effective subset of a logistic-regression model consists of the features having at least one non-zero coefficient. For multiclass classification, a feature is considered active whenever it has
+a non-zero coefficient for at least one class.
 
-\subsubsection{Effective feature subset}
-
-The effective subset of a logistic-regression model consists of the features
-having at least one non-zero coefficient.
-
-For binary classification, this is simply
-\[
-S
-=
-\{j:\beta_j\neq0\}.
-\]
-
-For multiclass classification, a feature is considered active whenever it has
-a non-zero coefficient for at least one class:
-\[
-S
-=
-\left\{
-j:
-\exists k,\;
-\beta_{kj}\neq0
-\right\}.
-\]
-
-The serializer records this subset independently of the full input
-representation. This is important for the computation of miscoding, since the
-representation actually used by the model may contain fewer attributes than
-the original dataset.
+The logistic-regression family also illustrates an important principle of model serialization in \texttt{mnplib}. The canonical description should contain the computation required to generate the representation being evaluated, rather than every mathematical operation appearing in the statistical formulation of the estimator The sigmoid and softmax functions are essential for interpreting logistic regression probabilistically and for fitting the estimator. They are not, however, required to reproduce its final class prediction. Removing them from the serialized description is therefore not an approximation of the prediction rule. It is a reduction of the description to the computation relevant to the effective representation.
 
 \subsubsection{Search space}
 
-The logistic-regression search implemented in \texttt{mnplib} deliberately
-avoids regularization. Each candidate uses an unregularized
-\texttt{LogisticRegression} estimator.
+The logistic-regression search implemented in \texttt{mnplib} deliberately avoids regularization. Each candidate uses an unregularized \texttt{LogisticRegression} estimator. The search therefore does not explore the conventional regularization hyperparameter $C$, nor does it compare $L_1$, $L_2$, or elastic-net penalties. Model complexity is controlled instead through the representation provided to the model and through the nescience of the resulting candidate.
 
-The search therefore does not explore the conventional regularization
-hyperparameter \(C\), nor does it compare \(L_1\), \(L_2\), or elastic-net
-penalties. Model complexity is controlled instead through the representation
-provided to the model and through the nescience of the resulting candidate.
+The available attributes are first ordered using the miscoding-based feature ranking: $(j_1,j_2,\ldots,j_p)$. The search then evaluates the nested prefixes $S_k = \{j_1,\ldots,j_k\}$, $k=1,\ldots,p$.
+For every prefix, exactly one unregularized logistic-regression model is fitted: $M_k = \operatorname{LogisticRegression}(X_{S_k},Y)$. Thus the effective search parameter is again the number of selected features $k \in \{1,\ldots,p\}$. Instead of examining the complete power set of attributes, containing $2^p-1$ non-empty subsets, the search evaluates at most \(p\) nested candidate representations.
 
-The available attributes are first ordered using the miscoding-based feature
-ranking:
-\[
-(j_1,j_2,\ldots,j_p).
-\]
+The search can also be restricted to a maximum number of feature prefixes. The optimization algorithm uses the \texttt{lbfgs} solver. The parameter \texttt{max\_iter} limits the number of optimization iterations, but it is not treated as a model-selection hyperparameter. It is only a safeguard to allow the numerical optimization to converge.
 
-The search then evaluates the nested prefixes
-\[
-S_k
-=
-\{j_1,\ldots,j_k\},
-\qquad
-k=1,\ldots,p.
-\]
+If fitting fails for a candidate, the failure is recorded as a diagnostic and the search proceeds with the remaining feature prefixes. Convergence warnings are likewise retained as diagnostics rather than being silently ignored.
 
-For every prefix, exactly one unregularized logistic-regression model is fitted:
-\[
-M_k
-=
-\operatorname{LogisticRegression}(X_{S_k},Y).
-\]
-
-Thus the effective search parameter is again the number of selected features:
-\[
-k\in\{1,\ldots,p\}.
-\]
-
-Instead of examining the complete power set of attributes, containing
-\[
-2^p-1
-\]
-non-empty subsets, the search evaluates at most \(p\) nested candidate
-representations.
-
-The search can also be restricted to a maximum number of feature prefixes. The
-optimization algorithm uses the \texttt{lbfgs} solver. The parameter
-\texttt{max\_iter} limits the number of optimization iterations, but it is not
-treated as a model-selection hyperparameter. It is only a safeguard to allow
-the numerical optimization to converge.
-
-If fitting fails for a candidate, the failure is recorded as a diagnostic and
-the search proceeds with the remaining feature prefixes. Convergence warnings
-are likewise retained as diagnostics rather than being silently ignored.
-
-\subsubsection{Why regularization is omitted}
-
-Conventional logistic regression often introduces regularization by minimizing
-an objective of the general form
-\[
-L(\beta)
-+
-\lambda R(\beta),
-\]
-where \(L\) is the logistic loss and \(R\) penalizes the size or number of
-coefficients.
-
-Regularization serves several purposes, including controlling overfitting,
-shrinking coefficients, and sometimes producing sparse models. However,
-introducing the regularization strength as an additional hyperparameter would
-partially duplicate the role that nescience is intended to play in the AutoML
+Conventional logistic regression often introduces regularization by minimizing an objective of the general form $L(\beta) + \lambda R(\beta)$, where $L$ is the logistic loss and $R$ penalizes the size or number of
+coefficients. Regularization serves several purposes, including controlling overfitting, shrinking coefficients, and sometimes producing sparse models. However, introducing the regularization strength as an additional hyperparameter would partially duplicate the role that nescience is intended to play in the AutoML
 procedure.
 
-In the current implementation, complexity is controlled through the combined
-effect of:
+In the current implementation, complexity is controlled through the combined effect of the miscoding of the selected representation, the inaccuracy of the resulting predictions, and the surfeit of the serialized prediction rule. The search therefore allows nescience itself to determine whether additional features and coefficients provide enough useful explanatory information to justify the increased description.
 
-\begin{itemize}
-    \item the miscoding of the selected representation;
-    \item the inaccuracy of the resulting predictions; and
-    \item the surfeit of the serialized prediction rule.
-\end{itemize}
+%
+% Section: Decision Trees
+%
 
-The search therefore allows nescience itself to determine whether additional
-features and coefficients provide enough useful explanatory information to
-justify the increased description.
+\section{Decision Trees}
+\label{subsec:automl_decision_trees}
+\index{Decision tree}
+\index{Cost-complexity pruning}
 
-This should not be interpreted as a general claim that regularization is
-unnecessary for logistic regression. It is a deliberate design choice of the
-nescience-based AutoML search: the objective is to study model selection under
-the information-theoretic criteria of the theory rather than to combine those
-criteria with a second, independent complexity penalty.
+Decision trees are predictive models that partition the feature space recursively. Starting from the complete set of observations, each internal node applies a condition to one feature and divides the observations into two subsets. The process continues recursively until a leaf node is reached. The leaf provides the prediction associated with the resulting region of the feature space.
 
-\subsubsection{Role of nescience}
+For numerical attributes, a binary decision-tree node typically has the form $X_j \leq t$, where $X_j$ is one of the input features and \(t\) is a threshold learned from the data. Observations satisfying the condition are sent to the left subtree, while the remaining observations are sent to the right subtree. A decision tree therefore represents a piecewise prediction rule. For regression, each leaf contains a numerical prediction. For classification, each leaf contains a class prediction.
 
-Logistic regression illustrates how the different components of nescience can
-cooperate during model search.
+Unlike linear regression, decision trees can represent nonlinear relationships and interactions between attributes without requiring them to be specified explicitly. Their flexibility, however, also creates a model-selection problem. A tree can continue growing until it describes increasingly small subsets of the observations, producing a complicated model that may fit the available data closely but generalize poorly.
 
-First, \emph{miscoding} determines the order in which attributes enter the
-model. Features expected to provide useful information about the target are
-considered first, while attributes contributing mostly surplus information are
-postponed.
+The AutoML implementation in \texttt{mnplib} addresses this problem by combining feature selection based on miscoding with cost-complexity pruning and final model selection based on nescience.
 
-Second, \emph{inaccuracy} evaluates the class predictions generated by each
-candidate model. A representation containing too few relevant attributes may
-not permit a suitable linear decision boundary and therefore produces high
-inaccuracy.
+\subsubsection{Model description}
 
-Third, \emph{surfeit} measures the redundancy of the canonical model
-description. Adding features introduces additional coefficients and arithmetic
-terms into the linear scores. In multiclass problems, a feature may contribute
-one coefficient to each class score, so additional features can increase the
-description substantially.
+A fitted decision tree has a particularly natural representation in the restricted model-description language used by \texttt{mnplib}. Every internal tree node becomes a conditional expression, and every leaf becomes a terminal prediction.
 
-The combination of inaccuracy and surfeit produces mismodel, while miscoding
-captures the quality of the representation itself. Nescience finally balances
-these two dimensions:
+For a node that tests feature \(X_j\) against threshold \(t\), the semantic AST contains the condition $X_j\leq t$. The complete node is represented as
 \[
-\operatorname{Nescience}(M_k)
-=
-\operatorname{Nescience}
-\left(
-\operatorname{Miscoding}(S_k),
-\operatorname{Mismodel}(M_k)
-\right).
+d_L \quad \texttt{if} \quad X_j\leq t \quad \texttt{else} \quad d_R,
 \]
+where $d_L$ and $d_R$ are the recursively serialized left and right subtrees.
 
-The selected logistic-regression candidate is therefore
-\[
-k^\star
-=
-\operatorname*{arg\,min}_k
-\operatorname{Nescience}(M_k).
-\]
-
-The search can be summarized as
+\begin{example}
+The tree
 \[
 \begin{array}{c}
-\text{rank attributes using miscoding}
-\\[2mm]
-\downarrow
-\\[2mm]
-S_1,S_2,\ldots,S_p
-\\[2mm]
-\downarrow
-\\[2mm]
-\text{fit an unregularized logistic model for each }S_k
-\\[2mm]
-\downarrow
-\\[2mm]
-\text{serialize its explicit classification rule}
-\\[2mm]
-\downarrow
-\\[2mm]
-\text{compute miscoding, inaccuracy, surfeit, and nescience}
-\\[2mm]
-\downarrow
-\\[2mm]
-\underset{k}{\operatorname{arg\,min}}\;
-\operatorname{Nescience}(M_k).
+X_0\leq1.5 \\
+/\qquad\backslash \\
+2.0 \qquad X_2\leq3.0 \\
+\qquad / \qquad\backslash \\
+\qquad 4.0 \qquad 7.0
 \end{array}
 \]
+is represented conceptually as
+\begin{verbatim}
+2.00e+00 if x0<=1.50e+00 else
+4.00e+00 if x2<=3.00e+00 else
+7.00e+00
+\end{verbatim}
+and, after canonical rendering, as a single deterministic expression following the syntax rules of the model-description language.
+\end{example}
 
-As with linear regression, feature selection is therefore not treated as an
-independent preprocessing operation. The representation and the resulting
-model are evaluated jointly.
+The serializer traverses the fitted scikit-learn tree recursively beginning at its root. At every internal node it retrieves:
 
-\subsubsection{Interpretation}
+\begin{itemize}
+    \item the feature used by the split;
+    \item the threshold of the split;
+    \item the left child; and
+    \item the right child.
+\end{itemize}
 
-The logistic-regression family also illustrates an important principle of
-model serialization in \texttt{mnplib}. The canonical description should
-contain the computation required to generate the representation being
-evaluated, rather than every mathematical operation appearing in the
-statistical formulation of the estimator.
+The threshold is represented as a canonical numerical constant and the feature as its canonical identifier $x_0,x_1,\ldots$. The resulting AST therefore mirrors the computational structure of the tree directly.
 
-The sigmoid and softmax functions are essential for interpreting logistic
-regression probabilistically and for fitting the estimator. They are not,
-however, required to reproduce its final class prediction. Removing them from
-the serialized description is therefore not an approximation of the prediction
-rule. It is a reduction of the description to the computation relevant to the
-effective representation.
+For regression trees, a terminal node is represented by the numerical value predicted by that leaf. Thus, a leaf predicting $\widehat{Y}=4.73$ is represented by a constant node and rendered canonically as \texttt{4.73e+00}. For the single-output regression tasks currently considered by the library, each leaf therefore contributes one numerical constant to the model description.
 
-This distinction allows the canonical language to remain small while still
-representing logistic-regression classifiers exactly. It also ensures that
-surfeit is computed from the predictive structure of the model rather than from
-operations that are irrelevant to the output being evaluated.
+For classification trees, a leaf predicts the class having the largest value in the corresponding fitted leaf distribution. The class value is represented using a \texttt{Label} node rather than a numeric constant. A classification tree is therefore represented entirely using: feature references, numerical thresholds comparisons, conditional expressions, and class labels. No tree-specific primitive is required by the model language.
+
+The serializer also preserves the missing-value routing rule stored in the fitted scikit-learn tree. When missing values at a given node are routed to the left subtree, the serializer distinguishes an observed value from \texttt{NaN} through the property $x=x$. For ordinary finite numbers this expression is true, whereas for
+\texttt{NaN} it is false. The condition associated with the node can therefore be written conceptually as
+\[
+\begin{cases}
+x_j\leq t, & x_j=x_j, \\
+\text{true}, & \text{otherwise},
+\end{cases}
+\]
+which directs a missing value to the left child.
+
+This logic is itself represented using the same conditional expressions as the rest of the tree. Consequently, the serialized description continues to reproduce the prediction rule without introducing a special tree-specific missing-value instruction.
+
+The effective representation used by a tree consists only of the features that appear in its internal split nodes. Features supplied to the estimator but never selected for a split do not belong to the effective subset of the resulting tree.
+
+\subsubsection{Search space}
+
+Decision trees contain a large number of possible structural hyperparameters: maximum depth, minimum leaf size, minimum split size, maximum number of leaves, pruning strength, and others. Searching their Cartesian product would generate a large and highly redundant search space. The \texttt{mnplib} AutoML implementation instead constructs the search space from two dimensions that correspond naturally to the two principal sources of nescience:
+
+\begin{enumerate}
+    \item the representation supplied to the tree; and
+    \item the complexity of the tree built from that representation.
+\end{enumerate}
+
+The representation dimension is explored through miscoding-ranked feature prefixes. The structural dimension is explored through cost-complexity pruning.
+
+Let $(j_1,j_2,\ldots,j_p)$ be the order of the attributes obtained from the miscoding-based feature ranking. The search considers the nested subsets $S_k = \{j_1,\ldots,j_k\}$, $k=1, \ldots, p$. For each feature prefix $S_k$, a decision tree is fitted and its cost-complexity pruning path is obtained.
+
+Cost-complexity pruning associates each subtree \(T\) with an objective of the general form
+\[
+R_\alpha(T) = R(T) + \alpha |T|,
+\]
+where $R(T)$ measures the empirical error of the tree, $|T|$ measures its size, and $\alpha \geq 0$ controls the penalty assigned to structural complexity. Small values of $\alpha$ favor larger trees, while larger values progressively remove branches.
+
+The scikit-learn pruning path produces a sequence $\alpha_0, \alpha_1, \ldots, \alpha_m$ corresponding to increasingly pruned trees. Rather than selecting one pruning strength according to the cost-complexity
+criterion itself, \texttt{mnplib} uses these values to generate candidate tree structures. The candidates are then evaluated using nescience. Cost-complexity pruning is used to navigate the space of possible tree structures; it is not the final criterion by which \texttt{mnplib} selects the preferred model.
+
+A complete cost-complexity pruning path may contain a large number of distinct values of $\alpha$. Evaluating every value can make AutoML unnecessarily expensive, particularly when repeated for several feature prefixes. The searcher therefore reduces the set of pruning parameters before fitting the final candidates.
+
+After removing invalid values and duplicates, the non-negative pruning parameters are transformed according to
+\[
+a \longmapsto \log\left(1+\frac{a}{a_{\min}}\right),
+\]
+where $a_{\min}$ is the smallest positive pruning value. The transformed values are discretized using the standard discretization procedure of \texttt{mnplib}. For each occupied bin, the original pruning parameter whose transformed value lies closest to the centre of the bin is retained as a representative. Thus, rather than evaluating every element of a potentially dense pruning path, the search evaluates a smaller set $\widetilde{A}_k \subseteq A_k$  that covers the range of pruning strengths.
+
+This procedure is a computational approximation intended to reduce the number of structurally similar candidate trees. It does not alter the definition of nescience used to evaluate the resulting models.
+
+For each selected feature prefix $S_k$, the search proceeds conceptually as
+\[
+S_k \longrightarrow \text{pruning path} \longrightarrow \widetilde{A}_k
+\longrightarrow \{T_{k,\alpha}:\alpha\in\widetilde{A}_k\}.
+\]
+Each candidate $T_{k,\alpha}$  is a decision tree fitted using the selected feature columns and the pruning parameter $\texttt{ccp\_alpha}=\alpha$. The same procedure is used for classification and regression trees, using \texttt{DecisionTreeClassifier} and \texttt{DecisionTreeRegressor}, respectively.
+
+The current implementation uses a tree with \texttt{min\_samples\_leaf=5} when obtaining the initial pruning path for each feature prefix. Candidate trees corresponding to the retained pruning parameters are subsequently fitted using their selected \texttt{ccp\_alpha} values.
+
+Different pruning parameters can sometimes produce the same effective tree. Evaluating such models repeatedly would add computational cost without introducing a new candidate description.
+
+The search therefore computes a structural signature containing: the left-child indices, the right-child indices, the feature index used at every node, and the split thresholds. Thresholds are rounded to a fixed numerical precision when constructing this signature. If a candidate has the same selected feature prefix and the same structural signature as a tree already evaluated, it is discarded as a duplicate.
+
+This reduction is particularly appropriate for a nescience-based search: models implementing the same effective tree structure need not be evaluated repeatedly merely because they were produced by different values of an auxiliary pruning parameter.
+
+Miscoding controls the representation dimension of the search. Rather than allowing every possible feature subset to enter the tree search, the attributes are first ordered according to their supervised relevance. The search then explores only the nested prefixes $S_1\subset S_2\subset\cdots\subset S_p$. This reduces the representation search from $2^p-1$ possible non-empty subsets to at most $p$ prefixes.
+
+For decision trees, this is particularly useful because the tree-building algorithm already performs local feature selection when choosing each split. Miscoding operates at a different level: it determines which representation is made available to the entire tree before training begins. The two mechanisms are therefore complementary. Miscoding guides the global representation, while the decision-tree algorithm chooses locally which available feature and threshold should be used at each node.
+
+For a fixed feature subset, pruning produces a sequence of models ranging fromvcomplex trees to progressively simpler ones. At one extreme, a highly pruned tree contains few decisions. Its serialized description is short and structurally simple, but it may fail to reproduce the target accurately. At the other extreme, a large tree can create many specialized regions of the feature space. This may decrease prediction error but introduces additional conditions, thresholds, and leaves into the description. Each additional internal node contributes approximately a structure of the form
+\begin{verbatim}
+<left> if xj<=threshold else <right>
+\end{verbatim}
+to the serialized model. Consequently, tree growth directly increases the amount of computational structure represented in the canonical description.
+
+This produces the characteristic trade-off smaller trees with potentially higher inaccuracy and simpler model description, whereas larger tree have potentially lower inaccuracy and more elaborate model description. Surfeit evaluates the latter description, while inaccuracy evaluates the former prediction discrepancy. Their combination through mismodel therefore provides a natural criterion for deciding how far the tree should be allowed to grow.
+
+The complete tree search jointly explores $(S_k,\alpha)$, where $S_k$ determines the representation and $\alpha$ determines a poin on the pruning path. Each candidate is evaluated through $\operatorname{Nescience}(T_{k,\alpha})$. Conceptually, the selected model is
+\[
+(k^\star,\alpha^\star) =
+\operatorname*{arg\,min}_{k,\alpha} \operatorname{Nescience}(T_{k,\alpha}).
+\]
+
+Decision trees therefore provide a particularly direct illustration of nescience-based AutoML. Miscoding controls which information is supplied to the model, while pruning changes the complexity of the description constructed from that information. Inaccuracy determines whether the resulting description reproduces the target sufficiently well, and surfeit penalizes unnecessary structure in the serialized prediction rule.
+
+The search does not require an externally specified preferred tree depth or a fixed regularization strength. Instead, the appropriate balance between representation, predictive fidelity, and model complexity emerges from the nescience of the candidate models.
+
+%
+% Section: Naive Bayes
+%
+
+\section{Naive Bayes}
+\label{subsec:automl_naive_bayes}
+\index{Naive Bayes}
+\index{Gaussian Naive Bayes}
+\index{Bayesian classification}
+
+Naive Bayes is a family of probabilistic classification models based on Bayes' theorem and a simplifying conditional-independence assumption. Given a class variable \(Y\) and a representation $X=(X_1,\ldots,X_p)$, Bayes' theorem gives
+\[
+P(Y=c\mid X) = \frac{P(X\mid Y=c)P(Y=c)}{P(X)}.
+\]
+For classification, the denominator \(P(X)\) is common to every candidate class and therefore does not need to be evaluated. The predicted class can be written as
+\[
+\widehat{Y} = \operatorname*{arg\,max}_{c} P(X\mid Y=c)P(Y=c).
+\]
+ Naive Bayes assumes that the attributes are conditionally independent given the class:
+\[
+P(X\mid Y=c) = \prod_{j=1}^{p} P(X_j\mid Y=c).
+\]
+The resulting classifier can therefore combine a collection of simple feature-wise distributions rather than estimate the complete joint distribution of the representation.
+
+The current implementation in \texttt{mnplib} supports only Gaussian Naive Bayes, implemented through scikit-learn's \texttt{GaussianNB}. Each numerical feature is assumed to follow a Gaussian distribution within each class.
+
+For class \(c\) and feature \(X_j\), Gaussian Naive Bayes models
+\[
+X_j\mid Y=c \sim \mathcal{N}(\mu_{cj},\sigma_{cj}^2),
+\]
+where $\mu_{cj}$ and $\sigma_{cj}^2$ are estimated from the training observations belonging to class $c$. The conditional density is
+\[
+P(X_j=x_j\mid Y=c) = \frac{1}{\sqrt{2\pi\sigma_{cj}^{2}}}
+\exp\left(-\frac{(x_j-\mu_{cj})^2}{2\sigma_{cj}^{2}} \right).
+\]
+Using the Naive Bayes independence assumption, the class score is proportional to
+\[
+P(Y=c) \prod_{j=1}^{p} P(X_j=x_j\mid Y=c).
+\]
+In practice it is preferable to work with logarithms. Since the logarithm is a strictly increasing function, maximizing the probability is equivalent to maximizing its logarithm. Thus the decision score becomes
+\[
+s_c(X) = \log P(Y=c) - \frac{1}{2}
+\sum_{j=1}^{p} \log\left(2\pi\sigma_{cj}^{2}\right) - \sum_{j=1}^{p}
+\frac{(X_j-\mu_{cj})^2}{2\sigma_{cj}^{2}}.
+\]
+The predicted class is therefore
+\[
+\widehat{Y} = \operatorname*{arg\,max}_c s_c(X).
+\]
+This form is particularly convenient for the restricted model-description language used by \texttt{mnplib}, because the logarithms of the fitted constants can be calculated when the model is serialized. No logarithm operation is required during prediction.
+
+\subsubsection{Model description}
+
+The serializer constructs one arithmetic expression for each class. For class $c$, it begins with the logarithm of the fitted prior:
+\[
+\log P(Y=c).
+\]
+For every feature used by the fitted model, it adds the precomputed Gaussian normalization constant
+\[
+-\frac{1}{2} \log\left(2\pi\sigma_{cj}^{2}\right)
+\]
+and subtracts the quadratic penalty
+\[
+\frac{(X_j-\mu_{cj})^2}
+     {2\sigma_{cj}^{2}}.
+\]
+Consequently, a complete class score is represented explicitly as
+\[
+s_c(X) = a_c - \sum_{j\in S}
+\frac{(X_j-\mu_{cj})^2}
+     {2\sigma_{cj}^{2}},
+\]
+where
+\[
+a_c = \log P(Y=c) - \frac{1}{2} \sum_{j\in S}
+\log\left(2\pi\sigma_{cj}^{2}\right)
+\]
+contains quantities that can be precomputed from the fitted model.
+
+\begin{example}
+A two-feature class score may have a canonical representation conceptually equivalent to
+
+\begin{verbatim}
+-2.31e+00
+-(x0-1.27e+00)**2.00e+00/8.42e-01
+-(x1-4.16e+00)**2.00e+00/2.73e+00
+\end{verbatim}
+
+with the exact parentheses determined by the canonical renderer.
+\end{example}
+
+Notice that expressions such as
+\[
+\log P(Y=c)
+\]
+and
+\[
+-\frac{1}{2}\log(2\pi\sigma^2)
+\]
+appear in the canonical model only through their fitted numerical values. They are constants of the trained prediction rule and therefore do not require \texttt{log}, $\pi$, or a Gaussian-density primitive in the executable description. The only operations required to evaluate a Gaussian class score are therefore: constants, feature references, addition and subtraction, multiplication and division, and exponentiation by two.
+
+After constructing one score $s_c$ for every class, the serializer represents the final decision through explicit score comparisons and nested conditionals. No special \texttt{argmax}, \texttt{classify}, \texttt{Gaussian}, or \texttt{NaiveBayes} executable primitive is required.
+
+For three classes, the resulting decision is conceptually of the form
+\[
+\widehat{Y} =
+\begin{cases}
+c_0, & s_0\geq s_1 \land s_0\geq s_2, \\
+c_1, & s_1\geq s_2, \\
+c_2, & \text{otherwise}.
+\end{cases}
+\]
+
+Thus the statistical interpretation of the model is Gaussian Naive Bayes, but its canonical executable description is reduced to arithmetic expressions and conditional class selection.
+
+Not every input feature necessarily contributes information to the fitted Gaussian decision rule. The serializer regards feature $j$ as active when either its fitted means or its fitted variances differ between classes. Thus, $j \in S$ whenever
+\[
+\max_c \mu_{cj}-\min_c\mu_{cj}\neq0
+\]
+or
+\[
+\max_c \sigma_{cj}^{2}-\min_c\sigma_{cj}^{2}\neq0.
+\]
+If both the class means and class variances are identical for a feature, that feature contributes the same class-dependent structure to every score and is therefore excluded from the effective feature subset.
+
+\subsubsection{Search space}
+
+The current AutoML procedure does not search over different members of the Naive Bayes family. In particular, it does not compare Gaussian, multinomial, Bernoulli, or categorical variants. It also does not search over a grid of values of the Gaussian variance-smoothing parameter. Instead, the search dimension is the representation supplied to a single Gaussian Naive Bayes family.
+
+The Naive Bayes assumption treats features independently conditional on the class, but this does not imply that every available feature should be supplied to the classifier. Some attributes may contain useful target information, whereas others may contribute mostly surplus information. Miscoding provides an ordering that attempts to introduce useful attributes first.
+
+The features are first ordered using the miscoding-based ranking $(j_1,j_2,\ldots,j_p)$. The search then considers the nested prefixes $S_k = \{j_1,\ldots,j_k\}$, $k=1,\ldots,p$. For each prefix, one Gaussian Naive Bayes classifier is fitted $M_k = \operatorname{GaussianNB}(X_{S_k},Y)$. Thus the effective AutoML parameter is $k$, the number of attributes included from the miscoding ordering. Rather than evaluating the  $2^p-1$ possible non-empty feature subsets, the procedure evaluates at most $p$ nested representations.
+
+Each additional active feature introduces fitted parameters into every relevant class score. For $K$ classes, feature \(j\) may contribute, for each class, $\mu_{cj}$ and $\sigma_{cj}^{2}$, together with the arithmetic operations necessary to evaluate
+\[
+\frac{(X_j-\mu_{cj})^2}{2\sigma_{cj}^{2}}.
+\]
+Consequently, increasing the number of features generally increases the canonical model description. This produces a natural trade-off: more features could potentially lower inaccuracy but it requires larger class-score descriptions. Conversely, fewer features implies simpler descriptions but potentially greater inaccuracy.
+
+Gaussian Naive Bayes requires positive class variances. In numerical implementations, attributes with extremely small variances can therefore create stability problems. The scikit-learn estimator addresses this through the parameter \texttt{var\_smoothing}. The current searcher forwards a fixed value of this parameter to every candidate; its default is $10^{-9}$. Within \texttt{mnplib}, \texttt{var\_smoothing} is treated as a numerical
+stability setting rather than as a model-selection dimension. It is consequently not optimized by nescience in the current search. Every feature-prefix candidate is fitted using the same value.
+
+The Naive Bayes family described here should be understood specifically as Gaussian Naive Bayes. Other variants, such as Multinomial Naive Bayes, Bernoulli Naive Bayes, and Categorical Naive Bayes, use different conditional distributions and would therefore require different executable score descriptions. The current implementation deliberately avoids introducing a generic \texttt{NaiveBayes} primitive into the model language. Supporting another distribution would require expressing its prediction rule using the same general computational language or extending that language only with genuinely general operations.
+
+This preserves the central serialization principle of \texttt{mnplib}: the canonical description should expose the computation performed by the fitted model rather than hide it behind a model-family-specific token.
+
+%
+% Section: Linear Support Vector Machines
+%
+
+\section{Linear Support Vector Machines}
+\label{subsec:automl_svm}
+
+\index{Support vector machine}
+\index{LinearSVC}
+\index{LinearSVR}
+
+Support vector machines, or SVMs, are supervised learning models based on the construction of decision functions with large geometric margins. In the current ersion of \texttt{mnplib}, the supported SVM family is restricted to \emph{linear} support vector machines, implemented through the scikit-learn estimators \texttt{LinearSVC} and \texttt{LinearSVR}.
+
+This restriction is important. Kernel SVMs define decision functions through similarity calculations against support vectors and therefore require a more elaborate model description. The present section considers only linear SVMs, whose fitted prediction rules can be represented using the same arithmetic language employed for linear and logistic models.
+
+For binary classification, a linear support-vector classifier computes a score
+\[
+f(X) = \beta_0 + \sum_{j=1}^{p} \beta_j X_j.
+\]
+The predicted class is determined by the sign of this score:
+\[
+\widehat{Y} =
+\begin{cases}
+c_1, & f(X)>0,\\
+c_0, & \text{otherwise}.
+\end{cases}
+\]
+The vector $\beta=(\beta_1,\ldots,\beta_p)$ defines the orientation of the separating hyperplane, while the intercept $\beta_0$ determines its position. The parameter $C>0$ controls the balance between margin maximization and violations of the margin constraints. Smaller values of $C$ permit a softer margin and stronger regularization, whereas larger values place greater emphasis on fitting the training observations.
+
+For multiclass classification, scikit-learn represents the problem through multiple linear decision functions. The predicted class is obtained from the corresponding class scores.
+
+Linear support-vector regression uses an affine prediction function
+\[
+\widehat{Y} = \beta_0 + \sum_{j=1}^{p} \beta_j X_j,
+\]
+but estimates its coefficients according to the support-vector regression objective rather than ordinary least squares. A central parameter is the width $\epsilon$ of the insensitive region around the regression function. Errors lying inside this region do not contribute to the corresponding loss. The parameter $C$ determines the penalty assigned to deviations outside the insensitive region.
+
+Although the fitting criterion differs substantially from linear regression, the final prediction rule remains affine. This allows the fitted model to reuse the same canonical arithmetic representation.
+
+% LinearSVM: Model description
+
+\subsubsection{Model description}
+
+The serializer for linear SVMs reuses the serialization strategy employed by other linear models. A fitted affine score
+\[
+z = \beta_0 + \beta_1 X_1 + \cdots + \beta_p X_p
+\]
+is translated into a semantic AST beginning with the intercept. Every non-zero coefficient contributes a multiplication term $|\beta_j|X_j$, which is joined to the current expression using addition or subtraction
+according to its sign.
+
+\begin{example}
+The fitted model
+\[
+z = -0.6 + 1.8X_1 - 0.9X_3
+\]
+may be represented canonically as
+
+\begin{verbatim}
+-6.00e-01+1.80e+00*x0-9.00e-01*x2
+\end{verbatim}
+
+where the numerical constants follow the canonical scientific notation used by the model-description language.
+\end{example}
+
+For regression, this affine expression is itself the complete predictive model. For binary classification, it is embedded in a conditional:
+
+\begin{verbatim}
+label(c1) if -6.00e-01+1.80e+00*x0-9.00e-01*x2>0.00e+00
+else label(c0)
+\end{verbatim}
+
+For multiclass classification, the linear class scores are compared explicitly using the same nested conditional machinery employed for logistic regression. No SVM-specific classification primitive is required. Thus, the canonical description of a linear SVM is constructed entirely from general model-language elements: numerical constants, feature references, arithmetic operators, comparisons, conditional expressions, and class labels.
+
+As for the other linear model families, a feature belongs to the effective representation if its fitted coefficient is non-zero.
+
+% LinearSVM Search Space
+
+\subsubsection{Search space}
+
+The current \texttt{LinearSVC} search follows a deliberately small hyperparameter search. Rather than exploring a large Cartesian product of solver and regularization options, the implementation evaluates a predefined collection of values of the regularization parameter $C$. With the default configuration, the candidate values are $C \in \{0.1,1,10\}$. For each value, one model is fitted: $M_C = \operatorname{LinearSVC}(C)$. Duplicate values of $C$ are ignored. The solver configuration is otherwise fixed. In particular, the current search
+uses \texttt{dual=False} together with a maximum number of optimization iterations and a convergence
+tolerance. The latter quantities are optimization controls rather than dimensions of the model-selection search.
+
+Each successfully fitted candidate is passed to the shared candidate evaluator, which computes its nescience. Thus the selected classification model is conceptually
+\[
+C^\star = \operatorname*{arg\,min}_{C\in\mathcal C} \operatorname{Nescience}(M_C),
+\]
+where $\mathcal C$ is the finite set of tested regularization strengths.
+
+The current \texttt{LinearSVR} search uses a different strategy. Rather than searching over $C$ and $\epsilon$, the search fixes these parameters and explores the representation supplied to the regressor. The current defaults are $C=1$ and $\epsilon=0$. The available features are first ordered by the miscoding-based ranking: $(j_1, j_2, \ldots, j_p)$. The search then evaluates the nested prefixes $S_k = \{j_1,\ldots,j_k\}$, $k=1, \ldots, p$. For each prefix S$_k$, a separate linear support-vector regressor is fitted:
+\[
+M_k = \operatorname{LinearSVR} \left(X_{S_k}, Y; C, \epsilon \right).
+\]
+The fitted candidate is wrapped so that it remains usable over the original feature space, while the evaluator is informed explicitly of the selected feature indices. The effective model-selection variable is therefore the representation size $k$, not the SVM regularization parameters.
+
+Miscoding plays a direct role in the \texttt{LinearSVR} search. Rather than testing arbitrary feature subsets, the search begins with the most promising feature according to supervised miscoding and progressively introduces
+additional attributes. This reduces the representation search from $2^p-1$ possible non-empty subsets to at most $p$ nested prefixes. The resulting search examines $M_1, M_2, \ldots, M_p$, where each model receives a progressively richer representation.
+
+Miscoding therefore determines the order in which the representation is expanded, while nescience determines when further expansion is no longer beneficial.
+
+The present implementation should be interpreted specifically as support for \emph{linear} support-vector machines. Nonlinear kernel SVMs are not represented by the serializer considered here. Their prediction rules require repeated evaluation of kernel functions against support vectors and therefore demand a richer canonical description.
+
+%
+% Section: Polynomial SVM
+%
+
+\section{Polynomial Support Vector Machines}
+\label{subsec:automl_polynomial_svm}
+
+\index{Polynomial SVM}
+\index{Polynomial kernel}
+\index{SVC}
+\index{SVR}
+
+Linear support-vector machines construct affine decision functions in the original feature space. This provides compact models, but it also limits the decision boundaries and regression functions that can be represented. A polynomial support-vector machine extends the same margin-based principle by replacing the ordinary inner product between observations with a polynomial kernel.
+
+Given two feature vectors $x,z \in \mathbb{R}^{p}$, the polynomial kernel is defined as
+\[
+K(x,z) = \left(\gamma\,x^\mathsf{T}z+r \right)^d,
+\]
+where $\gamma$ controls the scale of the inner product, $r$ is an offset, and \(d\) is the degree of the polynomial. The kernel allows a support-vector machine to represent nonlinear relations without constructing the corresponding polynomial features explicitly. For example, a kernel of degree two implicitly introduces quadratic terms and feature interactions, while a degree-three kernel additionally introduces cubic structure.
+
+For a fitted support-vector regressor, the prediction function has the form
+\[
+\widehat{Y}(x) = b + \sum_{i=1}^{n_{\mathrm{SV}}} \alpha_i K(x,s_i),
+\]
+where $s_i$ is the $i$-th support vector, $\alpha_i$ its fitted dual coefficient, $b$ the intercept, and $n_{\mathrm{SV}}$ the number of support vectors.
+
+Substituting the polynomial kernel gives
+\[
+\widehat{Y}(x) = b + \sum_{i=1}^{n_{\mathrm{SV}}} \alpha_i
+\left(\gamma \sum_{j=1}^{p}x_j s_{ij} + r\right)^d.
+\]
+For binary classification, the same expression defines a decision score
+\[
+f(x) = b + \sum_{i=1}^{n_{\mathrm{SV}}} \alpha_i
+\left(\gamma \sum_{j=1}^{p}x_j s_{ij} + r\right)^d,
+\]
+and the predicted class is determined by its sign:
+\[
+\widehat{Y} =
+\begin{cases}
+c_1, & f(x)\geq0,\\
+c_0, & f(x)<0.
+\end{cases}
+\]
+The current \texttt{mnplib} implementation supports polynomial support-vector regression and binary polynomial support-vector classification. Multiclass polynomial classification is not currently supported because reproducing the one-versus-one decision procedure of the underlying SVM implementation would require additional prediction logic.
+
+\subsubsection{Model description}
+
+The serializer first represents the inner product
+\[
+x^\mathsf{T}s_i = \sum_{j=1}^{p}x_j s_{ij}
+\]
+as a bounded sum. Conceptually, the canonical expression is
+
+\begin{verbatim}
+sum(x[j]*sv[i][j] for j in range(n_features))
+\end{verbatim}
+
+The polynomial kernel is then represented as
+
+\begin{verbatim}
+( gamma*sum(x[j]*sv[i][j] for j in range(n_features))
+  +coef0 )**degree
+\end{verbatim}
+
+Finally, the complete support-vector prediction rule is represented by a second bounded sum:
+
+\begin{verbatim}
+intercept
++sum( dual[i]
+      *( gamma
+         *sum(x[j]*sv[i][j] for j in range(n_features))
+         +coef0 )**degree
+      for i in range(n_support_vectors) )
+\end{verbatim}
+
+The exact canonical representation contains no \texttt{SVM}, \texttt{kernel}, \texttt{dot}, or other model-specific executable primitive. The model is expressed entirely through general elements of the description
+language: constants, vectors and indexed elements, multiplication and addition, exponentiation,  bounded sums, and conditional expressions for classification.
+
+The repetitive algorithmic structure of the model is represented compactly by \texttt{Sum}, but the information contained in the fitted parameters is not hidden. Every support-vector coordinate and every dual coefficient remains part of the description. Consequently, a model requiring many support vectors naturally requires more
+information to describe than one requiring only a few.
+
+For support-vector regression, the resulting score is itself the model output, so the serializer returns the arithmetic expression directly.
+
+For binary classification, the same score is embedded in a conditional expression. Conceptually,
+
+\begin{verbatim}
+label(c1) if score>=0.00e+00 else label(c0)
+\end{verbatim}
+
+where $c_0$ and $c_1$ correspond to the fitted class labels.
+
+As with logistic regression and linear support-vector classification, no probability transformation is necessary. The canonical description contains only the computation required to reproduce the final prediction.
+
+The polynomial kernel requires only arithmetic, exponentiation, indexed access, and bounded summation, and can therefore be described exactly using the existing language.
+
+The support vectors also determine the effective feature subset of the fitted model. For a nonconstant polynomial kernel, an input coordinate is conservatively considered active when at least one support vector associated with a non-zero dual coefficient has a non-zero value in that coordinate. If the polynomial has degree zero, or if the effective value of $\gamma$ is zero, the kernel is independent of the input representation and no feature is considered active.
+
+\subsubsection{Search space}
+
+Polynomial SVMs introduce two particularly important structural parameters: the regularization strength $C$ and the polynomial degree $d$. The current AutoML search deliberately keeps this space small. By default it
+evaluates $C \in \{0.1,1,10\}$ and $d \in \{2,3,4\}$. Thus, at most nine combinations are generated before failed or invalid candidates are removed. For every candidate, the kernel parameters $\gamma$ and $r$ are not independently searched. The current implementation uses \texttt{gamma="scale"} and \texttt{coef0=1.0}. The search therefore concentrates on the two dimensions having the clearest interpretation for model selection: $(C,d)$. The maximum number of optimization iterations and convergence tolerance are treated as fitting controls rather than as model-selection dimensions.
+
+Before fitting the polynomial SVM candidates, the available features are ordered according to supervised miscoding: $(j_1,j_2,\ldots,j_p)$. The current search constructs one fixed selected set from this ranking,
+potentially truncated by the configured maximum number of feature prefixes. All combinations of $C$ and $d$ are then evaluated on the same selected representation. Thus, unlike the LinearSVR search described previously, the current polynomial SVM procedure does not fit a separate model for every nested feature prefix. Miscoding is used to determine and constrain the representation supplied to the polynomial SVM, while the explicit hyperparameter search is performed over regularization and polynomial degree.
+
+Before fitting, the selected features are standardized. The fitted scaler is retained with the public model so that it can subsequently receive observations in the original input representation.
+
+Polynomial support-vector machines are particularly sensitive to numerical representation. A prediction depends on support-vector coordinates, dual coefficients, kernel parameters, powers, and the accumulation of potentially
+many kernel contributions. Quantization of these constants can therefore cause the canonical prediction rule to deviate from the original fitted estimator. For this reason, the searcher explicitly checks the predictions produced by the canonical description before accepting a candidate.
+
+For classification, the class predictions produced by the canonical AST must match the fitted model predictions exactly. For regression, small numerical differences are permitted according to a fixed absolute and relative tolerance. Candidates whose canonical descriptions exceed this tolerance are rejected and reported through search diagnostics. This additional check ensures that a short canonical representation is not accepted merely because quantization has silently changed the fitted model.
+
+
+%
+% Section: Multilayer Perceptron
+%
+
+\section{Multilayer Perceptrons}
+\label{subsec:automl_mlp}
+\index{Multilayer perceptron}
+\index{Neural network}
+
+A multilayer perceptron, or MLP, is a feed-forward neural network composed of successive layers of artificial neurons. Each layer transforms the output of the preceding layer through an affine transformation followed, except in the final layer, by a nonlinear activation function.
+
+Let
+\[
+h^{(0)} = X
+\]
+denote the input representation. For layer \(\ell\), the pre-activation value of neuron $j$ is
+\[
+z_j^{(\ell)} = b_j^{(\ell)} + \sum_{i=1}^{n_{\ell-1}} w_{ji}^{(\ell)} h_i^{(\ell-1)},
+\]
+where $w_{ji}^{(\ell)}$ is the weight connecting input $i$ to neuron $j$, $b_j^{(\ell)}$ is its bias, and $n_{\ell-1}$ is the number of inputs to the layer. The hidden-layer output is then
+\[
+h_j^{(\ell)} = \phi\!\left(z_j^{(\ell)}\right),
+\]
+where $\phi$ is the activation function. Typical choices include identity, ReLU, logistic, and hyperbolic tangent.
+
+By composing several such transformations, an MLP can represent nonlinear relationships and interactions that cannot be expressed by a single linear model. This flexibility comes at the cost of a much larger model space. The number of selected input variables, number of hidden layers, number of neurons per layer, and training configuration all affect the resulting predictor.
+
+The AutoML procedure implemented in \texttt{mnplib} therefore treats MLP selection as a joint search over representation and architecture.
+
+% MLP: Model description
+
+\subsubsection{Model description}
+
+A neural network presents a particular challenge for model serialization. A high-level token such as \texttt{dense(...)} would hide a substantial amount of computation inside a single primitive. This would make the textual description artificially short and would therefore be inappropriate for the computation of surfeit.
+
+The \texttt{mnplib} serializer instead represents neural-network layers using general bounded computational constructs. Two constructs are particularly important:
+
+\begin{itemize}
+    \item \texttt{Sum}, which represents a finite accumulation; and
+    \item \texttt{Comprehension}, which represents the construction of a vector by repeating the same expression over a finite index range.
+\end{itemize}
+
+These constructs are part of the general model-description language and are not specific to neural networks. For one neuron,
+\[
+z_j = b_j + \sum_{i=0}^{n-1}w_{ji}x_i,
+\]
+the canonical computation is represented conceptually as
+
+\begin{verbatim}
+b[j] + sum(w[j][i] * x[i] for i in range(n))
+\end{verbatim}
+
+The complete layer is represented as a bounded comprehension:
+
+\begin{verbatim}
+[ b[j] + sum(w[j][i] * x[i] for i in range(n_inputs))
+  for j in range(n_outputs) ]
+\end{verbatim}
+
+Thus the repeated structure of the layer is represented by a short bounded program, while every fitted weight and bias remains explicitly present in the model description.
+
+This distinction is important. The language compresses the regularity of the computation, but it does not hide the learned parameters.
+
+Activation functions are not represented by dedicated model-specific tokens. Instead, their computations are expressed using the general arithmetic and conditional constructs of the language. For the identity activation, $\phi(z)=z$, no additional operation is required. For ReLU, $\phi(z)=\max(0,z)$, the serializer uses the conditional expression
+\[
+\phi(z) = 
+\begin{cases}
+z, & z>0,\\
+0, & \text{otherwise},
+\end{cases}
+\]
+which can be rendered conceptually as
+\begin{verbatim}
+z if z > 0.00e+00 else 0.00e+00
+\end{verbatim}
+
+Other activation functions, like the logistic activation, or the hyperbolic tangent, are not allowed in the \texttt{mnplib} library. 
+
+The serializer begins with the selected input features and represents them as a vector $h^{(0)} = [x_0,x_1,\ldots,x_{p-1}]$. For each fitted layer, its weight matrix and bias vector are converted into constant vectors contained in the semantic AST. If layer $\ell$ has $n_{\ell-1}$ inputs and $n_\ell$ outputs, the score of
+neuron $j$ is represented by
+\[
+z_j^{(\ell)} = b_j^{(\ell)} + \sum_{i=0}^{n_{\ell-1}-1} w_{ji}^{(\ell)} h_i^{(\ell-1)}.
+\]
+The complete layer is then represented as
+\[
+h^{(\ell)} = \left[ \phi\!\left(z_j^{(\ell)}\right) \;\middle|\; j=0,\ldots,n_\ell-1 \right].
+\]
+In the canonical Python-like language, this corresponds conceptually to
+
+\begin{verbatim}
+[ activation(
+    b[j]
+    + sum(w[j][i] * h[i] for i in range(n_inputs))
+  )
+  for j in range(n_outputs) ]
+\end{verbatim}
+
+where the term \texttt{activation(...)} in this explanatory notation is itself expanded into the corresponding arithmetic or conditional AST and does not appear as a dedicated canonical token. Each successive layer consumes the vector produced by the previous one.
+
+For regression, the final layer uses the identity activation. The serialized model therefore returns the final numerical output directly. For single-output regression, the result is the first element of the final
+output vector.
+
+For classification, only the computation needed to reproduce $\operatorname{predict}(X)$ is retained. In binary classification, the final scalar output is converted into a class prediction using an explicit threshold rule. The serializer does not need to retain probability calculations that do not alter the final predicted class. In multiclass classification, the final class scores are compared explicitly using nested conditional expressions. As with logistic regression, no special \texttt{classify} or \texttt{argmax} primitive is required.
+
+The resulting model description therefore remains composed of the same general building blocks used throughout the library: constants, feature and vector references, arithmetic, bounded sums, bounded comprehensions, comparisons, conditional expressions, and class labels.
+
+The effective feature subset of the MLP is determined from the first-layer weights. A feature is considered used when it has at least one non-zero connection to a neuron in the first hidden layer. Features whose first-layer outgoing weights are all exactly zero do not affect the network output and therefore need not be included in the effective representation.
+
+% MLP: Search space
+
+\subsubsection{Search space}
+
+The MLP search differs substantially from the searches used for linear or logistic regression. A neural network has a structural architecture that must itself be selected. The current implementation performs a greedy search over two principal dimensions: the number of selected input features, and the hidden-layer architecture.
+
+The input features are first ordered using the miscoding-based ranking: $(j_1,j_2,\ldots,j_p)$. A candidate with $k$ input features therefore uses the prefix $S_k = \{j_1,\ldots,j_k\}$. The network architecture is represented by a tuple $H = (h_1,h_2,\ldots,h_L)$, where $h_\ell$ is the number of neurons in hidden layer $\ell$. A search state can therefore be written as $(k,H)$.
+
+The search begins with a small initial state. The current defaults use: two selected features, and one hidden layer containing three neurons. Thus the initial state is $(2,(3))$. The purpose is to start from a relatively small model and allow additional representation or structural complexity only when doing so reduces nescience.
+
+From the current state, the search considers three types of local move.
+
+\begin{itemize}
+
+\item \emph{Add a feature}: the next feature in the miscoding ranking is added: $(k,H) \longrightarrow (k+1,H)$.
+
+\item \emph{Add a hidden layer}:  If the maximum number of hidden layers has not been reached, a new layer is appended $(k,(h_1,\ldots,h_L)) \longrightarrow (k,(h_1,\ldots,h_L,h_{\mathrm{new}}))$. The width of the newly added layer is determined by the configured \texttt{layer\_width}, subject to the maximum allowed units per layer.
+
+\item \emph{Add units}: If the current hidden layers have not reached their maximum width, their sizes are increased by a configured step $(k,(h_1,\ldots,h_L)) \longrightarrow (k,(h_1+\Delta,\ldots,h_L+\Delta))$.
+
+\end{itemize}
+
+These moves define a local neighborhood around the current architecture.
+
+Every candidate is trained using only the selected feature prefix. Before training, the selected inputs are standardized using \texttt{StandardScaler}. This transformation is retained together with the candidate model so that the final public estimator accepts the original input representation.
+
+The MLP itself is fitted using configurable values for: activation, optimization solver, regularization parameter $\alpha$, maximum number of training iterations, and convergence tolerance. These quantities are fixed during the architecture search. They are training configuration rather than dimensions explored by the current greedy search. The principal search variables remain $k$ and $H$.
+
+From the current state, all admissible neighboring moves are evaluated, subject to the maximum number of candidates. Let $\mathcal{N}(k,H)$ denote the set of neighboring states generated by adding a feature, adding a
+layer, or adding units. The best local move is
+\[
+(k',H') = \operatorname*{arg\,min}_{(a,B)\in\mathcal{N}(k,H)} \operatorname{Nescience}(M_{a,B}).
+\]
+The search moves to this state only if the improvement exceeds a minimum
+threshold:
+\[
+\operatorname{Nescience}(M_{k',H'}) < \operatorname{Nescience}(M_{k,H}) - \delta,
+\]
+where $\delta$ is the configured minimum improvement.
+
+If no sufficient improvement is observed for a specified number of rounds, the search terminates. The search also terminates when no additional local moves are available, or the configured maximum number of candidate evaluations is reached.
+
+This produces a bounded greedy architecture search rather than an exhaustive enumeration of all possible networks. Rather than optimizing architecture size independently of representation quality, the procedure evaluates both within a common framework. The preferred network is not necessarily the smallest or the most accurate one in isolation, but the model whose representation and description jointly provide the lowest
+nescience among the candidates explored.

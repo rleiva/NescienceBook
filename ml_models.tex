@@ -1446,3 +1446,852 @@ If no sufficient improvement is observed for a specified number of rounds, the s
 
 This produces a bounded greedy architecture search rather than an exhaustive enumeration of all possible networks. Rather than optimizing architecture size independently of representation quality, the procedure evaluates both within a common framework. The preferred network is not necessarily the smallest or the most accurate one in isolation, but the model whose representation and description jointly provide the lowest
 nescience among the candidates explored.
+
+```latex
+%
+% Section: Autoregressive Models
+%
+
+\section{Autoregressive Models}
+\label{subsec:automl_autoregressive}
+\index{Autoregressive model}
+\index{Time series!autoregressive model}
+
+Autoregressive models predict the current value of a time series from values
+observed in its past. Given a numerical sequence
+
+\[
+Y=(Y_1,\ldots,Y_n),
+\]
+
+the classical autoregressive model of order \(p\), denoted by AR(\(p\)), has the
+form
+
+\[
+\widehat Y_t
+=
+\beta_0
++
+\sum_{k=1}^{p}
+\beta_k Y_{t-k},
+\]
+
+where \(\beta_0\) is an intercept and
+\(\beta_1,\ldots,\beta_p\) determine the contribution of the previous
+observations.
+
+The implementation in \texttt{mnplib} generalizes this idea slightly. The
+\texttt{TimeSeries} class first transforms the sequence into a supervised lagged
+representation. If the maximum temporal window is \(w\), the candidate features
+include
+
+\[
+Y_{t-1},Y_{t-2},\ldots,Y_{t-w}.
+\]
+
+When exogenous variables are available, their lagged observations are added to
+the same representation. Thus, the complete set of candidate variables may be
+
+\[
+Z_t
+=
+\left(
+Y_{t-1},\ldots,Y_{t-w},
+X_{1,t-1},\ldots,X_{1,t-w},
+\ldots,
+X_{q,t-w}
+\right).
+\]
+
+The autoregressive model used by \texttt{mnplib} is therefore more generally
+written as
+
+\[
+\widehat Y_t
+=
+\beta_0
++
+\sum_{j\in S}
+\beta_j Z_{j,t},
+\]
+
+where \(S\) is a subset of the available lagged variables.
+
+This differs from a conventional AR(\(p\)) model in an important respect. A
+classical AR(\(p\)) model normally uses the contiguous lags
+\(1,\ldots,p\). The \texttt{mnplib} implementation is allowed to select an
+arbitrary informative subset of the lagged representation. A model may therefore
+use, for example,
+
+\[
+Y_{t-1},\quad Y_{t-12},\quad X_{1,t-3},
+\]
+
+while discarding intermediate lags that contribute little useful information.
+
+Once the effective subset has been selected, the coefficients are fitted by
+ordinary least squares using the \texttt{LinearRegression} estimator from
+scikit-learn.
+
+From the perspective of the Theory of Nescience, this distinction is
+significant. The set of lagged variables belongs to the representation, whereas
+the fitted linear coefficients belong to the description. The problem is
+therefore not merely to estimate the coefficients of an autoregression, but to
+identify which parts of the temporal history deserve to be represented in the
+first place.
+
+\subsubsection{Model description}
+
+After fitting, the autoregressive forecasting rule is represented as a linear
+arithmetic expression over the selected lagged features. Conceptually, a fitted
+model such as
+
+\[
+\widehat Y_t
+=
+2.4
++
+0.7Y_{t-1}
+-
+0.2Y_{t-3}
++
+0.4X_{1,t-2}
+\]
+
+is reduced to an expression equivalent to
+
+\[
+2.4
++
+0.7z_1
+-
+0.2z_2
++
+0.4z_3,
+\]
+
+where the variables \(z_j\) identify the selected lagged inputs.
+
+The canonical representation follows the same principles used for ordinary
+linear regression. The intercept is represented as a constant, and each non-zero
+coefficient produces a multiplication between a numerical constant and a
+canonical feature reference. Zero coefficients need not contribute to the
+effective prediction rule.
+
+For example, a canonical representation may be conceptually equivalent to
+
+\begin{verbatim}
+2.40e+00
++7.00e-01*x0
+-2.00e-01*x1
++4.00e-01*x2
+\end{verbatim}
+
+where \texttt{x0}, \texttt{x1}, and \texttt{x2} refer to the effective lagged
+features rather than directly to the original time-series variables.
+
+The temporal meaning of those inputs is retained separately in the feature
+metadata. A selected feature may therefore be reported as, for example,
+\texttt{y\_lag\_12} or \texttt{temperature\_lag\_3}, while the executable
+description itself remains a simple arithmetic program.
+
+This separation is useful for computing surfeit. The canonical string describes
+only the actual prediction rule; information such as the original dates,
+optimization history, or estimator implementation does not contribute to the
+model description.
+
+\subsubsection{Search space}
+
+The principal search performed for the autoregressive family concerns the
+effective temporal representation.
+
+The complete lagged matrix may contain many variables. If there are \(q\)
+exogenous attributes and a temporal window of size \(w\), the maximum number
+of candidate lagged features is
+
+\[
+p=(q+1)w.
+\]
+
+An exhaustive search over every non-empty subset would require evaluating
+
+\[
+2^p-1
+\]
+
+representations and rapidly becomes infeasible.
+
+Instead, \texttt{mnplib} applies its miscoding-based greedy feature-selection
+procedure directly to the lagged representation. At each step, candidate lagged
+features are evaluated according to how much their inclusion improves the
+supervised representation of the future target while accounting for redundancy
+with features already selected.
+
+The resulting subset is then used to fit one linear autoregressive model, which
+is evaluated through nescience.
+
+The search can be controlled by a \texttt{min\_improvement} parameter. A new
+lagged feature is accepted only when its inclusion produces at least the required
+improvement in the miscoding-based selection criterion.
+
+Consequently, the autoregressive family does not search explicitly over an
+integer order \(p\) in the conventional sense. Its effective order and lag
+structure emerge from the selected temporal representation itself.
+
+This is a natural application of the Minimum Nescience Principle: temporal
+variables are introduced only when their information contribution justifies
+their inclusion in the resulting representation and description.
+
+
+%
+% Section: Moving Average
+%
+
+\section{Moving Average}
+\label{subsec:automl_moving_average}
+\index{Moving average}
+\index{Time series!moving average}
+
+A moving-average forecaster predicts the next observation from the arithmetic
+mean of a fixed number of recent observations. Given a window of size \(w\),
+the prediction used by \texttt{mnplib} is
+
+\[
+\widehat Y_t
+=
+\frac{1}{w}
+\sum_{k=1}^{w}
+Y_{t-k}.
+\]
+
+Equivalently,
+
+\[
+\widehat Y_t
+=
+\sum_{k=1}^{w}
+\omega_k Y_{t-k},
+\qquad
+\omega_k=\frac{1}{w}.
+\]
+
+All observations inside the window therefore receive equal weight.
+
+It is important to distinguish this forecasting rule from the
+\emph{moving-average process} MA(\(q\)) used in classical ARMA models. An
+MA(\(q\)) stochastic process expresses the current observation in terms of past
+innovations or errors,
+
+\[
+Y_t
+=
+\mu
++
+\varepsilon_t
++
+\theta_1\varepsilon_{t-1}
++\cdots+
+\theta_q\varepsilon_{t-q}.
+\]
+
+The \texttt{moving\_average} family implemented here is instead the ordinary
+rolling-mean forecasting rule based directly on past observations.
+
+The implementation uses a fixed linear forecaster. Its coefficients are not
+estimated from the training data. Once the window \(w\) has been chosen, the
+weights are completely determined:
+
+\[
+\boldsymbol{\omega}
+=
+\left(
+\frac1w,\frac1w,\ldots,\frac1w
+\right).
+\]
+
+This makes moving average one of the simplest descriptions considered by the
+time-series AutoML procedure.
+
+\subsubsection{Model description}
+
+For a window of size \(w\), the canonical model is simply a weighted sum of the
+first \(w\) target lags,
+
+\[
+\widehat Y_t
+=
+\frac1wY_{t-1}
++
+\frac1wY_{t-2}
++\cdots+
+\frac1wY_{t-w}.
+\]
+
+For example, with \(w=3\),
+
+\[
+\widehat Y_t
+=
+\frac13Y_{t-1}
++
+\frac13Y_{t-2}
++
+\frac13Y_{t-3}.
+\]
+
+The executable model description is therefore conceptually equivalent to
+
+\begin{verbatim}
+3.33e-01*x0
++3.33e-01*x1
++3.33e-01*x2
+\end{verbatim}
+
+after numerical constants have been normalized to the precision used by the
+canonical model language.
+
+No fitted coefficients, error terms, training observations, or optimization
+state need to be encoded. The complete model is determined by the window size
+and the corresponding fixed coefficients.
+
+This has an important consequence for surfeit. Small moving-average windows
+produce extremely compact descriptions. Increasing the window introduces
+additional terms that must be justified by a sufficient improvement in the
+ability of the model to reproduce the target.
+
+\subsubsection{Search space}
+
+The only structural parameter of this family is the window size \(w\).
+
+Given a maximum lag window \(W\), the default search considers
+
+\[
+w\in\{1,2,\ldots,W\}.
+\]
+
+For each candidate value of \(w\), the representation is
+
+\[
+S_w
+=
+\{
+Y_{t-1},\ldots,Y_{t-w}
+\},
+\]
+
+and the corresponding fixed moving-average predictor is constructed and
+evaluated using nescience.
+
+The candidate representations therefore form the nested sequence
+
+\[
+S_1
+\subset
+S_2
+\subset
+\cdots
+\subset
+S_W.
+\]
+
+Users may explicitly provide a smaller collection of window sizes when prior
+knowledge restricts the temporal scales of interest.
+
+No numerical optimization is required inside each candidate. The weights are
+fixed at \(1/w\), so model fitting merely instantiates the corresponding
+prediction rule.
+
+The search therefore asks a simple question: how much recent history should be
+retained? Very short windows may have high inaccuracy because they react too
+strongly to individual observations. Very long windows may smooth away useful
+changes while introducing unnecessary descriptive structure. Nescience provides
+a common criterion for balancing these effects.
+
+
+%
+% Section: Exponential Smoothing
+%
+
+\section{Exponential Smoothing}
+\label{subsec:automl_exponential_smoothing}
+\index{Exponential smoothing}
+\index{Time series!exponential smoothing}
+
+Exponential smoothing predicts future observations by assigning progressively
+smaller weights to observations further in the past. Recent values therefore have
+greater influence than older ones.
+
+In its classical recursive form, simple exponential smoothing can be written as
+
+\[
+S_t
+=
+\alpha Y_t
++
+(1-\alpha)S_{t-1},
+\]
+
+where
+
+\[
+0<\alpha<1
+\]
+
+is the smoothing parameter, and the next forecast is typically derived from the
+current smoothed level.
+
+The implementation in \texttt{mnplib} uses a finite-window version of this
+principle. For a window of size \(w\), the unnormalized weight of lag \(k\) is
+
+\[
+\widetilde\omega_k
+=
+\alpha(1-\alpha)^{k-1},
+\qquad
+k=1,\ldots,w.
+\]
+
+Because only a finite window is retained, the weights are normalized so that
+they sum to one:
+
+\[
+\omega_k
+=
+\frac{
+\alpha(1-\alpha)^{k-1}
+}{
+\sum_{j=1}^{w}
+\alpha(1-\alpha)^{j-1}
+}.
+\]
+
+The forecast is then
+
+\[
+\widehat Y_t
+=
+\sum_{k=1}^{w}
+\omega_kY_{t-k}.
+\]
+
+The most recent observation \(Y_{t-1}\) receives the largest weight, while older
+observations contribute geometrically less.
+
+The smoothing parameter controls the rate of decay. When \(\alpha\) is large,
+the forecast concentrates heavily on the most recent observations. When
+\(\alpha\) is small, the weights decay more slowly and a longer portion of the
+history contributes materially to the forecast.
+
+As with the moving-average family, these coefficients are fixed once \(w\) and
+\(\alpha\) have been specified. They are not estimated from the target series by
+an additional optimization procedure.
+
+\subsubsection{Model description}
+
+The finite-window exponential-smoothing predictor is serialized as an explicit
+weighted linear combination of lagged target observations.
+
+For example, for a window of size three,
+
+\[
+\widehat Y_t
+=
+\omega_1Y_{t-1}
++
+\omega_2Y_{t-2}
++
+\omega_3Y_{t-3},
+\]
+
+where the three numerical weights have already been computed from
+\(\alpha\).
+
+The canonical executable description therefore contains only ordinary
+arithmetic operations and fitted constants. It does not need to encode the
+exponential formula used to construct the coefficients. Once the model has been
+created, the numerical weights completely determine its prediction rule.
+
+A possible canonical representation is conceptually equivalent to
+
+\begin{verbatim}
+5.71e-01*x0
++2.86e-01*x1
++1.43e-01*x2
+\end{verbatim}
+
+for a particular choice of \(w\) and \(\alpha\).
+
+This representation has two advantages. First, prediction requires no special
+exponential-smoothing primitive in the model language. Second, surfeit is
+computed from the effective forecasting rule rather than from the algorithm that
+was used to derive its coefficients.
+
+\subsubsection{Search space}
+
+The family has two structural parameters:
+
+\[
+(w,\alpha),
+\]
+
+where \(w\) is the temporal window and \(\alpha\) the smoothing coefficient.
+
+For each candidate window \(w\), the effective representation consists of
+
+\[
+S_w
+=
+\{
+Y_{t-1},\ldots,Y_{t-w}
+\}.
+\]
+
+For every selected value of \(\alpha\), a different deterministic weight vector
+is constructed and therefore a different forecasting description is obtained.
+
+The current default search considers a collection of window sizes up to the
+configured temporal horizon and the smoothing coefficients
+
+\[
+\alpha
+\in
+\{
+0.1,\;0.2,\;0.3,\;0.5,\;0.8
+\}.
+\]
+
+Users may provide different collections of windows and smoothing parameters
+through the family-specific search options.
+
+The total number of candidates is therefore approximately
+
+\[
+|\mathcal W|
+\,|\mathcal A|,
+\]
+
+where \(\mathcal W\) is the set of admissible windows and
+\(\mathcal A\) the set of smoothing coefficients.
+
+Each candidate is inexpensive to evaluate because the weights are computed
+directly; no iterative fitting procedure is required.
+
+From the perspective of nescience, increasing \(w\) expands the temporal
+representation and lengthens the forecasting description, while changing
+\(\alpha\) redistributes the importance assigned to recent and distant
+observations. The selected combination is the one whose predictive improvement
+best justifies the resulting representation and description complexity.
+
+
+%
+% Section: ARIMA
+%
+
+\section{ARIMA}
+\label{subsec:automl_arima}
+\index{ARIMA}
+\index{Time series!ARIMA}
+
+ARIMA models combine three classical mechanisms for describing a time series:
+autoregression, differencing, and moving-average errors. The acronym ARIMA
+stands for \emph{Autoregressive Integrated Moving Average}.
+
+An ARIMA model is conventionally identified by three non-negative integers
+
+\[
+(p,d,q),
+\]
+
+where \(p\) is the autoregressive order, \(d\) the number of differences applied
+to the original series, and \(q\) the moving-average order.
+
+Let the backshift operator \(B\) be defined by
+
+\[
+BY_t=Y_{t-1}.
+\]
+
+The differenced series can be written as
+
+\[
+(1-B)^dY_t.
+\]
+
+An ARIMA(\(p,d,q\)) process is then commonly represented by
+
+\[
+\phi(B)(1-B)^dY_t
+=
+c+\theta(B)\varepsilon_t,
+\]
+
+where
+
+\[
+\phi(B)
+=
+1-\phi_1B-\cdots-\phi_pB^p
+\]
+
+is the autoregressive polynomial and
+
+\[
+\theta(B)
+=
+1+\theta_1B+\cdots+\theta_qB^q
+\]
+
+is the moving-average polynomial.
+
+Thus, ARIMA can represent several distinct forms of temporal structure.
+Differencing can remove polynomial trends, autoregressive terms describe
+dependence on previous values, and the moving-average component describes
+dependence on previous innovations.
+
+This makes ARIMA substantially more expressive than the fixed moving-average
+and finite-window smoothing models described in the preceding sections.
+
+\subsubsection{Model description}
+
+ARIMA creates a particular challenge for the model-description framework used
+by \texttt{mnplib}.
+
+An autoregressive linear model can be represented as a stateless expression over
+a finite collection of input features. The same is true for the finite moving
+average and exponential-smoothing implementations described above.
+
+An ARIMA prediction, in contrast, depends on an evolving internal state. In
+particular, the moving-average component depends on previous innovations
+
+\[
+\varepsilon_{t-1},\ldots,\varepsilon_{t-q},
+\]
+
+and differencing requires maintaining information about previous levels of the
+series. Multi-step forecasting repeatedly updates this state as new predictions
+are generated.
+
+A faithful executable description must therefore encode not only an arithmetic
+expression, but also a state-transition mechanism.
+
+The current model-description language used by \texttt{mnplib} does not yet
+provide such a stateful executable representation. Consequently, model-language
+schema version 4 cannot serialize ARIMA models faithfully.
+
+For this reason, the current ARIMA searcher does not return model candidates to
+the minimum-nescience evaluator. Instead, it reports that the model description
+is unsupported.
+
+This is not a limitation of the theoretical concept of nescience. An ARIMA
+model could be evaluated once an adequate canonical representation of its state
+and transition rules is defined. The current limitation is purely one of the
+model-description language implemented by the library.
+
+\subsubsection{Search space}
+
+Conceptually, the principal structural search of an ARIMA family concerns the
+order
+
+\[
+(p,d,q).
+\]
+
+The public \texttt{TimeSeries} interface already accepts family-specific
+configuration through an \texttt{orders} option, consisting of candidate
+three-integer tuples. An optimization iteration limit can likewise be provided
+through \texttt{max\_iter}.
+
+Thus, a configured search space may conceptually take the form
+
+\[
+\mathcal O
+=
+\{
+(p_1,d_1,q_1),
+\ldots,
+(p_m,d_m,q_m)
+\}.
+\]
+
+Each order would define a distinct description family whose fitted coefficients
+and resulting predictions could be evaluated through nescience.
+
+However, this search is not currently executed by \texttt{mnplib}. Until an
+executable canonical ARIMA description is added to the model language, the
+ARIMA searcher returns no candidate models.
+
+This restriction follows directly from the role of surfeit in the Theory of
+Nescience. A forecasting model should not participate in minimum-nescience
+selection unless its predictive procedure can be represented faithfully. Using a
+placeholder description, or measuring only the number of parameters, would make
+its surfeit incomparable with that of the other model families.
+
+ARIMA is therefore part of the intended forecasting model space, but its
+integration remains incomplete in the current implementation.
+
+
+%
+% Section: State-Space Models
+%
+
+\section{State-Space Models}
+\label{subsec:automl_state_space}
+\index{State-space model}
+\index{Time series!state-space model}
+
+State-space models describe a time series through an unobserved internal state
+that evolves over time. The observed sequence is treated as an imperfect
+measurement of this latent state.
+
+A general linear Gaussian state-space model can be expressed through two
+equations. The observation equation is
+
+\[
+Y_t
+=
+Z_t\alpha_t+\varepsilon_t,
+\]
+
+where \(Y_t\) is the observed value, \(\alpha_t\) the latent state, and
+\(\varepsilon_t\) observation noise. The transition equation is
+
+\[
+\alpha_{t+1}
+=
+T_t\alpha_t+R_t\eta_t,
+\]
+
+where \(T_t\) determines how the state evolves and \(\eta_t\) represents state
+noise.
+
+Many familiar time-series models can be represented in this form. The current
+\texttt{mnplib} interface identifies two structural variants of particular
+interest: the \emph{local-level} model and the \emph{local-linear-trend} model.
+
+In a local-level model,
+
+\[
+Y_t
+=
+\mu_t+\varepsilon_t,
+\]
+
+and the latent level evolves according to
+
+\[
+\mu_{t+1}
+=
+\mu_t+\eta_t.
+\]
+
+The observed series is therefore understood as a noisy measurement of a level
+that itself follows a random walk.
+
+The local-linear-trend model extends the state by introducing a time-varying
+slope. A common formulation is
+
+\[
+Y_t
+=
+\mu_t+\varepsilon_t,
+\]
+
+\[
+\mu_{t+1}
+=
+\mu_t+\beta_t+\eta_t,
+\]
+
+and
+
+\[
+\beta_{t+1}
+=
+\beta_t+\zeta_t,
+\]
+
+where \(\mu_t\) denotes the current level and \(\beta_t\) the current trend.
+
+These models are useful when the temporal structure is better understood as the
+evolution of a hidden state than as a direct deterministic function of a fixed
+collection of lagged observations.
+
+\subsubsection{Model description}
+
+State-space models pose the same general serialization problem as ARIMA, but
+in an even more explicit form.
+
+The model does not define prediction as a stateless mapping
+
+\[
+\widehat Y=f(X).
+\]
+
+Instead, forecasting requires maintaining and updating a latent state. After
+each observation, the internal estimate of that state changes, and subsequent
+predictions depend on the updated value.
+
+A faithful executable description must therefore specify at least
+
+\begin{enumerate}
+    \item the state vector;
+    \item the observation equation;
+    \item the transition equation;
+    \item the fitted numerical parameters; and
+    \item the algorithm by which the state is updated as observations become
+          available.
+\end{enumerate}
+
+The current restricted model language in \texttt{mnplib} does not support this
+kind of persistent state. Model-language schema version 4 is designed primarily
+for stateless predictive expressions and consequently cannot provide a faithful
+canonical executable representation of a state-space forecaster.
+
+The current state-space searcher therefore does not produce candidates for
+minimum-nescience evaluation. Like ARIMA, the family is recognized by the
+public interface but is presently excluded because its model description cannot
+yet be represented consistently.
+
+Again, this should be understood as an implementation constraint rather than a
+theoretical objection. The Theory of Nescience places no restriction on
+state-space descriptions provided that they can be encoded as finite,
+computable descriptions. A future model-language version supporting explicit
+state and transition operations could make these families directly comparable
+with the stateless forecasting models already implemented.
+
+\subsubsection{Search space}
+
+The current public configuration anticipates a structural search over a small
+collection of state-space forms. In particular, the recognized alternatives are
+
+\begin{itemize}
+    \item \texttt{local\_level};
+    \item \texttt{local\_linear\_trend}.
+\end{itemize}
+
+A maximum number of optimization iterations may also be specified through the
+\texttt{max\_iter} search option.
+
+Conceptually, each structural alternative defines a different class of
+descriptions. The local-level model assumes that temporal variation can be
+explained by a single evolving latent level. The local-linear-trend model adds a
+second latent component representing the evolution of the trend.
+
+From the perspective of nescience, introducing the additional trend state should
+be justified only when the resulting reduction in descriptive deficiency and
+inaccuracy compensates for the additional descriptive structure.
+
+At present, however, this comparison is not performed by the library. The
+state-space searcher reports an unsupported-description diagnostic and returns no
+candidate models.
+
+This conservative behavior is important. Since surfeit depends on the canonical
+model description, comparing a fully serialized model against a state-space model
+represented only by its family name or parameter count would not be meaningful.
+The latter would receive an artificially short description and would therefore
+distort the minimum-nescience search.
+
+A complete implementation of state-space models in \texttt{mnplib} therefore
+requires not merely fitting the statistical model, but extending the canonical
+description language so that its evolving state can be represented and executed
+faithfully.

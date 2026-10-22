@@ -1332,798 +1332,663 @@ Surfeit analyzes the compressibility of the model description. It does not direc
 What surfeit can identify is a situation in which increasing descriptive complexity appears difficult to justify by the corresponding reduction in inaccuracy. Such a pattern is often associated with overfitting, but the interpretation must be made jointly with the predictive behavior of the model.
 
 %
+% Section: Mismodel
+%
+
+\section{Mismodel}
+\label{sec:machine_learning_mismodel}
+
+In Chapter~\ref{chap:Mismodel}, mismodel was introduced as the error associated
+with describing a representation. A description may fail in two complementary
+ways. First, it may be \emph{deficient}: it may not contain enough information
+to reconstruct the representation adequately. Second, it may contain
+\emph{surplus}: unnecessary descriptive information that is not required by a
+minimal description of the representation.
+
+The theoretical mismodel of a description \(d\) with respect to a representation
+\(r\) is defined as the dominant of these two defects,
+
+\[
+\nu(r,d)
+=
+\max\left\{
+d_D(r,d),
+s_D(r,d)
+\right\},
+\]
+
+where \(d_D\) denotes description deficiency and \(s_D\) description surplus.
+This definition has a bottleneck interpretation: a description is satisfactory
+only when it is simultaneously sufficiently complete and sufficiently economical.
+
+Unfortunately, theoretical mismodel cannot be computed directly. Its definition
+depends on the set of minimal descriptions of the representation, which is
+generally unknown, and ultimately on Kolmogorov complexity, which is
+non-computable.
+
+The practical implementation in \texttt{mnplib} therefore relies on the two
+approximations introduced in the previous sections. Inaccuracy approximates
+description deficiency, while surfeit approximates description surplus:
+
+\[
+d_D(r,d)
+\approx
+\widehat\iota(r,d),
+\]
+
+and
+
+\[
+s_D(r,d)
+\approx
+\widehat\sigma(d).
+\]
+
+The practical mismodel implemented by \texttt{mnplib} combines these two
+quantities using their root mean square,
+
+\[
+\widehat\nu(r,d)
+=
+\sqrt{
+\frac{
+\widehat\iota(r,d)^2
++
+\widehat\sigma(d)^2
+}{2}
+}.
+\]
+
+This aggregation intentionally differs from the theoretical bottleneck
+definition. The theoretical quantity uses the maximum because the dominant
+description defect determines how far the description is from the ideal class
+of minimal descriptions. The practical implementation uses a smooth RMS
+approximation because it provides greater numerical resolution for model
+comparison and optimization: improvements in either component affect the final
+score even when that component is not currently the largest.
+
+Both inaccuracy and surfeit take values in \([0,1]\), and consequently practical
+mismodel also lies in this interval:
+
+\[
+0\leq
+\widehat\nu(r,d)
+\leq1.
+\]
+
+A value close to zero indicates a description that reproduces the target
+representation accurately and does so with little detectable unnecessary
+complexity. A high value indicates that the model is inaccurate, excessively
+complex, or both.
+
+The distinction between the two components is essential. A very simple model
+may have low surfeit but high inaccuracy because it fails to capture relevant
+structure. Conversely, an elaborate model may reproduce the observations very
+closely while having high surfeit because its description contains more
+structure than is justified by the representation. Mismodel searches for a
+balance between these two extremes.
+
+The class can be used directly when the predictions and canonical description
+of a model are already available:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.mismodel import Mismodel
+
+metric = Mismodel().fit_y(y)
+
+report = metric.analysis(
+    predictions=predictions,
+    model_string=model_string,
+)
+
+report["inaccuracy"]
+report["surfeit"]
+report["mismodel"]
+\end{verbatim}}
+\end{sourcecode}
+
+In normal machine-learning workflows, however, the fitted-model interfaces of
+\texttt{Nescience} or the AutoML classes obtain the prediction vector and the
+canonical description automatically through the serialization layer.
+
+\subsection*{The Inaccuracy--Surfeit Trade-off}
+
+Increasing the complexity of a model often reduces inaccuracy because a richer
+description can reproduce finer details of the observed representation. At the
+same time, the resulting model description becomes more elaborate and may
+therefore exhibit greater surfeit.
+
+For a sequence of increasingly expressive descriptions
+
+\[
+d_1,d_2,\ldots,d_k,
+\]
+
+we frequently observe
+
+\[
+\widehat\iota(d_{j+1})
+<
+\widehat\iota(d_j),
+\]
+
+while eventually
+
+\[
+\widehat\sigma(d_{j+1})
+>
+\widehat\sigma(d_j).
+\]
+
+Minimizing either component independently would therefore lead to undesirable
+extremes. Minimizing inaccuracy alone encourages increasingly elaborate models
+and may ultimately favor memorization of the observed representation.
+Minimizing surfeit alone encourages very short descriptions that may fail to
+explain the data.
+
+Practical mismodel provides a single criterion for navigating this trade-off.
+
+\begin{example}
+\label{ex:mismodel_tree_depth}
+
+Consider a synthetic binary classification problem and decision trees of
+increasing depth. Shallow trees provide compact descriptions but may fail to
+capture the decision boundary. Deeper trees reduce classification error, but
+their canonical descriptions contain progressively more branches, thresholds,
+and leaves.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import make_classification
+from sklearn.tree import DecisionTreeClassifier
+
+from mnplib.nescience import Nescience
+
+X, y = make_classification(
+    n_samples=2000,
+    n_features=6,
+    n_informative=4,
+    n_redundant=0,
+    class_sep=1.2,
+    random_state=42,
+)
+
+metric = Nescience().fit(X, y)
+
+rows = []
+
+for depth in range(1, 11):
+
+    model = DecisionTreeClassifier(
+        max_depth=depth,
+        random_state=42,
+    ).fit(X, y)
+
+    report = metric.model_analysis(model)
+
+    rows.append({
+        "depth": depth,
+        "inaccuracy": report["inaccuracy"],
+        "surfeit": report["surfeit"],
+        "mismodel": report["mismodel"],
+    })
+
+results = pd.DataFrame(rows)
+
+plt.plot(
+    results["depth"],
+    results["inaccuracy"],
+    label="Inaccuracy",
+)
+
+plt.plot(
+    results["depth"],
+    results["surfeit"],
+    label="Surfeit",
+)
+
+plt.plot(
+    results["depth"],
+    results["mismodel"],
+    label="Mismodel",
+)
+
+plt.xlabel("Maximum tree depth")
+plt.ylabel("Metric")
+plt.legend()
+plt.show()
+\end{verbatim}}
+\end{sourcecode}
+
+For the shallowest trees, surfeit is low because the model description contains
+few decision rules. Their inaccuracy is comparatively high, however, because
+the trees are too simple to reconstruct the class structure adequately.
+
+As depth increases, inaccuracy normally decreases. At the same time, additional
+branches and thresholds make the canonical description increasingly elaborate,
+and surfeit tends to increase. Practical mismodel reflects both effects and may
+therefore attain its minimum at an intermediate depth.
+
+The model preferred by mismodel is not necessarily the most accurate tree nor
+the shortest one. It is the tree that provides the best compromise between
+descriptive adequacy and descriptive economy.
+\end{example}
+
+The previous example varies complexity within a single family. Mismodel is
+also useful when comparing fundamentally different model families.
+
+\begin{example}
+\label{ex:mismodel_model_families}
+
+Consider a simple classification problem generated from two approximately
+linearly separable Gaussian populations. We compare logistic regression with a
+decision tree. Both models may achieve high training accuracy, but they
+represent the relation between the features and the target in very different
+ways.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import pandas as pd
+
+from sklearn.datasets import make_blobs
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+
+from mnplib.nescience import Nescience
+
+X, y = make_blobs(
+    n_samples=3000,
+    centers=2,
+    n_features=4,
+    cluster_std=2.0,
+    random_state=42,
+)
+
+logistic = LogisticRegression(
+    max_iter=1000,
+).fit(X, y)
+
+tree = DecisionTreeClassifier(
+    random_state=42,
+).fit(X, y)
+
+metric = Nescience().fit(X, y)
+
+rows = []
+
+for name, model in [
+    ("Logistic regression", logistic),
+    ("Decision tree", tree),
+]:
+
+    report = metric.model_analysis(model)
+
+    rows.append({
+        "model": name,
+        "accuracy": model.score(X, y),
+        "inaccuracy": report["inaccuracy"],
+        "surfeit": report["surfeit"],
+        "mismodel": report["mismodel"],
+    })
+
+pd.DataFrame(rows)
+\end{verbatim}}
+\end{sourcecode}
+
+In a problem whose class boundary is fundamentally simple, both models may
+obtain similar predictive performance. The decision tree can nevertheless
+require a substantially longer description because it approximates the same
+structure through a collection of explicit branching rules. Logistic regression,
+by contrast, represents the relation directly through a small collection of
+coefficients.
+
+If the improvement in inaccuracy obtained by the tree is small relative to its
+increase in surfeit, logistic regression will have the lower mismodel. If the
+data instead contain a genuinely nonlinear or piecewise structure, the additional
+complexity of the tree may be justified by a sufficiently large reduction in
+inaccuracy, and the ordering may reverse.
+
+This illustrates one of the main advantages of mismodel. Conventional model
+selection frequently compares models primarily through predictive scores and
+then treats complexity through family-specific criteria such as tree depth,
+parameter count, or regularization strength. Mismodel evaluates predictive
+adequacy and descriptive economy through a common criterion, allowing models
+from structurally different families to be compared directly.
+\end{example}
+
+\subsection*{Interpretation}
+
+Mismodel concerns only the relation between a representation and its
+description. It does not determine whether the representation itself is
+appropriate for the entity under investigation. That separate source of error is
+measured by miscoding.
+
+This distinction is particularly important in machine learning. Suppose a model
+has high mismodel. The problem lies primarily in the description: the model
+does not reproduce the available target adequately, uses unnecessary descriptive
+structure, or both. Searching for a better model family or a better configuration
+within the current family may therefore reduce the error.
+
+A model may instead have very low mismodel while being based on a poor
+representation. For example, it may predict a biased or incomplete target
+extremely accurately. Improving the model further would then accomplish little;
+the principal limitation lies in the data or features rather than in the
+description.
+
+Mismodel should therefore be interpreted together with miscoding. These two
+quantities correspond to the two fundamental stages of the Theory of Nescience:
+
+\[
+\text{entity}
+\longrightarrow
+\text{representation}
+\longrightarrow
+\text{description}.
+\]
+
+Miscoding evaluates the first transition, whereas mismodel evaluates the
+second. Nescience, introduced in the following section, combines both levels
+into a practical assessment of the complete representation--description pair.
+
+%
 % Section: Nescience
 %
 
 \section{Nescience}
 \label{sec:machine_learning_nescience}
 
-In Chapter \ref{chap:Nescience} we defined the concept of nescience as the solution to a nonlinear multiobjective optimization problem, in which we minimize the miscoding, inaccuracy, and surfeit of representations and models. The solution to this problem is, in general, not unique: we can often find multiple pairs (representation, model) such that none of the three quantities can be improved without degrading at least one of the others (Pareto optimality). However, in practice we expect a machine-learning library to provide a single solution when training a model on a dataset. To provide a unique solution, we resort to a utility function that selects one element from the Pareto-optimal set. The \texttt{nescience} library offers several utility functions; the default is the arithmetic mean of the three metrics.
+In Chapter~\ref{chap:Nescience}, nescience was introduced as a measure of the two fundamental ways in which a hypothesis may fail. First, the representation may be inadequate for the entity under study; this defect is measured by \emph{miscoding}. Second, the description may fail to model the representation adequately or economically; this defect is measured by \emph{mismodel}.
 
-\begin{remark}
-The \texttt{nescience} library implements the following utility functions to approximate the concept of nescience, i.e., to compute $\hat\nu\!\left(\mathbb{Z}, m, \mathbf{y} \right)$:
+In the supervised machine-learning setting considered in this chapter, the representation is a subset of the available features and the description is a fitted predictive model. The practical problem is therefore to evaluate a pair $(S,m)$, where $S\subseteq\{1,\ldots,p\}$ is the subset of features effectively used by the model and $m$ is the corresponding predictive description.
 
-\begin{itemize}
-\item Euclidean distance: $\left( \hat\mu(\mathbb{Z}, \mathbf{y})^2 + \hat\iota(\hat{y}, \mathbf{y})^2  + \hat\sigma(m, \mathbf{y})^2 \right)^{1/2}$
-\item Arithmetic mean: $\frac{\hat\mu(\mathbb{Z}, \mathbf{y}) + \hat\iota(\hat{y}, \mathbf{y}) + \hat\sigma(m, \mathbf{y})}{3}$
-\item Geometric mean: $\left( \hat\mu(\mathbb{Z}, \mathbf{y}) \times \hat\iota(\hat{y}, \mathbf{y}) \times \hat\sigma(m, \mathbf{y}) \right)^{1/3}$
-\item Product: $\hat\mu(\mathbb{Z}, \mathbf{y}) \times \hat\iota(\hat{y}, \mathbf{y}) \times \hat\sigma(m, \mathbf{y})$
-\item Addition: $\hat\mu(\mathbb{Z}, \mathbf{y}) + \hat\iota(\hat{y}, \mathbf{y}) + \hat\sigma(m, \mathbf{y})$
-\item Weighted mean: $w_\mu \hat\mu(\mathbb{Z}, \mathbf{y}) + w_\iota \hat\iota(\hat{y}, \mathbf{y}) + w_\sigma \hat\sigma(m, \mathbf{y})$
-\item Harmonic mean: $\frac{3}{ \hat\mu(\mathbb{Z}, \mathbf{y})^{-1} + \hat\iota(\hat{y}, \mathbf{y})^{-1} + \hat\sigma(m, \mathbf{y})^{-1} }$
-\end{itemize}
+The \texttt{mnplib} implementation follows this hierarchical decomposition. Four primitive quantities are first computed:$\widehat d$, $\widehat s$, $\widehat \iota$, $\widehat \sigma$, where $\widehat d$ and $\widehat s$ are the empirical deficiency and surplus of the selected representation, $\widehat\iota$ is the inaccuracy of the model predictions, and $\widehat\sigma$ is the surfeit of the canonical model description. Deficiency and surplus diagnose the representation and are combined into the empirical miscoding $\widehat\mu$, whereas inaccuracy and surfeit diagnose the description and are combined into the empirical mismodel $\widehat\nu$.
 
-Euclidean distance and addition can produce nescience values greater than one, which conflicts with the intended $[0,1]$ range. The geometric mean, product, and harmonic mean have the issue that the resulting nescience is zero (or undefined, in the harmonic case) whenever any of the three components is zero. The weighted mean introduces three additional hyperparameters $(w_\mu, w_\iota, w_\sigma)$ that must be chosen (often subject to $w_\mu + w_\iota + w_\sigma = 1$). It remains an open question which utility function is most appropriate in general; by default we use the arithmetic mean.
-\end{remark}
+The final practical nescience is obtained by combining these two derived quantities:
+\[
+\widehat N = \sqrt{w\,\widehat\mu^2 + (1-w)\,\widehat\nu^2},
+\]
+where $0\leq w\leq1$ is the weight assigned to miscoding. By default, $w=1/2$, so miscoding and mismodel receive equal importance.
 
-Example \ref{ex:nescience_decisiontree} shows how to use the \texttt{nescience} library to compute the nescience of a dataset and a model.
+This hierarchical decomposition is important because miscoding and mismodel identify different sources of failure. Miscoding concerns the quality of the information supplied to the model, whereas mismodel concerns what the model does with that information. A low nescience therefore requires both an adequate representation and an adequate description.
+
+The purpose of practical nescience is not to replace all conventional machine-learning scores with a single universal number. Rather, it provides a scalar criterion for comparing candidates while preserving information about the origin of their deficiencies. If nescience is high because miscoding dominates, searching increasingly elaborate model families may be unproductive, since the principal limitation lies in the representation itself. Conversely, if mismodel dominates, the representation may already contain the required information and the main opportunity for improvement lies in finding a more adequate or more economical description.
+
+This distinction is particularly useful in AutoML, where model selection should not be reduced to predictive accuracy alone. Nescience evaluates jointly \emph{what information is used} and \emph{how that information is described}. In this way, it extends conventional model selection to the representation--description framework developed throughout the Theory of Nescience.
+
+% Nescience: model evaluation
+
+\subsection*{Model Evaluation}
+
+The \texttt{Nescience} class follows the scikit-learn estimator convention. The method \texttt{fit()} receives the dataset and the target, but does not fit a predictive model. Instead, it prepares the empirical quantities required to evaluate representations and descriptions:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.nescience import Nescience
+
+metric = Nescience()
+metric.fit(X, y)
+\end{verbatim}}
+\end{sourcecode}
+
+During fitting, the class initializes a \texttt{Miscoding} estimator for the feature representation and a \texttt{Mismodel} estimator for the target. A predictive estimator can then be evaluated with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+value = metric.nescience_model(model)
+\end{verbatim}}
+\end{sourcecode}
+
+The fitted model is first translated into the canonical artifacts required by the metric: the subset of features effectively used by the model, the vector of predictions produced by the model, and the canonical string representation of the model. These three artifacts correspond directly to the practical components of nescience. The feature subset is used to compute deficiency and surplus, the predictions are used to compute inaccuracy, and the canonical model string is used to compute surfeit.
+
+For a more detailed analysis, the method
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+report = metric.model_analysis(model)
+\end{verbatim}}
+\end{sourcecode}
+
+returns the primitive components together with miscoding, mismodel, nescience, reliability diagnostics, and information about the canonical model description. This makes it possible not only to compare models by a single number, but also to inspect why one model is preferred to another.
+
+% Nescience: Reliability of the estimate
+
+\subsection*{Reliability of the Estimate}
+
+The practical computation of nescience ultimately depends on empirical code lengths. As discussed in Section~\ref{sec:machine_learning_miscoding}, the joint empirical state space may become sparsely populated when many features are considered simultaneously. In such cases, \texttt{mnplib} does not silently treat an unstable empirical estimate as fully reliable. The analysis report contains diagnostic information about the joint state distribution, including its mean occupancy and singleton fraction. When the estimate is considered weakly supported, the high-level nescience methods issue a \texttt{RuntimeWarning} while retaining the computable numerical value. This distinction is useful in practice. The numerical nescience value describes what follows from the empirical approximation, while the reliability diagnostic
+indicates how much confidence should be placed in that approximation.
 
 \begin{example}
 \label{ex:nescience_decisiontree}
 
-We compute the nescience of a decision-tree classifier on the \texttt{digits} dataset (MNIST handwritten digits) from \texttt{sklearn}.
+Consider a decision-tree classifier fitted to the handwritten digits dataset distributed with scikit-learn.
 
 \begin{sourcecode}
-{\scriptsize \begin{verbatim}
+{\scriptsize
+\begin{verbatim}
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_digits
-from Nescience.Nescience import Nescience
+
+from mnplib.nescience import Nescience
 
 data = load_digits()
 
 tree = DecisionTreeClassifier()
 tree.fit(data.data, data.target)
-tree.score(data.data, data.target
-[ ] 1
 
-nescience = Nescience()
-nescience.fit(data.data, data.target)
+score = tree.score(data.data, data.target)
 
-nescience.nescience(tree)
-[ ] 0.5895603819965907
+metric = Nescience()
+metric.fit(data.data, data.target)
+
+nescience = metric.nescience_model(tree)
+
+score, nescience
 \end{verbatim}}
 \end{sourcecode}
 
-The training accuracy of the decision tree is $1.0$, meaning all samples are correctly classified on the training set. This is symptomatic of overfitting. In practice we would use a train/test split or cross-validation. Nonetheless, the nescience value of about $0.59$ flags that something is wrong with the model-data pairing.
+A representative result is
 
+\begin{verbatim}
+(1.0, 0.568)
+\end{verbatim}
+
+The tree classifies every observation in the training dataset correctly, but its nescience remains substantially greater than zero. Perfect training accuracy is therefore not equivalent to a satisfactory representation--model pair.
+
+In this example, the library also reports that the miscoding estimate is weakly supported because the effective joint state space is very sparse. The warning does not imply that the numerical computation failed; it indicates that the representation-related component should be interpreted cautiously.
 \end{example}
 
-As Example \ref{ex:nescience_decisiontree} illustrates, a key advantage of nescience is that it can evaluate model quality without requiring computationally expensive procedures such as cross-validation or holding out a test set. Another advantage is that nescience allows comparisons across different model families, as shown next.
+This example illustrates an important difference between accuracy and nescience. Accuracy evaluates only whether the fitted model reproduces the observed class labels. Nescience additionally evaluates the representation used by the model and the descriptive structure required to obtain those predictions.
+
+% Nescience: Comparing different model families
+
+\subsection*{Comparing Different Model Families}
+
+Because all supported estimators are converted into the same canonical artifact interface, nescience can be used to compare models belonging to different families. This is not possible with many model-specific complexity measures. Tree depth, for example, is meaningful for a decision tree but not for a neural network, while the number of hidden units is meaningful for a neural network but not for a linear model. Surfeit instead evaluates their canonical descriptions through the same principle.
 
 \begin{example}
 \label{ex:nescience_comparison}
 
-We compare two model families on the Breast Cancer Wisconsin (Diagnostic) dataset from \texttt{sklearn}: a decision tree and a neural network.
+Consider the Breast Cancer Wisconsin dataset. We fit a shallow decision tree and a multilayer perceptron and compare both their training accuracy and their nescience.
 
 \begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPClassifier
+{\scriptsize
+\begin{verbatim}
 from sklearn.datasets import load_breast_cancer
-from Nescience.Nescience import Nescience
+from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+from mnplib.nescience import Nescience
 
 data = load_breast_cancer()
 X = data.data
 y = data.target
 
-tree = DecisionTreeClassifier(max_depth=3)
-tree.fit(X, y)
-tree.score(X, y)
-[ ] 0.9789103690685413
+metric = Nescience().fit(X, y)
 
-nescience = Nescience()
-nescience.fit(X, y)
-nescience.nescience(tree)
-[ ] 0.5945936419010083
+tree = DecisionTreeClassifier(max_depth=2)
+tree.fit(X, y)
 
 nn = MLPClassifier()
 nn.fit(X, y)
-nn.score(X, y)
-[ ] 0.9261862917398945
 
-nescience.nescience(nn)
-[ ] 0.7860523786210711
+score_tree = tree.score(X, y)
+score_nn   = nn.score(X, y)
+
+nsc_tree = metric.nescience_model(tree)
+nsc_nn   = metric.nescience_model(nn)
+
+score_tree, score_nn
 \end{verbatim}}
 \end{sourcecode}
 
-In one run, both models achieve high and broadly similar training accuracy. In this case, not only does the decision tree achieve the better score, but its nescience is also much lower than that of the multilayer perceptron; hence we should prefer the former to the latter.
+A representative result is
 
+\begin{verbatim}
+(0.9420, 0.9561)
+\end{verbatim}
+
+while the corresponding nescience values are approximately
+
+\begin{verbatim}
+(0.5534, 0.6814)
+\end{verbatim}
+
+The multilayer perceptron obtains the slightly greater training accuracy, but the decision tree has the lower nescience. This does not mean that decision trees should generally be preferred to neural networks. Rather, it shows that the two criteria answer different questions. Training accuracy considers only predictive agreement with the observed labels. Nescience also accounts for the representation employed by the model and for the descriptive structure required to produce its predictions.
 \end{example}
 
-Nescience can also be used to optimize hyperparameters within a (parametric) family of models. A practical advantage is that we can adopt a greedy search for a hyperparameter that is monotone with accuracy: select the value at which nescience stops decreasing and starts to increase, since this is the point at which we are no longer learning anything new from the dataset (see Example \ref{ex:nescence_hyperparameter}).
+In this particular example, the improvement in training accuracy obtained by the multilayer perceptron is not sufficient to compensate for its greater overall representational and descriptive defect according to the nescience criterion.
+
+% Nescience: Model complexity
+
+\subsection*{Model Complexity}
+
+Nescience can also be used to compare candidate models within the same model family. Decision trees provide a simple example because their complexity can be varied directly through their maximum depth. Increasing tree depth normally allows the model to fit progressively finer details of the training data. At the same time, it creates additional conditions, thresholds, and leaves in the canonical model description.
+
+Nescience evaluates this change through two different mechanisms. The effective set of features selected by the tree changes the miscoding of the representation, while the predictions and the serialized tree determine its mismodel.
 
 \begin{example}
-\label{ex:nescence_hyperparameter}
+\label{ex:nescience_tree_depth}
 
-We revisit a decision tree on the breast cancer dataset. We train $10$ trees with \texttt{max\_depth} from $1$ to $10$. The deeper the tree, the higher the training accuracy, but also the higher the risk of overfitting. For each tree we compute the model's nescience and compare it to a cross-validation score. Figure \ref{figure:nescience_cancer} shows typical behavior: both nescience and the cross-validation error decrease as depth increases, up to an inflection point after which they increase, indicating overfitting. The \texttt{nescience} library suggests a maximum depth of $7$, whereas cross-validation indicates an optimum near $6$.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{nescience_cancer.png}
-\caption{Evolution of Nescience with Tree Depth.}
-\label{figure:nescience_cancer}
-\end{figure}
-
-\end{example}
-
-It is instructive to examine the three components in Figure \ref{figure:nescience_cancer}. As expected, deeper trees reduce inaccuracy and increase surfeit. By contrast, miscoding can evolve nonmonotonically because each candidate tree may use a different subset of features at internal nodes. It would be desirable to have a tree-building algorithm that accounts for miscoding when selecting split features; such an algorithm is described in Section \ref{sec:decision_trees}.
-
-Finally, we consider hyperparameter searches where a greedy approach is not applicable—for example, when searching over multiple (often conflicting) hyperparameters. Grid search can be computationally expensive due to the number of combinations, and even more so if each candidate requires cross-validation. Since nescience can flag overfitting without cross-validation, it can substantially speed up hyperparameter search. Example \ref{ex:hyper_search} shows how to integrate nescience into \texttt{GridSearchCV}.
-
-\begin{example}
-\label{ex:hyper_search}
-
-In this example we are going to see how we can use the \texttt{nescience} library to find the optimal hyperparameters for a model using a grid search. In particular, we are going to select the best hyperparameters for a multilayer perceptron classifer, including the number of hidden layers, and the size of those layers (what it is called Neural Architecture Search). The procedure will be demonstrated using the \texttt{digits} dataset.
+We train decision trees of increasing depth on the Breast Cancer Wisconsin dataset. The models are fitted on a training subset, while their predictive behavior can also be inspected on a held-out test subset.
 
 \begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from Nescience.Nescience import Nescience
-from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report
+{\scriptsize
+\begin{verbatim}
+from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+from mnplib.nescience import Nescience
+
+import pandas as pd
+
+data = load_breast_cancer()
+X = data.data
+y = data.target
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.30,
+)
+
+metric = Nescience().fit(X, y)
+
+rows = []
+
+for depth in range(1, 13):
+
+    model = DecisionTreeClassifier(
+        max_depth=depth
+    ).fit(X_train, y_train)
+
+    report = metric.model_analysis(model)
+
+    rows.append({
+        "max_depth":
+            depth,
+        "train_accuracy":
+            model.score(X_train, y_train),
+        "test_accuracy":
+            model.score(X_test, y_test),
+        "n_features_used":
+            len(report["selected_features"]),
+        "miscoding":
+            report["miscoding"],
+        "mismodel":
+            report["mismodel"],
+        "nescience":
+            report["nescience"],
+    })
+
+comparison = pd.DataFrame(rows)
 \end{verbatim}}
 \end{sourcecode}
 
-First of all we have to provide a custom loss function based on the concept of nescience to be integrated with the search procedure. The next code shows how to implement such a function.
+As it is shown in Figure \ref{fig:Nescience_Trees} as training accuracy increases as the tree becomes deeper and eventually reaches one. Nescience, however, need not decrease with training accuracy. The shallowest models can obtain lower nescience when the additional predictive detail introduced by deeper trees does not compensate for the resulting changes in representation and model description.
 
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-def my_custom_loss_func(estimator, X, y):
-    
-    nsc = Nescience()
-    nsc.fit(X, y)
-    nescience = nsc.nescience(estimator)
-    
-    # scikit-learn expect that higher numbers are better
-    score = -nescience
-    
-    return score
-\end{verbatim}}
-\end{sourcecode}
+\begin{table}
+\begin{centering}
+\begin{tabular}{c c}
+\includegraphics[width=0.455\textwidth]{nescience_tree_1}
+&
+\includegraphics[width=0.5\textwidth]{nescience_tree_2}\tabularnewline
+\end{tabular}
+\par\end{centering}
+\caption{\label{fig:Nescience_Trees}Nescience of Decision Trees}
+\end{table}
 
-Second, we have to define the grid of hyperparameters over which we are going to do the search. The larger the grid, the better the result, but also, the more computer time is required to evaluate all possible combinations.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-parameters = {'solver': ['lbfgs'],
-              'max_iter': [1000, 1500, 2000 ], 
-              'alpha': 10.0 ** -np.arange(1, 10, 3),
-              'hidden_layer_sizes':[(60,), (100,), (60, 60,), (100, 100,), 
-                                    (60, 60, 60,), (100, 100, 100,)]}
-\end{verbatim}}
-\end{sourcecode}
-
-Next code show how to do a classical grid search using the score of the models. The search will be evaluated using a train/test split of the dataset.
- 
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-clf_std = GridSearchCV(estimator=MLPClassifier(), param_grid=parameters,
-                       cv=3, iid=True, n_jobs=-1)
-clf_std.fit(X_train, y_train)
-clf_std.best_params_
-
-[] {'alpha': 0.1,
-[]  'hidden_layer_sizes': (100,),
-[]  'max_iter': 1000,
-[]  'solver': 'lbfgs'}
-
-y_true, y_pred = y_test, clf_std.predict(X_test)
-print(classification_report(y_true, y_pred))
-
-[] precision    recall  f1-score   support
-[] avg / total       0.98      0.97      0.97       540
-\end{verbatim}}
-\end{sourcecode}
-
-Next code show how to perform exactly the same search, but using the concept of nescience instead of the metric score.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-clf_nsc = GridSearchCV(estimator=MLPClassifier(), param_grid=parameters,
-                       cv=3, scoring=my_custom_loss_func, iid=True)
-clf_nsc.fit(X_train, y_train)
-clf_nsc.best_params_
-
-{'alpha': 0.1,
- 'hidden_layer_sizes': (60,),
- 'max_iter': 1500,
- 'solver': 'lbfgs'}
-
-y_true, y_pred = y_test, clf_nsc.predict(X_test)
-print(classification_report(y_true, y_pred))
-
-                  precision    recall    f1-score    support
-avg / total       0.98         0.98      0.98        540
-\end{verbatim}}
-\end{sourcecode}
-
-In a typical run, both searches yield strong generalization. Notably, the nescience-based search selects a \emph{smaller} model (e.g., a single hidden layer with $60$ neurons instead of $100$) and compensates with a higher \texttt{max\_iter}. This reflects the role of surfeit: nescience tends to select the smallest model that attains high accuracy without overfitting the training data.
-
+The three curves should therefore be interpreted separately. Miscoding changes when different features become part of the effective tree representation. Mismodel changes because both the predictions and the canonical tree description change. Nescience combines these two dimensions.
 \end{example}
 
+This example also illustrates why nescience should not be understood as an alternative spelling of generalization error. The depth minimizing nescience need not coincide with the depth maximizing held-out accuracy. The former selects according to representational and descriptive adequacy; the latter selects according to predictive performance on unseen observations.
 
+% Nescience: Hyperparameter Search
 
+\subsection*{Hyperparameter Search}
 
+The same principle can be used in a conventional hyperparameter-search procedure. A scoring function compatible with scikit-learn can be defined by returning the negative nescience, since scikit-learn assumes that larger scores are preferable:
 
-
-
-
-%
-% Section: Model Serialization
-%
-
-\section{Model Serialization}
-\label{sec:mnplib_model_serialization}
-
-\index{Model serialization}
-\index{Canonical description}
-\index{Abstract syntax tree}
-\index{Model-description language}
-
-The practical computation of surfeit requires an explicit representation of
-the model being evaluated. Machine-learning libraries, however, normally store
-trained models as complex programming-language objects containing parameters,
-metadata, caches, and implementation-specific state. The string returned by
-\texttt{repr(model)} or \texttt{str(model)} is therefore not an adequate
-description for the purposes of nescience. It may omit learned parameters,
-include irrelevant implementation details, or change between versions of the
-underlying library.
-
-To address this problem, \texttt{mnplib} translates every supported model into
-a small executable description language. The resulting description specifies
-only the computation required to produce the model predictions. Training
-metadata, implementation details, and presentation information are deliberately
-excluded.
-
-The serialization process follows four stages:
-\[
-M
-\;\xrightarrow{\;S\;}\;
-A_M
-\;\xrightarrow{\;N\;}\;
-\overline{A}_M
-\;\xrightarrow{\;R\;}\;
-d_M,
-\]
-where \(M\) is a fitted model, \(S\) is a model-specific serializer, \(A_M\)
-is an abstract syntax tree, \(N\) is a normalization procedure,
-\(\overline{A}_M\) is the canonical abstract syntax tree, \(R\) is the
-canonical renderer, and \(d_M\) is the resulting model description.
-
-The same canonical abstract syntax tree can also be exported as a structured
-JSON-compatible object. This representation is intended for applications such
-as Cajal, which may render the model using mathematical notation, diagrams,
-rule lists, or natural language. The graphical presentation is not part of
-\texttt{mnplib}: the library provides the computational meaning of the model,
-whereas the user interface determines how that meaning is displayed.
-
-\subsection{A Restricted Description Language}
-
-The model-description language is a deliberately small subset of Python
-expressions. It supports numeric constants, feature references, arithmetic
-operations, comparisons, conditional expressions, string literals, and a small
-collection of explicitly authorized mathematical functions. It does not support
-assignments, loops, imports, mutable state, arbitrary function calls, or access
-to Python objects.
-
-The restricted language has three purposes. First, it provides a common
-description format for models originating from different machine-learning
-families. Second, it ensures that every description can be executed
-mechanically. Third, it reduces the influence of arbitrary implementation and
-formatting choices on the estimation of surfeit.
-
-The following grammar is used by the current implementation. It is expressed
-using the syntax of the \texttt{Lark} parsing library.
-
+\begin{sourcecode}
+{\scriptsize
 \begin{verbatim}
-?start: expression
+def nescience_scorer(estimator, X, y):
 
-?expression: conditional
+    metric = Nescience().fit(X, y)
 
-?conditional: comparison
-            | comparison "if" comparison "else" conditional
+    return -metric.nescience_model(estimator)
+\end{verbatim}}
+\end{sourcecode}
 
-?comparison: sum
-           | sum COMPARATOR sum
+The scorer can then be supplied to tools such as \texttt{GridSearchCV}. For example, a collection of multilayer-perceptron architectures may be compared using
 
-?sum: product
-    | sum "+" product       -> add
-    | sum "-" product       -> subtract
-
-?product: factor
-        | product "*" factor -> multiply
-        | product "/" factor -> divide
-
-?factor: "-" factor         -> negate
-       | power
-
-?power: atom
-      | atom "**" factor    -> power
-
-?atom: NUMBER
-     | FEATURE
-     | STRING
-     | function_call
-     | "(" expression ")"
-
-function_call: FUNCTION "(" expression ")"
-
-COMPARATOR: "<=" | "<" | ">=" | ">" | "=="
-
-FUNCTION: "abs"
-        | "sqrt"
-        | "exp"
-        | "log"
-        | "sin"
-        | "cos"
-
-FEATURE: /x(?:0|[1-9][0-9]*)/
-
-NUMBER: /(?:0\.00e\+00|[1-9]\.[0-9]{2}e[+-][0-9]{2,})/
-
-STRING: ESCAPED_STRING
-
-%import common.ESCAPED_STRING
-%import common.WS_INLINE
-%ignore WS_INLINE
-\end{verbatim}
-
-Feature variables are represented by the symbols
-\[
-x_0,x_1,x_2,\ldots.
-\]
-Human-readable column names are retained as metadata, but they are not included
-in the canonical description. This prevents changes in column labels from
-changing the measured model description.
-
-Conditional expressions use the Python form
-\[
-e_1\ \texttt{if}\ c\ \texttt{else}\ e_2,
-\]
-where \(c\) is a comparison and \(e_1\) and \(e_2\) are the expressions
-evaluated when the comparison is true and false, respectively. Nested
-conditional expressions are sufficient to represent binary decision trees.
-
-For example, the description
+\begin{sourcecode}
+{\scriptsize
 \begin{verbatim}
-0.00e+00 if x2<=2.45e+00 else
-1.00e+00 if x3<=1.75e+00 else 2.00e+00
-\end{verbatim}
-represents a classification tree with three possible class codes. The mapping
-from these codes to the original class labels is stored in the model metadata.
-
-A linear regression model may be represented as
-\begin{verbatim}
-2.50e+00*x0-7.50e-01*x2+1.00e+00
-\end{verbatim}
-which denotes
-\[
-\widehat{y}
-=
-2.50x_0-0.75x_2+1.
-\]
-
-Only model families whose prediction procedure can be expressed in the
-restricted language are supported. A serializer must not produce an
-approximate informal summary of a model and present it as an executable
-description. If a model requires an operation not defined by the language, the
-language must be extended explicitly or the model must be reported as
-unsupported.
-
-\subsection{Abstract Syntax Tree}
-
-\index{Abstract syntax tree}
-
-The textual description is not constructed directly by concatenating strings.
-Each model-specific serializer first produces an abstract syntax tree, or AST.
-The tree consists of immutable Python data classes representing the semantic
-operations performed by the model.
-
-The principal node types are:
-
-\begin{itemize}
-    \item \texttt{Constant}, representing a numeric constant;
-    \item \texttt{StringConstant}, representing a categorical value;
-    \item \texttt{Feature}, representing an input feature;
-    \item \texttt{Negate}, representing unary negation;
-    \item \texttt{Add}, \texttt{Subtract}, \texttt{Multiply},
-          \texttt{Divide}, and \texttt{Power}, representing arithmetic
-          operations;
-    \item \texttt{Less}, \texttt{LessEqual}, \texttt{Greater},
-          \texttt{GreaterEqual}, and \texttt{Equal}, representing comparisons;
-    \item \texttt{Conditional}, representing a conditional expression; and
-    \item \texttt{Function}, representing a call to one of the mathematical
-          functions explicitly authorized by the language.
-\end{itemize}
-
-For example, the expression
-\[
-2.5x_0+1
-\]
-is represented conceptually by
-\[
-\operatorname{Add}\left(
-    \operatorname{Multiply}\left(
-        \operatorname{Constant}(2.5),
-        \operatorname{Feature}(0)
-    \right),
-    \operatorname{Constant}(1)
-\right).
-\]
-
-The AST is independent of scikit-learn and of any particular model class.
-Model-specific serializers are responsible only for translating the
-computation implemented by a trained estimator into these semantic nodes.
-They do not determine whitespace, parentheses, constant formatting, or other
-textual conventions.
-
-This separation ensures that linear models, decision trees, ensembles, and
-other supported estimators use the same language and the same rendering rules.
-
-\subsection{Canonical Representation of Constants}
-
-\index{Numeric constants}
-\index{Scientific notation}
-
-Every numeric constant is rendered using normalized scientific notation. The
-canonical form is
-\[
-s\,d.dd\,\texttt{e}\,e_see,
-\]
-where \(s\) is an optional negative sign, \(d.dd\) contains one digit before
-the decimal point and exactly two digits after it, \(e_s\) is the explicit sign
-of the exponent, and the exponent contains at least two digits.
-
-Examples include:
-
-\begin{center}
-\begin{tabular}{ll}
-\hline
-Value & Canonical representation \\
-\hline
-\(1\)       & \texttt{1.00e+00} \\
-\(2.5\)     & \texttt{2.50e+00} \\
-\(49.7\)    & \texttt{4.97e+01} \\
-\(0.497\)   & \texttt{4.97e-01} \\
-\(0.00497\) & \texttt{4.97e-03} \\
-\(-49.7\)   & \texttt{-4.97e+01} \\
-\(0\)       & \texttt{0.00e+00} \\
-\hline
-\end{tabular}
-\end{center}
-
-Negative zero is always normalized to \texttt{0.00e+00}. Exponents with an
-absolute value greater than \(99\) retain all their digits; the two-digit
-requirement is a minimum rather than a maximum. Thus \(10^{100}\) is rendered
-as \texttt{1.00e+100}.
-
-This notation is not intended to imply that the written numeral is the shortest
-possible description of the corresponding number. In the theoretical framework,
-a constant would be described by a program that produces it. Finding the
-shortest such program is another instance of the non-computability of
-Kolmogorov complexity.
-
-The practical model language instead defines a fixed effective description
-machine. Within this machine, a numeric literal is an instruction that produces
-the corresponding constant. Uniform scientific notation prevents a number from
-receiving an accidental advantage merely because it has an unusually short
-representation in decimal notation.
-
-The simplicity of constants such as zero and one is captured structurally. For
-example, the normalization rules remove multiplicative and additive identities:
-\[
-1x\longrightarrow x,
-\qquad
-x+0\longrightarrow x.
-\]
-Consequently, a coefficient equal to one can make a model description shorter
-because it is algebraically unnecessary, not because the character string
-\texttt{1} happens to be short.
-
-The use of exactly two decimal places in the coefficient quantizes constants to
-three significant digits. The quantized value becomes part of the canonical AST:
-the library does not display a rounded constant while secretly executing a
-higher-precision value. The AST, canonical string, parser, interpreter, and
-JSON representation therefore agree on the same value.
-
-Serialization fidelity is checked by comparing the predictions generated by
-the canonical description with the predictions of the source estimator. For
-regression, a documented numerical tolerance is used. For classification,
-predicted classes must normally agree exactly. If a model cannot be represented
-with the required fidelity, its serializer must report this limitation rather
-than silently generating an inaccurate description.
-
-\subsection{Normalization}
-
-Before rendering, the AST is passed through a small normalization procedure.
-Its purpose is to eliminate obvious syntactic redundancy introduced by
-model-specific serializers. It is not intended to be a symbolic algebra
-system.
-
-The current normalization rules include:
-\[
-\begin{aligned}
-1e &\longrightarrow e,
-&
-e1 &\longrightarrow e,
-\\
-0e &\longrightarrow 0,
-&
-e0 &\longrightarrow 0,
-\\
-e+0 &\longrightarrow e,
-&
-0+e &\longrightarrow e,
-\\
-e-0 &\longrightarrow e,
-&
--(-e) &\longrightarrow e.
-\end{aligned}
-\]
-
-Here juxtaposition denotes multiplication. The rules are applied recursively
-to the children of each node and then locally to the resulting parent node.
-
-The normalizer does not perform polynomial expansion, factorization,
-common-subexpression elimination, associative regrouping, or general
-expression-equivalence analysis. In particular, it does not reorder
-floating-point additions or multiplications. Deterministic ordering is instead
-the responsibility of each serializer when it constructs the AST. For example,
-a linear-model serializer emits terms in increasing feature-index order.
-
-The normalization rules assume finite feature values. This is consistent with
-the input validation applied by the library before model evaluation. Algebraic
-transformations such as \(0e\rightarrow0\) would not preserve the propagation
-of special floating-point values such as \texttt{NaN}; such values therefore
-fall outside the normal domain of the canonical model language.
-
-Normalization is idempotent:
-\[
-N(N(A))=N(A).
-\]
-This property ensures that repeatedly serializing an already canonical model
-does not continue to change its description.
-
-\subsection{Canonical Rendering and Parsing}
-
-The canonical renderer converts the normalized AST into the unique textual
-description accepted by the grammar. It uses no optional whitespace except
-where required to separate the keywords \texttt{if} and \texttt{else}.
-Parentheses are introduced only when required by operator precedence or by the
-association of nested conditional expressions.
-
-The renderer is deterministic:
-\[
-\overline{A}_1=\overline{A}_2
-\quad\Longrightarrow\quad
-R(\overline{A}_1)=R(\overline{A}_2).
-\]
-
-The inverse operation is implemented by a parser generated from the Lark
-grammar. The parser converts a valid textual description back into an AST.
-After normalization, rendering and parsing satisfy the round-trip property
-\[
-N\!\left(P\!\left(R(\overline{A})\right)\right)=\overline{A},
-\]
-where \(P\) denotes the parser.
-
-Equivalently, every canonical description satisfies
-\[
-R\!\left(
-N\!\left(P(d)\right)
-\right)=d.
-\]
-
-These properties are tested for every supported model serializer. They make
-the model language a genuine serialization format rather than a one-way
-pretty-printer.
-
-\subsection{Execution}
-
-\index{Executable description}
-
-Canonical descriptions are executable. Execution is performed directly over
-the AST by a restricted interpreter:
-\[
-E(\overline{A}_M,X)=\widehat{Y}_M,
-\]
-where \(X\) is the feature matrix and \(\widehat{Y}_M\) is the prediction
-vector produced by the serialized model.
-
-The interpreter evaluates feature nodes as columns of \(X\), applies arithmetic
-operations recursively, and evaluates conditional nodes using their comparison
-and branch expressions. Where possible, operations are vectorized using NumPy.
-
-The library does not execute canonical descriptions through unrestricted
-Python \texttt{eval} or \texttt{exec}. Only AST nodes and mathematical
-functions explicitly defined by the language can be evaluated. This restriction
-ensures that a model description cannot import modules, access arbitrary
-objects, read files, or execute unrelated code.
-
-For every supported serializer, mnplib checks the fidelity condition
-\[
-E(\overline{A}_M,X)\simeq M(X),
-\]
-where \(M(X)\) denotes the predictions produced by the source estimator. The
-symbol \(\simeq\) denotes numerical agreement within the declared tolerance
-for regression, and exact equality of predicted classes for classification.
-
-The prediction vector used by the nescience metrics is generated from the
-canonical AST. This ensures that inaccuracy and surfeit refer to the same
-description. The source estimator is used to construct the AST and to verify
-serialization fidelity, but no hidden model behavior is used during the
-subsequent evaluation.
-
-\subsection{Model Descriptions and Model Artifacts}
-
-The library distinguishes the semantic description of a model from the
-artifacts required to evaluate it.
-
-A \texttt{ModelDescription} contains:
-
-\begin{itemize}
-    \item the canonical model type;
-    \item the normalized AST;
-    \item the canonical model string;
-    \item the indices and names of the features used by the model; and
-    \item computational metadata, such as the depth and number of leaves of a
-          decision tree.
-\end{itemize}
-
-A \texttt{ModelArtifacts} object additionally contains the information required
-by the nescience metrics:
-
-\begin{itemize}
-    \item the effective feature subset;
-    \item the predictions produced by the canonical description; and
-    \item the canonical model string.
-\end{itemize}
-
-The three quantities correspond to the practical components of nescience.
-The feature subset is evaluated by \texttt{Miscoding}; the predictions are
-evaluated by \texttt{Inaccuracy}; and the canonical model string is evaluated
-by \texttt{Surfeit}.
-
-Presentation information is not included. Colors, fonts, layout coordinates,
-expanded or collapsed branches, and other graphical properties do not belong
-to the computational model and must not influence its surfeit.
-
-\subsection{JSON-Compatible Representation}
-
-\index{JSON model representation}
-
-The normalized AST can be exported as a versioned JSON-compatible structure.
-For example, part of a decision-tree description may be exported as follows:
-
-\begin{verbatim}
-{
-  "schema": "mnplib-model",
-  "schema_version": 1,
-  "model_type": "decision_tree_classifier",
-  "ast": {
-    "type": "conditional",
-    "condition": {
-      "type": "less_equal",
-      "left": {
-        "type": "feature",
-        "index": 2,
-        "name": "petal length (cm)"
-      },
-      "right": {
-        "type": "constant",
-        "value": 2.45,
-        "canonical": "2.45e+00"
-      }
-    },
-    "if_true": {
-      "type": "constant",
-      "value": 0.0,
-      "canonical": "0.00e+00"
-    },
-    "if_false": {
-      "type": "constant",
-      "value": 1.0,
-      "canonical": "1.00e+00"
-    }
-  },
-  "metadata": {
-    "depth": 1,
-    "n_nodes": 3,
-    "n_leaves": 2,
-    "features_used": [2]
-  }
-}
-\end{verbatim}
-
-The external representation contains only JSON-compatible values and does not
-expose internal Python class names or module paths. Its schema is versioned so
-that applications can detect incompatible changes.
-
-A graphical application such as Cajal consumes this semantic representation
-rather than parsing the canonical string or inspecting the original
-scikit-learn estimator. Cajal may then present the same model as a mathematical
-formula, a tree diagram, a rule list, or a natural-language explanation.
-
-The pretty-printed representation produced by the user interface is not used
-to compute surfeit. Otherwise, changes in typography or layout would change the
-measured nescience of an otherwise identical model. Surfeit is always computed
-from the canonical computational description generated by mnplib.
-
-\subsection{Relation to Theoretical Descriptions}
-
-The restricted model language provides a computable approximation to the set
-of descriptions introduced in the theoretical part of this book. The language
-and its interpreter jointly define a reference description machine
-\[
-\Gamma_{\mathrm{mnplib}}.
-\]
-For a canonical program \(d_M\) and feature representation \(X\),
-\[
-\Gamma_{\mathrm{mnplib}}(d_M,X)
-=
-E(P(d_M),X)
-=
-\widehat{Y}_M.
-\]
-
-The canonical description is therefore not an informal summary of the model:
-it is an effective procedure for producing its predictions.
-
-The library does not claim that \(d_M\) is the shortest possible description of
-the model or its output. Finding such a description would require solving a
-non-computable minimization problem. Instead, mnplib fixes a small reference
-language, uses one deterministic serializer for each supported model family,
-and applies the same rules to all candidate models.
-
-Consequently, model-description length and surfeit must be interpreted relative
-to:
-
-\begin{itemize}
-    \item the version of the model-description language;
-    \item the available AST node types;
-    \item the constant-quantization policy;
-    \item the normalization rules; and
-    \item the canonical renderer.
-\end{itemize}
-
-This dependence is unavoidable in any computable approximation of
-Kolmogorov complexity. What is required for meaningful comparison is not an
-encoding-free description, but a fixed, general, deterministic, and
-model-independent description system.
-
-\subsection{Limitations}
-
-The serialization process introduces several practical limitations.
-
-First, only model families whose prediction procedure can be represented in the
-restricted language can be serialized. Supporting a new model family may
-require a new serializer or, in some cases, a carefully delimited extension of
-the grammar.
-
-Second, numeric constants are quantized. This may cause the serialized model to
-differ slightly from the original estimator. The library therefore validates
-serialization fidelity and exposes the resulting discrepancy rather than
-assuming perfect equivalence.
-
-Third, the canonical representation is not a proof of minimality. A different
-description language may provide a shorter valid description of the same
-computation. The purpose of the canonical language is to make comparisons
-reproducible and operational, not to compute exact Kolmogorov complexity.
-
-Finally, the textual description should not be confused with its visual
-presentation. mnplib is responsible for constructing, validating, executing,
-and measuring model descriptions. External applications remain free to present
-the same semantic AST in whatever form is most suitable for their users.
-
-
-
-
-
-
-
-
-
+search = GridSearchCV(
+    estimator=MLPClassifier(),
+    param_grid=parameters,
+    cv=3,
+    scoring=nescience_scorer,
+)
+
+search.fit(X_train, y_train)
+\end{verbatim}}
+\end{sourcecode}
+
+The procedure differs conceptually from an ordinary predictive grid search. Conventional scoring selects the hyperparameters giving the best predictive criterion on the validation folds. Nescience scoring instead evaluates the representation--description pair associated with every fitted candidate. The two searches may therefore select different models even when their predictive performance is similar. Such disagreement is expected rather than problematic: the optimization objectives are different.
+
+In the current implementation, \texttt{mnplib} also provides dedicated AutoML (see Sections \ref{sec:machine_learning_classification} and \ref{sec:machine_learning_regression}) search procedures for its supported model families. These searchers avoid unnecessarily large generic grids by exploiting the structure of each family. Miscoding may be used to order or constrain feature subsets, while nescience evaluates the resulting fitted candidates. Examples include feature-prefix search for linear models, cost-complexity pruning for decision trees, bounded searches over support-vector parameters, and greedy architecture search for small multilayer perceptrons.
 
 %
 % Section: Auto Classification
@@ -2132,417 +1997,2143 @@ the same semantic AST in whatever form is most suitable for their users.
 \section{Auto Classification}
 \label{sec:machine_learning_classification}
 
-The \texttt{nescience} library also includes a module for automated machine learning (for both classification and regression problems). The AutoML module returns the single model, chosen from a collection of model families, that yields the smallest nescience. For each family, the class performs a greedy search over the hyperparameters required by that family, using nescience as the objective.
+The previous sections introduced practical measures for evaluating the quality of a representation and of a model once both have already been specified. In a typical machine-learning problem, however, neither of these choices is known in advance. We must decide which attributes should be used, which family of models is appropriate, and which configuration within that family provides the most adequate description of the data.
 
-The next example shows how to apply the AutoML tools.
+The \texttt{NescienceClassifier} class addresses these three problems jointly. Rather than optimizing classification accuracy alone, it searches for a representation--description pair having minimum practical nescience.
+
+Let $X=[x_1,\ldots,x_p]$ be the available feature matrix and let $y$ be a categorical target. A candidate classifier can be characterized by a feature subset $S$, a model family $M$, and a set of model parameters $\theta$. The Auto Classification problem implemented by \texttt{mnplib} can therefore be written conceptually as
+\[
+(S^\star,M^\star,\theta^\star) = \operatorname*{arg\,min}_{S,M,\theta} \widehat N(S,M_\theta),
+\]
+over the finite collection of candidates explored by the library.
+
+This formulation differs from conventional hyperparameter optimization in an important respect. The representation itself is part of the search. A candidate may improve not only because a different model or hyperparameter is selected, but also because a different subset of the available information is supplied to the model.
+
+% AutoClassifer: Model Families
+
+\subsection*{Model Families}
+
+The current implementation considers the following model families (see Appendix \ref{chap:ml_models} for a detailed description):
+
+\begin{itemize}
+    \item decision trees;
+    \item logistic regression;
+    \item linear support-vector classifiers;
+    \item polynomial support-vector classifiers;
+    \item Gaussian Naive Bayes; and
+    \item multilayer perceptrons.
+\end{itemize}
+
+The objective is to cover a broad collection of genuinely different predictive structures while avoiding redundant variants of the same underlying model family. Many estimators available in general-purpose machine-learning libraries do not introduce a fundamentally different class of descriptions, but rather modify the fitting procedure in order to control overfitting, constrain parameters, or improve numerical behavior. From the perspective of \texttt{mnplib}, such variants are useful only when they enlarge the space of descriptions in a meaningful way.
 
 \begin{example}
-\label{ex:automl}
+Ridge regression, Lasso, and Elastic Net all produce models of the same general form as linear regression,
+\[
+\widehat y = \beta_0+\sum_{j=1}^{p}\beta_j x_j,
+\]
+but fit the coefficients under different regularization penalties. Ridge adds an $L_2$ penalty, Lasso an $L_1$ penalty, and Elastic Net combines both. These procedures may be valuable in conventional machine learning because they can reduce overfitting, shrink coefficients, or induce sparsity. However, the final predictive description remains a linear model.
 
-In this example we use the \texttt{nescience} library to find the model that best describes the \texttt{digits} dataset.
+In \texttt{mnplib}, descriptive complexity and overfitting are addressed explicitly through surfeit, mismodel, and nescience. Introducing Ridge, Lasso, and Elastic Net as separate model families would therefore cause the AutoML procedure to evaluate several alternative fitting mechanisms for essentially the same class of descriptions, increasing computational cost without substantially expanding the space of predictive structures being explored.
+\end{example}
+
+The model families included in the library are intended to provide qualitatively different ways of describing the relation between the input representation and the target. Logistic regression provides linear decision boundaries; Naive Bayes provides a probabilistic description based on class-conditional distributions; decision trees provide piecewise conditional rules; polynomial support-vector machines introduce nonlinear polynomial decision surfaces; and multilayer perceptrons provide compositions of nonlinear transformations. Linear support-vector classifiers provide an alternative margin-based linear description.
+
+The resulting AutoML search is therefore deliberately broad in terms of \emph{model structure}, but selective in terms of estimator variants. The aim is to maximize the diversity of candidate descriptions while avoiding unnecessary computation over methods that differ mainly in how the same basic model is regularized or fitted.
+
+Users may evaluate all available families, which is the default, or explicitly restrict the search. For example,
 
 \begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from sklearn.datasets import load_digits
+{\scriptsize
+\begin{verbatim}
+from mnplib.classifier import NescienceClassifier
+
+model = NescienceClassifier(
+    models=[
+        "decision_tree",
+        "logistic_regression",
+        "naive_bayes",
+    ]
+)
+\end{verbatim}}
+\end{sourcecode}
+
+limits the search to the three specified families. This can be useful when prior knowledge rules out some forms of description, when computational resources are limited, or when the purpose of the analysis is to compare a particular subset of model families.
+
+% AutoClassifier: Searching Representations and Models
+
+\subsection*{Searching Representations and Models}
+
+The Theory of Nescience allows the search of hyperparameters to proceed more selectively than a classical grid search. Starting from relatively simple candidates, family-specific searchers evaluate progressively more elaborate alternatives and continue only while nescience improves sufficiently. Additional features, parameters, or structural elements are therefore introduced only when their reduction in miscoding or inaccuracy justifies the corresponding increase in descriptive complexity (see Appendix \ref{chap:ml_models}).
+
+This replaces many costly grid searches with bounded or greedy procedures. An exhaustive search over $k$ hyperparameters with $q_i$ possible values may require $\prod_{i=1}^{k} q_i$ model fits, with an additional multiplicative cost when cross-validation is used. Nescience-guided search can instead examine only a much smaller sequence of promising candidates. Thus, \texttt{mnplib} uses nescience not merely as a different scoring function, but also as a principle for reducing the search
+space itself.
+
+For example, logistic regression and Gaussian Naive Bayes primarily explore different feature representations, decision trees explore alternative pruned tree structures, linear support-vector classifiers evaluate different regularization strengths, polynomial support-vector classifiers search a bounded collection of polynomial configurations, and multilayer perceptrons
+explore small alternative architectures.
+
+Feature-dependent searches are guided by supervised miscoding. The available features are ranked according to either deficiency or miscoding, and the family-specific searcher may evaluate progressively larger prefixes of that ordering. The default ranking criterion is deficiency. If the ordered features are $(j_1,j_2,\ldots,j_p)$, the corresponding prefix sequence is $S_1=\{j_1\}, S_2=\{j_1,j_2\}, \ldots,  S_p=\{j_1,\ldots,j_p\}$. This transforms what would otherwise be a combinatorial search through $2^p-1$ non-empty feature subsets into a much smaller ordered search.
+
+Not every family uses this sequence in exactly the same way. The feature ranking provides common information about the representation, while each searcher decides how that information should be incorporated into its own candidate-generation procedure.
+
+% AutoClassifier: Candidate Evaluation
+
+\subsection*{Candidate Evaluation}
+
+Although the search procedures differ, every candidate is evaluated in the same way. For a fitted candidate, \texttt{mnplib} obtains three canonical artifacts: the effective feature subset used by the model, the predictions produced by its canonical description, and the canonical string representation of the model. These artifacts are used to compute deficiency, surplus, inaccuracy, and surfeit. The resulting miscoding and mismodel are then combined into practical nescience as described in Section~\ref{sec:machine_learning_nescience}.
+
+Consequently, models belonging to very different families can be compared within the same framework. A decision tree is not penalized according to its depth while a neural network is not penalized according to its number of neurons. Instead, both are ultimately evaluated through the quality of the representation, the predictions they produce, and their canonical descriptions.
+
+Candidates whose nescience cannot be computed reliably enough to yield a finite value are not eligible for final selection. Among the remaining candidates, \texttt{NescienceClassifier} chooses the one having minimum nescience. This is a minimum-nescience search rather than a maximum-accuracy search. Classification accuracy is still available as a useful external diagnostic, but it is not the quantity minimized by the Auto Classification procedure.
+
+% AutoClassifer: Usign the Classifier
+
+\subsection*{Using the Classifier}
+
+The resulting object follows the usual scikit-learn estimator interface. After fitting, the selected candidate can be used directly through \texttt{predict()} and \texttt{score()}.
+
+\begin{example}
+\label{ex:auto_classifier_wine}
+
+We illustrate Auto Classification using the Wine dataset distributed with scikit-learn. The dataset contains thirteen numerical measurements of wines belonging to three classes.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from sklearn.datasets import load_wine
 from sklearn.model_selection import train_test_split
 
-from Nescience.Nescience import AutoClassifier
+from mnplib.classifier import NescienceClassifier
 
-(X, y) = load_digits(return_X_y=True)
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
+X, y = load_wine(return_X_y=True)
 
-model = AutoClassifier()
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+)
+
+model = NescienceClassifier()
 model.fit(X_train, y_train)
 
 model.score(X_test, y_test)
-[] 0.9622222222222222
 \end{verbatim}}
-
 \end{sourcecode}
+
+In a representative run, the resulting test accuracy is $0.93$. The important point, however, is not the test score itself. The held-out observations were not used by the minimum-nescience criterion to select the candidate; they provide an independent assessment of the classifier obtained by
+the search.
+
+We can inspect the family of the selected model with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+type(model.get_model())
+\end{verbatim}}
+\end{sourcecode}
+
+which, in this run, returns
+
+\begin{verbatim}
+sklearn.tree._classes.DecisionTreeClassifier
+\end{verbatim}
+
+Thus, from the candidate representations and model families explored during fitting, the procedure selected a decision tree as the description with minimum nescience.
 \end{example}
 
-If we evaluate \texttt{type(model.model)}, we will see that the library has selected a linear support vector machine as the best model for this dataset.
+This result of previous example should not be interpreted as a general statement that decision trees are preferable for the classification of wines, since the selected model depends on the training sample. The example illustrates instead that a single call to \texttt{fit()} simultaneously performs representation search, model-family selection, and family-specific model refinement.
 
-A key difference between the \texttt{nescience} library and other AutoML libraries is that it returns a \emph{single} model as the best candidate, rather than an ensemble of models. In this way, the data scientist can directly reuse the result of \texttt{AutoClassifier} and proceed with the subsequent analysis.
+Unlike an AutoML procedure that exposes only its final prediction object, \texttt{NescienceClassifier} retains the analyses of the candidates that were evaluated. The complete collection can be inspected with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model.results_dataframe()
+\end{verbatim}}
+\end{sourcecode}
+
+which returns the candidates ordered by increasing nescience. This makes it possible to compare not only their final scalar values, but also the model families, feature representations, hyperparameters, and nescience components that led to the selection.
+
+The selected candidate can be examined in greater detail with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model.analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+which reports, among other quantities, its deficiency, surplus, miscoding, inaccuracy, surfeit, mismodel, nescience, model family, and selected hyperparameters. These diagnostics are useful because two candidates may have similar nescience
+for quite different reasons. One may be limited primarily by the quality of its feature representation, while another may use an adequate representation but require an unnecessarily elaborate description.
+
+% AutoClassifer: A Single Description
+
+\subsection*{A Single Description}
+
+A deliberate property of Auto Classification is that the result is a single model rather than an ensemble of several competing models. This choice follows naturally from the role assigned to descriptions in the Theory of Nescience. The objective is to find an economical individual description capable of accounting for the available representation, rather than to improve prediction by accumulating a large collection of independently fitted descriptions.
+
+This does not imply that ensembles are invalid machine-learning models. An ensemble may obtain excellent predictive performance, and in principle it could also be evaluated through nescience if serialized completely. Its description, however, must include the information required to specify its constituent models and their aggregation. The current Auto Classification implementation instead concentrates on individual model families whose descriptive structure can be evaluated directly and compared under a common canonical language. The result is therefore not merely a convenient predictive object. It is the representation--description pair with the smallest practical nescience among the candidates actually explored by the search.
+
+This distinction summarizes the main purpose of the class. Conventional AutoML usually treats the feature matrix as given and searches primarily for a predictive model and its hyperparameters. \texttt{NescienceClassifier} treats the representation and the description as coupled choices. Miscoding guides the selection of information supplied to the classifier, while mismodel evaluates what the fitted classifier does with that information. Nescience provides the common criterion by which the resulting candidates are compared.
 
 %
 % Section: Auto Regression
 %
 
 \section{Auto Regression}
+\label{sec:machine_learning_regression}
 
-The \texttt{AutoRegressor} class automatically selects the best model for a regression problem. In particular, it (i) computes an optimal subset of features, (ii) selects the most suitable family of models, and (iii) tunes the model's hyperparameters—using nescience as the objective. 
+Auto Regression addresses the same representation--description search problem introduced in the previous section, but for a numerical target. Given a feature matrix $X=[x_1,\ldots,x_p]$ and a continuous target $y$, the objective is to determine which information should be supplied to the model, which regression family should be used, and which configuration within that family provides the best description.
+
+The \texttt{NescienceRegressor} class performs these choices jointly using practical nescience as its objective. A candidate regressor can be characterized by a feature subset $S$, a model family $M$, and a set of parameters $\theta$. Conceptually, the search is
+\[
+(S^\star,M^\star,\theta^\star) = \operatorname*{arg\,min}_{S,M,\theta} \widehat N(S,M_\theta),
+\]
+over the finite collection of candidates explored by the library.
+
+As in Auto Classification, the representation itself is part of the search. Improvement may therefore result from selecting a more appropriate subset of the available features, from choosing a different family of descriptions, or from refining the structure of a model within one family.
+
+% AutoRegressor: Model Families
+
+\subsection*{Model Families}
+
+The current implementation considers the following regression families (see Appendix~\ref{chap:ml_models} for a detailed description):
+
+\begin{itemize}
+    \item linear regression;
+    \item decision-tree regression;
+    \item linear support-vector regression;
+    \item polynomial support-vector regression; and
+    \item multilayer perceptrons.
+\end{itemize}
+
+As with classification, the objective is to cover a broad collection of genuinely different predictive structures while avoiding redundant variants of the same underlying model family.
+
+\begin{example}
+The Ridge, Lasso, and Elastic Net all produce linear predictive descriptions of the form
+\[
+\widehat y = \beta_0+\sum_{j=1}^{p}\beta_jx_j,
+\]
+but differ in the regularization introduced during fitting. Such methods can be useful in conventional machine learning to reduce overfitting, shrink coefficients, or induce sparsity. From the perspective of \texttt{mnplib}, however, they do not define fundamentally different forms of description. The complexity and adequacy of the fitted linear model are already evaluated through surfeit, mismodel, and nescience. Treating each regularized variant as a separate AutoML family would therefore increase computation without substantially enlarging the space of predictive structures being explored.
+\end{example}
+
+The selected families represent qualitatively different forms of regression. Linear regression provides affine descriptions; decision trees provide piecewise constant conditional descriptions; linear support-vector regression provides an alternative margin-based linear formulation; polynomial support-vector regression introduces nonlinear polynomial relations; and multilayer perceptrons provide compositions of nonlinear transformations. The search is therefore deliberately broad in terms of \emph{descriptive structure}, but selective in terms of estimator variants. The aim is to maximize the diversity of the candidate descriptions while avoiding unnecessary computation over alternative fitting procedures for essentially the same model.
+
+Users may evaluate all supported families, which is the default, or restrict the search explicitly. For example,
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.regressor import NescienceRegressor
+
+model = NescienceRegressor(
+    models=[
+        "linear_regression",
+        "decision_tree",
+        "polynomial_svr",
+    ]
+)
+\end{verbatim}}
+\end{sourcecode}
+
+limits the search to the three specified families.
+
+% AutoRegressor: Searching Representations and Models
+
+\subsection*{Searching Representations and Models}
+
+The Theory of Nescience allows hyperparameter search to proceed more selectively than a classical exhaustive grid. Starting from relatively simple representations and descriptions, family-specific searchers explore progressively more elaborate candidates and concentrate computation on changes that can reduce nescience. This replaces many large grid searches with bounded or greedy procedures. An exhaustive search over $k$ hyperparameters with $q_i$ possible values may require $\prod_{i=1}^{k}q_i$ model fits, with an additional multiplicative cost when cross-validation is used. A nescience-guided search can instead evaluate a much smaller collection of structurally meaningful candidates.
+
+The exact search depends on the model family. Linear models primarily explore alternative feature representations, decision trees explore pruned tree structures, polynomial support-vector regression evaluates a bounded collection of nonlinear configurations, and multilayer perceptrons explore small alternative architectures.
+
+Feature-dependent searches are guided by supervised miscoding. The available features are ranked according to either deficiency or miscoding, and family-specific searchers may evaluate progressively larger prefixes of that ordering. If the ranked features are $(j_1, j_2, \ldots, j_p)$, the corresponding prefix sequence is $S_1=\{j_1\}, S_2=\{j_1,j_2\}, \ldots, S_p=\{j_1,\ldots,j_p\}$. This reduces what would otherwise be a combinatorial search through $2^p-1$ possible non-empty subsets to a much smaller ordered search.
+
+Thus, \texttt{mnplib} uses nescience not only as a criterion for ranking fitted models, but also as a principle for limiting the search space itself.
+
+% AutoRegressor: Candidate Evaluation
+
+\subsection*{Candidate Evaluation}
+
+Although each family generates candidates differently, all fitted regressors are evaluated through the same procedure. For every candidate, \texttt{mnplib} obtains the effective feature subset, the predictions generated by the canonical model description, and the canonical string representation of that description. These artifacts are used to compute deficiency, surplus, inaccuracy, and surfeit. The resulting miscoding and mismodel are then combined into practical nescience as described in Section~\ref{sec:machine_learning_nescience}.
+
+This provides a common basis for comparing models whose conventional notions of complexity are otherwise incompatible. The depth of a decision tree cannot be compared directly with the number of hidden units in a neural network or with the number of support vectors in a kernel machine. Nescience instead compares all candidates through the quality of their representation, their predictions, and their canonical descriptions. Candidates whose nescience is not finite are excluded from final selection.
+Among the remaining candidates, \texttt{NescienceRegressor} selects the model having the smallest nescience.
+
+This is therefore a minimum-nescience search rather than a maximum-$R^2$ search. The native regression score remains useful as an external diagnostic, but it is not the quantity optimized by the Auto Regression procedure.
+
+% AutoRegressor: Using the Regressor
+
+\subsection*{Using the Regressor}
+
+The resulting object follows the standard scikit-learn estimator interface and can be used directly through \texttt{predict()} and \texttt{score()}.
 
 \begin{example}
 \label{ex:auto_regression}
 
-In this example we apply our auto-regression class to estimating house prices, using the \texttt{boston} dataset included with \texttt{scikit-learn}.
+We illustrate Auto Regression using the California Housing dataset distributed with scikit-learn. The target is the median house value, represented as a continuous numerical variable.
 
 \begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from fastautoml.fastautoml import AutoRegressor
-from sklearn.datasets import load_boston
+{\scriptsize
+\begin{verbatim}
+from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 
-(X, y) = load_boston(return_X_y=True)
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
+from mnplib.regressor import NescienceRegressor
 
-model = AutoRegressor()
+X, y = fetch_california_housing(return_X_y=True)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    random_state=1,
+)
+
+model = NescienceRegressor()
 model.fit(X_train, y_train)
-AutoRegressor()
 
 model.score(X_test, y_test)
-0.8763987309111113
 \end{verbatim}}
-
 \end{sourcecode}
+
+In a representative run, the resulting held-out \(R^2\) score is approximately
+
+\begin{verbatim}
+0.835
+\end{verbatim}
+
+As in the classification case, the held-out score is not used by the minimum-nescience procedure to choose the model. It provides an independent assessment of the regressor selected from the training data.
+
+The selected model family can be inspected with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+type(model.get_model())
+\end{verbatim}}
+\end{sourcecode}
+
+which, in this run, returns
+
+\begin{verbatim}
+sklearn.tree._classes.DecisionTreeRegressor
+\end{verbatim}
+
+Thus, among the representations and regression families explored during training, the procedure selected a decision tree as the description with minimum nescience.
 \end{example}
 
-If we evaluate \texttt{type(model.model)}, we see that the library has selected a linear support vector machine or a decision tree (depending on the run and dataset version) as the best model for this dataset.
+The result should not be interpreted as a general statement that decision trees are the best regressors for housing data. The selected model depends on the training sample and on the search configuration. The purpose of the example is to show that a single call to \texttt{fit()} performs representation search, model-family selection, and family-specific model refinement.
 
-A key difference between the \texttt{nescience} library and other AutoML libraries is that it returns a single model as the best candidate, rather than an ensemble of models. In this way, the data scientist can directly reuse the result of \texttt{AutoRegressor} and proceed with the analysis.
+The complete set of evaluated candidates can be inspected with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model.results_dataframe()
+\end{verbatim}}
+\end{sourcecode}
+
+which returns the candidates ordered by increasing nescience. The selected candidate can be examined in more detail with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model.analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+which reports its deficiency, surplus, miscoding, inaccuracy, surfeit, mismodel, nescience, model family, selected hyperparameters, and native estimator score.
+
+These diagnostics are useful because two regressors may achieve similar predictive performance for very different reasons. One may be limited mainly by an inadequate representation, while another may use suitable features but rely on an unnecessarily elaborate description.
+
+% AutoRegressor: A Single Description
+
+\subsection*{A Single Description}
+
+As in Auto Classification, Auto Regression deliberately returns a single fitted model rather than an ensemble. This follows from the role of descriptions in the Theory of Nescience. The objective is to identify an economical individual description capable of accounting for the available representation, rather than to improve predictive performance by accumulating many independently fitted descriptions.
+
+This does not imply that ensembles are invalid regression models. An ensemble could in principle be evaluated by nescience if all of its constituent models and aggregation rules were serialized explicitly. However, such a model would have to pay the descriptive cost of all this structure. The current implementation instead concentrates on single-model families that provide genuinely different forms of explanation and can be compared directly through the common canonical language. The final result is therefore the representation--description pair with the smallest practical nescience among the candidates actually explored.
+
+This is the central distinction between \texttt{NescienceRegressor} and a conventional AutoML procedure. Conventional model selection normally treats the feature matrix as fixed and searches for the estimator that optimizes a predictive score. \texttt{NescienceRegressor} treats the representation and description as coupled choices: miscoding guides which information is supplied to the model, mismodel evaluates the resulting predictive description, and nescience provides the common criterion for selecting among the alternatives.
+
+%
+% Section: Residual Analysis
+%
+
+\section{Residual Analysis}
+\label{sec:machine_learning_residuals}
+
+A predictive model rarely reconstructs its target perfectly. Once a model has produced a vector of predictions $\widehat{\mathbf y} = (\widehat y_1,\ldots,\widehat y_n)$, the remaining discrepancy with the observed target $\mathbf y=(y_1,\ldots,y_n)$ contains information about what the model has failed to capture. In regression, this discrepancy is traditionally represented by the residuals $r_i = y_i-\widehat y_i$. Residual plots are commonly used to detect systematic bias, heteroscedasticity, nonlinearity, or other violations of the assumptions of a fitted model. Measures such as the mean squared error or root mean squared error summarize the magnitude of these discrepancies.
+
+The \texttt{ResidualAnalysis} class in \texttt{mnplib} takes a complementary information-theoretic perspective. Instead of considering only how large each numerical error is, it studies the empirical structure of the corrections required to transform the predictions into the observed target. Two models may therefore have residuals of similar magnitude while leaving correction patterns of very different complexity.
+
+The class does not train a predictive model. It receives an observed target and an aligned vector of predictions:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.residuals import ResidualAnalysis
+
+residuals = ResidualAnalysis()
+residuals.fit(X, y, predictions=predictions)
+\end{verbatim}}
+\end{sourcecode}
+
+When no explanatory attributes are required, the shorter interface
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+residuals = ResidualAnalysis()
+residuals.fit_y(y, predictions=predictions)
+\end{verbatim}}
+\end{sourcecode}
+
+can be used instead. Thus, residual analysis is independent of how the predictions were obtained: they may come from a model fitted by \texttt{mnplib}, from a scikit-learn estimator, or from any other predictive procedure.
+
+% Residual analysis - Correction states
+
+\subsection*{Correction States}
+
+To study the structure of prediction errors, \texttt{mnplib} first represents the observed and predicted values using a common set of states. For classification, the states are simply the observed and predicted class labels. For regression, continuous values must first be discretized. A collection of uniform intervals is constructed from the range of the observed target and
+the same interval boundaries are then applied to both $\mathbf y$ and $\widehat{\mathbf y}$. Predictions falling below or above the observed target range are assigned separate states.
+
+Let $s_i$ denote the state of the observed target $y_i$, and let $\widehat s_i$ denote the state of its prediction. We define the empirical correction pattern of observation $i$ as the ordered transition $c_i = (\widehat s_i,s_i)$. For example, the pattern $3 \rightarrow 5$ indicates that the model predicted a value belonging to state $3$, whereas the observed value belonged to state $5$.
+
+This symbolic representation deliberately ignores small numerical differences that do not change the empirical state of an observation. The objective is not to replace the ordinary residual $y_i-\widehat y_i$, which remains available for regression, but to provide an additional representation from which the informational structure of prediction errors can be analyzed.
+
+\subsection*{Correction Information}
+
+Some correction patterns occur frequently, whereas others are unusual. If the
+model predicts state \(\widehat s\), we estimate from the complete sample the
+conditional probability
+
+\[
+\widehat p(s\mid\widehat s).
+\]
+
+The local correction information associated with observation \(i\) is
+
+\[
+I_i
+=
+-\log_2
+\widehat p(s_i\mid\widehat s_i).
+\]
+
+A low value means that the observed state is common when the model predicts
+\(\widehat s_i\). The required correction is therefore regular and predictable.
+A high value means that the transition from the predicted state to the observed
+state is uncommon and consequently requires more information to specify.
+
+The class also compares this conditional probability with the marginal
+probability of the observed state. Let
+
+\[
+\widehat p(s_i)
+\]
+
+be the frequency of state \(s_i\) in the target. The local explanatory gain of
+the prediction is
+
+\[
+G_i
+=
+\log_2
+\frac{
+    \widehat p(s_i\mid\widehat s_i)
+}{
+    \widehat p(s_i)
+}.
+\]
+
+A positive value indicates that knowing the prediction makes the observed state
+more likely than it was a priori. The implementation reports the
+\emph{negative local explanatory gain},
+
+\[
+G_i^{-}
+=
+\max\{0,-G_i\},
+\]
+
+which is positive only when the prediction makes the observed state less likely
+than its marginal frequency.
+
+Both quantities are calculated for every observation. They are diagnostics of
+the residual structure and should not be interpreted as measures of
+generalization performance.
+
+Row-level values can be inspected with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+residuals.results_dataframe()
+\end{verbatim}}
+\end{sourcecode}
+
+For regression, the returned table includes the observed and predicted values,
+the numerical residual, the corresponding observed and predicted states, the
+correction pattern, local correction information, and negative local
+explanatory gain.
+
+A summary of the complete prediction vector can be obtained with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+residuals.analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+The report includes the number of observed correction patterns, the empirical
+code lengths of the target, predictions, and their joint representation, as well
+as the conditional code lengths
+
+\[
+\widehat L(\mathbf y\mid\widehat{\mathbf y})
+=
+\widehat L(\mathbf y,\widehat{\mathbf y})
+-
+\widehat L(\widehat{\mathbf y}),
+\]
+
+and
+
+\[
+\widehat L(\widehat{\mathbf y}\mid\mathbf y)
+=
+\widehat L(\mathbf y,\widehat{\mathbf y})
+-
+\widehat L(\mathbf y).
+\]
+
+These quantities estimate how much information remains necessary to reconstruct
+one state sequence when the other is known.
+
+It is important to distinguish this correction representation from the empirical
+inaccuracy introduced in Section~\ref{sec:machine_learning_inaccuracy}.
+For numeric targets, inaccuracy retains its own discretization procedure, in
+which target and predictions are encoded independently. Residual correction
+analysis instead deliberately uses the same target-derived intervals for both
+vectors so that transitions between predicted and observed states have a direct
+interpretation. The correction quantities are therefore complementary
+diagnostics and are not a decomposition of inaccuracy.
+
+\begin{example}
+\label{ex:residual_missing_variable}
+
+Consider a simple regression problem with two independent explanatory
+attributes,
+
+\[
+y=3x_1+6x_2+\varepsilon,
+\]
+
+where \(\varepsilon\) is small random noise. We deliberately fit an incomplete
+linear model using only \(x_1\).
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.linear_model import LinearRegression
+from mnplib.residuals import ResidualAnalysis
+
+rng = np.random.default_rng(42)
+
+n = 1200
+
+x1 = rng.normal(size=n)
+x2 = rng.normal(size=n)
+noise = rng.normal(scale=0.25, size=n)
+
+y = 3*x1 + 6*x2 + noise
+
+X = pd.DataFrame({
+    "x1": x1,
+    "x2": x2,
+})
+
+model = LinearRegression().fit(X[["x1"]], y)
+predictions = model.predict(X[["x1"]])
+
+residuals = ResidualAnalysis(task="regression").fit(
+    X,
+    y,
+    predictions=predictions,
+)
+
+table = residuals.results_dataframe()
+\end{verbatim}}
+\end{sourcecode}
+
+If the residuals are plotted against the omitted attribute \(x_2\),
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+plt.scatter(
+    X["x2"],
+    table["residual"],
+    alpha=0.5,
+)
+
+plt.axhline(0)
+plt.xlabel("Omitted variable x2")
+plt.ylabel("Residual")
+plt.show()
+\end{verbatim}}
+\end{sourcecode}
+
+a clear linear structure appears. The residuals are therefore not simply random
+errors. They contain information about a variable that the description has
+failed to use.
+
+We can verify this by fitting the complete model:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model = LinearRegression().fit(X, y)
+predictions = model.predict(X)
+
+residuals = ResidualAnalysis(task="regression").fit(
+    X,
+    y,
+    predictions=predictions,
+)
+
+residuals.analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+Once \(x_2\) is incorporated, the systematic pattern largely disappears and the
+remaining corrections are dominated by the small random term
+\(\varepsilon\).
+
+This example illustrates an important interpretation of residuals within the
+Theory of Nescience. A residual may represent information that the current
+description has not yet captured. If that information exhibits regular structure,
+it may be possible to improve the model or the representation rather than merely
+accepting the discrepancy as irreducible noise.
+\end{example}
+
+The previous example concerned an obvious missing variable. A second example
+shows why the informational structure of residuals can be useful even when a
+conventional error metric is held constant.
+
+\begin{example}
+\label{ex:residual_systematic_random}
+
+We construct two prediction vectors having exactly the same root mean squared
+error. In the first case, every prediction contains the same systematic offset,
+
+\[
+\widehat y_i=y_i+1.
+\]
+
+In the second, independent random noise is added and rescaled so that its RMSE
+is also exactly one.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+
+from sklearn.metrics import mean_squared_error
+from mnplib.residuals import ResidualAnalysis
+
+rng = np.random.default_rng(42)
+
+n = 3000
+y = rng.normal(0, 2, size=n)
+
+systematic = y + 1
+
+noise = rng.normal(size=n)
+noise /= np.sqrt(np.mean(noise**2))
+random = y + noise
+
+print(
+    np.sqrt(mean_squared_error(y, systematic)),
+    np.sqrt(mean_squared_error(y, random)),
+)
+\end{verbatim}}
+\end{sourcecode}
+
+Both values are equal to one by construction. We now analyze the two prediction
+vectors.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+systematic_analysis = ResidualAnalysis(
+    task="regression"
+).fit_y(
+    y,
+    predictions=systematic,
+)
+
+random_analysis = ResidualAnalysis(
+    task="regression"
+).fit_y(
+    y,
+    predictions=random,
+)
+
+systematic_report = systematic_analysis.analysis()
+random_report = random_analysis.analysis()
+
+pd.DataFrame({
+    "Systematic": {
+        "Correction patterns":
+            systematic_report["n_correction_patterns"],
+        "Conditional bits":
+            systematic_report[
+                "target_conditional_code_length_bits"
+            ],
+        "Mean correction information":
+            systematic_report[
+                "mean_local_correction_information"
+            ],
+    },
+    "Random": {
+        "Correction patterns":
+            random_report["n_correction_patterns"],
+        "Conditional bits":
+            random_report[
+                "target_conditional_code_length_bits"
+            ],
+        "Mean correction information":
+            random_report[
+                "mean_local_correction_information"
+            ],
+    },
+})
+\end{verbatim}}
+\end{sourcecode}
+
+Although the two predictors have the same RMSE, their residual structures are
+very different. The systematic predictor repeatedly applies approximately the
+same correction: knowing the predicted state strongly constrains the state of
+the observed value. The random predictor generates a wider and less predictable
+collection of state transitions.
+
+Consequently, the numerical magnitude of the error alone does not characterize
+what remains unexplained by a model. A systematic error may be large while
+remaining highly regular and therefore potentially correctable by a simple
+modification of the description. Random residuals of the same magnitude contain
+less exploitable structure.
+
+This distinction is particularly relevant from the perspective of the Theory of
+Nescience. Learning consists in capturing regularities in a representation. If
+regularity remains in the residuals, then part of the available structure has not
+yet been incorporated into the model. Residual analysis therefore provides a
+way to examine not only \emph{how wrong} a prediction is, but also
+\emph{how structured the remaining error is}.
+\end{example}
+
+The two examples illustrate the complementary roles of conventional and
+information-theoretic residual analysis. Numerical residuals remain essential:
+their sign and magnitude directly quantify prediction error. The correction
+representation introduced by \texttt{ResidualAnalysis} adds a second question:
+how much regularity remains in those errors?
+
+A model whose residuals exhibit repeated and predictable correction patterns
+may still admit a relatively simple improvement. Conversely, when the remaining
+corrections become increasingly irregular, additional modeling may yield
+progressively less useful structure. In this sense, residual analysis provides a
+natural bridge between ordinary prediction diagnostics and the broader objective
+of the Theory of Nescience: identifying which part of a representation remains
+unexplained by its current description.
+
+
+%
+% Section: Anomaly Analysis
+%
+
+\section{Anomaly Analysis}
+\label{sec:machine_learning_anomalies}
+
+An anomaly is usually understood as an observation that departs from what is expected. Many anomaly-detection methods identify anomalies by looking at the empirical distribution of the observations themselves. Samples that lie far from the bulk of the data, occur in low-density regions, or receive an extreme isolation score are then regarded as anomalous. The approach adopted by \texttt{mnplib} is different. Anomalies are defined relative to a predictive model. An observation is anomalous when the model fails to reconstruct its observed target state. Thus, anomaly detection is not primarily a search for unusual values, but for observations that contradict the regularities captured by the model. This distinction is important because an unusual observation need not be anomalous. A very large value may be perfectly expected once its explanatory attributes are taken into account. Conversely, an apparently ordinary value may be anomalous if it is inconsistent with what should occur under its particular conditions.
+
+The anomaly analysis implemented by \texttt{mnplib} builds directly on the
+residual representation introduced in
+Section~\ref{sec:machine_learning_residuals}. Let \(s_i\) denote the observed
+target state of sample \(i\), and let \(\widehat s_i\) denote the corresponding
+predicted state.
+
+For a classification problem, the states are the class labels themselves. A
+sample is anomalous whenever
+
+\[
+s_i \neq \widehat s_i,
+\]
+
+that is, whenever it is misclassified.
+
+For regression, the observed target range is divided into a common collection
+of intervals. The same interval boundaries are applied to both the observed
+values and the predictions. A regression sample is considered anomalous whenever
+
+\[
+s_i \neq \widehat s_i.
+\]
+
+Thus, a small numerical residual does not necessarily imply a regular sample,
+and a relatively large residual does not necessarily imply an anomaly. What
+matters is whether the prediction and the observation belong to the same
+empirical target state.
+
+Predictions outside the observed target range are assigned dedicated states
+below or above that range. This prevents an extreme prediction from being
+silently absorbed into one of the edge intervals.
+
+The anomaly criterion is therefore threshold-free. There is no user-defined
+residual threshold, contamination fraction, z-score limit, or isolation cutoff.
+Once the target representation has been fixed, anomaly status follows directly
+from whether the model reconstructs the correct state.
+
+The same \texttt{ResidualAnalysis} object introduced in the previous section
+can be used to obtain the anomalous observations:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.residuals import ResidualAnalysis
+
+analysis = ResidualAnalysis(task="regression").fit(
+    X,
+    y,
+    predictions=predictions,
+)
+
+indices = analysis.anomalies()
+\end{verbatim}}
+\end{sourcecode}
+
+For regression problems, under-predicted and over-predicted anomalies can also
+be obtained separately:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+under = analysis.anomalies(
+    kind="under_predicted",
+)
+
+over = analysis.anomalies(
+    kind="over_predicted",
+)
+\end{verbatim}}
+\end{sourcecode}
+
+A complete table of the detected observations and their correction diagnostics
+is available through
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+analysis.results_dataframe(
+    only_anomalies=True,
+)
+\end{verbatim}}
+\end{sourcecode}
+
+The table includes the observed and predicted values, their corresponding
+states, the correction pattern, the direction of the residual in regression,
+and the local information quantities introduced in the previous section.
+
+\subsection*{Anomalies and Outliers}
+
+The distinction between anomalies and outliers is fundamental. An outlier is
+typically defined with respect to the distribution of the observations. An
+anomaly in the present framework is defined with respect to a model.
+
+Consequently,
+
+\[
+\text{outlier} \not\equiv \text{anomaly}.
+\]
+
+A sample may be statistically extreme and nevertheless be correctly explained
+by the model. Likewise, a sample located near the center of the empirical
+distribution may contradict the model once its explanatory conditions are taken
+into account.
+
+\begin{example}
+\label{ex:stadium_anomaly}
+
+Consider the mobile traffic generated by a cellular base station located near a
+football stadium. On ordinary days the traffic is relatively low, while during a
+match it increases substantially as the stadium fills.
+
+For simplicity, suppose traffic follows approximately
+
+\[
+y = 20 + 80x + \varepsilon,
+\]
+
+where \(x\in[0,1]\) denotes stadium attendance and \(\varepsilon\) represents
+small measurement noise.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+
+from mnplib.residuals import ResidualAnalysis
+
+rng = np.random.default_rng(42)
+
+n = 240
+
+attendance = rng.uniform(0, 1, size=n)
+
+predictions = 20 + 80*attendance
+traffic = predictions + rng.normal(
+    scale=2,
+    size=n,
+)
+
+X = pd.DataFrame({
+    "attendance": attendance,
+})
+\end{verbatim}}
+\end{sourcecode}
+
+We now introduce two particular observations. In the first, the stadium is full
+and the traffic is very high. In the second, the stadium is also full, but the
+traffic remains unexpectedly low.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+outlier = 10
+anomaly = 20
+
+attendance[outlier] = 1.0
+predictions[outlier] = 100.0
+traffic[outlier] = 100.0
+
+attendance[anomaly] = 1.0
+predictions[anomaly] = 100.0
+traffic[anomaly] = 45.0
+
+X["attendance"] = attendance
+
+analysis = ResidualAnalysis(
+    task="regression"
+).fit(
+    X,
+    traffic,
+    predictions=predictions,
+)
+
+table = analysis.results_dataframe()
+\end{verbatim}}
+\end{sourcecode}
+
+The first observation has one of the largest traffic values in the complete
+dataset. From a purely distributional perspective it is an outlier. However,
+high traffic is exactly what the model predicts for a full stadium, so the
+observation is reconstructed correctly and is not anomalous.
+
+The second observation is quite different. A traffic value of \(45\) is not
+particularly extreme when considered without context, but it is incompatible
+with a full stadium for which the model predicts approximately \(100\). The
+observation therefore belongs to a different target state from its prediction
+and is identified as anomalous.
+
+This example illustrates why anomaly detection cannot, in general, be reduced
+to the detection of extreme values. The relevant question is not whether an
+observation is unusual in isolation, but whether it is unusual \emph{given what
+the model knows about it}.
+\end{example}
+
+\subsection*{Explaining Anomalies}
+
+Detecting anomalous observations is only the first step. A more interesting
+question is whether the detected anomalies reveal some systematic information
+that is missing from the current representation or description.
+
+For each anomaly, \texttt{mnplib} retains its correction pattern
+
+\[
+(\widehat s_i,s_i).
+\]
+
+Different anomalies may correspond to different correction mechanisms. The
+method
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+analysis.feature_analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+uses supervised miscoding on the anomalous subset to determine which available
+attributes help distinguish these correction patterns.
+
+The target of this supervised analysis is not the original target variable, but
+the correction state itself. Thus, the procedure asks:
+
+\begin{quote}
+Which attributes contain information about the different ways in which the
+model fails?
+\end{quote}
+
+The method ranks individual attributes and can also perform redundancy-aware
+feature selection over the anomalous subset. This provides a direct connection
+between anomaly analysis and the concept of miscoding developed earlier in this
+chapter.
+
+A simpler exploratory diagnostic is
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+analysis.attribute_distribution(
+    "attribute_name"
+)
+\end{verbatim}}
+\end{sourcecode}
+
+which compares the distribution of an attribute in the complete dataset with
+its distribution among anomalous observations, using common bins for numeric
+attributes.
+
+\begin{example}
+\label{ex:employee_discount_anomaly}
+
+Consider a telecommunications operator that predicts the monthly bill of each
+customer from their usage and contracted plan. Suppose the expected bill is
+
+\[
+y = f + 0.75u,
+\]
+
+where \(f\) is the fixed plan fee and \(u\) is monthly usage.
+
+Employees of the company receive a legitimate \(50\%\) discount. If employee
+status is absent from the representation supplied to the model, these customers
+will appear to have unexpectedly low bills.
+
+We construct a simple synthetic dataset.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+
+from mnplib.residuals import ResidualAnalysis
+
+rng = np.random.default_rng(42)
+
+n = 800
+
+usage = rng.uniform(
+    20, 120, size=n
+)
+
+plan_fee = rng.choice(
+    [15.0, 25.0, 40.0],
+    size=n,
+    p=[0.4, 0.4, 0.2],
+)
+
+is_employee = rng.random(n) < 0.08
+
+normal_bill = (
+    plan_fee + 0.75*usage
+)
+
+bill = normal_bill.copy()
+bill[is_employee] *= 0.5
+bill += rng.normal(scale=1.0, size=n)
+
+X = pd.DataFrame({
+    "usage": usage,
+    "plan_fee": plan_fee,
+    "is_employee":
+        is_employee.astype(int),
+})
+\end{verbatim}}
+\end{sourcecode}
+
+Assume first that the predictive description ignores employee status. Its
+predictions correspond to the ordinary undiscounted bill:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+predictions = normal_bill
+
+analysis = ResidualAnalysis(
+    task="regression"
+).fit(
+    X,
+    bill,
+    predictions=predictions,
+)
+\end{verbatim}}
+\end{sourcecode}
+
+Many employee observations are now identified as over-predicted anomalies:
+their actual bills belong to lower target states than the model predicts.
+
+We can examine the relation between employee status and these anomalies with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+analysis.attribute_distribution(
+    "is_employee",
+    kind="over_predicted",
+)
+\end{verbatim}}
+\end{sourcecode}
+
+The resulting distribution shows a strong concentration of anomalous
+observations among employees. This suggests that the apparent anomaly is not
+caused by an intrinsically strange customer, but by information that is absent
+from the predictive description.
+
+We now improve the model by incorporating the employee discount:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+predictions = normal_bill.copy()
+
+predictions[is_employee] *= 0.5
+
+analysis_with_employee = ResidualAnalysis(
+    task="regression"
+).fit(
+    X,
+    bill,
+    predictions=predictions,
+)
+
+analysis_with_employee.analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+The number of anomalous employee observations falls substantially. The
+observations themselves have not changed; only the model has changed.
+
+This illustrates an important property of model-relative anomalies: an anomaly
+is not necessarily an intrinsic property of a sample. It may instead indicate
+that the current representation or description is incomplete.
+
+In this example, employee status explains the systematic discrepancy. Once
+that information is incorporated into the description, the corresponding
+observations cease to be anomalous.
+\end{example}
+
+\subsection*{Structure of the Anomaly Set}
+
+Anomalies may themselves exhibit regularities. If many anomalous observations
+share the same predicted state, or a small collection of predicted states, then
+the anomaly set contains repeated structure. If instead the anomalous
+predictions are distributed almost uniformly across many states, the failures
+are more heterogeneous.
+
+The method
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+analysis.compressibility()
+\end{verbatim}}
+\end{sourcecode}
+
+provides a simple measure of this structure.
+
+Let \(n_A\) be the number of anomalous observations and let the predicted
+states among those observations have empirical probabilities
+\(p_1,\ldots,p_q\). Their ideal empirical code length is
+
+\[
+L_{\mathrm{opt}}
+=
+-n_A
+\sum_{j=1}^{q}
+p_j\log_2 p_j.
+\]
+
+As reference, suppose the anomalous predicted states were uniformly distributed
+over the complete target-state alphabet of size \(k\). The corresponding code
+length would be
+
+\[
+L_{\mathrm{unif}}
+=
+n_A\log_2 k.
+\]
+
+The empirical anomaly compressibility is then
+
+\[
+C_A
+=
+1-
+\frac{L_{\mathrm{opt}}}
+     {L_{\mathrm{unif}}}.
+\]
+
+Values close to one indicate that the anomalous predictions concentrate in a
+small and predictable set of states. Values closer to zero indicate that they
+are distributed more uniformly.
+
+Compressibility does not determine which samples are anomalies. Detection has
+already been performed using the model-relative state mismatch criterion.
+Compressibility characterizes the structure of the anomaly set after detection.
+
+This distinction is important. A collection of anomalies generated by one
+systematic failure mechanism should normally exhibit more regularity than a
+collection of unrelated failures. Such regularity provides evidence that the
+anomalies may admit a common explanation and therefore deserve to be analyzed
+together.
+
+The purpose of anomaly analysis in \texttt{mnplib} is therefore broader than
+simply returning a collection of unusual observations. It separates three
+questions:
+
+\begin{enumerate}
+    \item Does the model reconstruct the observed target state?
+    \item How much information characterizes the required correction?
+    \item Do the failures share explanatory attributes or repeated structure?
+\end{enumerate}
+
+This organization follows naturally from the Theory of Nescience. A model
+captures regularities in a representation. Observations that it fails to
+reconstruct reveal the limits of that description. Some of these failures may
+be explained by information missing from the representation, others by an
+inadequate model, and still others may correspond to genuinely exceptional
+observations.
+
+An anomaly should therefore not be interpreted automatically as an error,
+fraud, failure, or rare event. It is first of all a statement about the relation
+between an observation and the current model: according to the information and
+description presently available, that observation has not been explained.
 
 %
 % Section: Time Series
 %
 
 \section{Time Series}
+\label{sec:machine_learning_timeseries}
 
-In this section we study the application of the concept of miscoding to a time series and a delayed version of itself, or to a delayed version of a second time series.
+A time series differs from an ordinary supervised dataset because the order of
+the observations carries information. Values observed in the past may help to
+represent, and ultimately to predict, values observed later. The
+\texttt{mnplib} library studies this temporal dependence by applying supervised
+miscoding to lagged versions of a series.
 
-Automiscoding applies miscoding to a time series and a lagged version of itself, as a function of the lag. Automiscoding estimates to what \emph{extent} past observations of the series can explain (or help forecast) future observations. In this sense, automiscoding has a similar objective to autocorrelation in classical time-series analysis (see Section \ref{sub:autocorrelation}).
+Two related analyses are considered. \emph{Automiscoding} measures the
+relationship between a time series and delayed versions of itself.
+\emph{Crossmiscoding} measures the relationship between an explanatory time
+series and future values of a target series.
 
-\begin{definition}
-Let $\{\mathbf{x}_t\}$ be a time series composed by $n$ samples. We define lag $k$ \emph{regular automiscoding} of $\{\mathbf{x}_t\}$ as $\hat\mu(\mathbf{x}_{x_{k+1}, x_{k+2}, \ldots, x_n}, \mathbf{x}_{x_0, x_1, \ldots, x_{(n-k)}})$. We define in the same way the concepts of \emph{adjusted automiscoding} and \emph{partial automiscoding}.
-\end{definition}
+The current implementation treats lagged observations as ordinary supervised
+features. If
+\[
+\mathbf{y}
+=
+(y_1,y_2,\ldots,y_n)
+\]
+is a numeric time series and \(w\) is a maximum lag, the library constructs
+features
 
-In contrast to autocorrelation, automiscoding is defined for all time series, including those with a trend. Moreover, automiscoding remains interpretable in the presence of trends and can reveal seasonal components without requiring prior decomposition.
+\[
+y_{t-1},\;
+y_{t-2},\;
+\ldots,\;
+y_{t-w}
+\]
+
+for each target value \(y_t\). If additional time-dependent attributes are
+available, their lagged values are constructed in the same way. Thus, an
+exogenous variable \(x_j\) gives rise to
+
+\[
+x_{j,t-1},\;
+x_{j,t-2},\;
+\ldots,\;
+x_{j,t-w}.
+\]
+
+In the implementation, lag one always denotes the observation immediately
+preceding the target value. Lagged features receive explicit names such as
+\texttt{y\_lag\_1} or \texttt{temperature\_lag\_3}, making the resulting
+temporal representation equivalent to an ordinary supervised dataset whose
+features have a clear temporal interpretation.
+
+\subsection*{Automiscoding}
+
+Let
+\[
+\mathbf{x}
+=
+(x_1,x_2,\ldots,x_n)
+\]
+be a time series. For a positive lag \(k<n\), define the aligned past and
+future sequences
+
+\[
+\mathbf{x}^{(k)}_{\mathrm{past}}
+=
+(x_1,x_2,\ldots,x_{n-k})
+\]
+
+and
+
+\[
+\mathbf{x}^{(k)}_{\mathrm{future}}
+=
+(x_{k+1},x_{k+2},\ldots,x_n).
+\]
+
+We define the empirical automiscoding at lag \(k\) as
+
+\[
+\widehat\mu_{\mathrm{auto}}(k)
+=
+\widehat\mu
+\left(
+\mathbf{x}^{(k)}_{\mathrm{past}},
+\mathbf{x}^{(k)}_{\mathrm{future}}
+\right),
+\]
+
+where \(\widehat\mu\) is the supervised miscoding introduced in
+Section~\ref{sec:machine_learning_miscoding}.
+
+Automiscoding therefore asks how adequate the observations at time \(t-k\) are
+as a representation of observations at time \(t\). A small value indicates a
+strong relationship between the two lagged sequences, whereas a large value
+indicates that knowing the earlier observation provides comparatively little
+information about the later one.
+
+The decomposition into deficiency and surplus remains useful. For each lag
+\(k\), \texttt{mnplib} reports
+
+\[
+\widehat d(k),
+\qquad
+\widehat s(k),
+\qquad
+\widehat\mu(k).
+\]
+
+Deficiency measures how much information about the future sequence is still
+missing when the lagged sequence is known. Surplus measures how much
+information in the past sequence is not recoverable from the future sequence.
+Their combination gives the miscoding associated with that lag.
+
+Automiscoding is related to autocorrelation, but the two quantities answer
+different questions. Autocorrelation measures linear dependence between
+\(\mathbf{x}_t\) and \(\mathbf{x}_{t-k}\). Automiscoding instead evaluates one
+lagged sequence as a representation of the other and is therefore not restricted
+to linear relationships.
+
+The library does not require a stationarity assumption in order to compute
+automiscoding. This makes the measure applicable to sequences containing
+trends or seasonal variation. Nevertheless, as with any empirical dependence
+measure, interpretation must take nonstationarity into account: a low miscoding
+at a particular lag indicates temporal structure in the observed data, not by
+itself a stationary stochastic mechanism.
+
+The lag diagnostics associated with a fitted \texttt{TimeSeries} object can be
+obtained through
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+table = ts.lag_analysis(
+    max_lag=36
+)
+\end{verbatim}}
+\end{sourcecode}
+
+For the target series itself, each row contains the lag, feature name,
+deficiency, surplus, miscoding, and diagnostics concerning the reliability of
+the empirical estimate.
 
 \begin{example}
-We examine cycles in the number of passengers of a US airline. Figure \ref{figure:air_passengers} shows monthly passengers from 1949 to 1960 (AirPassengers dataset, see References below). There is a clear yearly cycle. We apply automiscoding to confirm this analytically.
+\label{ex:airpassengers_automiscoding}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{airpassengers.png}
-\caption{Air Passengers.}
-\label{figure:air_passengers}
-\end{figure}
+We examine the monthly number of international airline passengers from 1949 to
+1960. The series exhibits a strong upward trend together with a clear annual
+seasonal component.
 
 \begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from nescience.timeseries import TimeSeries
-
-data = pd.read_csv("data/AirPassengers.csv", index_col=["Month"],
-                    parse_dates=True)
-X = np.array(data["#Passengers"]).reshape(-1, 1)
-
-ts = TimeSeries(auto=False)
-ts.fit(data)
-mscd = ts.auto_miscoding(max_lag=36)
-\end{verbatim}}
-\end{sourcecode}
-
-As shown in Figure \ref{figure:auto-miscoding}, the adjusted automiscoding exhibits a prominent peak every twelve months: the distance between the aligned sequences is minimized when the lag is a multiple of one year.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{auto-miscoding.png}
-\caption{Auto-miscoding of Air Passengers.}
-\label{figure:auto-miscoding}
-\end{figure}
-
-\end{example}
-
-Crossmiscoding measures the relationship between a time series and a lagged version of a second time series. The objective is to detect whether the first series has temporal predictive power over the second.
-
-\begin{definition}
-Let $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ be two time series composed by $n$ samples each. We define lag $k$ \emph{regular crossmiscoding} of $\{\mathbf{x}_t\}$ and $\{\mathbf{y}_t\}$ as $\hat\mu(\mathbf{x}_{x_{k+1}, x_{k+2}, \ldots, x_n}, \mathbf{y}_{x_0, x_1, \ldots, x_{(n-k)}})$. We define in the same way the concepts of \emph{adjusted crossmiscoding} and \emph{partial crossmiscoding}.
-\end{definition}
-
-\begin{example}
-We investigate whether it is possible to predict household appliance energy consumption. The dataset (Appliances Energy Prediction; see References) contains temperature and humidity measurements from rooms every ten minutes, the appliance energy consumption, and weather variables from a nearby station.
-
-For each feature we compute the lag in $[1,30]$ that maximizes crossmiscoding with the target:
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from fastautoml.fastautoml import Miscoding
-
-X = pd.read_csv("../data/energydata_complete.csv", parse_dates=["date"],
-                index_col="date")
-y = X["Appliances"]
-X = X.drop(["Appliances", "lights"], axis=1)
-
-miscoding = Miscoding()
-miscoding.fit(X, y)
-
-best_lag  = list()
-for i in np.arange(X.shape[1]):
-    mscd = miscoding.cross_miscoding(attribute1=i, min_lag=1, max_lag=30)
-    best_lag.append(np.where(mscd == np.max(mscd))[0][0] + 1)
-\end{verbatim}}
-\end{sourcecode}
-
-Figure \ref{figure:cross-miscoding} shows the results. In general, indoor measurements favor small lags, whereas weather variables (which influence indoor conditions with delay) favor larger lags.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{cross_miscoding_lag.png}
-\caption{Cross Miscoding Lag}
-\label{figure:cross-miscoding}
-\end{figure}
-
-\end{example}
-
-\begin{remark}
-The approximation to miscoding introduced in this chapter estimates (i) the quality of individual features as predictors of a target and (ii) the quality of the training dataset as a whole. However, it does not explicitly account for redundancy among the features themselves. For instance, two features $\mathbf{x}_i$ and $\mathbf{x}_j$ may each have low miscoding with respect to $\mathbf{y}$ yet be largely redundant with one another. It remains an open question how to extend miscoding to incorporate feature redundancy in a way that stays close to the theoretical definition, is computationally efficient, and does not require prohibitively large samples.
-\end{remark}
-
-% Auto Time Series
-
-% \subsection{Auto Time Series}
-
-% {\color{red} TODO: Introduce the auto-time series models, and clearly state what it can be expect from such models (short story: nothing)}
-
-% {\color{red} TODO: Introduce structural time series models, the state space representation, and the Kalman filter}
-
-% {\color{red} structura approach [...] different unobserved components or building blocks responsible for the dynamics of the series such as trend, seasonal, cycle, and the effects of explanatory and intervention variables are identified separately before being put together in a state space model.}
-
-% {\color{red} State space methods originated in the eld of control engineering, starting with the groundbreaking
-% paper of Kalman (1960). They were initially (and still are) deployed for the purpose
-% of accurately tracking the position and velocity of moving objects such as ships, airplanes,
-% missiles, and rockets [...] these ideas could well be applied to time series analysis
-% generally as well.}
-
-% {\color{red} In a state space
-% analysis the time series observations are assumed to depend linearly on a state vector that
-% is unobserved and is generated by a stochastically time-varying process (a dynamic system).
-% The observations are further assumed to be subject to measurement error that is independent
-% of the state vector. The state vector can be estimated or identified once a sufficient set of
-% observations becomes available.}
-
-% \begin{definition}
-% A linear Gaussian state space model for the multivariate time series $\mathbf{y} = \mathbf{y}_1, \ldots, \mathbf{y_n}$, where each observiation is a $p$ dimensional vector $\mathbf{y}_i = \{ y_{i1}, \ldots, y_{ip} \}$, is given by
-% \begin{equation}
-% \mathbf{y}_t = \mathbf{Z}_t \mathbf{\alpha}_t + \mathbf{d}_t + \mathbf{\epsilon}_t \quad \mathbf{\epsilon}_t \sim N \left( 0, \mathbf{H}_t \right)
-% \end{equation}
-% called {\color{red} space?} \emph{orbservation or measurement equation}, and
-% \begin{equation}
-% \mathbf{\alpha}_t = \mathbf{T}_t \mathbf{\alpha}_{t-1} + \mathbf{c}_t + \mathbf{R}_t \mathbf{\eta}_t \quad \mathbf{\eta}_t \sim N \left( 0, \mathbf{Q}_t \right)
-% \end{equation}
-% called \emph{state or transition equation}, where the individual summands correspond to:
-% \begin{align*}
-%  & \mathbf{y}_t \quad \text{observed or measured values,} \\
-%  & \mathbf{Z}_t \quad \text{design matrix,} \\
-%  & \mathbf{\alpha}_t \quad \text{unobserved state,} \\
-%  & \mathbf{d}_t \quad \text{observation intercept,} \\
-%  & \mathbf{\epsilon}_t \quad \text{observational disturbance,} \\
-%  & \mathbf{H}_t \quad \text{observational disturbance covariance matrix,} \\
-%  & \mathbf{T}_t \quad \text{transition matrix,} \\
-%  & \mathbf{c}_t \quad \text{state intercept,} \\
-%  & \mathbf{R}_t \quad \text{selection matrix,}  \\
-%  & \mathbf{\eta}_t \quad \text{state disturbance, and} \\
-%  & \mathbf{Q}_t \quad \text{state disturbance covariance matrix}
-% \end{align*}
-% \end{definition}
-
-% {\color{red} The $p \times m$ matrix $Z_t$ links the observation vector $y_t$ with the unobservable state vector $\alpha_t$ and may consist of regression variables.  The $m \times m$ transition matrix $T_t$ determines the dynamic evolution fo the state vector [...] the observation and state disturbances $\epsilon_t$ and $eta_t$ are assumed to be serially independent and independent of each other at all time points [...] matrix $R_t$ is an $m \times r$ selection matrix with $r < m$.}
-
-% {\color{red} The initial state vector $\alpha_1$ is assumed to be generated as $\alpha_1 \sim NID \left( a_1, P_1 \right)$, independen of the observation and estate disturbances $\epsilon_t$ and $\eta_t$. Mean $a_1$ and variance $P_1$ can be treated as given konw.}
-
-% {\color{red} Talk about initialization?}
-
-% For example, if the time series $\mathbf{y}$ is unidimensional and the state space model is time invariant (only $\mathbf{y}_t$ and $\mathbf{\alpha}_t$ depends on $t$, being the rest of the summands constant), a model with $m$ unobserved stares will be given by
-% \[
-% y_t = [ z_1 \ldots z_m ]
-% \begin{bmatrix}
-%   z_{1} \\
-%   \vdots \\
-%   z_{n}
-% \end{bmatrix}
-% + d_{t} + \epsilon_{t}
-% \]
-
-% Some of the most common time series models are particular cases of the state-space model (see Example XX).
-
-% \begin{example}
-% \end{example}
-
-% {\color{red} TODO: Explain the Kalman filter}
-
-% The \emph{Kalman filter} is a recursive formula that provides an optimal estimate for the unknown state in a state space model. At each time step $t$, the Kalman filter computes the predicted state conditional to the observations up to time $t-1$.
-
-% {\color{red} Kalman filter can be use for filtering, prediction and smoothing. Here we are only interested in prediction [...] forward pass [...] recursive formulas}
-
-% \begin{definition}
-% \begin{equation}
-% \begin{split}
-%   & \mathbf{a}_{t+1} = \mathbf{T}_t \mathbf{a}_t + \mathbf{K}_t \mathbf{v}_t  \\
-%   & \mathbf{K}_t = \mathbf{T}_t \mathbf{P}_t \mathbf{Z}_t^T \mathbf{F}_t^{1} \\
-%   & \mathbf{v}_t = \mathbf{y}_t  - \mathbf{Z}_t \mathbf{a}_t
-% \end{split}
-% \end{equation}
-% called \emph{prediction equations}, and
-% \begin{equation}
-% \begin{split}
-%   & \mathbf{F}_t = \mathbf{Z}_t \mathbf{P}_t \mathbf{Z}_t^T + \mathbf{H}_t \\
-%   & \mathbf{L}_t = \mathbf{T}_t - \mathbf{K}_t \mathbf{Z}_t \\
-%   & \mathbf{P}_{t+1} = \mathbf{T}_t \mathbf{P}_t \mathbf{L}_t^T + \mathbf{R}_t \mathbf{Q}_t \mathbf{R}_t^T
-% \end{split}
-% \end{equation}
-% called \emph{updating equations}.
-% \end{definition}
-
-% \begin{example}
-% {\color{red} TODO: Provide an example where we can see how the Kalman filter integrates the predicted probability distribution and observed probability distribution to make a prediction}
-% \end{example}
-
-% {\color{red} TODO: Examplain the space search algorithm}
-
-% \begin{example}
-% {\color{red} TODO: Provide an example of auto-time series}
-% \end{example}
-
-%
-% Section: Anomaly Detection
-%
-
-\section{Anomaly Detection}
-
-As we have seen in Section XXX, the main problem in anomaly detection is that we do not have a precise mathematical definition of what an anomaly is. In this book we propose to equate \emph{abnormal} samples with \emph{incompressible} samples, and to study the consequences. The essence is that learning is about finding regularities in a dataset, and data compression is about exploiting regularities. We have also seen that the best model minimizes the sum of the length of the model plus the length of the data given the model. This optimal model partitions the dataset into two disjoint subsets: a compressible part and an incompressible part. It is the latter that interests us here: being incompressible means the samples cannot be explained by the model, i.e., they are model-based anomalies under the best available model.
-
-\begin{definition}
-Let $\emph{X}$ be a dataset composed by $p$ features and $n$ samples, $\mathbf{y}$ the target variable, and $\mathit{M}$ a model such that the nescience $N \left( \mathbf{X}, \mathit{M} \right)$ is minimal. Let $\hat{y} = \mathit{M} \left( \mathbf{X} \right)$ be the predicitons made by the model $\mathit{M}$ over the vectors of $\mathbf{X}$. We define the \emph{anomaly subset} of $\mathbf{X}$, denoted by $\mathcal{A}_\mathit{M}^\mathbf{X}$, to the set of $X$ such that $y \neq \hat{y}$.
-\end{definition}
-
-The class \texttt{nescience.anomalies} allows us to identify the anomaly subset, i.e., the samples that do not match the regularity patterns found in the rest of the dataset. In Example \ref{ex-abnormal_boston_houses} we apply this class to identify houses with abnormally low prices and to explain why they are cheaper.
-
-\begin{example}
-\label{ex-abnormal_boston_houses}
-We use the Boston House Prices dataset from \texttt{scikit-learn}. The dataset contains 13 predictive features (both numeric and categorical) describing different characteristics of the houses (number of rooms, age, etc.) and the target is the median value of owner-occupied homes. The dataset has 506 samples. We aim to identify houses whose prices are \emph{abnormally low}, i.e., houses that, given their characteristics, should have a higher price.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from sklearn.datasets import load_boston
-
-data = load_boston()
-X    = data.data
-y    = data.target
-\end{verbatim}}
-\end{sourcecode}
-
-We first train a "knowledge model," i.e., the best model that explains the target variable given the predictors, without overfitting. By default, the \texttt{anomalies} class uses the AutoML capabilities provided by the \texttt{nescience} library.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from nescience.anomalies import Anomalies
-
-model = Anomalies(X_type="mixed", y_type="numeric")
-model.fit(X, y)
-\end{verbatim}}
-\end{sourcecode}
-
-Finally, we select those samples for which the actual price is smaller than the price predicted by the model.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-anomalies = model.get_anomalies("smaller")
-X.shape, anomalies.shape
-((506, 13), (25,))
-\end{verbatim}}
-\end{sourcecode}
-
-Thus, there are 25 houses with abnormally low price.
-
-\end{example}
-
-The \texttt{anomalies} class also allows us to group the identified anomalies according to shared characteristics.
-
-Let us examine which attributes best describe those abnormal houses.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-model.get_classes(n_dims=1, an_type="smaller", filter_balancedness=True,
-                  filter_redundancy=False, filter_repeated_attrs=False)
-
-Attribute1	Attribute2	Inertia	        N Class 0	N Class 1	Ratio
-2	        None	        154.953975	9	        16	        0.36
-4	        None   	        0.090593	6	        19	        0.24
-5	        None	        5.002437	17	        8	        0.68
-7	        None	        20.352117	6	        19	        0.24
-8	        None	        77.611111	18	        7	        0.72
-9	        None	        41737.11111	7	        18	        0.28
-10	        None	        26.577436	13	        12	        0.52
-12	        None	        430.294828	18	        7	        0.72
-\end{verbatim}}
-\end{sourcecode}
-
-According to the inertia, the best attribute to classify the anomalies is attribute 4 (nitric oxides concentration). This attribute divides the abnormal houses into two clusters of sizes 6 and 19. Let us examine how price varies with this dimension.
-
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-from sklearn.linear_model import LinearRegression
+{\scriptsize
+\begin{verbatim}
+import pandas as pd
 import matplotlib.pyplot as plt
-        
-lr = LinearRegression()
-lr.fit(X[:,4].reshape(-1, 1), y)
-        
-plt.scatter(X[:,4].reshape(-1, 1), y)
-plt.plot(X[:,4], lr.intercept_ + lr.coef_ * X[:,4], color="red")
-plt.xlabel(data.feature_names[4])
-plt.ylabel("Price")
-\end{verbatim}}
-\end{sourcecode}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{nox_price.png}
-\caption{Price as a function of NOX.}
-\label{figure:nox_vs_price}
-\end{figure}
+from mnplib.timeseries import TimeSeries
 
-The regression line suggests that house prices are lower in areas with higher nitric oxides concentration. Let us see how the anomalies split along this dimension.
+data = pd.read_csv(
+    "data/AirPassengers.csv",
+    index_col="Month",
+    parse_dates=True,
+)
 
-\begin{sourcecode}
-{\scriptsize \begin{verbatim}
-class0, class1 = model.get_class_points(attribute1=4, attribute2=None,
-                 an_type="smaller")
+y = data["Passengers"].to_numpy()
 
-plt.hist(class0)
-plt.hist(class1)
-plt.ylabel("Count")
-plt.xlabel(data.feature_names[4])
+ts = TimeSeries(
+    window_size=36,
+)
+
+ts.fit(y)
+
+lags = ts.lag_analysis(
+    max_lag=36
+)
+
+auto = lags[
+    lags["feature_name"].str.startswith("y_lag_")
+]
+
+plt.plot(
+    auto["lag"],
+    auto["miscoding"],
+)
+
+plt.xlabel("Lag (months)")
+plt.ylabel("Automiscoding")
 plt.show()
 \end{verbatim}}
 \end{sourcecode}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{nox_histogram.png}
-\caption{Histogram of anomalies NOX.}
-\label{figure:nox_histogram}
-\end{figure}
+The resulting profile exhibits local minima at lags close to \(12\), \(24\),
+and \(36\) months. These values correspond to the annual periodicity of the
+series: observations separated by one, two, or three years provide particularly
+good representations of one another.
 
-The analysis suggests that six of the houses have abnormally low prices because they are located in areas with high pollution levels. We can repeat the same analysis with the other attributes; however, their higher inertia indicates that class separation will be less evident. Note that there may be multiple reasons why a house's price is abnormally low. 
+This example illustrates the meaning of automiscoding. A seasonal cycle appears
+as repeated reductions of miscoding at multiples of the period. Unlike
+autocorrelation, the measure is based on empirical information rather than
+linear covariance.
 
+It is important to note that the result identifies temporal dependence, not
+causality. The fact that past values of a series contain information about future
+values does not by itself establish a causal mechanism.
+\end{example}
+
+\subsection*{Crossmiscoding}
+
+The same construction can be applied to two different time series. Let
+
+\[
+\mathbf{x}
+=
+(x_1,x_2,\ldots,x_n)
+\]
+
+be a potential explanatory sequence and
+
+\[
+\mathbf{y}
+=
+(y_1,y_2,\ldots,y_n)
+\]
+
+the target sequence. For lag \(k>0\), define
+
+\[
+\mathbf{x}^{(k)}_{\mathrm{past}}
+=
+(x_1,x_2,\ldots,x_{n-k})
+\]
+
+and
+
+\[
+\mathbf{y}^{(k)}_{\mathrm{future}}
+=
+(y_{k+1},y_{k+2},\ldots,y_n).
+\]
+
+The empirical crossmiscoding from \(\mathbf{x}\) to \(\mathbf{y}\) at lag
+\(k\) is
+
+\[
+\widehat\mu_{\mathrm{cross}}^{x\rightarrow y}(k)
+=
+\widehat\mu
+\left(
+\mathbf{x}^{(k)}_{\mathrm{past}},
+\mathbf{y}^{(k)}_{\mathrm{future}}
+\right).
+\]
+
+A small value indicates that past observations of \(x\) constitute a good
+representation of later observations of \(y\). By evaluating several values of
+\(k\), it is possible to determine the delay at which the relationship is
+strongest.
+
+Crossmiscoding is directional in its interpretation. In general, the questions
+
+\[
+x_{t-k}\rightarrow y_t
+\]
+
+and
+
+\[
+y_{t-k}\rightarrow x_t
+\]
+
+are different supervised representation problems. A useful lag from \(x\) to
+\(y\) therefore does not imply an equivalent relationship in the opposite
+direction.
+
+As with automiscoding, a low crossmiscoding value should not be interpreted as
+proof of causality. Common external causes, trends, seasonality, or other
+confounding structures may produce strong lagged relationships. Crossmiscoding
+indicates that the past of one observed variable contains information useful for
+representing the future of another.
+
+The current implementation supports numeric exogenous variables. When an
+exogenous matrix \(X\) accompanies a target series \(y\), every attribute is
+expanded into its lagged versions. The combined lag diagnostics can then be
+obtained through
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+table = ts.lag_analysis(
+    max_lag=30
+)
+\end{verbatim}}
+\end{sourcecode}
+
+The returned table contains both target lags and exogenous lags, allowing the
+same deficiency, surplus, and miscoding criteria to be applied to all temporal
+relationships.
+
+\begin{example}
+\label{ex:energy_crossmiscoding}
+
+We investigate the Appliances Energy Prediction dataset. Measurements were
+collected every ten minutes from a residential building and include appliance
+energy consumption, indoor temperature and humidity, and external weather
+variables.
+
+Our objective is to determine which past measurements provide useful
+information about future appliance energy consumption, and at which lag this
+relationship is strongest.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import pandas as pd
+
+from mnplib.timeseries import TimeSeries
+
+data = pd.read_csv(
+    "data/energydata_complete.csv",
+    parse_dates=["date"],
+    index_col="date",
+)
+
+y = data["Appliances"].to_numpy()
+
+X = data.drop(
+    columns=["Appliances", "lights"]
+)
+
+ts = TimeSeries(
+    window_size=30,
+)
+
+ts.fit(
+    y,
+    X=X,
+)
+
+lags = ts.lag_analysis(
+    max_lag=30
+)
+
+cross = lags[
+    lags["feature_name"].str.startswith("y_lag_")
+    == False
+]
+
+best = (
+    cross
+    .sort_values("miscoding")
+    .groupby("attribute", as_index=False)
+    .first()
+)
+
+best[
+    [
+        "attribute",
+        "lag",
+        "deficiency",
+        "surplus",
+        "miscoding",
+    ]
+]
+\end{verbatim}}
+\end{sourcecode}
+
+For each exogenous attribute, the resulting table identifies the lag with the
+smallest miscoding. Indoor temperature and humidity measurements may favor
+short delays because they respond directly to activity within the house,
+whereas external weather variables may exhibit stronger relationships at longer
+delays as their effects propagate through the building.
+
+The result contains more information than the lag alone. Two variables may have
+similar crossmiscoding while differing substantially in deficiency and surplus.
+A variable with low deficiency may contain most of the information required to
+represent future energy consumption while also carrying considerable unrelated
+information. Another may contain less irrelevant information but fail to capture
+part of the target variation. The decomposition therefore helps explain why a
+particular temporal feature is useful or inadequate.
+\end{example}
+
+\subsection*{Lagged Representations}
+
+Automiscoding and crossmiscoding can be understood more generally as feature
+analysis over a lagged representation.
+
+For a target series \(\mathbf{y}\), a maximum lag \(w\), and \(p\) exogenous
+variables, the temporal problem is transformed into the supervised matrix
+
+\[
+\mathbf{X}_{\mathrm{lag}}
+=
+\begin{bmatrix}
+y_{t-1} &
+\cdots &
+y_{t-w} &
+x_{1,t-1} &
+\cdots &
+x_{1,t-w} &
+\cdots &
+x_{p,t-w}
+\end{bmatrix},
+\]
+
+with target \(y_t\).
+
+The temporal origin of each feature is retained explicitly. A feature is
+therefore characterized not only by an attribute but also by a lag:
+
+\[
+(\text{source},\text{attribute},k).
+\]
+
+This representation provides a natural connection between time-series analysis
+and the supervised miscoding framework developed earlier in this chapter.
+Temporal feature selection becomes the problem of deciding which past
+observations form the most adequate representation of the future target.
+
+The maximum number of lags is controlled by the \texttt{window\_size}
+parameter. If \texttt{window\_size="auto"}, the current implementation uses
+
+\[
+w
+=
+\max\left\{
+1,
+\left\lfloor\sqrt{n}\right\rfloor
+\right\},
+\]
+
+where \(n\) is the number of observations. A fixed integer can instead be used
+when prior knowledge suggests a meaningful temporal horizon.
+
+The number of available supervised observations decreases with the window
+size. With a window of \(w\), the first \(w\) observations cannot serve as
+targets with a complete history, leaving
+
+\[
+n-w
+\]
+
+supervised samples. Large temporal windows therefore increase the number of
+candidate lagged features while simultaneously reducing the number of aligned
+observations available for their empirical analysis.
+
+This trade-off is particularly relevant for miscoding. As the temporal
+representation becomes larger, joint empirical distributions may become sparse.
+For this reason, the lag diagnostics returned by \texttt{mnplib} include the
+same reliability information used elsewhere in the library, such as the number
+of observed joint states, their mean occupancy, and the fraction of singleton
+states.
+
+Automiscoding and crossmiscoding should therefore be interpreted as tools for
+discovering temporal information structure. They identify which past
+observations provide useful representations of future values and expose whether
+that relationship is limited by deficiency, surplus, or both. The subsequent
+problem of using those lagged representations to construct and select forecasting
+models is treated separately in the Auto Time Series section.
 
 %
-% Section: The Analysis of the Incompressible
+% Section: Auto Time Series
 %
 
-% \section{The Analysis of the Incompressible}
+\section{Auto Time Series}
+\label{sec:auto_time_series}
 
-% As we have said in Chapter {chap:Introduction}, one of the reasons to understand how things work is to understand the cause-effect relation in systems. We are interested in this cause/effect relation in two ways. That is, if we want to see an effect in a system, we want to understand wich causes trigger that effect. Also, and perhaps more interesting, if we have observed an (probably undesired effect) in a system we would like to discover what has caused that effect, so we can fix it, and revert the normal situation.
+The previous section introduced the use of miscoding to analyze temporal
+relationships. Automiscoding identifies informative lags of the target series,
+while crossmiscoding identifies lagged exogenous variables that contain
+information about future values of the target. We now consider the subsequent
+problem: automatically constructing a forecasting model from these temporal
+representations.
 
-% We could use the theory of nescience to model, and modify, those uncommon effect, by means of training a model and looking at the incompressible part of the data.
+Time-series forecasting introduces an additional modeling choice that is absent
+from an ordinary regression problem. Given a series
 
+\[
+\mathbf{y}
+=
+(y_1,y_2,\ldots,y_n),
+\]
 
-% A model $\mathcal{M}$ for a dataset $\mathcal{D} = (X, y)$ is a compressed version of that dataset, since the length of the dataset given the model $l(\mathcal{D} \mid \mathcal{M})$ is smaller that then length of the original dataset $l(\mathcal{D})$. The model $\mathcal{M}$ is composed by the regularities found in the dataset (subject to the algorithm used and the families of models considered). What it is left, $\mathcal{D} \mid \mathcal{M}$ is the incompressible part of the dataset, that is, those samples that have no regularity at all, or present a regularity that requires a description longer than the length of the raw data.
+we must decide not only which model should describe the target, but also which
+part of the past should constitute its representation. A forecasting hypothesis
+therefore depends on at least three choices:
 
-% In this section we are going to show the practical applications of analyzing what it is left, that is, the incrompressible samples of a dataset. An element that is incompressible represents a very unlikely, or uncommon, situation of the entity being studied. A incompressible element does not necessarily means a problem, since if a problem is sufficiently common, it can be compressed. An incompressible element is something than cannot be explained given the normal behaviour of the system. Of course, all of this is assuming that our dataset has no errors.
+\begin{enumerate}
+    \item the temporal window considered;
+    \item the lagged observations used as the effective representation; and
+    \item the forecasting description applied to that representation.
+\end{enumerate}
 
-% Once we have found a model that has the lowest possible nescience for a dataset, we could separate those elements that have not been compresed, denoted by XX, and fit a second model. We could argue that it does not make any sense to model the incompressible part, since, it is incompressible. However, the incompressible part is incompressible with respect to the original entity under study, that is, the global systen. And in this new case, we are studying a different entity, namely, the uncommon parts of an entity. It might happen that we can find regularities in this new entity.
+If exogenous variables are available, their past values become additional
+candidate elements of the representation.
 
+The \texttt{TimeSeries} class in \texttt{mnplib} automates these decisions using
+the Minimum Nescience Principle. Given a target series and, optionally,
+exogenous variables, it constructs a lagged supervised representation, evaluates
+a collection of forecasting candidates, and selects the candidate with the
+smallest nescience.
+
+Conceptually, if \(S\) denotes a subset of available lagged variables,
+\(M\) a forecasting family, and \(\theta\) its configuration, the procedure
+searches for
+
+\[
+(S^\star,M^\star,\theta^\star)
+=
+\operatorname*{arg\,min}_{S,M,\theta}
+\widehat N(S,M_\theta),
+\]
+
+over the finite collection of candidates considered by the implementation.
+
+This formulation makes time-series forecasting a particular instance of the
+general representation--description problem developed throughout this chapter.
+The lagged observations constitute the representation; the forecasting model
+constitutes its description.
+
+\subsection*{The Lagged Representation}
+
+The first step consists in transforming the temporal sequence into a supervised
+representation. Given a window of \(w\) observations, the target history produces
+the variables
+
+\[
+y_{t-1},y_{t-2},\ldots,y_{t-w}.
+\]
+
+If \(p\) exogenous variables are available, their histories are added in the same
+way:
+
+\[
+x_{1,t-1},\ldots,x_{1,t-w},
+\quad\ldots\quad,
+x_{p,t-1},\ldots,x_{p,t-w}.
+\]
+
+The resulting representation has the general form
+
+\[
+\mathbf{x}_t
+=
+\left(
+y_{t-1},\ldots,y_{t-w},
+x_{1,t-1},\ldots,x_{p,t-w}
+\right),
+\]
+
+with target \(y_t\).
+
+The forecasting problem can therefore be interpreted as an ordinary supervised
+problem after temporal ordering has been encoded explicitly in the features.
+Unlike ordinary regression, however, each feature has a temporal meaning: it
+identifies both the variable from which it originates and its distance into the
+past.
+
+The window size places an upper bound on the history available to the
+forecasting procedure. If it is not specified explicitly, the current
+implementation uses
+
+\[
+w
+=
+\max
+\left\{
+1,
+\left\lfloor\sqrt{n}\right\rfloor
+\right\}.
+\]
+
+This provides a practical default rather than a theoretical optimum. Domain
+knowledge may justify choosing a different horizon, particularly when natural
+temporal scales such as daily, weekly, seasonal, or annual cycles are known in
+advance.
+
+\subsection*{Searching Representations and Descriptions}
+
+Once the lagged representation has been constructed, Auto Time Series evaluates
+forecasting candidates using the same general principles employed by Auto
+Classification and Auto Regression.
+
+For each candidate, the procedure determines the effective temporal
+representation, obtains predictions over the aligned training observations, and
+constructs a canonical description of the forecasting model. These three
+artifacts are sufficient to compute the four practical components of nescience:
+
+\[
+\text{deficiency},
+\qquad
+\text{surplus},
+\qquad
+\text{inaccuracy},
+\qquad
+\text{surfeit}.
+\]
+
+Deficiency and surplus characterize the selected temporal representation.
+Inaccuracy measures the informational discrepancy between the observed and
+predicted values. Surfeit evaluates unnecessary complexity in the canonical
+description of the forecasting rule.
+
+They are combined hierarchically into miscoding, mismodel, and finally
+nescience. The selected candidate is the one with minimum finite nescience.
+
+This criterion differs from selecting the forecasting model with the smallest
+training error. A candidate may reproduce the observed series very accurately
+while relying on too many lagged variables or on an unnecessarily elaborate
+description. Conversely, an extremely simple candidate may have little surfeit
+while failing to capture important temporal structure. Nescience evaluates both
+effects simultaneously.
+
+This is particularly relevant for time series because increasing the size of
+the temporal representation can easily improve the fit. A sufficiently flexible
+model supplied with many past observations may reproduce increasingly fine
+details of the training sequence. The additional lags, however, are not free:
+irrelevant or redundant temporal information contributes to miscoding, while
+unnecessary model structure contributes to mismodel.
+
+Consequently, the objective is not
+
+\[
+\text{use as much history as possible},
+\]
+
+but rather
+
+\[
+\text{use the history that is justified by the resulting description}.
+\]
+
+\subsection*{Model Families}
+
+The current implementation evaluates a compact collection of forecasting
+families representing different assumptions about temporal structure. Their
+mathematical definitions and implementation details are described in
+Appendix~\ref{chap:ml_models}.
+
+As in Auto Classification and Auto Regression, the purpose is not to enumerate
+every forecasting estimator available in general-purpose libraries. The objective
+is to cover a sufficiently diverse set of descriptive structures while avoiding
+large collections of methods that differ mainly in fitting details or
+regularization.
+
+Each family defines its own search procedure because its meaningful parameters
+and structural refinements are different. The candidate models generated by
+these searches are nevertheless evaluated through the same nescience framework,
+which makes descriptions from different forecasting families directly
+comparable.
+
+Where a family admits alternative temporal windows or configurations, the
+search is bounded to a finite collection of meaningful candidates rather than
+performed over an unrestricted hyperparameter space. This follows the same
+principle used elsewhere in \texttt{mnplib}: use the structure of the problem and
+nescience to restrict computation to plausible improvements rather than relying
+on exhaustive grid search.
+
+\subsection*{Fitting a Time Series}
+
+The basic interface requires only a numeric target series:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+from mnplib.timeseries import TimeSeries
+
+model = TimeSeries()
+model.fit(y)
+\end{verbatim}}
+\end{sourcecode}
+
+The fitting process constructs the lagged representation, evaluates the available
+forecasting candidates, and stores the model with minimum nescience.
+
+Exogenous variables can be supplied through an additional matrix:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model = TimeSeries()
+
+model.fit(
+    y,
+    X=X,
+)
+\end{verbatim}}
+\end{sourcecode}
+
+The rows of \(X\) must be aligned with the target series. The current
+implementation requires numeric exogenous variables; categorical variables must
+therefore be encoded before fitting.
+
+After fitting, the selected model can be examined with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model.nescience()
+model.components()
+model.analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+The analysis reports the selected forecasting candidate, its family and
+configuration, the temporal window, the selected lagged features, and the
+components of nescience.
+
+The complete set of evaluated candidates can be inspected with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model.results_dataframe()
+\end{verbatim}}
+\end{sourcecode}
+
+which makes it possible to compare the alternatives considered during the
+search rather than examining only the final model.
+
+\begin{example}
+\label{ex:auto_timeseries}
+
+Consider again the monthly airline-passenger series analyzed in
+Example~\ref{ex:airpassengers_automiscoding}. Instead of studying its individual
+lags, we now ask \texttt{mnplib} to construct a forecasting description
+automatically.
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+import pandas as pd
+
+from mnplib.timeseries import TimeSeries
+
+data = pd.read_csv(
+    "data/AirPassengers.csv",
+    index_col="Month",
+    parse_dates=True,
+)
+
+y = data["Passengers"].to_numpy()
+
+model = TimeSeries(
+    window_size=24,
+)
+
+model.fit(y)
+
+model.analysis()
+\end{verbatim}}
+\end{sourcecode}
+
+The returned analysis identifies the selected candidate and the lagged
+observations that form its effective representation. The important point is that
+the complete \(24\)-month history need not appear in the final description.
+Temporal observations that do not contribute sufficiently to the representation
+can be excluded, while informative seasonal or short-term lags can be retained.
+
+The fitted values over the portion of the training series for which a complete
+lag window exists are available through
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+fitted = model.fitted_values()
+\end{verbatim}}
+\end{sourcecode}
+
+and future values can be forecast with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+forecast = model.forecast(
+    steps=12
+)
+\end{verbatim}}
+\end{sourcecode}
+
+The result provides a twelve-step continuation of the series using the candidate
+selected by minimum nescience.
+\end{example}
+
+\subsection*{Forecasting and Model Evaluation}
+
+The nescience used during model selection is evaluated on the lagged
+representation derived from the observed series. It should therefore not be
+confused with an estimate of future forecasting performance.
+
+This distinction is important. Nescience asks how well a representation and
+description account for the observations currently available. Future observations
+provide an independent empirical test of whether the discovered regularities
+continue to hold.
+
+If subsequent observations are available, the selected forecasting model can be
+evaluated with
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+model.score(y_future)
+\end{verbatim}}
+\end{sourcecode}
+
+which forecasts the corresponding horizon and returns the coefficient of
+determination \(R^2\) between the forecasts and the newly observed values.
+
+Thus, two conceptually different quantities are involved:
+
+\[
+\widehat N
+\]
+
+measures the quality of the representation--description pair on the available
+series, whereas
+
+\[
+R^2_{\mathrm{future}}
+\]
+
+measures subsequent forecasting performance.
+
+The former is used to construct and select the model; the latter can be used to
+validate it once genuinely future observations become available.
+
+This separation also explains why the current implementation does not
+automatically divide the original series into training and validation subsets
+during the nescience search. The purpose of fitting is to identify the
+representation and description that best account for all currently available
+information. Artificially withholding part of that information would change the
+representation being analyzed. Genuine future data can subsequently provide the
+out-of-sample evaluation.
+
+\subsection*{Forecasting with Exogenous Information}
+
+When exogenous variables are supplied, Auto Time Series can include their
+lagged values in the temporal representation. Conceptually, this extends the
+forecasting hypothesis from
+
+\[
+y_t
+=
+f(y_{t-1},\ldots,y_{t-w})
+\]
+
+to
+
+\[
+y_t
+=
+f(
+y_{t-1},\ldots,y_{t-w},
+x_{1,t-1},\ldots,x_{p,t-w}
+).
+\]
+
+The problem is then not merely to determine how much of the target's own past
+should be retained, but also whether the histories of external variables
+contribute useful information.
+
+This establishes a direct connection with crossmiscoding. Crossmiscoding
+analyzes the individual temporal relationships between exogenous variables and
+the target. Auto Time Series goes one step further by evaluating those lagged
+variables as part of a complete predictive representation and by jointly
+considering the quality of the resulting forecasting description.
+
+For forecasting models that require future exogenous information, those values
+can be supplied when requesting the forecast:
+
+\begin{sourcecode}
+{\scriptsize
+\begin{verbatim}
+forecast = model.forecast(
+    steps=12,
+    X_future=X_future,
+)
+\end{verbatim}}
+\end{sourcecode}
+
+The exact treatment of exogenous information depends on the forecasting family
+and is discussed together with the corresponding models in the appendix.
+
+\subsection*{Interpretation}
+
+Auto Time Series follows the same principle as the other automated modeling
+tools in \texttt{mnplib}, but the temporal setting makes the distinction between
+representation and description particularly explicit.
+
+A conventional forecasting workflow often treats choices such as the number of
+lags, explanatory variables, model family, and hyperparameters as separate
+modeling decisions. Within the Theory of Nescience, they can be organized into
+two fundamental questions:
+
+\begin{enumerate}
+    \item Which parts of the observed past form an adequate representation of
+          the future?
+    \item Which description most economically captures the regularities present
+          in that representation?
+\end{enumerate}
+
+The first question is primarily reflected by miscoding. The second is reflected
+by mismodel. Nescience combines both and provides a common criterion for
+comparing complete forecasting hypotheses.
+
+Auto Time Series should therefore not be understood merely as a procedure for
+automatically tuning a forecasting algorithm. Its purpose is broader: to search
+for a compact representation--description pair that explains the temporal
+regularities present in the observed sequence and can subsequently be used to
+forecast its continuation.
 
 
 %

@@ -28,8 +28,6 @@ Not every computable string qualifies equally as a scientific description. A \em
 
 Descriptions may also be restricted to particular families, reflecting the fact that in real scientific work we rarely search over the entire space of conceivable descriptions. Instead, we usually work within structured classes such as linear models, systems of differential equations, decision trees, or neural networks. In this setting, a description may be understood as consisting of two parts: a structural component, which captures the regularities present in the representation, and an input component, which provides the remaining information needed for reconstruction. When the structural component is restricted to a given family, the resulting descriptions correspond to what scientists ordinarily call \emph{models}. The chapter also studies basic operations on descriptions, such as augmentation and reduction, which formalize the ways in which descriptions may be refined, enriched, or simplified.
 
-Whereas the chapter on representations focused on how entities are encoded, the present chapter focuses on how those encodings are modeled. It is at this point that the theory of nescience moves from the problem of representing entities to the problem of explaining their representations through valid, minimal, and effective descriptions, and through the model classes used in scientific practice.
-
 %
 % Section: Valid Descriptions
 %
@@ -362,7 +360,7 @@ It may happen that there is no shorter possible description of a representation 
 An interesting case arises when all the descriptions in $\mathcal{D}_e$ are pleonastic, that is, there exist no models shorter than the representation for any of the possible representations of the entity. This situation would occur if all representations of the entity $e$ are random strings. In such a case, scientific research would be fundamentally limited, as it would be impossible to find a suitable model for $e$. Our ability to understand and make predictions about $e$ would then be constrained by the length of its incompressible representations.
 
 %
-% Section: Effective Descriptions
+% Section: Extended Descriptions
 %
 
 \section{Extended Descriptions}
@@ -602,26 +600,355 @@ Thus \(\mathcal{D}_e \neq \varnothing\).
 
 This proposition shows that extended describability and representability coincide at the level of entities. In particular, if an entity admits no representation, then it admits no extended description either.
 
-% Subsection: Hypotheses
+%
+% Section: Hypotheses
+%
 
-\subsection*{Hypotheses}
+\section{Hypotheses}
+\label{sec:hypotheses}
 
-From a practical perspective, scientific activity consists in discovering representations and descriptions that admit meaningful interpretations and can be used to solve concrete problems, such as explanation, optimization, or prediction. From a more theoretical perspective, the aim of science may be viewed as the construction of representation-description pairs that are consistent with the behavior of an unknown abstract oracle, which mediates the relationship between strings and entities.
+Scientific inquiry involves not only constructing representations of entities
+and descriptions of those representations, but also considering them together.
+A representation determines what is being studied, while its associated
+description provides a computational account of the information contained
+in that representation. We refer to such a pair as a \emph{hypothesis}.
 
-\begin{notation}
-We denote by \(\mathcal H\) the set of hypotheses,
+Recall that $\mathcal{R}$ denotes the set of extended representations,
+$\mathcal{D}$ the set of descriptions, and $\mathcal{D}_r$ the set of
+extended descriptions of a representation $r \in \mathcal{R}$.
+Not every pair in $\mathcal{R}\times\mathcal{D}$ constitutes a hypothesis,
+since an arbitrary description need not contain any meaningful information
+about the representation with which it is paired. We therefore require
+the description to belong to the set of extended descriptions associated
+with the representation.
+
+\begin{definition}
+\label{def:hypothesis}
+We define the set of \emph{hypotheses}\index{Hypothesis} as
 \[
-\mathcal H = \{\, (r,d)\in \mathcal R\times\mathcal D : d\in\mathcal D_r \,\}.
+\mathcal{H}
+=
+\left\{
+(r,d)\in\mathcal{R}\times\mathcal{D}
+:
+d\in\mathcal{D}_r
+\right\}.
 \]
-Its elements \(x=(r,d)\) are called \emph{hypotheses}. We also write
-\[
-\mathcal H_r=\{(r,d)\in\mathcal H : d\in\mathcal D_r\},
-\qquad
-\mathcal H_e=\{(r,d)\in\mathcal H : r\in\mathcal R_e,\ d\in\mathcal D_r\}.
-\]
-\end{notation}
+Each element $(r,d)\in\mathcal{H}$ is called a hypothesis.
+\end{definition}
 
-Thus, a hypothesis is simply a convenient way of referring simultaneously to a representation and to one of its associated descriptions.
+Thus, a hypothesis consists of an extended representation and one of
+its extended descriptions. The description need not reconstruct the
+representation exactly; it is sufficient that its output contains
+non-trivial information about the representation, as established by
+the definition of extended descriptions.
+
+\subsection*{Hypotheses of a Representation}
+
+In many scientific applications, the representation is fixed in advance.
+For example, an experimental dataset may be given, and the objective is
+to identify a mathematical model that describes it adequately.
+In such cases, it is convenient to consider only those hypotheses
+associated with the given representation.
+
+\begin{definition}
+Let $r\in\mathcal{R}$ be a representation. We define the set of
+\emph{hypotheses of the representation $r$}\index{Hypothesis!of a representation}
+as
+\[
+\mathcal{H}_r
+=
+\{r\}\times\mathcal{D}_r.
+\]
+\end{definition}
+
+The set $\mathcal{H}_r$ contains all hypotheses sharing the same
+representation $r$, while allowing their descriptions to vary.
+The following proposition establishes that every representation
+admits at least one hypothesis.
+
+\begin{proposition}
+\label{prop:hypothesis_rep_nonempty}
+For every $r\in\mathcal{R}$,
+\[
+\mathcal{H}_r\neq\varnothing.
+\]
+\end{proposition}
+
+\begin{proof}
+Every finite binary string $r$ admits an exact description: a Turing
+machine can be constructed that outputs $r$ and halts. Since every exact
+description is also an extended description, we have
+$\mathcal{D}_r\neq\varnothing$. Consequently,
+\[
+\mathcal{H}_r=\{r\}\times\mathcal{D}_r\neq\varnothing.
+\]
+\end{proof}
+
+This property ensures that every extended representation can be associated
+with at least one hypothesis, even if the available descriptions provide
+little scientific insight.
+
+We can now establish an important structural property of the hypothesis
+space: it is partitioned by the representations.
+
+\begin{proposition}
+\label{prop:hypothesis_rep_partition}
+The set of hypotheses satisfies
+\[
+\mathcal{H}
+=
+\bigcup_{r\in\mathcal{R}}\mathcal{H}_r.
+\]
+Moreover, for any two distinct representations $r_1,r_2\in\mathcal{R}$,
+\[
+r_1\neq r_2
+\quad\Longrightarrow\quad
+\mathcal{H}_{r_1}\cap\mathcal{H}_{r_2}=\varnothing.
+\]
+\end{proposition}
+
+\begin{proof}
+Let $(r,d)\in\mathcal{H}$. By definition, $r\in\mathcal{R}$ and
+$d\in\mathcal{D}_r$. Hence
+\[
+(r,d)\in\{r\}\times\mathcal{D}_r=\mathcal{H}_r,
+\]
+which proves that
+\[
+\mathcal{H}\subseteq\bigcup_{r\in\mathcal{R}}\mathcal{H}_r.
+\]
+
+Conversely, if $(r,d)\in\mathcal{H}_r$ for some $r\in\mathcal{R}$,
+then $d\in\mathcal{D}_r$, and therefore $(r,d)\in\mathcal{H}$.
+This establishes the reverse inclusion.
+
+For the second statement, suppose that
+$(r,d)\in\mathcal{H}_{r_1}\cap\mathcal{H}_{r_2}$.
+By definition, the first coordinate of the pair must equal both
+$r_1$ and $r_2$. Hence $r_1=r_2$, contradicting the assumption
+that they are distinct. Therefore the intersection is empty.
+\end{proof}
+
+The proposition shows that every hypothesis belongs to exactly one
+representation-specific hypothesis set. This remains true even when
+two distinct representations share some extended descriptions:
+the ordered pairs are different because their first coordinates differ.
+
+\subsection*{Hypotheses of an Entity}
+
+Scientific research is usually directed toward understanding a particular
+entity rather than a fixed representation. Since an entity may admit several
+extended representations, each with its own associated descriptions, we
+introduce the corresponding entity-specific hypothesis space.
+
+\begin{definition}
+Let $e\in\mathcal{E}$ be an entity. We define the set of
+\emph{hypotheses of the entity $e$}\index{Hypothesis!of an entity}
+as
+\[
+\mathcal{H}_e
+=
+\left\{
+(r,d)\in\mathcal{H}:r\in\mathcal{R}_e
+\right\}.
+\]
+\end{definition}
+
+Thus, a hypothesis belongs to $\mathcal{H}_e$ whenever its
+representation contains non-trivial information about the entity $e$
+and its description belongs to the corresponding set $\mathcal{D}_r$.
+The following proposition relates the hypotheses of an entity to those
+of its individual representations.
+
+\begin{proposition}
+\label{prop:hypothesis_entity_union}
+For every entity $e\in\mathcal{E}$,
+\[
+\mathcal{H}_e
+=
+\bigcup_{r\in\mathcal{R}_e}\mathcal{H}_r.
+\]
+\end{proposition}
+
+\begin{proof}
+Let $(r,d)\in\mathcal{H}_e$. Then $r\in\mathcal{R}_e$ and
+$d\in\mathcal{D}_r$. Consequently,
+$(r,d)\in\mathcal{H}_r$, and therefore
+\[
+(r,d)\in\bigcup_{r\in\mathcal{R}_e}\mathcal{H}_r.
+\]
+
+Conversely, suppose
+\[
+(r,d)\in\bigcup_{r\in\mathcal{R}_e}\mathcal{H}_r.
+\]
+Then there exists some $r\in\mathcal{R}_e$ such that
+$(r,d)\in\mathcal{H}_r$. Hence $d\in\mathcal{D}_r$ and
+$(r,d)\in\mathcal{H}$. Since $r\in\mathcal{R}_e$, it follows
+that $(r,d)\in\mathcal{H}_e$.
+\end{proof}
+
+This result establishes a natural hierarchy between the three
+hypothesis spaces:
+\[
+\mathcal{H}_r
+\subseteq
+\mathcal{H}_e
+\subseteq
+\mathcal{H},
+\qquad r\in\mathcal{R}_e.
+\]
+A representation-specific hypothesis space contains alternative
+descriptions of a fixed representation, whereas an entity-specific
+hypothesis space also allows the representation itself to vary.
+
+An immediate consequence concerns the existence of hypotheses for
+an entity.
+
+\begin{proposition}
+\label{prop:hypothesis_entity_nonempty}
+For every entity $e\in\mathcal{E}$,
+\[
+\mathcal{H}_e\neq\varnothing
+\quad\Longleftrightarrow\quad
+\mathcal{R}_e\neq\varnothing.
+\]
+\end{proposition}
+
+\begin{proof}
+If $\mathcal{H}_e\neq\varnothing$, there exists a hypothesis
+$(r,d)\in\mathcal{H}_e$. By definition, $r\in\mathcal{R}_e$,
+so $\mathcal{R}_e\neq\varnothing$.
+
+Conversely, suppose $\mathcal{R}_e\neq\varnothing$.
+Choose any $r\in\mathcal{R}_e$. By Proposition
+\ref{prop:hypothesis_rep_nonempty}, $\mathcal{H}_r$ is nonempty.
+Since $\mathcal{H}_r\subseteq\mathcal{H}_e$, it follows that
+$\mathcal{H}_e\neq\varnothing$.
+\end{proof}
+
+This proposition establishes that an entity admits hypotheses precisely
+when it admits extended representations. The existence of hypotheses
+therefore depends on the representability of the entity, rather than
+on any independent condition imposed by the descriptive framework.
+
+\subsection*{Relations Between Hypothesis Spaces}
+
+The representation-specific hypothesis spaces form a partition of
+$\mathcal{H}$. However, the corresponding entity-specific hypothesis
+spaces need not be disjoint. This difference arises because a single
+extended representation may contain information about several entities.
+
+We first observe that every hypothesis is associated with at least
+one entity.
+
+\begin{proposition}
+\label{prop:hypothesis_entity_cover}
+The set of hypotheses satisfies
+\[
+\mathcal{H}
+=
+\bigcup_{e\in\mathcal{E}}\mathcal{H}_e.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition, the set of extended representations satisfies
+\[
+\mathcal{R}
+=
+\bigcup_{e\in\mathcal{E}}\mathcal{R}_e.
+\]
+Let $(r,d)\in\mathcal{H}$. Then $r\in\mathcal{R}$, so
+there exists at least one entity $e\in\mathcal{E}$ such that
+$r\in\mathcal{R}_e$. Consequently, $(r,d)\in\mathcal{H}_e$,
+which proves
+\[
+\mathcal{H}
+\subseteq
+\bigcup_{e\in\mathcal{E}}\mathcal{H}_e.
+\]
+
+The reverse inclusion follows immediately from
+$\mathcal{H}_e\subseteq\mathcal{H}$ for every entity
+$e\in\mathcal{E}$.
+\end{proof}
+
+Although the entity-specific hypothesis spaces cover the entire
+hypothesis space, they do not necessarily form a partition.
+The next proposition characterizes their possible intersections.
+
+\begin{proposition}
+\label{prop:hypothesis_entity_intersection}
+Let $e_1,e_2\in\mathcal{E}$ be two entities. Then
+\[
+\mathcal{H}_{e_1}\cap\mathcal{H}_{e_2}
+=
+\bigcup_{r\in\mathcal{R}_{e_1}\cap\mathcal{R}_{e_2}}
+\mathcal{H}_r.
+\]
+Consequently,
+\[
+\mathcal{H}_{e_1}\cap\mathcal{H}_{e_2}\neq\varnothing
+\quad\Longleftrightarrow\quad
+\mathcal{R}_{e_1}\cap\mathcal{R}_{e_2}\neq\varnothing.
+\]
+\end{proposition}
+
+\begin{proof}
+Let $(r,d)\in\mathcal{H}_{e_1}\cap\mathcal{H}_{e_2}$.
+Then $r\in\mathcal{R}_{e_1}$ and
+$r\in\mathcal{R}_{e_2}$, so
+\[
+r\in\mathcal{R}_{e_1}\cap\mathcal{R}_{e_2}.
+\]
+Since $d\in\mathcal{D}_r$, we have $(r,d)\in\mathcal{H}_r$.
+Therefore,
+\[
+(r,d)\in
+\bigcup_{r\in\mathcal{R}_{e_1}\cap\mathcal{R}_{e_2}}
+\mathcal{H}_r.
+\]
+
+Conversely, let $(r,d)$ belong to the union on the right-hand
+side. Then $r\in\mathcal{R}_{e_1}\cap\mathcal{R}_{e_2}$
+and $d\in\mathcal{D}_r$. Consequently,
+$(r,d)\in\mathcal{H}_{e_1}$ and
+$(r,d)\in\mathcal{H}_{e_2}$, proving the equality.
+
+The final equivalence follows from Proposition
+\ref{prop:hypothesis_rep_nonempty}, since every
+representation $r\in\mathcal{R}$ admits at least one hypothesis.
+\end{proof}
+
+This result has an important interpretation. A hypothesis need not be
+associated with a unique entity. If its representation contains
+non-trivial information about several entities, the same
+representation-description pair may belong to several entity-specific
+hypothesis spaces.
+
+For example, an experimental dataset may contain information about
+several related physical phenomena. A description capturing a common
+regularity in the dataset may therefore contribute to hypotheses about
+more than one entity. The association between hypotheses and entities
+is consequently not necessarily one-to-one.
+
+This distinction will become particularly important when introducing
+nescience. Although the same hypothesis may belong to several
+entity-specific hypothesis spaces, its miscoding must be evaluated
+relative to the particular entity under investigation. By contrast,
+mismodel concerns the relation between the representation and its
+description, independently of which entity motivated the investigation.
+
+The distinction between $\mathcal{H}$, $\mathcal{H}_e$, and
+$\mathcal{H}_r$ therefore provides a natural foundation for the
+subsequent study of scientific knowledge. The global hypothesis
+space contains all admissible representation-description pairs;
+entity-specific hypothesis spaces organize inquiry around particular
+research entities; and representation-specific hypothesis spaces
+support the comparison of alternative descriptions of fixed
+representations.
 
 %
 % Section: Models

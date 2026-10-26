@@ -34,8 +34,6 @@ The theory also leads to a more subtle conclusion. Scientific progress is not gu
 
 \section{Nescience}
 
-% {\color{red}TODO: this is the most generic form, and it is intended to be used with the concept of local Pareto optimality.}
-
 Intuitively, our understanding of an entity depends on two complementary aspects of scientific work: the construction of a representation that encodes the entity, and the construction of a description that models that representation. According to the theory of nescience, there are two sources of ignorance, captured by the notions of miscoding and mismodel. Miscoding measures how far a candidate representation is from being algorithmically equivalent to an admissible representation of the entity, whereas mismodel measures how far a candidate description is from being algorithmically equivalent to a minimal description of the given representation.
 
 From this perspective, scientific inquiry consists in jointly reducing representational and descriptive error. Although miscoding depends only on $r$, while mismodel depends on $d$ relative to $r$, the goal is to optimize both components simultaneously. Science is therefore naturally formulated as a bi-objective optimization problem.
@@ -45,477 +43,442 @@ From this perspective, scientific inquiry consists in jointly reducing represent
 \index{Science problem}
 \begin{align*}
  & \text{Given an entity} \: e \in \mathcal{E} \\
- & \quad \text{minimize} \quad \{ \mu(e, r), \nu(r, d)\} \\
+ & \quad \text{minimize} \quad \left( \mu(e, r), \nu(r, d) \right) \\
  & \quad \text{subject to} \quad (r, d) \in \mathcal{H}_e
 \end{align*}
 \end{tBox}
 
-The feasible region is the set
+The feasible region\index{Feasible region} is the set
 \[
-\mathcal{H}_e=\{(r,d)\mid r\in\mathcal{R}_e,\ d\in\mathcal{D}_r\},
+\mathcal{H}_e = \{(r,d) \in \mathcal{H} \mid r\in\mathcal{R}_e\},
 \]
-which contains all extended representation-description pairs associated with the entity $e$. The decision vectors are pairs $(r, d)$ consisting of a representation and a description. The objective functions to be minimized are miscoding and mismodel. The objective space is therefore a subset $\mathbf{Z}\subseteq\mathbb{R}_{\geq 0}^2$. Our primary focus lies in the feasible decision space $\mathcal{H}_e$, namely the space of extended representations and descriptions for the entity under study, rather than in the objective space $\mathbf{Z}\subseteq\mathbb{R}_{\geq 0}^2$ of metric values.
+which contains all extended representation-description pairs associated with the entity $e$. The decision vectors are pairs $(r, d)$ consisting of a representation and a description. The objective functions\index{Objective function} to be minimized are miscoding and mismodel. The objective space\index{Objective space} is therefore a subset $\mathbf{Z}\subseteq\mathbb{R}_{\geq 0}^2$. Our primary focus lies in the feasible decision space\index{Decision space} $\mathcal{H}_e$, namely the space of extended representations and descriptions for the entity under study, rather than in the objective space\index{Objective space} $\mathbf{Z}\subseteq\mathbb{R}_{\geq 0}^2$ of metric values.
 
-% Subsection: Pareto Optimality
-
-\subsection*{Pareto Optimality}
-
-If the current representation and description are not perfect, the objective of scientific inquiry is to identify alternative hypotheses that reduce our ignorance. This means finding a new representation or a new description that decreases at least one of the two components of nescience, miscoding or mismodel, without increasing the other.
-
-\begin{definition}
-We say that a hypothesis $(r,d) \in \mathcal{H}$ \emph{dominates}\index{Dominate} another hypothesis $(r',d') \in \mathcal{H}_e$ if
-\[
-\mu(e, r) \leq \mu(e, r'), \qquad \nu(r, d) \leq \nu(r', d'),
-\]
-and at least one of these two inequalities is strict.
-\end{definition}
-
-This notion of dominance formalizes the idea of unambiguous scientific improvement. A dominating hypothesis is never worse in either component of nescience and is strictly better in at least one. Consequently, dominated hypotheses can be regarded as suboptimal and, in principle, replaceable by better alternatives.
-
-The definition also highlights the two fundamental directions in which scientific progress may occur. On the one hand, we may improve the representation of the entity, thereby reducing miscoding, while retaining a description of comparable quality. On the other hand, we may refine the description of a given representation, thereby reducing mismodel, without degrading the representational fidelity.
-
-In practice, there is rarely a single solution that simultaneously minimizes both miscoding and mismodel. Instead, one typically obtains a collection of mutually incomparable hypotheses that define the frontier of optimal trade-offs.
-
-\begin{definition}
-We say that a hypothesis $(r,d) \in \mathcal{H}_e$ is \emph{Pareto optimal}\index{Pareto optimal} if there does not exist another hypothesis $(r',d') \in \mathcal{H}_e$ such that $(r',d')$ dominates $(r,d)$. The set of Pareto optimal solutions, denoted by $\mathbf{P}_{\mathcal{H}_e}$, is called the \emph{Pareto frontier}\index{Pareto frontier}.
-\end{definition}
-
-In the context of scientific research, the Pareto frontier represents the set of best-achievable balances between representational and descriptive quality. Along this frontier, one cannot reduce miscoding without worsening mismodel, nor reduce mismodel without worsening miscoding. It therefore provides the natural set of candidate hypotheses from which a decision maker may later select a single preferred solution.
-
-In some applications it may still be convenient to adopt a hypothesis that is not Pareto optimal, for example when one wishes to privilege representational fidelity over descriptive economy, or conversely. Such choices belong to the stage of decision making and scalarization, not to the structural definition of nescience itself.
-
-% Subsection: Range of Solutions
-
-\subsection*{Range of Solutions}
-
-In multi-objective optimization, the \emph{ideal objective vector}\index{Ideal vector} is the point in objective space whose coordinates are the smallest values that each objective function could attain individually. It represents the theoretical best outcome in which every objective is simultaneously optimized. Although such a point is not necessarily attainable by any feasible solution, it provides a natural reference against which the quality of candidate solutions and the shape of the Pareto frontier can be assessed.
-
-For the science problem, the objective functions are miscoding and mismodel. Since both quantities are non-negative and attain their minimum value at zero, the ideal objective vector is the origin.
-
-\begin{proposition}
-The ideal objective vector for the science problem is the origin $(0,0)$.
-\end{proposition}
-
-\begin{proof}
-By definition, both miscoding and mismodel are non-negative:
-\[
-\mu(e, r) \geq 0, \qquad \nu(r, d) \geq 0.
-\]
-Hence no objective vector can lie below $(0,0)$.
-
-Moreover, the value $0$ is attainable for both objectives in the limiting ideal case.
-If $\bar r \in \bar{\mathcal{R}}_{e}$ is an admissible representation and $d^\star \in \mathcal{D}_{e}^{\star}$ is a minimal description of $r^\star$, then
-\[
-\mu(e, \bar r)=0, \qquad \nu(\bar r, d^\star)=0.
-\]
-Therefore the ideal objective vector is $(0,0)$.
-\end{proof}
-
-A hypothesis $(r,d) \in \mathcal{H}$ is said to be \emph{ideal} if it exhibits zero
-miscoding and zero mismodel. Intuitively, this means that the representation is already
-algorithmically equivalent to an admissible representation of the target entity, and that the
-description is already algorithmically equivalent to a minimal description of that representation.
-Ideal hypotheses embody the notion of perfect knowledge within the present formulation of the
-theory.
-
-Unfortunately, in most practical applications the ideal vector is not attainable. The obstruction
-may lie in the representation, in the description, or in both. Some entities resist faithful
-representation with finite strings; others admit only highly imperfect or highly non-minimal
-descriptions within the limits of current scientific practice.
-
-\begin{example}
-A natural example is weather prediction. The entity under study is the state of the atmosphere
-over a geographical region. Any finite representation of that entity is necessarily imperfect,
-because measurements are noisy, incomplete, and spatially limited. Hence miscoding remains
-strictly positive. In addition, even highly sophisticated numerical models fail to produce
-descriptions that are both fully adequate and minimal, because the underlying dynamics are
-chaotic and the models necessarily rely on approximations and auxiliary structure. Thus
-mismodel also remains strictly positive. In such a case, the ideal vector $(0,0)$ is not reachable.
-\end{example}
-
-Since miscoding and mismodel are measured in bits,
-their values are non-negative but not naturally bounded above by a universal constant.
-When a bounded objective region is required for practical purposes, one may instead work with
-the corresponding relative versions of miscoding and mismodel introduced in Chapters
-\ref{chap:Miscoding} and \ref{chap:Mismodel}.
-
-\subsection*{Trade-offs}
-
-Because the science problem is bi-objective, the global structure of trade-offs is
-simple: every transition between two hypotheses can be analyzed in terms of how mismodel
-changes relative to miscoding.
-
-\begin{definition}
-Let $e \in \mathcal{E}$ be an entity, and $\mathbf{x}_1=(r_1,d_1)$ and $\mathbf{x}_2=(r_2,d_2)$ be two hypotheses such that $\mu(e, r_2) \neq \mu(e, r_1)$. We define the \emph{nescience trade-off ratio}\index{Trade-off ratio}
-between $\mathbf{x}_1$ and $\mathbf{x}_2$ as
-\[
-\Delta_{\nu\mu}(\mathbf{x}_1,\mathbf{x}_2) = \frac{\nu(r_2, d_2)-\nu(r_1, d_1)}
-{\mu(e, r_2)-\mu(e, r_1)}.
-\]
-\end{definition}
-
-This ratio quantifies the rate at which descriptive error changes relative to representational
-error when moving from one hypothesis to another.
-A positive value of $\Delta_{\nu\mu}$ indicates that miscoding and mismodel move in the same
-direction, either improving together or deteriorating together. A negative value indicates a genuine
-trade-off: one objective improves only at the expense of worsening the other.
-
-The structural notion of nescience developed in this section is therefore not a single scalar
-quantity but a bi-objective characterization of ignorance through the pair
-\[
-\bigl(\mu(r),\nu_r(d)\bigr).
-\]
-A single numerical score may still be introduced later by means of a decision maker or a
-scalarization criterion, but such a score should be understood as a practical selection device built
-on top of the more fundamental multiobjective formulation given here.
-
-% Subsection: Local Pareto Optimality
-
-\subsection*{Local Pareto Optimality}
-
-The notion of Pareto optimality introduced above is global, in the sense that it compares a
-hypothesis with all other hypotheses in the search space. In practice, however, scientific inquiry
-often proceeds incrementally, by modifying a current hypothesis through limited changes in its
-representation, its description, or both. This motivates a localized version of Pareto optimality.
-
-To formalize this idea, we must first specify what counts as a \emph{small} modification of a
-hypothesis. In the present framework, we measure the size of a modification in algorithmic terms:
-a nearby hypothesis is one that can be transformed into the current one, and conversely, by means
-of short programs.
-
-\begin{definition}
-Let $(r,d) \in \mathcal{H}$ and let $\varepsilon > 0$.
-We define the \emph{algorithmic neighborhood}\index{Algorithmic neighborhood} of $(r,d)$ as
-\[
-\mathcal{N}_\varepsilon(r,d)
-=
-\Bigl\{\, (r',d') \in \mathcal{H}
-\;\Bigm|\;
-\begin{aligned}
-&K(r' \mid r) + K(r \mid r') \leq \varepsilon,\\
-&K(d' \mid d) + K(d \mid d') \leq \varepsilon
-\end{aligned}
-\,\Bigr\}.
-\]
-\end{definition}
-
-This definition captures the idea that two hypotheses are close when both their representations and
-their descriptions are mutually transformable by short programs. In practical terms, the
-neighborhood $\mathcal{N}_\varepsilon(r,d)$ includes hypotheses obtained from $(r,d)$ through
-small modifications such as slight reformulations of the representation, the addition or removal of a
-small number of attributes, minor adjustments of parameters, or limited refinements of the
-description. By contrast, hypotheses that require a substantial redesign of the representation, a
-radically different descriptive framework, or a major conceptual reorganization lie outside the
-neighborhood, since the algorithmic information needed to pass from one hypothesis to the other is
-too large.
-
-\begin{definition}
-Let $(r,d) \in \mathcal{H}$ and let $\varepsilon > 0$. We say that $(r,d)$ is \emph{locally Pareto optimal}\index{Local Pareto optimal} with respect to $\mathcal{N}_\varepsilon(r,d)$ if there does not exist $(r',d') \in \mathcal{N}_\varepsilon(r,d)$ such that $(r',d')$ dominates $(r,d)$.
-\end{definition}
-
-A locally Pareto optimal hypothesis is therefore one that cannot be improved through small
-algorithmic modifications. In this sense, local Pareto optimality expresses a form of
-\emph{algorithmic stability}: within the region of hypotheses accessible from the current one by
-bounded transformations, no strictly better alternative exists.
-
-It is important to stress that a local Pareto optimum does not, in general, correspond either to a
-different representation style of the same entity or to a different entity altogether. The reason is that
-the notion of neighborhood is purely algorithmic. A dominating hypothesis may lie outside
-$\mathcal{N}_\varepsilon(r,d)$ simply because it requires a transformation of high algorithmic
-complexity, even if it concerns the same entity and uses the same representation style. Conversely,
-two hypotheses concerning different entities might accidentally lie close to each other in algorithmic
-terms. Thus local Pareto optimality should be interpreted as a property of the geometry of the
-hypothesis space under bounded transformations, not as a direct classification of entities or
-representation styles.
-
-The next proposition makes explicit the computational meaning of local Pareto optimality.
-
-\begin{proposition}
-\label{prop:local_pareto_algorithmic_interpretation}
-Let $(r,d) \in \mathcal{H}$ and let $\varepsilon > 0$. The hypothesis $(r,d)$ is locally Pareto optimal with respect to $\mathcal{N}_\varepsilon(r,d)$ if and only if there does not exist any hypothesis $(r',d')$ such that
-\[
-K(r' \mid r) + K(r \mid r') \leq \varepsilon,
-\qquad
-K(d' \mid d) + K(d \mid d') \leq \varepsilon,
-\]
-and
-\[
-\mu(r') \leq \mu(r), \qquad \nu_{r'}(d') \leq \nu_r(d),
-\]
-with at least one of these two inequalities being strict.
-\end{proposition}
-
-\begin{proof}
-This follows immediately by combining the definition of algorithmic neighborhood with the
-definition of local Pareto optimality. Indeed, $(r,d)$ is locally Pareto optimal if and only if there
-is no dominating hypothesis inside $\mathcal{N}_\varepsilon(r,d)$, and belonging to
-$\mathcal{N}_\varepsilon(r,d)$ is equivalent to satisfying the two algorithmic bounds stated above.
-\end{proof}
-
-Proposition \ref{prop:local_pareto_algorithmic_interpretation} shows that local Pareto optimality
-is a statement about the impossibility of reducing nescience through small algorithmic
-transformations of the current hypothesis. In other words, if a locally Pareto optimal hypothesis is
-to be improved, the improvement must come from a transformation whose algorithmic complexity
-exceeds the radius $\varepsilon$ of the neighborhood.
-
-\begin{example}
-Consider a machine learning task in which a current hypothesis consists of a representation $r$
-built from a fixed set of customer attributes and a description $d$ given by a logistic regression
-model. Small modifications of this hypothesis include adding or removing a small number of
-features, slightly changing the preprocessing pipeline, or adjusting the form of the model while
-retaining the same overall descriptive framework. If no such small modification decreases either
-miscoding or mismodel without worsening the other, then the hypothesis is locally Pareto optimal.
-Nevertheless, a substantially different hypothesis, for example one based on a new representation
-built from call transcripts and a transformer-based description, may still dominate it. Such a
-hypothesis would lie outside the algorithmic neighborhood because the transformation required to
-reach it is too large.
-\end{example}
-
-Global and local Pareto optimality are related in the expected way: global optimality is stronger
-than local optimality.
-
-\begin{proposition}
-\label{prop:global_implies_local_pareto_eps}
-Let $(r,d) \in \mathcal{H}$ and let $\varepsilon > 0$. If $(r,d)$ is Pareto optimal in $\mathcal{H}$, then $(r,d)$ is locally Pareto optimal with respect to $\mathcal{N}_\varepsilon(r,d)$.
-\end{proposition}
-
-\begin{proof}
-Assume that $(r,d)$ is Pareto optimal in $\mathcal{H}$. Then there does not exist any hypothesis $(\tilde r,\tilde d) \in \mathcal{H}$ that dominates
-$(r,d)$. Since
-\[
-\mathcal{N}_\varepsilon(r,d) \subseteq \mathcal{H},
-\]
-there cannot exist any hypothesis inside $\mathcal{N}_\varepsilon(r,d)$ that dominates $(r,d)$.
-Hence $(r,d)$ is locally Pareto optimal with respect to $\mathcal{N}_\varepsilon(r,d)$.
-\end{proof}
-
-The converse fails in general.
-
-\begin{proposition}
-\label{prop:local_not_global_pareto_eps}
-Local Pareto optimality with respect to $\mathcal{N}_\varepsilon(r,d)$ does not, in general, imply global Pareto optimality in $\mathcal{H}$.
-\end{proposition}
-
-\begin{proof}
-Consider a hypothesis $(r,d)$ and suppose there exists another hypothesis $(r^\dagger,d^\dagger)$
-such that $(r^\dagger,d^\dagger)$ dominates $(r,d)$, but
-\[
-K(r^\dagger \mid r) + K(r \mid r^\dagger) > \varepsilon
-\qquad\text{or}\qquad
-K(d^\dagger \mid d) + K(d \mid d^\dagger) > \varepsilon.
-\]
-Then $(r^\dagger,d^\dagger) \notin \mathcal{N}_\varepsilon(r,d)$.
-If, in addition, no hypothesis inside $\mathcal{N}_\varepsilon(r,d)$ dominates $(r,d)$, then
-$(r,d)$ is locally Pareto optimal, yet not globally Pareto optimal, since it is dominated by
-$(r^\dagger,d^\dagger)$ in the full search space.
-\end{proof}
-
-This proposition captures an important feature of scientific inquiry: a hypothesis may resist all
-sufficiently small improvements and yet fail to be globally optimal. In such cases, progress
-requires a transformation of higher algorithmic complexity, such as the introduction of new
-variables, a substantial change of representation, or the adoption of a fundamentally different
-descriptive framework.
-
-The next proposition records a simple monotonicity property with respect to the neighborhood
-radius.
-
-\begin{proposition}
-\label{prop:local_pareto_radius_monotonicity}
-Let $0 < \varepsilon_1 \leq \varepsilon_2$. If a hypothesis $(r,d)$ is locally Pareto optimal with
-respect to $\mathcal{N}_{\varepsilon_2}(r,d)$, then it is also locally Pareto optimal with respect to
-$\mathcal{N}_{\varepsilon_1}(r,d)$.
-\end{proposition}
-
-\begin{proof}
-Since $\varepsilon_1 \leq \varepsilon_2$, we have
-\[
-\mathcal{N}_{\varepsilon_1}(r,d) \subseteq \mathcal{N}_{\varepsilon_2}(r,d).
-\]
-If no hypothesis in the larger neighborhood $\mathcal{N}_{\varepsilon_2}(r,d)$ dominates $(r,d)$,
-then a fortiori no hypothesis in the smaller neighborhood
-$\mathcal{N}_{\varepsilon_1}(r,d)$ dominates $(r,d)$. Therefore $(r,d)$ is locally Pareto optimal
-with respect to $\mathcal{N}_{\varepsilon_1}(r,d)$.
-\end{proof}
-
-Proposition \ref{prop:local_pareto_radius_monotonicity} shows that local Pareto optimality
-becomes more demanding as the neighborhood radius increases. A hypothesis that is locally Pareto
-optimal for a large value of $\varepsilon$ is stable against a broader class of modifications than one
-that is locally Pareto optimal only for a small value of $\varepsilon$.
-
-Finally, observe that the notion of local Pareto optimality is primarily useful for understanding the
-dynamics of scientific search, rather than for defining the ultimate standard of optimality.
-Global Pareto optimality identifies the truly nondominated hypotheses in the full search space,
-whereas local Pareto optimality captures the possibility that inquiry may become trapped in regions
-of the hypothesis space where no small improvement is available. This makes the concept valuable
-for analyzing scientific stagnation, incremental progress, and the need for discontinuous conceptual
-shifts.
-
-% Section: Perfect Knowledge
+%
+% Section: Perfect knowledge
+%
 
 \subsection*{Perfect Knowledge}
 \label{sec:perfect_knowledge}
 
-According to the theory of nescience, the fundamental aim of scientific research is to reduce our ignorance concerning the entities under investigation. This ignorance is captured by two quantities: the miscoding of the representation and the mismodel of the description. Perfect knowledge is therefore naturally understood as the limit in which both sources of ignorance vanish, or cannot be further improved without sacrifice.
-
-This viewpoint leads to two complementary notions of perfect knowledge. The first is an ideal, theoretical notion, in which both miscoding and mismodel are exactly zero. The second is a practical notion, based on Pareto optimality, in which no further decrease in one of the two components is possible without increasing the other. The former captures the endpoint of inquiry in an absolute sense; the latter captures the best attainable state within a given symbolic and methodological framework.
+Perfect knowledge of an entity therefore requires both an adequate representation of the entity and an optimal description of that representation. This leads to a structural definition of perfect knowledge, based on admissible representations and minimal descriptions.
 
 \begin{definition}
-Let $(r,d) \in \mathcal{H}$ be a hypothesis. We say that $(r,d)$ attains
-\emph{ideal perfect knowledge}\index{Ideal perfect knowledge} if
+Let $e\in\mathcal{E}$ be an entity, and let $(r,d)\in\mathcal{H}_e$ be a hypothesis about $e$. We say that the hypothesis $(r,d)$ attains \emph{perfect knowledge}\index{Perfect knowledge} of the entity $e$ if
 \[
-\mu(e, r)=0
-\qquad\text{and}\qquad
-\nu(r, d)=0.
+r\in\overline{\mathcal{R}}_e \qquad\text{and}\qquad d\in\mathcal{D}_r^\star.
 \]
 \end{definition}
 
-Thus, ideal perfect knowledge is attained when the representation exhibits zero miscoding and the description exhibits zero mismodel. Intuitively, this means that the representation is already optimal with respect to the target entity, and that the description is already optimal with respect to that representation.
+Perfect knowledge is thus attained when the representation is admissible for the entity and its description is minimal. The representation contains the information required to reconstruct the entity without independent, semantically irrelevant content, while the description reconstructs the representation using the shortest possible effective encoding.
 
-Because Kolmogorov-based quantities are defined only up to additive constants, the exact equalities
-appearing in the previous definition should be regarded as an ideal limiting case. For many
-theoretical purposes, a more robust notion is obtained by allowing constant-size discrepancies.
+This structural definition is preferable to requiring miscoding and mismodel to be exactly zero. Both quantities are based on conditional Kolmogorov complexity, whose values depend on the reference universal machine up to additive constants. Even an admissible representation or a minimal description may therefore have a small nonzero defect, reflecting the fixed computational overhead required to reproduce its conditional input.
+
+For this reason, we also introduce a weaker notion that tolerates constant-size discrepancies. Fix a reference universal machine and constants $c_\mu,c_\nu \geq 0$, chosen independently of the entity and hypothesis, and sufficiently large to accommodate the constant overhead of reproducing a conditional input.
 
 \begin{definition}
-Let $(r,d) \in \mathcal{H}$ be a hypothesis. We say that $(r,d)$ attains \emph{negligible perfect knowledge}\index{Negligible perfect knowledge} if
+Let $e\in\mathcal{E}$ be an entity, and let $(r,d)\in\mathcal{H}_e$ be a hypothesis about $e$. We say that $(r,d)$ attains \emph{negligible perfect knowledge} \index{Negligible perfect knowledge} of the entity $e$ if
 \[
-\mu(e, r)=O(1) \qquad\text{and}\qquad \nu(r, d)=O(1).
+\mu(e,r)\leq c_\mu \qquad\text{and}\qquad \nu(r,d)\leq c_\nu.
 \]
 \end{definition}
 
-Negligible perfect knowledge expresses that both the representational and the descriptive defects
-are bounded by a constant amount of algorithmic information. This is often the more stable notion
-from the standpoint of algorithmic information theory.
+Equivalently, both defects must be bounded by fixed constants independent of the entity representation, and description. This condition is commonly expressed in algorithmic information
+theory by writing
+\[
+\mu(e,r)=O(1) \qquad\text{and}\qquad \nu(r,d)=O(1),
+\]
+where the bounds are understood to be uniform over the objects under consideration.
+
+Negligible perfect knowledge allows a hypothesis to differ from the theoretical ideal by a constant amount of algorithmic information. Unlike exact zero-error conditions, this notion accommodates the additive ambiguities inherent in Kolmogorov complexity. The following proposition establishes its relationship with perfect knowledge.
 
 \begin{proposition}
 \label{prop:minimal_rep_minimal_desc_negligible_pk}
-Let $e \in E$ be an entity, let $r \in \bar{R}_e$ be an admissible representation of $e$, and let
-$d \in D_r^\star$ be a minimal description of $r$. Then the hypothesis $(r,d)$ attains negligible
-perfect knowledge.
+Every hypothesis attaining perfect knowledge also attains negligible perfect knowledge.
 \end{proposition}
-
 \begin{proof}
-Since $r \in \bar{R}_e$, the representation $r$ is admissible for $e$. Hence its representational defect
-is negligible, that is,
+Let $e\in\mathcal{E}$ and let $(r,d)\in\mathcal{H}_e$ attain perfect knowledge. By definition, $r\in\overline{\mathcal{R}}_e$ and $d\in\mathcal{D}_r^\star$. Since $r$ is an admissible representation, we may choose $r'=r$ in the definitions of representational deficiency and surplus. Hence
 \[
-\mu(e, r)=O(1).
+d_R(e,r)\leq K(r\mid r)=O(1),
 \]
-Likewise, since $d \in D_r^\star$, the description $d$ is minimal for the target representation $r$.
-Therefore its descriptive defect is also negligible:
+and
 \[
-\nu(r, d)=O(1).
+s_R(e,r)\leq K(r\mid r)=O(1).
 \]
 Consequently,
 \[
-\mu(e, r)=O(1)
-\qquad\text{and}\qquad
-\nu(r, d)=O(1),
+\mu(e,r) = \max\{d_R(e,r),s_R(e,r)\} = O(1).
 \]
-so $(r,d)$ attains negligible perfect knowledge.
+Similarly, since $d$ is a minimal description of $r$, we may choose $d'=d$ in the definitions of descriptive
+deficiency and surplus. Therefore,
+\[
+d_D(r,d)\leq K(d\mid d)=O(1),
+\]
+and
+\[
+s_D(r,d)\leq K(d\mid d)=O(1).
+\]
+It follows that
+\[
+\nu(r,d) = \max\{d_D(r,d),s_D(r,d)\} = O(1).
+\]
+The bounds on $K(r\mid r)$ and $K(d\mid d)$ are uniform, since a fixed program can reproduce its conditional input. Thus, both defects are bounded by the prescribed constants $c_\mu$ and $c_\nu$, and the hypothesis attains negligible perfect knowledge.
 \end{proof}
 
-This proposition identifies the structural content of perfect knowledge in the present theory:
-admissible representations together with minimal descriptions yield vanishing nescience up to the
-usual constant-size ambiguity.
+The converse does not necessarily hold. A representation may differ from an admissible representation by only a constant amount of algorithmic information without itself being admissible. Likewise, a description may be algorithmically close to a minimal description without being minimal. Negligible perfect knowledge therefore permits small structural imperfections that perfect knowledge excludes.
 
-In practice, ideal perfect knowledge is often unattainable. Even when a hypothesis cannot be made
-perfect in the strict sense, it may still be impossible to improve it in one component of nescience
-without worsening the other. This motivates the practical notion of Pareto perfect knowledge.
+Perfect knowledge provides an ideal reference for scientific inquiry, whereas negligible perfect knowledge accommodates the fixed coding overhead inherent in its mathematical formulation.
+
+% Subsection: Pareto Optimality
+
+\subsection*{Pareto Optimality}
+\label{sec:nescience_pareto}
+
+The science problem is a bi-objective optimization problem in which miscoding and mismodel are minimized simultaneously. Given an entity $e\in\mathcal E$, scientific inquiry seeks hypotheses that improve our understanding of $e$ by reducing one or both components of nescience. However, an improvement in one component may come at the expense of the other. This motivates the notion of Pareto dominance.
 
 \begin{definition}
-Let $(r,d) \in \mathcal{H}$ be a hypothesis. We say that $(r,d)$ attains
-\emph{Pareto perfect knowledge}\index{Pareto perfect knowledge} if $(r,d)$ is Pareto optimal with
-respect to the two objectives
+Let $e\in\mathcal E$, and let $(r,d),(r',d')\in\mathcal H_e$ be two hypotheses. We say that $(r,d)$
+\emph{dominates}\index{Dominance} $(r',d')$ if
 \[
-\mu(e, r)
-\qquad\text{and}\qquad
-\nu(r, d).
+\mu(e,r)\leq\mu(e,r'), \qquad \nu(r,d)\leq\nu(r',d'),
+\]
+with at least one strict inequality.
+\end{definition}
+
+Dominance characterizes unambiguous scientific improvement. A dominating hypothesis reduces at least one source of ignorance without increasing the other. Consequently, dominated hypotheses are suboptimal with respect to the two objectives of the science problem (see Section~\ref{sec:multiobjective_optimization}).
+
+Nevertheless, improvements in miscoding and mismodel need not coincide. Changing the representation may reduce miscoding while making the current description less adequate. Conversely, improving the description of a fixed representation reduces mismodel without changing miscoding. When these objectives cannot be minimized simultaneously, scientific inquiry encounters trade-offs between alternative hypotheses.
+
+\begin{definition}
+Let $e\in\mathcal E$ be an entity. A hypothesis $(r,d)\in\mathcal H_e$ is \emph{Pareto optimal}
+\index{Pareto optimal} if no other hypothesis in $\mathcal H_e$ dominates it.
+
+We define the set of Pareto-optimal hypotheses of $e$ as
+\[
+\mathcal P_e = \left\{ (r,d)\in\mathcal H_e : \nexists (r',d')\in\mathcal H_e \text{ that dominates } (r,d) \right\}.
+\]
+The corresponding \emph{Pareto frontier}\index{Pareto frontier} is the set of objective vectors associated with Pareto-optimal hypotheses:
+\[
+\mathcal F_e = \left\{ \bigl(\mu(e,r),\nu(r,d)\bigr) : (r,d)\in\mathcal P_e \right\}.
 \]
 \end{definition}
 
-Pareto perfect knowledge does not mean that ignorance has been reduced to zero. It means only
-that no further improvement in miscoding can be achieved without worsening mismodel, and no
-further improvement in mismodel can be achieved without worsening miscoding. In this sense,
-Pareto perfect knowledge marks the boundary of what can be improved within the current symbolic
-framework.
+Pareto-optimal hypotheses represent the best attainable trade-offs between miscoding and mismodel within the feasible hypothesis space. For such hypotheses, neither component can be strictly reduced without increasing the other. The Pareto frontier therefore identifies the objective vectors from which a decision maker may select a preferred solution.
+
+An important property of the science problem follows from the discrete nature of its objective functions. Since miscoding and mismodel are defined in terms of conditional Kolmogorov complexity, both take non-negative integer values. This guarantees the existence of Pareto-optimal hypotheses whenever the feasible set is nonempty.
 
 \begin{proposition}
-\label{prop:ideal_implies_pareto_perfect}
-Every hypothesis that attains ideal perfect knowledge also attains Pareto perfect knowledge.
+\label{prop:science_pareto_existence}
+Let $e\in\mathcal E$ be an entity such that $\mathcal H_e\neq\varnothing$. Then
+\[
+\mathcal P_e\neq\varnothing.
+\]
+Moreover, the Pareto frontier $\mathcal F_e$ is finite.
 \end{proposition}
 
 \begin{proof}
-Let $(r,d)$ be a hypothesis such that
-\[
-\mu(e, r)=0
-\qquad\text{and}\qquad
-\nu(r, d)=0.
-\]
-Since both miscoding and mismodel are nonnegative, there is no other hypothesis
-$(r',d') \in \mathcal{H}$ such that
-\[
-\mu(e, r') \leq \mu(e, r), \qquad \nu(r', d') \leq \nu(r, d),
-\]
-with at least one strict inequality. Hence no hypothesis dominates $(r,d)$, and therefore
-$(r,d)$ is Pareto optimal.
+Since $\mathcal H_e$ is nonempty and miscoding takes values in $\mathbb N_0$, there exists a hypothesis
+$h_0=(r_0,d_0)\in\mathcal H_e$ minimizing miscoding. Among all hypotheses attaining this minimum, choose one that minimizes mismodel. Such a hypothesis exists because mismodel also takes values in $\mathbb N_0$.
+
+The hypothesis $h_0$ is Pareto optimal. Indeed, any hypothesis dominating $h_0$ would either have smaller miscoding, contradicting its minimality, or have equal miscoding and smaller mismodel, contradicting the choice of $h_0$. Hence $\mathcal P_e\neq\varnothing$.
+
+To prove finiteness, let $a=\mu(e, r_0)$ and  $b=\nu(r_0,d_0)$. Every Pareto-optimal objective vector different from $(a,b)$ must have its first coordinate greater than $a$ and its second coordinate strictly smaller than $b$; otherwise, it would be dominated by $(a,b)$.
+
+Since mismodel takes non-negative integer values, the second coordinate of any such vector belongs to
+$\{0,1,\ldots,b-1\}$. Furthermore, two distinct Pareto-optimal objective vectors cannot have the same second coordinate, since the one with smaller first coordinate would dominate the other.
+
+Therefore $\mathcal F_e$ contains at most $b+1$ distinct objective vectors, and is finite.
 \end{proof}
 
-The converse does not hold in general.
+This result establishes that the science problem always admits at least one Pareto-optimal hypothesis when its
+feasible set is nonempty. Moreover, although infinitely many hypotheses may be Pareto optimal, their objective
+vectors form a finite frontier.
 
-\begin{proposition}
-\label{prop:pareto_not_ideal_perfect}
-Pareto perfect knowledge does not, in general, imply ideal perfect knowledge.
-\end{proposition}
-\begin{proof}
-Consider a hypothesis $(r,d)$ lying on the Pareto frontier such that
-\[
-\mu(e, r)>0
-\qquad\text{and}\qquad
-\nu(r, d)>0.
-\]
-Such a situation occurs whenever any attempt to reduce miscoding necessarily increases mismodel,
-or any attempt to reduce mismodel necessarily increases miscoding. Then $(r,d)$ is Pareto optimal,
-hence it attains Pareto perfect knowledge, but it does not attain ideal perfect knowledge because
-neither objective is zero.
-\end{proof}
-
-This distinction is important. Ideal perfect knowledge corresponds to complete success in both
-dimensions of nescience, whereas Pareto perfect knowledge corresponds only to the best attainable
-trade-off. The latter is often the practically relevant notion.
-
-The concept of Pareto perfect knowledge provides a natural stopping criterion for inquiry. When a
-hypothesis becomes Pareto optimal, further research can no longer improve one of the two sources
-of ignorance without worsening the other. At that point, continued inquiry is justified only if one is
-willing to revise the decision rule, alter the representation style, enlarge the class of admissible
-descriptions, or accept a different trade-off structure.
+Perfect knowledge, negligible perfect knowledge, and Pareto optimality characterize different aspects of scientific understanding. Perfect knowledge requires an admissible representation and a minimal description, and therefore implies negligible perfect knowledge, in which both miscoding and mismodel are bounded by fixed constants. Pareto optimality, by contrast, is a relative notion: it requires only that no other feasible hypothesis dominates the one under consideration. Consequently, a Pareto-optimal hypothesis may still exhibit substantial miscoding or mismodel, while a hypothesis attaining negligible perfect knowledge may nevertheless be dominated by another with smaller defects.
 
 \begin{example}
-In weather prediction, the target entity is the evolving state of the atmosphere over a geographical
-region. Any finite representation of this entity is necessarily imperfect due to measurement noise,
-limited spatial resolution, and incomplete coverage. Thus miscoding remains strictly positive.
-Moreover, even the best available numerical descriptions rely on approximations, discretizations,
-and auxiliary assumptions, so mismodel also remains strictly positive. In such a case, ideal perfect
-knowledge is unattainable. Nevertheless, one may still reach Pareto perfect knowledge when no
-further reduction of miscoding is possible without worsening mismodel, and vice versa.
+Consider an entity $e$ corresponding to the motion of a harmonic oscillator. Suppose that two hypotheses are
+currently known, with objective vectors $h_1:(3,12)$, and $h_2:(10,4)$, where the first coordinate denotes miscoding and the second denotes mismodel. The first hypothesis uses a relatively accurate representation but an inadequate description. The second uses a poorer representation but describes it more effectively. Neither hypothesis dominates the other. Thus, both are Pareto optimal among the currently known hypotheses, even though neither attains negligible perfect knowledge.
+
+Now suppose that a hypothesis $h^\star=(r,d^\star)$ is discovered, where $r$ is an admissible representation and $d^\star$ is a minimal description. By definition, $h^\star$ attains perfect knowledge and therefore negligible perfect knowledge.
+
+Consider also a hypothesis $h'=(r,d')$ obtained by adding a fixed redundant instruction to $d^\star$. This modification leaves the reconstructed representation unchanged and introduces only constant-size descriptive overhead. Hence $h'$ attains negligible perfect knowledge, but not perfect knowledge, because $d'$ is not minimal. For illustration, suppose their objective vectors are $h^\star:(2,2)$ and $h':(2,3)$. The hypothesis $h^\star$ dominates all three alternatives. In particular, $h'$ illustrates that negligible perfect knowledge does not imply Pareto optimality.
 \end{example}
 
-% In the previous formulation of nescience, the connection between perfect knowledge and
-% randomness followed from the requirement that surfeit be zero. In the present bi-objective
-% formulation, that conclusion is no longer immediate from perfect knowledge alone. What perfect
-% knowledge now requires is zero mismodel, that is, optimality of the description with respect to the
-% target representation, not necessarily incompressibility of the description as a finite string.
+These numerical values are illustrative rather than computed Kolmogorov complexities. The example distinguishes structural perfection, negligible defects, and Pareto optimality relative to the hypotheses under consideration.
 
-% Accordingly, perfect knowledge should now be interpreted primarily as \emph{algorithmic
-% optimality relative to a representational framework}, rather than as randomness in the strict sense.
-% If one additionally imposes a zero-surplus condition on the description, then the earlier link with
-% incompressibility may be recovered. But this stronger conclusion no longer follows from the
-% definition of nescience itself.
+% Section: Ideal objective vector
+
+\subsection*{Ideal Objective Vector}
+\label{sec:ideal_objective_vector}
+
+In multi-objective optimization, the \emph{ideal objective vector} \index{Ideal vector} is the point in objective space whose coordinates are the minimum attainable values of the individual objectives. Although these minima need not be attainable simultaneously, the ideal vector provides a natural reference for evaluating solutions and interpreting the Pareto frontier.
+
+\begin{definition}
+Let $e\in\mathcal E$ be an entity such that $\mathcal H_e\neq\varnothing$. We define the \emph{ideal objective vector} of the science problem for $e$ as
+\[
+\mathbf z_e^I = \left(\min_{(r,d)\in\mathcal H_e}\mu(e,r), \min_{(r,d)\in\mathcal H_e}\nu(r,d) \right).
+\]
+\end{definition}
+
+Since miscoding and mismodel are non-negative integer-valued quantities, both minima exist whenever the hypothesis space is nonempty. Consequently, the ideal vector is well defined, although it need not correspond to any feasible hypothesis.
+
+An important property of the science problem is that, for knowable entities, the ideal objective vector lies within a constant-size distance of the origin.
+
+\begin{proposition}
+Let $e\in\mathcal E$ be an entity admitting at least one admissible representation. Then
+\[
+\mathbf z_e^I=(O(1),O(1)).
+\]
+\end{proposition}
+
+\begin{proof}
+Let $\bar r\in\overline{\mathcal R}_e$ be an admissible representation of $e$, and let $d^\star\in\mathcal D_{\bar r}^\star$ be a minimal description of $\bar r$. By the properties of miscoding and mismodel, $\mu(e,\bar r)=O(1)$, $\nu(\bar r,d^\star)=O(1)$. Since $(\bar r,d^\star)\in\mathcal H_e$, the coordinates of the ideal objective vector cannot exceed the corresponding values of this hypothesis. Therefore,
+\[
+0\leq z_{e,\mu}^I\leq\mu(e,\bar r)=O(1),
+\]
+and
+\[
+0\leq z_{e,\nu}^I\leq\nu(\bar r,d^\star)=O(1).
+\]
+Hence $\mathbf z_e^I=(O(1),O(1))$.
+\end{proof}
+
+This result establishes that the ideal objective vector of a knowable entity differs from the origin by at most constant-size coding overhead. Nevertheless, the two points need not coincide. The origin $(0,0)$ remains a universal lower-bound reference, representing the complete absence of both defects.
+
+A hypothesis that attains both coordinates of the ideal objective vector is necessarily Pareto optimal. However,
+such a hypothesis need not exist, since the individual minima may be attained by different hypotheses. Moreover, attaining the ideal objective vector should not be confused with perfect knowledge, which is defined structurally in terms of admissible representations and minimal descriptions.
+
+Finally, the absolute values of miscoding and mismodel are not universally bounded above. When bounded measures are required, the corresponding relative versions introduced in Chapters \ref{chap:Miscoding} and \ref{chap:Mismodel} may be considered.
+
+% Section: Trade-offs
+
+\subsection*{Trade-offs}
+\label{sec:nescience_tradeoffs}
+
+The science problem seeks to minimize miscoding and mismodel simultaneously. However, this long-term objective does not imply that every individual step of scientific inquiry should improve both quantities. For example, adopting a better representation may initially increase mismodel because existing descriptions are no longer adequate. Such temporary deterioration may be justified if it opens the way to hypotheses with lower overall nescience. Understanding the trade-offs between miscoding and mismodel is therefore essential to understanding how scientific knowledge can progress.
+
+A natural way to quantify the relationship between miscoding and mismodel is to compare their changes between two hypotheses.
+
+\begin{definition}
+Let $e\in\mathcal E$ be an entity, and let $\mathbf{x}_1=(r_1,d_1)$ and $\mathbf{x}_2=(r_2,d_2)$ be two hypotheses in $\mathcal H_e$ such that $\mu(e,r_1)\neq\mu(e,r_2)$. We define the \emph{nescience trade-off ratio} \index{Trade-off ratio} between these hypotheses as
+\[
+\Delta_{\nu\mu}(\mathbf{x}_1,\mathbf{x}_2) = \frac{\Delta_\nu(\mathbf{x}_1,\mathbf{x}_2)}{\Delta_\mu(\mathbf{x}_1,\mathbf{x}_2)} 
+= \frac{\nu(r_2,d_2)-\nu(r_1,d_1)} {\mu(e,r_2)-\mu(e,r_1)}.
+\]
+\end{definition}
+
+The trade-off ratio measures the change in mismodel per unit change in miscoding. A positive value indicates that both objectives change in the same direction, while a negative value indicates that one improves at the expense of the other. A zero value means that mismodel remains unchanged despite a change in miscoding. When miscoding remains unchanged, the ratio is undefined. In that case, a strict difference in mismodel establishes dominance directly.
+
+The ratio is symmetric:
+\[
+\Delta_{\nu\mu}(\mathbf{x}_1,\mathbf{x}_2) = \Delta_{\nu\mu}(\mathbf{x}_2,\mathbf{x}_1).
+\]
+It therefore describes the relationship between two objective vectors, but not the direction of improvement.
+
+A negative trade-off ratio does not necessarily imply that either hypothesis is Pareto optimal. Both hypotheses may be dominated by a third alternative. However, for distinct objective vectors belonging to the Pareto frontier, the ratio must always be negative.
+
+\begin{proposition}
+Let $\mathbf{x}_1,\mathbf{x}_2\in\mathcal P_e$ be Pareto-optimal hypotheses with distinct objective vectors.
+Then 
+\[
+\Delta_{\nu\mu}(\mathbf{x}_1,\mathbf{x}_2) < 0.
+\]
+\end{proposition}
+
+\begin{proof}
+Suppose, without loss of generality, that
+\[
+\mu(e,r_1)<\mu(e,r_2).
+\]
+Since both hypotheses are Pareto optimal, we must have
+\[
+\nu(r_1,d_1)>\nu(r_2,d_2).
+\]
+Otherwise, $\mathbf{x}_1$ would dominate $\mathbf{x}_2$. Consequently, the numerator of the trade-off ratio is
+negative while its denominator is positive, and therefore
+\[
+\Delta_{\nu\mu}(\mathbf{x}_1,\mathbf{x}_2)<0.
+\]
+If the miscoding values were equal, the hypothesis with smaller mismodel would dominate the other, unless their objective vectors were identical. The same reasoning applies to equal mismodel values.
+\end{proof}
+
+This proposition establishes that distinct points on the Pareto frontier necessarily represent conflicting objectives. A reduction in miscoding along the frontier must be accompanied by an increase in mismodel, and conversely. The trade-off ratio quantifies this exchange, although its magnitude depends on the particular points being compared.
+
+The unrestricted science problem has an additional property arising from the existence of minimal descriptions.
+Recall that every representation admits at least one minimal exact description, and that such descriptions
+have negligible mismodel. This places a uniform bound on the descriptive component of every Pareto-optimal hypothesis.
+
+\begin{proposition}
+\label{prop:pareto_mismodel_bound}
+There exists a constant $c_\nu$, independent of the entity and hypothesis, such that every $(r,d)\in\mathcal P_e$ satisfies
+\[
+\nu(r,d)\leq c_\nu.
+\]
+\end{proposition}
+\begin{proof}
+Let $(r,d)\in\mathcal P_e$ be a Pareto-optimal hypothesis, and choose a minimal description $d^\star\in\mathcal D_r^\star$. By the definitions of descriptive deficiency and surplus,
+\[
+d_D(r,d^\star)\leq K(d^\star\mid d^\star),
+\]
+and
+\[
+s_D(r,d^\star)\leq K(d^\star\mid d^\star).
+\]
+Since a fixed program can reproduce its conditional input, there exists a constant $c_\nu$ such that
+\[
+K(d^\star\mid d^\star)\leq c_\nu
+\]
+for every description $d^\star$. Hence
+\[
+\nu(r,d^\star)\leq c_\nu.
+\]
+Suppose now that $\nu(r,d)>c_\nu$. Then
+\[
+\nu(r,d^\star)<\nu(r,d).
+\]
+Since the representation is unchanged, the hypotheses $(r,d^\star)$ and $(r,d)$ have identical miscoding.
+Therefore $(r,d^\star)$ dominates $(r,d)$, contradicting Pareto optimality.
+
+Consequently, $\nu(r,d)\leq c_\nu$.
+\end{proof}
+
+This proposition shows that the theoretical Pareto frontier is confined to a bounded region in the mismodel direction, even though mismodel itself is not universally bounded over all hypotheses. This result reveals an important distinction between descriptive adequacy and scientific understanding. Every finite representation admits a minimal description, regardless of how poorly it represents the underlying entity. Consequently, negligible mismodel alone does not guarantee adequate knowledge of that entity: a description may reproduce an incomplete, misleading, or erroneous representation without correcting its defects. This observation highlights the fundamental importance of representational adequacy in scientific understanding. No description, however accurate or economical, can compensate for a representation that fundamentally mischaracterizes the entity under investigation. Nevertheless, an adequate representation alone does not constitute complete understanding: it must also be accompanied by an adequate description. Scientific knowledge therefore requires addressing both
+sources of epistemic error.
+
+% Section: Local Pareto Optimality
+
+\subsection*{Local Pareto Optimality}
+\label{sec:local_pareto_optimality}
+
+Pareto optimality is a global property: a hypothesis is Pareto optimal if no other hypothesis about the same entity dominates it. However, scientific inquiry often proceeds through limited modifications of existing representations and descriptions. This motivates a local notion of Pareto optimality, in which hypotheses are compared only with alternatives that are sufficiently close in algorithmic terms.
+
+To formalize this notion, we measure the proximity between two hypotheses through the algorithmic information required to transform their representations and descriptions into one another.
+
+\begin{definition}
+Let $e\in\mathcal E$ be an entity, let $(r,d)\in\mathcal H_e$ be a hypothesis, and let $\varepsilon>0$. We define the \emph{algorithmic neighborhood} \index{Algorithmic neighborhood} of $(r,d)$ relative to $e$ as
+\[
+\mathcal N^\varepsilon_e(r,d) = \left\{ (r',d') \in\mathcal H_e : 
+K(r'\mid r)+K(r\mid r')\leq\varepsilon \land K(d'\mid d)+K(d\mid d')\leq\varepsilon \right\}.
+\]
+\end{definition}
+
+Two hypotheses belong to the same algorithmic neighborhood when their representations and descriptions can be transformed into one another using programs of bounded length. Requiring transformations in both directions ensures that proximity accounts for the information needed both to introduce and to reverse a modification.
+
+The neighborhood is restricted to $\mathcal H_e$, so every hypothesis under consideration concerns the same entity. Nevertheless, algorithmic proximity does not necessarily imply semantic similarity. A short program may produce a substantial transformation, while a seemingly minor scientific modification may require considerable additional information. Moreover, program length measures the information needed to specify a transformation, not the computational effort required to execute it.
+
+We can now introduce local Pareto optimality.
+
+\begin{definition}
+Let $e\in\mathcal E$ be an entity, $(r,d)\in\mathcal H_e$ a hypothesis, and $\varepsilon>0$. We say that $(r,d)$ is \emph{locally Pareto optimal} \index{Local Pareto optimal} with respect to $\varepsilon$ if no hypothesis in $\mathcal N^\varepsilon_e(r,d)$ dominates it.
+
+We denote the set of locally Pareto-optimal hypotheses by
+\[
+\mathcal P^{\mathrm{loc}(\varepsilon)}_e = \left\{(r,d)\in\mathcal H_e:
+\nexists(r',d')\in\mathcal N^\varepsilon_e(r,d) \text{ that dominates }(r,d) \right\}.
+\]
+\end{definition}
+
+A locally Pareto optimal hypothesis cannot be improved through a dominating alternative within its algorithmic neighborhood. This does not imply that its miscoding or mismodel is negligible, nor that better hypotheses do not exist elsewhere in the hypothesis space. Local Pareto optimality therefore expresses a restricted form of optimality, determined by the permitted algorithmic transformations.
+
+An important property of algorithmic neighborhoods is that they contain only finitely many hypotheses for any fixed radius.
+
+\begin{proposition}
+Let $e\in\mathcal E$, $(r,d)\in\mathcal H_e$, and $\varepsilon>0$. Then $\mathcal N^\varepsilon_e(r,d)$ is finite.
+\end{proposition}
+\begin{proof}
+If $(r',d')\in\mathcal N^\varepsilon_e(r,d)$, then, in particular $K(r'\mid r)\leq\varepsilon$ and $K(d'\mid d)\leq\varepsilon$. For a fixed input $r$, only finitely many programs have length at most $\varepsilon$. Consequently, only finitely many strings $r'$ can satisfy the first inequality.
+
+The same argument applies to descriptions: for a fixed input $d$, only finitely many strings $d'$ can satisfy
+the second inequality. Therefore, only finitely many representation-description pairs can belong to $\mathcal N_{\varepsilon,e}(r,d)$.
+\end{proof}
+
+This result shows that algorithmic neighborhoods provide finite subsets of the hypothesis space, even when $\mathcal H_e$ is infinite. However, their finiteness does not imply that their elements can be effectively identified, since conditional Kolmogorov complexity is generally not computable.
+
+Global and local Pareto optimality are closely related. A globally Pareto-optimal hypothesis must also be locally Pareto optimal, since restricting the comparison to a neighborhood cannot introduce a dominating alternative.
+
+\begin{proposition}
+\label{prop:global_implies_local_pareto_eps}
+Let $e\in\mathcal E$ and $\varepsilon>0$. Then
+\[
+\mathcal P_e \subseteq \mathcal P^{\mathrm{loc}(\varepsilon)}_e.
+\]
+\end{proposition}
+\begin{proof}
+Let $(r,d)\in\mathcal P_e$. By definition, no hypothesis in $\mathcal H_e$ dominates $(r,d)$.
+
+Since $\mathcal N^\varepsilon_e(r,d) \subseteq\mathcal H_e$, no hypothesis in its algorithmic neighborhood can
+dominate it either. Therefore, $(r,d)\in\mathcal P^{\mathrm{loc}(\varepsilon)}_e$.
+\end{proof}
+
+The converse does not generally follow. A hypothesis may be locally Pareto optimal even though another hypothesis outside its neighborhood dominates it. In such a case, the dominating alternative requires a transformation whose bidirectional algorithmic information exceeds the specified radius in at least one of the two components.
+
+\begin{example}
+A hypothesis about a physical phenomenon may be based on a particular collection of measurements and a mathematical description of those measurements. It may be locally Pareto optimal under small changes to its representation and description, while another hypothesis based on substantially different observations and a different descriptive framework achieves lower miscoding and mismodel. Whether these hypotheses are algorithmically close depends on the information required to transform their encodings, rather than merely on their scientific interpretation.
+\end{example}
+
+Local Pareto optimality also depends on the neighborhood radius. Increasing the radius enlarges the set of hypotheses against which a candidate is compared.
+
+\begin{proposition}
+Let $e\in\mathcal E$ and $0<\varepsilon_1\leq\varepsilon_2$. Then
+\[
+\mathcal P^{\mathrm{loc}(\varepsilon_2)}_e \subseteq \mathcal P^{\mathrm{loc}(\varepsilon_1)}_e.
+\]
+\end{proposition}
+\begin{proof}
+For every $(r,d)\in\mathcal H_e$, the definition of algorithmic neighborhood gives
+\[
+\mathcal N^{\varepsilon_1}_e(r,d) \subseteq \mathcal N^{\varepsilon_2}_e(r,d).
+\]
+If no hypothesis in the larger neighborhood dominates $(r,d)$, then no hypothesis in the smaller neighborhood can dominate it. Therefore, local Pareto optimality at radius $\varepsilon_2$ implies local Pareto optimality at radius $\varepsilon_1$.
+\end{proof}
+
+This proposition shows that local Pareto optimality becomes more demanding as the neighborhood radius increases. A hypothesis that is locally Pareto optimal for a large radius is protected against a broader collection of dominating alternatives.
+
+In fact, global Pareto optimality can be characterized entirely in terms of local Pareto optimality over all possible radii.
+
+\begin{proposition}
+Let $e\in\mathcal E$ be an entity. Then
+\[
+\mathcal P_e = \bigcap_{\varepsilon>0} \mathcal P^{\mathrm{loc}(\varepsilon)}_e.
+\]
+\end{proposition}
+
+\begin{proof}
+By Proposition \ref{prop:global_implies_local_pareto_eps}, every globally Pareto-optimal hypothesis is locally
+Pareto optimal for every $\varepsilon>0$. Hence
+\[
+\mathcal P_e \subseteq \bigcap_{\varepsilon>0} \mathcal P^{\mathrm{loc}(\varepsilon)}_e.
+\]
+Conversely, suppose that $(r,d)\notin\mathcal P_e$. Then there exists a hypothesis $(r',d')\in\mathcal H_e$ that dominates $(r,d)$.
+
+Since $r,r',d,d'$ are finite binary strings, their conditional Kolmogorov complexities are finite. Therefore, we can choose $\varepsilon>0$ such that
+\[
+K(r'\mid r)+K(r\mid r')\leq\varepsilon
+\]
+and
+\[
+K(d'\mid d)+K(d\mid d')\leq\varepsilon.
+\]
+It follows that
+\[
+(r',d')\in\mathcal N_{\varepsilon,e}(r,d).
+\]
+Since $(r',d')$ dominates $(r,d)$, the hypothesis $(r,d)$ is not locally Pareto optimal for this radius. Hence
+\[
+(r,d)\notin
+\bigcap_{\varepsilon>0} \mathcal P^{\mathrm{loc}(\varepsilon)}_e.
+\]
+Combining both inclusions establishes the result.
+\end{proof}
+
+This proposition establishes that global Pareto optimality is equivalent to local Pareto optimality at every algorithmic scale. A hypothesis that is locally Pareto optimal only for a restricted range of radii may still be dominated by a more distant alternative. By contrast, a hypothesis that remains locally Pareto optimal for arbitrarily large radii must be globally Pareto optimal.
+
+Local Pareto optimality therefore provides a scale dependent characterization of the science problem. It distinguishes the absence of improvements within bounded algorithmic transformations from the absence of improvements throughout the entire hypothesis space. This distinction is important when examining the structure of scientific inquiry, since the lack of a nearby dominating hypothesis does not establish that the limits of scientific understanding have been reached.
 
 %
 % Scalar Nescience
 %
-
-\section{Scalar Nescience}
-\label{sec:scalar_nescience}
 
 % {\color{red} 
 % A \emph{scientific method}\index{Scientific method} (see Appendix \ref{chap:Philosophy}) refers to any algorithm or computable procedure capable of
@@ -525,132 +488,153 @@ further reduction of miscoding is possible without worsening mismodel, and vice 
 % the quality of the descriptions built upon them.
 % }
 
-From a mathematical perspective, any hypothesis in the Pareto frontier is a valid solution to the
-Science Problem. In this formal sense, the problem is solved once the full set of Pareto optimal
-hypotheses has been identified. In scientific practice, however, this is often not sufficient. Researchers
-usually seek a single hypothesis that is most appropriate for the specific goals, constraints, and
-standards of the investigation.
 
-In multi-objective optimization, a \emph{decision maker} (see Section
-\ref{sec:multiobjective_optimization}) is an entity, either a human agent, a set of explicit criteria,
-or an algorithm, that selects one hypothesis from the Pareto frontier. The role of the decision maker
-is to introduce a preference relation on the set of feasible hypotheses, thereby transforming the
-multi-objective problem into a single-objective selection problem.
+\section{Scalar Nescience}
+\label{sec:scalar_nescience}
 
-Within the present formulation of the theory of nescience, the decision maker evaluates hypotheses
-through their miscoding and mismodel. This reflects the fact that ignorance now has two primary
-components: representational error and descriptive error.
+From a mathematical perspective, any Pareto-optimal hypothesis is a valid solution to the Science Problem. In scientific practice, however, the objective is generally not to identify the entire Pareto set, but to find a single hypothesis that best satisfies the goals, constraints, and standards of the investigation.
+
+In multi-objective optimization, a decision maker\index{Decision maker} (see Section \ref{sec:multiobjective_optimization}) expresses preferences among alternative solutions. These preferences can be represented by a scalarization function that assigns a numerical value to each objective vector, thereby reducing the problem of selecting a hypothesis to a single-objective optimization problem.
 
 \begin{definition}
-Let $(r,d) \in \mathcal{H}$ be a hypothesis. A \emph{decision maker}\index{Science decision maker} for the science problem is a function
+Let $V:\mathbb{R}_{\geq 0}^2\to\mathbb{R}$ be a \emph{scalarization function}\index{Scalarization function}. We define the \emph{scalar nescience}\index{Scalar nescience} induced by $V$ for an entity $e\in\mathcal E$ and a hypothesis $(r,d)\in\mathcal H_e$ as
 \[
-V : \mathbb{R}_{\geq 0}^2 \to \mathbb{R}
-\]
-that assigns to each pair $\bigl(\mu(e, r),\nu(r, d)\bigr)$ the real value
-\[
-V\bigl(\mu(e, r), \nu(r, d)\bigr).
+N_V(e,r,d) = V\bigl(\mu(e,r),\nu(r,d)\bigr).
 \]
 \end{definition}
 
-The function $V$ is often called a \emph{value function}\index{Value function} or
-\emph{utility function}\index{Utility function}. It encodes the preferences of the scientist or the
-research community. Depending on the application, $V$ may treat miscoding and mismodel
-symmetrically, may privilege one of them, or may penalize imbalances between them.
+The function $V$, also called a \emph{value function} \index{Value function}, expresses the preferences of the decision maker. Depending on the objectives of the investigation, it may treat miscoding and mismodel symmetrically, assign greater importance to one of them, or penalize imbalances between the two.
 
-This formalism enables the selection of a single hypothesis from the Pareto frontier. It also makes
-explicit that the final choice of a hypothesis is not determined by the structural theory alone, but
-also by the practical aims of the investigation.
+The corresponding scalar optimization problem is
+\[
+\min_{(r,d)\in\mathcal H_e} N_V(e,r,d).
+\]
 
-A basic requirement for a reasonable decision maker is monotonicity: if one hypothesis is no worse
-in either objective and strictly better in at least one, then it should receive a strictly better score.
+A desirable property of a scalarization function is that it should not select a hypothesis dominated by another feasible alternative. The following proposition establishes a sufficient condition for this property.
 
 \begin{proposition}
 \label{prop:strictly_increasing_dm_pareto}
-Let $V : \mathbb{R}_{\geq 0}^2 \to \mathbb{R}$ be strictly increasing in each coordinate.
-If $(r^\star, d^\star)$ is a global minimizer of
+Let $e\in\mathcal E$ be an entity and let $V:\mathbb{R}_{\geq 0}^2\to\mathbb{R}$ be strictly increasing in each coordinate. Then every global minimizer of
 \[
-V\bigl(\mu(e, r^\star),\nu_r(r^\star, d^\star)\bigr)
+\min_{(r,d)\in\mathcal H_e} V\bigl(\mu(e,r),\nu(r,d)\bigr)
 \]
-over the feasible region $\mathcal{H}$, then $(r^\star,d^\star)$ is Pareto optimal.
+is Pareto optimal.
 \end{proposition}
-
 \begin{proof}
-Assume, for contradiction, that $(r^\star,d^\star)$ is not Pareto optimal. Then there exists
-$(r',d') \in \mathcal{H}$ such that
+Let $(r^\star,d^\star)$ be a global minimizer. Suppose, for contradiction, that it is not Pareto optimal. Then there exists another hypothesis $(r',d')\in\mathcal H_e$ such that $\mu(e,r')\leq\mu(e,r^\star)$, and $\nu(r',d')\leq\nu(r^\star,d^\star)$, with at least one strict inequality. Since $V$ is strictly increasing in each coordinate, we obtain
 \[
-\mu(e, r') \leq \mu(e, r^\star), \qquad \nu(r', d') \leq \nu(r^\star, d^\star),
+V\bigl(\mu(e,r'),\nu(r',d')\bigr) < V\bigl(\mu(e,r^\star),\nu(r^\star,d^\star)\bigr),
 \]
-with at least one strict inequality. Since $V$ is strictly increasing in each coordinate, it follows that
-\[
-V\bigl(\mu(e, r'), \nu(r', d')\bigr) < V\bigl(\mu(e, r^\star), \nu(r^\star, d^\star)\bigr),
-\]
-contradicting the optimality of $(r^\star,d^\star)$. Therefore $(r^\star,d^\star)$ must be Pareto optimal.
+contradicting the optimality of $(r^\star,d^\star)$. Therefore $(r^\star,d^\star)$ is Pareto optimal.
 \end{proof}
 
-This proposition is useful because it unifies many practical optimization methods under a single
-principle: any scalarization that is strictly increasing in both miscoding and mismodel can only
-select Pareto optimal hypotheses.
+This proposition shows that any strictly increasing scalarization preserves the principle of Pareto dominance: a dominated hypothesis cannot minimize scalar nescience. However, the minimizer need not be unique, and different scalarization functions may select different Pareto-optimal hypotheses.
 
-Unlike miscoding and mismodel, for which the Tchebycheff criterion provides a natural aggregation rule, the theory of nescience does not prescribe a unique scalarization. This is because representational and descriptive errors correspond to distinct scientific activities, and different research contexts may legitimately prioritize them differently.
+Unlike miscoding and mismodel, which aggregate their respective deficiency and surplus components through the maximum, scalar nescience does not have a uniquely prescribed aggregation rule. Representational and descriptive errors concern different aspects of scientific understanding, and their relative importance may depend on the objectives of the investigation.
 
-Consequently, scalar nescience should be regarded as a decision-making layer built on top of the structural bi-objective formulation. Different decision makers may therefore be appropriate in different applications.
+Scalar nescience should therefore be understood as a decision-making criterion built upon the more fundamental bi-objective formulation. The theory specifies what constitutes representational and descriptive error, while the scalarization function determines how these errors are balanced when selecting a hypothesis.
 
-% Subsection: Global Criterion
+% Section: Global Criterion
 
 \subsection*{Global Criterion}
+\label{sec:nescience_global_criterion}
 
-The global criterion method (see Section \ref{sub:multiobjective_global_criterion}) selects a
-hypothesis by minimizing the distance from its objective vector to the ideal vector. In the present
-case, the ideal vector is the origin $(0,0)$.
+The global criterion method (see Section \ref{sub:multiobjective_global_criterion}) selects a hypothesis by minimizing the distance between its objective vector and the ideal objective vector. Recall that, for an entity $e\in\mathcal E$, the ideal vector is
+\[
+\mathbf z_e^I = \bigl(z_{e,\mu}^I,z_{e,\nu}^I\bigr),
+\]
+where each coordinate represents the minimum attainable value of the corresponding objective function. Although these minima need not be attained simultaneously, the ideal vector provides a natural reference for evaluating competing hypotheses.
 
-A natural version of the global criterion is obtained by using the Euclidean distance:
+A general formulation of the global criterion uses the $L_p$ distance to the ideal vector:
 \begin{align*}
-& \text{minimize} \quad \sqrt{\mu(e, r)^2 + \nu(r, d)^2} \\
-& \text{subject to} \quad (r,d) \in \mathcal{H}
+& \text{minimize} \quad \left( \bigl(\mu(e,r)-z_{e,\mu}^I\bigr)^p
+  + \bigl(\nu(r,d)-z_{e,\nu}^I\bigr)^p \right)^{1/p}\\
+& \text{subject to} \quad (r,d)\in\mathcal H_e, \qquad 1\leq p<\infty.
 \end{align*}
 
-This scalarization is geometrically intuitive: it chooses the hypothesis whose pair $\bigl(\mu(e, r),\nu(r, d)\bigr)$ is closest to perfect knowledge. It treats both objectives symmetrically and penalizes hypotheses that are far from the ideal point in either coordinate.
+The parameter $p$ determines how deviations from the ideal vector are aggregated. For $p=1$, the criterion minimizes their sum, while $p=2$ corresponds to the Euclidean distance. Larger values of $p$ place increasing emphasis on the largest deviation, thereby discouraging highly unbalanced solutions.
 
-More generally, one may use an $L_p$ distance to the ideal vector:
+For every finite $p\geq1$, the global criterion is strictly increasing in both miscoding and mismodel. Consequently, every global minimizer is Pareto optimal, as established by Proposition \ref{prop:strictly_increasing_dm_pareto}.
+
+In the theory of nescience, the ideal objective vector is generally unknown. Moreover, since miscoding and mismodel are defined through conditional Kolmogorov complexity, their minimum values need not be exactly zero, even for admissible representations and minimal descriptions. Nevertheless, for every knowable entity, the coordinates of the ideal vector are bounded by constants independent of the hypothesis:
+\[
+\mathbf z_e^I=(O(1),O(1)).
+\]
+This motivates replacing the ideal vector by the origin, which is a universal lower bound for both objectives. The resulting \emph{origin-based global criterion} is
 \begin{align*}
-& \text{minimize} \quad \left( \mu(e, r)^p + \nu(r, d)^p \right)^{1/p} \\
-& \text{subject to} \quad (r,d) \in \mathcal{H},
-\qquad 1 \leq p < \infty
-\end{align*}
-The Tchebycheff method is a particular case of the global criterion in the limit $p \to \infty$,
-\begin{align*}
-& \text{minimize} \quad \max\{\mu(e, r),\nu(r, d)\} \\
-& \text{subject to} \quad (r,d) \in \mathcal{H}^\ast \times D.
+& \text{minimize} \quad \left( \mu(e,r)^p+\nu(r,d)^p \right)^{1/p} \\
+& \text{subject to} \quad (r,d)\in\mathcal H_e, \qquad 1\leq p<\infty.
 \end{align*}
 
-The case $p=\infty$ is particularly interesting in the theory of nescience, because it directly
-penalizes imbalance and selects hypotheses that control the worst of the two errors.
+This scalarization measures the distance from the complete absence of representational and descriptive error. It
+does not require knowledge of the ideal objective vector and preserves Pareto optimality for every finite $p\geq1$.
+
+An important property is that replacing the ideal vector with the origin introduces only a bounded difference between the corresponding theoretical distance values.
+
+\begin{proposition}
+\label{prop:origin_global_criterion_bound}
+Let $e\in\mathcal E$ be a knowable entity, and let $1\leq p<\infty$. Define
+\[
+V_I(r,d) = \left(\bigl(\mu(e,r)-z_{e,\mu}^I\bigr)^p + \bigl(\nu(r,d)-z_{e,\nu}^I\bigr)^p \right)^{1/p}
+\]
+and
+\[
+V_0(r,d) = \left(\mu(e,r)^p+\nu(r,d)^p \right)^{1/p}.
+\]
+Then, for every $(r,d)\in\mathcal H_e$,
+\[
+0 \leq V_0(r,d)-V_I(r,d) \leq \|\mathbf z_e^I\|_p=O(1).
+\]
+\end{proposition}
+\begin{proof}
+Let $\mathbf y=\bigl(\mu(e,r),\nu(r,d)\bigr)$. By definition of the ideal objective vector, $\mathbf y\geq\mathbf z_e^I\geq(0,0)$ componentwise. Therefore,
+\[
+\|\mathbf y-\mathbf z_e^I\|_p \leq\|\mathbf y\|_p.
+\]
+Moreover, by the triangle inequality,
+\[
+\|\mathbf y\|_p \leq \|\mathbf y-\mathbf z_e^I\|_p + \|\mathbf z_e^I\|_p.
+\]
+Combining these inequalities gives
+\[
+0 \leq V_0(r,d)-V_I(r,d) \leq\|\mathbf z_e^I\|_p.
+\]
+Since both coordinates of the ideal vector are $O(1)$ for knowable entities, its $L_p$ norm is also $O(1)$.
+\end{proof}
+
+Thus, using the origin instead of the ideal vector changes the theoretical global criterion by at most a constant-size amount. However, this does not guarantee that the two criteria select the same hypothesis.
+
+For $p=1$, the relationship is particularly simple:
+\[
+V_I(r,d) = V_0(r,d)-z_{e,\mu}^I-z_{e,\nu}^I.
+\]
+Since the difference is constant across hypotheses, both criteria induce exactly the same ordering and
+have the same global minimizers.
+
+For $p>1$, replacing the ideal vector by the origin may change the ordering of hypotheses, as the following
+example illustrates.
 
 \begin{example}
-Consider the following three Pareto optimal objective vectors:
-\[
-A=(1,7), \qquad B=(7,1), \qquad C=(4,4).
-\]
-A Euclidean global criterion selects $C$, since
-\[
-\sqrt{1^2+7^2}=\sqrt{50}, \qquad \sqrt{7^2+1^2}=\sqrt{50}, \qquad \sqrt{4^2+4^2}=\sqrt{32}.
-\]
-This illustrates the main feature of the global criterion: it favors hypotheses that achieve a balanced
-reduction of both miscoding and mismodel, even when the more extreme points are also Pareto
-optimal.
+Consider a science problem whose Pareto frontier consists of two objective vectors $A=(2,8)$ and $B=(6,5)$. The ideal objective vector is $\mathbf z_e^I=(2,5)$. Using the Euclidean distance to the ideal vector gives $V_I(A)=3$ and $V_I(B)=4$, so the global criterion selects $A$. Using the origin instead gives $V_0(A)=\sqrt{68}$ and $V_0(B)=\sqrt{61}$, so the origin-based criterion selects $B$. Both hypotheses are Pareto optimal.
 \end{example}
 
-The main drawback of the global criterion is that it does not recover all Pareto optimal hypotheses.
-In particular, it tends to favor centrally located trade-offs and may exclude hypotheses that are
-highly desirable because they are exceptionally good in one dimension.
+The example shows that changing the reference point may alter the preferred trade-off without violating Pareto optimality.
 
-Both miscoding and mismodel are absolute quantities measured in
-bits, and they need not share the same numerical scale for a given class of problems. Consequently,
-when a global criterion is used in practice, it is often advisable either to normalize the objectives
-explicitly or to replace them by their relative versions:
-\[
-\mu^{\mathrm{rel}}(e, r), \qquad \nu^{\mathrm{rel}}(r, d).
-\]
+In the limit $p\to\infty$, the origin-based global criterion becomes the Tchebycheff method\index{Tchebycheff method}:
+\begin{align*}
+& \text{minimize} \quad \max\{\mu(e,r),\nu(r,d)\}\\
+& \text{subject to} \quad (r,d)\in\mathcal H_e.
+\end{align*}
+
+This criterion minimizes the largest of the two defects. It is particularly interesting in the theory of nescience because it follows the same maximum-based aggregation principle used to define miscoding and mismodel from their respective deficiency and surplus components. Unlike the finite-$p$ criteria, however, the Tchebycheff criterion is not strictly increasing in both coordinates. Consequently, a dominated hypothesis may attain the same scalar value as a Pareto-optimal hypothesis.
+
+The global criterion offers a geometrically intuitive method for selecting a hypothesis, but it does not
+generally recover every Pareto-optimal solution. Different values of $p$ may favor different regions
+of the Pareto frontier, and replacing the ideal vector by the origin may further influence the selection.
+
+Furthermore, although miscoding and mismodel are both measured in bits, their numerical ranges may differ substantially. Consequently, an unweighted global criterion may implicitly assign greater importance to one objective. This can be addressed through fixed positive scaling factors or by considering the corresponding relative measures introduced in Chapters \ref{chap:Miscoding} and \ref{chap:Mismodel}. Such transformations must be interpreted carefully, since changing the objectives may also change their ordering and ideal values.
+
+The origin-based global criterion is therefore a natural scalarization for the theory of nescience: it avoids dependence on an unknown ideal vector, preserves Pareto optimality for finite $p$, and differs from the ideal-vector criterion by at most constant-size coding overhead.
 
 % Subsection: Weighted Sum Method
 

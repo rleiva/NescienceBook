@@ -154,7 +154,7 @@ One possible response to the limitation discussed in Example \ref{ex:shannon_enc
 Given a finite string $r$, the oracle determines whether $r$ contains sufficient information to reconstruct a unique entity without additional input. If so, the oracle internally associates $r$ with that entity; otherwise, the string is deemed non-representational.
 
 \begin{definition}
-Let \(\mathcal{O}_{\mathcal{E}}\) be a representation oracle over the set of entities \(\mathcal{E}\), with reconstruction function
+Let \(\mathcal{O}_{\mathcal{E}}\) be a representation oracle over the set of entities \(\mathcal{E}\), with  reconstruction function
 \(\delta_{\mathcal O} : \mathcal{B}^\ast \rightharpoonup \mathcal{E}\).
 We define the set of \emph{decodable representations}\index{Decodable representations} of the oracle as
 \[
@@ -975,7 +975,7 @@ In some domains with composed by an infinite collection of entities, such as mat
 
 \begin{example}
 A paradigmatic example of an entity that requires infinite refinement of its representations is
-Chaitin’s halting probability \(\Omega\).
+Chaitin's halting probability \(\Omega\).
 Fix a universal prefix-free Turing machine \(U\), and define
 \[
 \Omega \;=\; \sum_{p \text{ halts}} 2^{-|p|},
@@ -1409,606 +1409,766 @@ As in the case of the set of admissible representations $\bar{\mathcal{R}}_{\mat
 When the set of entities is clear from the context, we denote the set of representations simply by $\mathcal{R}$.
 \end{notation}
 
-Strings that do not belong to $\mathcal{R}_{\mathcal{E}}$, that is, strings that do not contain information about any entity in $\mathcal{E}$, correspond to targetless representations\index{Targetless representations}, which are explicitly allowed within the theory of nescience (see Sections~\ref{sec:targetless_representations} and~\ref{sec:scientific_representation}).
+Strings that do not belong to $\mathcal{R}_{\mathcal{E}}$, that is, strings that do not contain information about any entity in $\mathcal{E}$, correspond to targetless representations\index{Targetless representations}, which are explicitly allowed within the theory of nescience (see \ref{sec:scientific_representation}).
 
 %
 % Section: Effective Representations
 %
 
 \section{Effective Representations}
+\label{sec:effective_representations}
 
-The set of representations $\mathcal{R}$ is not accessible in practice, since it depends both on the true structure of the entities under investigation and on the Oracle's unknown internal reconstruction function. For this reason, scientific work cannot proceed directly with $\mathcal{R}$, but instead relies on a further level of approximation. We therefore introduce the set $\hat{\mathcal{R}} \subseteq \mathcal{B}^\ast$, consisting of candidate strings that constitute the representations currently available within scientific practice. The elements of $\hat{\mathcal{R}}$ are called \emph{effective representations}: finite descriptions that can be formulated, communicated, and manipulated within existing scientific frameworks, and that are taken within a given scientific context to represent particular entities, without any guarantee of correctness or completeness. Scientific progress can then be understood as the ongoing evolution of the set of effective representations $\hat{\mathcal{R}}$, whose elements reflect the representational commitments adopted within scientific practice at a given time. In favorable cases, these commitments may come to align more closely with the underlying admissible representations, but no such alignment is built into the definition.
+The set of representations $\mathcal{R}$ is not accessible in practice, since it depends both on the true structure of the entities under investigation and on the unknown internal reconstruction functions of representation oracles. For this reason, scientific work cannot proceed directly with $\mathcal{R}$, but instead relies on a further level of approximation.
+
+We therefore introduce the set $\hat{\mathcal{R}} \subseteq \mathcal{B}^\ast$, consisting of candidate strings that constitute the representations available within scientific practice. The elements of $\hat{\mathcal{R}}$ are called \emph{effective representations}: finite binary strings that can be formulated, communicated, and manipulated within existing scientific frameworks, and that are taken within a given scientific context to represent particular entities, without any guarantee of correctness or completeness.
+
+The distinction between representations and effective representations is fundamental. Whereas $\mathcal{R}$ characterizes the strings that contain genuine information about entities, $\hat{\mathcal{R}}$ records the strings that scientists have actually constructed, adopted, or investigated as representations. Consequently, effective representations need not belong to $\mathcal{R}$, and their association with particular entities may be incorrect or ambiguous.
 
 \begin{definition}
 Let $\mathcal{E}$ be a set of entities. For each entity $e \in \mathcal{E}$, we denote by
 \[
-\hat{\mathcal{R}}_{e} \subseteq \mathcal{B}^\ast
+\hat{\mathcal{R}}_e \subseteq \mathcal{B}^\ast
 \]
-the set of \emph{effective representations}\index{Effective representation} of $e$, that is, the finite binary strings that are currently taken, within a given scientific context, to represent or approximate the entity $e$.
+the set of \emph{effective representations}\index{Effective representation} of $e$, that is, the finite binary strings that have been taken, within a given scientific context, to represent or approximate the entity $e$.
 \end{definition}
 
-The notion of effective representations allows us to distinguish between known and unknown entities, in a representational or effective sense.
+The set $\hat{\mathcal{R}}_e$ depends on scientific practice rather than on the reconstruction function of an oracle. Membership in $\hat{\mathcal{R}}_e$ therefore does not guarantee membership in $\mathcal{R}_e$. An effective representation may omit relevant information, contain extraneous information, or fail entirely to represent its intended entity.
+
+We can extend this notion from individual entities to the entire domain of investigation.
 
 \begin{definition}
-\label{def:unknown_entity}
-An entity $e \in \mathcal{E}$ is said to be \emph{effectively known}\index{Effectively known} if $\hat{\mathcal{R}}_e \ne \varnothing$, and \emph{effectively unknown}\index{Effectively unknown} otherwise.
-\end{definition}
-
-In the theory of nescience, the notions of \emph{effective knowledge} and \emph{knowability} refer to two distinct concepts. An entity is said to be \emph{effectively known} if at least one effective representation is available, that is, if $\hat{\mathcal{R}}_e \neq \varnothing$, whereas it is said to be \emph{knowable} if an admissible representation exists, i.e., if $\bar{\mathcal{R}}_e \neq \varnothing$ (see Definition~\ref{def:knowable_entity}). Effective knowledge therefore concerns whether some string is currently taken, within a scientific context, to represent the entity, while knowability concerns whether the entity admits a fully adequate representation in principle.
-
-A common situation in science is one in which an entity is knowable but still effectively unknown. In such cases, an admissible representation exists in principle, yet no effective representation has yet been assigned to the entity within current scientific practice. This situation is not exceptional; on the contrary, it characterizes the overwhelming majority of entities in most scientific domains and reflects the open-ended, exploratory nature of scientific inquiry. By contrast, a more problematic situation arises when an entity is unknowable, yet effectively known. In this case, scientific practice assigns representations to an entity even though no admissible representation exists for it, as the following example illustrates.
-
-\begin{example}
-\label{ex:luminiferous_ether}
-The luminiferous ether\index{Luminiferous ether} was a hypothetical medium postulated to explain the propagation of light as a wave. The Michelson--Morley experiment\index{Michelson-Morley experiment} provided strong empirical evidence against the existence of such a medium, and Einstein's theory of special relativity\index{Theory of relativity} later rendered the ether concept unnecessary by postulating the invariance of the speed of light in vacuum. As a result, the ether was abandoned as a physical entity.
-\end{example}
-
-The luminiferous ether provides an example of an effectively known entity that is treated here as unknowable. Within a historical scientific context, certain strings were taken to represent it, even though, under the present theory, no admissible representation is assumed to exist for it. In such cases, scientists may develop and refine strings that are taken to represent an entity despite the fact that those strings do not correspond to any admissible representation of it. Scientific effort is thus directed toward an entity for which, within the present framework, no admissible reconstruction by the oracle exists. Unfortunately, when one works only with finite and imperfect representations, there is in general no infallible practical criterion for recognizing such cases in advance.
-
-\begin{definition}
-Let $\mathcal{E}$ be a set of entities. We define the set of \emph{effectively known representations} for $\mathcal{E}$ as
+Let $\mathcal{E}$ be a set of entities. We define the set of \emph{effective representations} for $\mathcal{E}$ as
 \[
-\hat{\mathcal{R}}_{\mathcal{E}} = \bigcup_{e \in \mathcal{E}} \hat{\mathcal{R}}_{e}.
+\hat{\mathcal{R}}_{\mathcal{E}}
+=
+\bigcup_{e \in \mathcal{E}} \hat{\mathcal{R}}_e.
 \]
 \end{definition}
 
 \noindent
-The set $\mathcal{R}_{\mathcal{E}}$ characterizes the space of all representations that are possible in principle for the entities in $\mathcal{E}$, independently of whether they are currently available or known. By contrast, the set $\hat{\mathcal{R}}_{\mathcal{E}}$ consists only of those effective representations that have actually been discovered, constructed, or adopted within scientific practice at a given time. Thus, $\hat{\mathcal{R}}_{\mathcal{E}}$ should be understood as a time-dependent record of the strings that are taken, within a given scientific context, to represent entities in $\mathcal{E}$, whereas $\mathcal{R}_{\mathcal{E}}$ characterizes the representations that are possible in principle. The former is shaped by historical practice and may include incorrect or misleading assignments; the latter remains a conceptual and generally inaccessible object.
+The set $\mathcal{R}_{\mathcal{E}}$ characterizes the space of representations that are possible in principle for entities in $\mathcal{E}$, independently of whether they have been discovered or adopted. By contrast, $\hat{\mathcal{R}}_{\mathcal{E}}$ consists of those candidate representations that have entered scientific practice. The former is a theoretical and generally inaccessible object; the latter reflects the historical development of scientific inquiry.
 
 \begin{notation}
 When the set of entities is clear from the context, we denote the set of effective representations simply by $\hat{\mathcal{R}}$.
 \end{notation}
 
-We can also define the set of effectively known entities, that is, the set of those entities for which at least one effective representation exists.
+As in the case of extended representations, the sets of effective representations associated with different entities need not be disjoint. In particular, for two distinct entities $e_1,e_2 \in \mathcal{E}$, it is possible that
+\[
+\hat{\mathcal{R}}_{e_1}
+\cap
+\hat{\mathcal{R}}_{e_2}
+\neq \varnothing.
+\]
+This reflects the possibility that the same finite string may be assigned to different entities, either simultaneously or at different stages of scientific development (see Example~\ref{ex:infectious_agents}).
+
+% Subsection: Evolution of Effective Representations
+
+\subsection*{Evolution of Effective Representations}
+
+Scientific inquiry is a historical process. New representations are continually introduced, existing representations are refined, and previously accepted representations may be rejected or reinterpreted. It is therefore useful to make the temporal dependence of effective representations explicit.
+
+For the purposes of this book, we adopt a cumulative interpretation of effective representations: once a string has been considered a representation of an entity, its historical association with that entity is retained, even if the representation is subsequently rejected or superseded. This convention distinguishes the historical record of scientific inquiry from the smaller collection of representations that remain accepted or actively used at a particular time.
 
 \begin{definition}
-Given a set of entities $\mathcal{E}$ and the family of sets of effective representations $\{\hat{\mathcal{R}}_e\}_{e \in \mathcal{E}}$, we define the set of \emph{effectively known entities} as
+Let $\mathcal{E}$ be a set of entities and let $T$ be a linearly ordered set of time indices. For each $t \in T$, we define
 \[
-\hat{\mathcal{E}} = \{ e \in \mathcal{E} \mid \hat{\mathcal{R}}_e \neq \varnothing \}.
+S^t \subseteq \mathcal{E} \times \mathcal{B}^\ast
+\]
+as the set of all entity-representation associations established within scientific practice up to and including time $t$.
+
+We define the set of \emph{effective representations}\index{Effective representation} of an entity $e \in \mathcal{E}$ by time $t$ as
+\[
+\hat{\mathcal{R}}_e^t = \left\{r \in \mathcal{B}^\ast\;\middle|\;(e,r) \in S^t\right\}.
+\]
+The set of effective representations for the entire domain $\mathcal{E}$ by time $t$ is defined as
+\[
+\hat{\mathcal{R}}_{\mathcal{E}}^t = \bigcup_{e \in \mathcal{E}} \hat{\mathcal{R}}_e^t.
 \]
 \end{definition}
 
-The set $\hat{\mathcal{E}}$ consists of those entities for which scientific practice has assigned at least one effective representation. This includes entities that are currently under active investigation (e.g., artificial intelligence), entities that were investigated in the past but are no longer central to ongoing research (e.g., the aerodynamics of zeppelins), and entities that were once investigated but later rejected as non-existent or false (e.g., the luminiferous ether).
+The association $(e,r) \in S^t$ indicates that the string $r$ has been taken to represent the entity $e$ within scientific practice at some time up to $t$. It does not imply that $r$ is a correct or admissible representation of $e$.
 
-As in the case of representations themselves, the sets of effective representations associated with different entities need not be disjoint. In particular, for two distinct entities $e_1, e_2 \in \hat{\mathcal{E}}$, it is possible that $\hat{\mathcal{R}}_{e_1} \cap \hat{\mathcal{R}}_{e_2} \neq \varnothing$, reflecting the ambiguity of some effective representations (see Example~\ref{ex:infectious_agents}).
+By construction, $S^t$ retains all historically established associations, including those involving representations that have subsequently been rejected or superseded. Consequently, for any $t_1,t_2 \in T$ with $t_1<t_2$, we have $S^{t_1} \subseteq S^{t_2}$. This cumulative property immediately implies the monotonicity of effective representations.
 
-A further consequence of working with effective representations is that some candidate strings may, unbeknownst to us, fail to encode the entity we intend to study, as Example \ref{ex:phlogiston} shows; membership in $\hat{\mathcal{R}}_e$ reflects contextual assignment rather than guaranteed correctness.
-
-\begin{example}
-\label{ex:phlogiston}
-In the late Eighteenth Century, chemist Joseph Priestley believed he was studying a substance called "phlogiston"\index{Phlogiston}, which was thought to be a fire-like element released during combustion. All of his experiments and representations were constructed around this idea. However, in reality, Priestley was observing the properties of a completely different entity: oxygen. Though his descriptions were coherent and reproducible, they were assigned within that scientific context to the wrong entity.
-\end{example}
-
-\begin{example}
-\label{ex:phlogiston}
-In the late Eighteenth Century, chemist Joseph Priestley believed he was studying a substance called \emph{phlogiston}\index{Phlogiston}, which was thought to be a fire-like element released during combustion. The strings produced within that scientific context were therefore taken to represent phlogiston, and so belonged to the set of effective representations \(\hat{\mathcal{R}}_{\text{phlogiston}}\). However, many of those same experimental descriptions were in fact tracking properties of a different entity, namely oxygen. In this sense, some strings that were historically assigned to phlogiston may also be regarded, from a later scientific standpoint, as effective representations of oxygen. Thus, the two sets of effective representations need not be disjoint:
+\begin{proposition}
+Let $e \in \mathcal{E}$ be an entity, and let $t_1,t_2 \in T$ with $t_1<t_2$. Then
 \[
-\hat{\mathcal{R}}_{\text{phlogiston}} \cap \hat{\mathcal{R}}_{\text{oxygen}} \neq \varnothing.
+\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}.
 \]
-This example illustrates how effective representations are determined by scientific assignment rather than guaranteed correctness, and how the same finite strings may be associated with different entities across different stages of scientific practice.
-\end{example}
+\end{proposition}
+\begin{proof}
+Let $r \in \hat{\mathcal{R}}_e^{t_1}$. By definition, $(e,r) \in S^{t_1}$. Since $S^{t_1} \subseteq S^{t_2}$, we also have $(e,r) \in S^{t_2}$. Therefore, by the definition of effective representations, $r \in \hat{\mathcal{R}}_e^{t_2}$, which establishes the inclusion.
+\end{proof}
 
-Effective representations are monotonic over time, in the sense that the set of representations associated with an entity grows as new representations are discovered; representations that are later discarded, rejected, or superseded are not removed from the set.
+This proposition formalizes the cumulative character of effective representations. Scientific practice may abandon a representation as incorrect or inadequate, but the fact that it was once considered remains part of the historical record. Consequently, the growth of $\hat{\mathcal{R}}_e^t$ measures the expansion of representational exploration, not necessarily an improvement in the quality of the representations.
+
+As an immediate consequence, the set of effective representations for the entire domain is also monotonic.
+
+\begin{proposition}
+Let $t_1,t_2 \in T$ with $t_1<t_2$. Then
+\[
+\hat{\mathcal{R}}_{\mathcal{E}}^{t_1} \subseteq \hat{\mathcal{R}}_{\mathcal{E}}^{t_2}.
+\]
+\end{proposition}
+\begin{proof}
+For every $e \in \mathcal{E}$, the previous proposition gives $\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}$. Taking the union over all entities in $\mathcal{E}$ yields
+\[
+\bigcup_{e \in \mathcal{E}} \hat{\mathcal{R}}_e^{t_1} \subseteq \bigcup_{e \in \mathcal{E}} \hat{\mathcal{R}}_e^{t_2},
+\]
+which establishes the result.
+\end{proof}
+
+The expansion of effective representations is therefore a necessary consequence of the cumulative historical definition, but it does not imply a monotonic reduction of ignorance. Newly introduced representations may be more informative than their predecessors, but they may also be redundant, misleading, or entirely incorrect. Evaluating such improvements requires the measures of miscoding introduced in Chapter~\ref{chap:Miscoding}.
+
+% Subsection: Known and Unknown Entities
+
+\subsection*{Known and Unknown Entities}
+\label{subsec:known_unknown_entities}
+
+The distinction between theoretical and effective representations allows us to distinguish entities that are currently represented within scientific practice from those for which no effective representation is available. This distinction provides the foundation for the study of the unknown within the theory of nescience.
+
+\begin{definition}
+\label{def:unknown_entity}
+An entity $e \in \mathcal{E}$ is said to be \emph{effectively known}\index{Effectively known} at time $t$ if
+\[
+\hat{\mathcal{R}}_e^t \neq \varnothing,
+\]
+and \emph{effectively unknown}\index{Effectively unknown} otherwise.
+\end{definition}
+
+Effective knowledge concerns the existence of representations within scientific practice, rather than their correctness or adequacy. An entity may be effectively known even when all its available representations are incomplete, misleading, or incorrect. Moreover, under the cumulative interpretation of effective representations, an entity remains effectively known once it has entered scientific consideration, even if its representations are subsequently rejected. Thus, effective knowledge reflects the historical scope of scientific inquiry, rather than the degree of understanding achieved.
 
 \begin{notation}
-We denote by $\hat{\mathcal{R}}_e^t$ the set of effective representations for an entity $e \in \mathcal{E}$ available at time $t$, and by $\hat{\mathcal{E}}^t$ the set of effectively known entities at time $t$.
+When the time $t$ is clear from the context or refers to the current time, we may omit the superscript and write $\hat{\mathcal{R}}_e$ instead of $\hat{\mathcal{R}}_e^t$.
 \end{notation}
 
-Next proposition proves the monotonicity property of effective representations over time.
+Effective knowledge must not be confused with knowability. An entity is effectively known when at least one candidate representation has been assigned to it within scientific practice. Knowability, by contrast, concerns whether the entity admits an admissible representation in principle, as established in Section~\ref{sec:decodable_representations} and the subsequent discussion of unknowable entities.
+
+The distinction gives rise to several possible situations. An entity may be knowable and effectively known, in which case scientific practice has assigned representations to an entity that admits adequate representation in principle. An entity may also be knowable but effectively unknown, because no effective representation has yet been assigned to it.
+
+The converse situation is also possible: an entity may be effectively known but unknowable. This occurs when scientific practice assigns representations to an entity for which no admissible representation exists within the theoretical framework. Such a situation may arise when the entity under investigation is hypothetical, fictitious, or otherwise incapable of reconstruction under the stipulated admissible representation schemes.
+
+\begin{example}
+\label{ex:luminiferous_ether}
+The luminiferous ether\index{Luminiferous ether} was a hypothetical medium postulated to explain the propagation of light as a wave. The Michelson--Morley experiment\index{Michelson-Morley experiment} failed to detect the expected motion of the Earth relative to such a medium, and Einstein's theory of special relativity\index{Theory of relativity} subsequently removed the need for a preferred mechanical medium for the propagation of light.
+
+The ether was therefore abandoned as a physical entity. Nevertheless, it had previously been the subject of extensive theoretical and experimental investigation, and numerous representations had been assigned to it.
+\end{example}
+
+Under an interpretation in which the ether is treated as a hypothetical physical entity for which no admissible reconstruction exists, Example~\ref{ex:luminiferous_ether} illustrates an effectively known but unknowable entity. Its effective representations remain part of the historical record, even though their original physical interpretation has been rejected.
+
+It is important to distinguish this interpretation from the ether considered as an abstract historical concept, which may itself be perfectly representable. Unknowability depends on the entity being investigated and on the admissible reconstruction schemes, rather than on the mere rejection of a scientific theory.
+
+A related difficulty arises when an effective representation is assigned to the wrong entity. Scientific practice may develop representations that are informative about one entity while interpreting them as representations of another.
+
+\begin{example}
+\label{ex:phlogiston}
+During the eighteenth century, the phlogiston theory\index{Phlogiston} attempted to explain combustion by postulating a substance released during burning. Joseph Priestley interpreted his experiments within this theoretical framework, including his investigation of the gas he called \emph{dephlogisticated air}, later identified as oxygen.
+
+Some experimental records originally interpreted through the phlogiston theory were subsequently reinterpreted in terms of oxygen and chemical reactions involving it. Consequently, it is possible for the same recorded strings to have been assigned, at different historical stages, to different entities.
+
+Under the cumulative interpretation of effective representations, such a reassignment can give rise to
+\[
+\hat{\mathcal{R}}_{\text{phlogiston}}^t \cap \hat{\mathcal{R}}_{\text{oxygen}}^t \neq \varnothing,
+\]
+provided that at least one recorded string has been associated with both entities by time $t$.
+\end{example}
+
+This example illustrates that the association between effective representations and entities is established by scientific practice rather than guaranteed by the representation oracle. The same string may be interpreted differently as scientific understanding changes, and some effective representations may fail to encode their intended entities.
+
+We can now collect all effectively known entities into a single set.
+
+\begin{definition}
+Given a set of entities $\mathcal{E}$ and the family of effective representations
+$\{\hat{\mathcal{R}}_e^t\}_{e \in \mathcal{E}}$, we define the set of \emph{effectively known entities}\index{Effectively known entities} at time $t$ as
+\[
+\hat{\mathcal{E}}^t = \{e \in \mathcal{E} \mid \hat{\mathcal{R}}_e^t \neq \varnothing\}.
+\]
+\end{definition}
+
+The set $\hat{\mathcal{E}}^t$ includes entities currently under active investigation, entities investigated in the past but no longer central to scientific research, and hypothetical entities whose original scientific interpretations have subsequently been rejected. It therefore records which entities have entered scientific consideration, independently of their current scientific status.
+
+\begin{notation}
+When the time index is clear from the context, we write $\hat{\mathcal{E}}$ for the set of effectively known entities.
+\end{notation}
+
+The set of effectively unknown entities is the complement of $\hat{\mathcal{E}}^t$ within the domain under investigation.
+
+\begin{definition}
+We define the set of \emph{effectively unknown entities}\index{Effectively unknown entities} at time $t$ as
+\[
+\mathcal{U}^t = \mathcal{E}\setminus\hat{\mathcal{E}}^t.
+\]
+\end{definition}
+
+By construction, $\hat{\mathcal{E}}^t$ and $\mathcal{U}^t$ form a partition of $\mathcal{E}$. Unlike the distinction between knowable and unknowable entities, this partition depends on the state of scientific practice and therefore changes over time.
+
+The monotonicity of effective representations implies a corresponding property for effectively known entities.
 
 \begin{proposition}
-Let $\hat{\mathcal{R}}_e^{t_1}$ and $\hat{\mathcal{R}}_e^{t_2}$ denote the set of effective representations associated with an entity $e \in \mathcal{E}$ at times $t_1$ and $t_2$ respectively. Then
+Let $t_1<t_2$. Then
 \[
-\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}
-\quad \text{for all} \quad t_1 < t_2.
+\hat{\mathcal{E}}^{t_1} \subseteq \hat{\mathcal{E}}^{t_2}.
 \]
 \end{proposition}
 \begin{proof}
-By assumption, representations discovered at time $t_1$ are retained at all later times, even if they are discarded or superseded, and additional representations may be introduced. Therefore, any effective representation available at time $t_1$ is also available at time $t_2 > t_1$, which implies $\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}$.
+Let $e \in \hat{\mathcal{E}}^{t_1}$. By definition $\hat{\mathcal{R}}_e^{t_1}\neq\varnothing$. By the monotonicity of effective representations, $\hat{\mathcal{R}}_e^{t_1} \subseteq4\hat{\mathcal{R}}_e^{t_2}$. Consequently, $\hat{\mathcal{R}}_e^{t_2}\neq\varnothing$, and therefore $e \in \hat{\mathcal{E}}^{t_2}$.
 \end{proof}
 
-As a direct consequence, the set of effectively known entities is itself monotonic over time.
+The previous proposition establishes that the historical collection of effectively known entities cannot decrease under the cumulative convention. Its complement therefore exhibits the opposite monotonicity.
 
-\begin{proposition}
-Let $\hat{\mathcal{E}}^{t_1}$ and $\hat{\mathcal{E}}^{t_2}$ denote the set of effectively known entities at times $t_1$ and $t_2$ respectively. Then
+\begin{corollary}
+Let $t_1<t_2$. Then
 \[
-\hat{\mathcal{E}}^{t_1} \subseteq \hat{\mathcal{E}}^{t_2}
-\quad \text{for all} \quad t_1 < t_2.
+\mathcal{U}^{t_2} \subseteq \mathcal{U}^{t_1}.
 \]
-\end{proposition}
+\end{corollary}
 \begin{proof}
-By definition $\hat{\mathcal{E}}^t = \{ e \in \mathcal{E} \mid \hat{\mathcal{R}}_e^t \neq \varnothing \}$. If $e \in \hat{\mathcal{E}}^{t_1}$, then $\hat{\mathcal{R}}_e^{t_1} \neq \varnothing$. By the previous proposition, this implies $\hat{\mathcal{R}}_e^{t_2} \neq \varnothing$ for all $t_2 > t_1$, and therefore $e \in \hat{\mathcal{E}}^{t_2}$.
+Since $\hat{\mathcal{E}}^{t_1} \subseteq \hat{\mathcal{E}}^{t_2}$, taking complements relative to the fixed set $\mathcal{E}$ gives $\mathcal{E}\setminus\hat{\mathcal{E}}^{t_2} \subseteq \mathcal{E}\setminus\hat{\mathcal{E}}^{t_1}$. The result follows from the definition of $\mathcal{U}^t$.
 \end{proof}
 
-The set of effectively known entities $\hat{\mathcal{E}}$ is thus not fixed by $\mathcal{E}$, but by the interaction between entities, representational practices, and available inferential tools. In this sense, scientific progress can be understood as the progressive expansion and refinement of the known subset $\hat{\mathcal{E}}$, together with a gradual reduction of representational ambiguity.
+These results provide a formal characterization of the expansion of effective scientific knowledge. As new entities enter scientific consideration, the set of effectively known entities grows, while the set of entities with no effective representation shrinks. However, this does not imply that scientific understanding necessarily improves. An entity becomes effectively known as soon as at least one candidate representation is assigned to it, even if that representation is extremely poor or incorrect. Thus, the expansion of $\hat{\mathcal{E}}^t$ measures the historical scope of scientific inquiry, rather than the quality of knowledge. The distinction between recognized and unrecognized ignorance therefore cannot be determined solely from membership in $\hat{\mathcal{E}}^t$.
 
 %
 % Section: Joint Representations
 %
 
+
 \section{Joint Representations}
 \label{sec:joint_representations}
 
+The set of extended representations $\mathcal{R}_e$ of an entity $e\in\mathcal{E}$ contains strings that carry non-trivial algorithmic information about the entity, without necessarily providing sufficient information for its complete reconstruction. Different extended representations may capture different aspects of the same entity, and transformations of these representations may preserve, eliminate, or introduce information relevant to it. This motivates the study of three elementary operations on representations: \emph{augmentation}, which adds information to an existing representation; \emph{reduction}, which removes part of a representation; and \emph{joint representation}, which combines representations of one or several entities. The purpose of this section is to establish how transformations of representations affect the algorithmic information available about the entities under investigation. Their effects on deficiency, surplus, and miscoding will be examined in Chapter~\ref{chap:Miscoding}.
 
-Ideally, scientific work would proceed by using an admissible representation of the entity $e$ under study, that is, an element of the set of admissible representations $\hat{\mathcal{R}}_{e}$. However, since such admissible representations are not accessible in practice, we must instead rely on the extended representations in $\mathcal{R}_e$. Certain representations are of high quality, in the sense that they encode substantial information about $e$. Yet, $\mathcal{R}_e$ also includes low-quality representations, which convey only limited information about $e$. Moreover, $\mathcal{R}_e$ may include representations that contain incorrect or misleading symbols: fragments that do not correspond to the entity and do not contribute to obtaining an admissible representation. Such errors may mislead us during inquiry if we treat them as valid information.
-
-If we want to increase our knowledge about an entity, we must use representations that are as complete and correct as possible, that is, as close as possible to an admissible representation. One way to achieve this is to try different strings until we discover a high-quality representation. However, this method can be extremely time-consuming and impractical. A more efficient approach is to improve a poor representation by adding missing symbols, removing unnecessary symbols, or combining known representations, each of which contains partial information.
-
-% Subsection: Extended Representations
+% Subsection: Operation of Augmentation
 
 \subsection*{Operation of Augmentation}
 
-One natural way to improve a representation consists of adding symbols that encode information that is missing with respect to the entity being represented. We call this operation \emph{augmentation}. It models the gradual enrichment of representations as additional relevant information is incorporated.
+One natural way to enrich a representation consists of adding symbols that may encode information missing from the original representation. We call this operation \emph{augmentation}\index{Augmentation of representations}. It models the progressive enrichment of representations as additional information about an entity is incorporated.
 
 \begin{definition}
-Let $r, s, t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be an entity. Suppose that the concatenated string $rt$ is a representation of $e$, that is, $rt \in \mathcal{R}_{e}$. We call the concatenation $rst$ an \emph{augmentation}\index{Augmentation of representations} of the representation $rt$, and we call $s$ an \emph{augmentation string}\index{Augmentation string}.
+Let $e\in\mathcal{E}$ be an entity, let $r\in\mathcal{R}_e$ be an extended representation of $e$, and let $s\in\mathcal{B}^\ast$ be an arbitrary binary string. We call the concatenated string $rs$ an \emph{augmentation} of $r$, and $s$ an \emph{augmentation string}\index{Augmentation string}.
 \end{definition}
 
-An augmentation may occur at any position within a representation, and both $r$ and $t$ are allowed to be empty. In particular, the common case of appending new information at the end of a representation corresponds to $t=\lambda$.
+Augmentation is defined by appending an arbitrary binary string to an existing extended representation. The augmentation string may contain additional information about the original entity, information about other entities, or information unrelated to the entity under investigation.
 
-Intuitively, an augmentation is intended to reduce the deficiency of a representation by incorporating additional information about the entity. The following proposition shows that augmentation preserves extendedness.
+Although the augmented string is not guaranteed to belong to $\mathcal{R}_e$, augmentation generally preserves the informational contribution of the original representation. Indeed, recovering the original representation requires at most a logarithmic amount of additional information to identify the boundary between the two strings. Consequently, an augmented representation retains substantial information about the original entity whenever the informational gain of the original representation is sufficiently large relative to this overhead.
+
+The following proposition establishes this information-preservation property.
 
 \begin{proposition}
-Let $r, s, t \in \mathcal{B}^*$ be arbitrary binary strings such that $rt \in \mathcal{R}_{e}$. Then $rst \in \mathcal{R}_{e}$.
+Let $e\in\mathcal{E}$ be an entity, let $r\in\mathcal{R}_e$, and let $s\in\mathcal{B}^\ast$. Then, for every admissible representation $\bar r\in\bar{\mathcal{R}}_e$,
+\[
+K(\bar r\mid rs) \le K(\bar r\mid r) + O(\log(l(r)+2)).
+\]
 \end{proposition}
-
 \begin{proof}
-Assume $rt \in \mathcal{R}_{e}$. By definition of $\mathcal{R}_{e}$, there exists a perfect representation
-$r^{\star}\in\mathcal{R}_{e}^{\star}$ such that
-\begin{equation}
-\label{eq:rt_rep_aug}
-K(r^{\star}\mid rt)\le K(r^{\star})-O(1).
-\end{equation}
-
-Let $g:\mathcal{B}^*\to \mathcal{B}^*$ be the computable function that, on input the concatenation
-$rst$, outputs $rt$ (i.e., discards the middle component $s$ and concatenates the first and third components).
-
-By monotonicity of conditional Kolmogorov complexity under computable transformations,
-\begin{equation}
-\label{eq:mono_aug}
-K(x\mid y)\le K(x\mid g(y)) + O(1)
-\end{equation}
-for every computable function $g$.
-
-Applying \eqref{eq:mono_aug} with $x=r^{\star}$ and $y=rst$, we obtain
+Given the augmented string $rs$, the original representation $r$ can be recovered by specifying its length $l(r)$ and extracting the corresponding prefix of $rs$. The integer $l(r)$ can be encoded using $O(\log(l(r)+2))$ bits. Therefore, there exists a program of length $O(\log(l(r)+2))$ that recovers $r$ from $rs$. Once $r$ has been recovered, a shortest program witnessing $K(\bar r\mid r)$ can be executed to reconstruct $\bar r$- Consequently,
 \[
-K(r^{\star}\mid rst)
-\le
-K(r^{\star}\mid g(rst)) + O(1)
-=
-K(r^{\star}\mid rt) + O(1).
+K(\bar r\mid rs) \le K(\bar r\mid r) + O(\log(l(r)+2)),
 \]
-Combining this with \eqref{eq:rt_rep_aug}, we conclude that
-\[
-K(r^{\star}\mid rst)
-\le
-K(r^{\star}) - O(1).
-\]
-
-Therefore, there exists $r^{\star}\in\mathcal{R}_{e}^{\star}$ such that
-$K(r^{\star}\mid rst)\le K(r^{\star})-O(1)$, and hence $rst\in\mathcal{R}_{e}$.
+which establishes the result.
 \end{proof}
 
-The previous proposition formalizes the intended role of augmentation: adding information cannot destroy the property of containing sufficient information about the entity. In particular, augmentation cannot increase deficiency beyond a constant term.
+The proposition shows that augmentation cannot increase the information required to reconstruct an admissible representation of the original entity by more than a logarithmic term in the length of the original representation. In particular, suppose that an admissible representation $\bar r$ satisfies
+\[
+K(\bar r\mid r) \le K(\bar r)-m
+\]
+for some positive information gain $m$. Then
+\[
+K(\bar r\mid rs) \le K(\bar r)-m + O(\log(l(r)+2)).
+\]
+Thus, augmentation preserves the original informational contribution up to a logarithmic overhead. This overhead is a worst-case bound, rather than an inevitable loss of information.
 
-As a direct consequence we obtain:
+A stronger property holds when the original representation can be recovered from the augmented string by a fixed computable procedure.
 
-\begin{corollary}
-Let $rt \in \mathcal{R}_{e}$ be an extended representation of an entity $e \in \mathcal{E}$, and let $rst$ be an augmentation of $rt$. Then $rst \in \mathcal{R}_{\mathcal{E}}$.
-\end{corollary}
-
+\begin{proposition}
+Let $e\in\mathcal{E}$ be an entity, let $r\in\mathcal{R}_e$, and let $s\in\mathcal{B}^\ast$. Suppose there exists a fixed computable function $g:\mathcal{B}^\ast\to\mathcal{B}^\ast$ such that $g(rs)=r$. Then, for every
+$\bar r\in\bar{\mathcal{R}}_e$,
+\[
+K(\bar r\mid rs) \le K(\bar r\mid r) + O(1).
+\]
+\end{proposition}
 \begin{proof}
-Since $rt \in \mathcal{R}_{e}$, we have $rst \in \mathcal{R}_{e} \subseteq \mathcal{R}_{\mathcal{E}}$.
+Since $g$ is computable by a fixed program,
+\[
+K(\bar r\mid rs) \le K(\bar r\mid g(rs))+O(1).
+\]
+Substituting $g(rs)=r$ gives
+\[
+K(\bar r\mid rs) \le K(\bar r\mid r)+O(1),
+\]
+which establishes the result.
 \end{proof}
 
-Augmentation does not guarantee uniqueness of reference, as the following example illustrates.
+This proposition applies whenever the boundary between the original representation and the augmentation string can be identified through a fixed computational procedure. In such cases, augmentation preserves the original informational contribution up to a constant independent of the lengths of the representations.
+
+However, augmentation does not guarantee a strict improvement in the representation. If the additional symbols contain information already available in the original representation, they may contribute no new information about the entity. Conversely, when the augmentation string contains previously missing information, the augmented representation may provide a more informative encoding.
 
 \begin{example}
-Consider an entity $e$ corresponding to a physical system described by classical mechanics, and let $rt$ be a representation encoding its mass, position, and velocity. Suppose that the augmentation string $s$ adds information about relativistic corrections. The augmented representation $rst$ still contains all the information required to reconstruct the original classical model, but it may also correspond, for the oracle, to a distinct entity $e'$ representing a relativistic model. In this case, $rst$ may simultaneously belong to $\mathcal{R}_e$ and to $\mathcal{R}_{e'}$.
+Consider an entity $e$ corresponding to the motion of a physical system, and let $r\in\mathcal{R}_e$ be an extended representation containing measurements of its position and velocity over time. Suppose that the augmentation string $s$ contains additional measurements of the forces acting on the system. The augmented string $rs$ combines the original observations with the additional measurements. If the forces contain relevant information about the motion of the system, the augmentation may reduce the information required to reconstruct
+an admissible representation of $e$. If the additional measurements are redundant or unrelated to the system, however, they need not improve the representation.
 \end{example}
 
-This example highlights an important subtlety: while augmentation reduces deficiency relative to the original entity, it may introduce additional structure that enables the oracle to associate the resulting representation with another entity as well. Augmented representations therefore increase informational content and expressive power, but may also increase the potential for ambiguity in reference.
+Augmentation may also introduce information about entities other than the original one. Since extended representations are not required to identify a unique entity, an augmented string may contain non-trivial information about several distinct entities simultaneously.
 
-% Subsection: Reduced Representations
+Thus, augmentation provides a general mechanism for enriching representations while largely preserving the original informational contribution. Whether the transformation improves the adequacy of the representation depends on the relevance of the additional information.
+
+% Subsection: Operation of Reduction
 
 \subsection*{Operation of Reduction}
 
-An alternative strategy for improving a representation consists of simplifying it by removing symbols that are believed to be incorrect, irrelevant, or superfluous. We refer to this operation as \emph{reduction}. Unlike augmentation, which targets deficiency, reduction targets surplus and therefore requires greater care: removing symbols may improve a representation, but it may also destroy essential information.
+An alternative way to transform a representation consists of removing symbols that may be unnecessary, irrelevant, or misleading. We call this operation \emph{reduction}\index{Reduction of representations} Reduction may eliminate information that is essential to representing the entity, whereas augmentation retains all the original symbols. Consequently, although neither operation guarantees that the resulting string remains an extended representation of the original entity, augmentation preserves its informational contribution up to a logarithmic overhead, while reduction may result in a substantial loss of information.
 
 \begin{definition}
-Let $r, s, t \in \mathcal{B}^*$ be arbitrary binary strings and let $e \in \mathcal{E}$ be an entity. Suppose that the concatenated string $rst$ is a representation of $e$, that is, $rst \in \mathcal{R}_{e}$. We call the string $rt$, obtained by removing the substring $s$, a \emph{reduced representation}\index{Reduced representation} of $rst$.
+Let $e\in\mathcal{E}$ be an entity, and let $r,s\in\mathcal{B}^\ast$ be binary strings such that $rs \in \mathcal{R}_e$. We call the string $r$ a \emph{reduction}\index{Reduced representation} of the representation $rs$, obtained by removing the suffix $s$. The string $s$ is called the \emph{removed substring}.
 \end{definition}
 
-As with augmentation, reduction may remove symbols from any position within a representation, and the removed substring $s$ may encode information of any kind.
+Reduction removes a suffix from an extended representation. The remaining string may still contain substantial information about the original entity, or it may have lost information essential to establishing the representational relationship.
 
-The crucial question is whether the removed substring $s$ is \emph{disposable}. Intuitively, a substring is disposable with respect to $e$ if eliminating it does not increase the deficiency of the representation. In other words, $s$ is disposable if the reduced representation $rt$ still contains sufficient information to reconstruct a perfect representation of $e$.
+The next proposition provides an upper bound on the information that may be lost through reduction.
 
-Formally, a substring $s$ of $rst$ is disposable (with respect to $e$) if
+\begin{proposition}
+Let $e\in\mathcal{E}$ be an entity, and let $r,s\in\mathcal{B}^\ast$ satisfy $rs\in\mathcal{R}_e$. Then, for every admissible representation $\bar r\in\bar{\mathcal{R}}_e$,
 \[
-rst \in \mathcal{R}_e
-\quad\text{and}\quad
-rt \in \mathcal{R}_e.
+K(\bar r\mid r) \le K(\bar r\mid rs) + K(s\mid r) + O(1).
 \]
-In this case, reduction preserves representationality and strictly decreases surplus by eliminating information that is not required for reconstructing the entity.
+\end{proposition}
+\begin{proof}
+Given the reduced representation $r$, one can execute a shortest program that reconstructs the removed substring
+$s$ from $r$. Once $s$ has been recovered, the original representation $rs$ can be reconstructed by concatenation. Finally, a shortest program witnessing $K(\bar r\mid rs)$ can be executed to reconstruct $\bar r$. Combining these programs with a fixed computational overhead gives
+\[
+K(\bar r\mid r) \le K(s\mid r) + K(\bar r\mid rs) + O(1),
+\]
+which establishes the result.
+\end{proof}
 
-However, not every substring is disposable. Reduction may eliminate symbols that are essential for the oracle to reconstruct the entity. In general, reduced representations are not guaranteed to remain representations.
+The proposition shows that the increase in conditional complexity caused by reduction is bounded by the information needed to recover the removed substring from the remaining representation. This bound can be substantial when the removed substring contains information that cannot be recovered from the retained
+string. However, when the removed substring is already determined by the remaining representation, reduction need not cause a significant loss of information.
+
+The following corollary formalizes this important special case.
+
+\begin{corollary}
+Let $e\in\mathcal{E}$ be an entity, and let $r,s\in\mathcal{B}^\ast$ satisfy $rs\in\mathcal{R}_e$. If $K(s\mid r)=O(1)$, then, for every $\bar r\in\bar{\mathcal{R}}_e$,
+\[
+K(\bar r\mid r) \le K(\bar r\mid rs) + O(1).
+\]
+\end{corollary}
+\begin{proof}
+Substituting $K(s\mid r)=O(1)$ into the previous proposition gives
+\[
+K(\bar r\mid r) \le K(\bar r\mid rs) + O(1),
+\]
+which establishes the result.
+\end{proof}
+
+The corollary identifies a sufficient condition for reduction to preserve the information available about the original entity. When the removed substring can be reconstructed from the remaining representation with constant overhead, its removal does not substantially increase the information required to reconstruct an admissible representation. However, this condition is not necessary. A substring may contain information unrelated to the entity, so that its removal has little effect on the reconstruction of an admissible representation, even when the removed substring cannot itself be recovered. Reduction may also discard substantial information while preserving the representational relationship with the entity.
 
 \begin{example}
-Let $r$ and $t$ be the empty strings $\lambda$, and let $s \in \mathcal{B}^*$ be such that $rst = s \in \mathcal{R}_{e}$. Then the reduced representation $rt = \lambda$ is the empty string. Since $K(r^{\star} \mid \lambda) = K(r^{\star})$ for all $r^{\star} \in \mathcal{R}^\ast$, the empty string does not belong to $\mathcal{R}_e$. In this case, the removed substring $s$ was not disposable.
+Let $e\in\mathcal{E}$ be an entity admitting an admissible representation $\bar r=xy$, where $x$ and $y$ are algorithmically independent, incompressible binary strings of length $n$. Consider the extended representation $r=xy$. Removing the suffix $y$ produces the reduced string $r'=x$. Since
+\[
+K(xy\mid xy)=O(1),
+\]
+the original representation contains essentially all the information required to reconstruct $\bar r$. However,
+\[
+K(xy\mid x)=n+O(\log n).
+\]
+Thus, the reduction loses approximately $n$ bits of information about the admissible representation Nevertheless, for sufficiently large $n$, the reduced string $x$ still contains substantial information
+about $\bar r$, and therefore continues to qualify as an extended representation of $e$.
 \end{example}
 
-Even when a reduced string remains a valid representation, reduction does not guarantee preservation of the represented entity.
+This example demonstrates that reduction may significantly decrease the information available about an entity without necessarily destroying extendedness.
+
+In more extreme cases, removing the entire representation may eliminate all substantial information about
+the entity. The resulting empty string need not belong to $\mathcal{R}_e$.
 
 \begin{example}
-Consider an entity $e$ corresponding to a specific chemical compound, and suppose that $rst$ encodes its full molecular structure, including stereochemical information. Let the substring $s$ encode the spatial configuration of a chiral center. The reduced representation $rt$, which omits this information, may still correspond to a valid chemical compound, but one that is chemically distinct: a different stereoisomer. In this case, $rt$ represents a different entity $e'$, even though it was obtained by reducing a representation of $e$.
+Consider an entity $e$ corresponding to a chemical compound, and let $rs\in\mathcal{R}_e$ be a representation
+containing information about its molecular connectivity and stereochemical configuration. Suppose that the suffix $s$ contains redundant annotations that can be reconstructed from the remaining representation $r$. Removing these annotations may preserve the informational content relevant to the compound. By contrast, if $s$ contains information identifying the configuration of a chiral center, its removal may eliminate information required to distinguish the compound from another stereoisomer. In both cases, the transformation is a reduction, but its consequences for the representation of the original entity are different.
 \end{example}
 
-These examples illustrate an important asymmetry between augmentation and reduction. While augmentation cannot destroy extendedness—since adding information cannot increase deficiency beyond a constant—reduction may remove essential information. Only when the removed substring is disposable does reduction genuinely improve a representation by decreasing surplus without increasing deficiency.
+Reduction may also change which entities are represented by the resulting string. A reduction of
+an extended representation of $e$ may cease to represent $e$ while remaining an extended
+representation of another entity $e'\in\mathcal{E}$.
 
-In practical contexts, such as the curation of datasets in machine learning, disposability corresponds to identifying and removing mislabeled samples, corrupted entries, or irrelevant features. These elements contribute surplus information that does not assist in reconstructing the underlying data-generating entity. Eliminating them refines the representation, but only when their removal does not eliminate essential structure.
+The distinction between augmentation and reduction is therefore important. Augmentation preserves the original
+symbols while adding new information, whereas reduction removes symbols that may contain information essential to the entity. Neither operation guarantees an improvement in representational adequacy. Augmentation may introduce irrelevant information, while reduction may discard relevant information. Their effects on deficiency, surplus, and miscoding will be examined in Chapter~\ref{chap:Miscoding}.
 
-% Subsection: Joint Representations
+% Subsection: Operation of Concatenation
 
-\subsection*{Joint Representations}
+\subsection*{Operation of Concatenation}
 
-A third, and particularly powerful, operation on representations consists of combining two existing representations into a single one. This operation, which we call \emph{joint representation}, plays a central role in the theory of nescience, as it provides a systematic mechanism for both refining existing knowledge and discovering new entities.
+A third operation consists of combining two existing extended representations into a single string. We call this operation \emph{joint representation} \index{Joint representation}. Joint representation differs from augmentation in that both component strings already contain non-trivial information about one or more entities.
+The components may represent the same entity or two different entities. This distinction gives rise to two forms of joint representation, each with a different role in the theory of nescience.
 
 \begin{definition}
-Let $r,s \in \mathcal{R}_{\mathcal{e}}$ be two representations of an entity $e \in \mathcal{E}$. We define the  \emph{joint representation}\index{Joint representation} of $r$ and $s$ as the concatenated string $rs$.
+Let $e_1,e_2\in\mathcal{E}$ be entities, and let $r\in\mathcal{R}_{e_1}$ and $s\in\mathcal{R}_{e_2}$ be extended representations. We define their \emph{joint representation} \index{Joint representation} as the concatenated string $rs$.
+
+We distinguish two cases:
+\begin{enumerate}
+\item An \emph{intra-entity joint representation} \index{Intra-entity joint representation} occurs when $e_1=e_2$.
+\item An \emph{inter-entity joint representation} \index{Inter-entity joint representation} occurs when $e_1\neq e_2$.
+\end{enumerate}
 \end{definition}
 
-Joint representations serve two distinct goals. When $r$ and $s$ represent the same entity, their joint representation may yield a more complete or less biased representation of that entity by aggregating complementary information. When $r$ and $s$ represent different entities, their joint representation may correspond to a new entity not previously represented.
+The distinction concerns the entities associated with the component representations rather than their syntactic form. Since the sets of extended representations of distinct entities may overlap, the same pair of strings may admit both interpretations under different choices of the associated entities.
+
+Intra-entity joint representations combine information about an existing entity, potentially yielding a more informative representation of it. Inter-entity joint representations combine information about different entities and may provide information about additional entities that neither component represents individually. Neither case guarantees that the resulting string belongs to the set of extended representations of any particular entity.
+
+Before examining the two cases separately, we establish the general informational properties of joint representations. The first property concerns the preservation of information about the entities represented by
+the components.
+
+\begin{proposition}
+Let $e_1,e_2\in\mathcal{E}$ be entities, and let $r\in\mathcal{R}_{e_1}$ and $s\in\mathcal{R}_{e_2}$. Then, for every admissible representation $\bar r_1\in\bar{\mathcal{R}}_{e_1}$,
+\[
+K(\bar r_1\mid rs) \le K(\bar r_1\mid r) + O(\log(l(r)+2)),
+\]
+and for every admissible representation $\bar r_2\in\bar{\mathcal{R}}_{e_2}$,
+\[
+K(\bar r_2\mid rs) \le K(\bar r_2\mid s) + O(\log(l(s)+2)).
+\]
+\end{proposition}
+\begin{proof}
+The first inequality follows directly from the information-preservation property of augmentation, since $rs$ is an augmentation of $r$. For the second inequality, the representation $s$ can be recovered from $rs$ by specifying its length $l(s)$ and extracting the corresponding suffix. This requires $O(\log(l(s)+2))$ bits. Once
+$s$ has been recovered, a shortest program witnessing $K(\bar r_2\mid s)$ can be executed. Therefore,
+\[
+K(\bar r_2\mid rs) \le K(\bar r_2\mid s) + O(\log(l(s)+2)),
+\]
+which establishes the result.
+\end{proof}
+
+This proposition shows that joint representation preserves the informational contributions of both components up to logarithmic overheads associated with recovering their boundaries.
+
+The operation also inherits several structural properties from ordinary string concatenation.
+
+\begin{proposition}
+Joint representation is associative. That is, for every $r,s,t\in\mathcal{R}_{\mathcal{E}}$,
+\[
+(rs)t=r(st).
+\]
+\end{proposition}
+\begin{proof}
+Joint representation is defined as ordinary string concatenation. Since concatenation is associative on $\mathcal{B}^\ast$, the equality holds.
+\end{proof}
+
+Associativity means that the grouping of consecutive representations does not affect the resulting binary string. This allows joint representation to be extended naturally to arbitrary finite collections.
+
+However, joint representation is not commutative. In general, $rs \neq sr$. This distinction is relevant because the ordering of symbols may affect how the resulting string relates to the entities under investigation. Nevertheless, reversing the order of the components preserves their combined algorithmic information up to a logarithmic overhead.
+
+\begin{proposition}
+Let $r,s\in\mathcal{R}_{\mathcal{E}}$ and let $x\in\mathcal{B}^\ast$. Then
+\[
+K(x\mid rs) = K(x\mid sr) + O(\log(l(rs)+2)).
+\]
+\end{proposition}
+\begin{proof}
+Given $rs$ and the length $l(r)$, one can separate the components and construct $sr$. The length $l(r)$ can be encoded using $O(\log(l(rs)+2))$ bits. Therefore,
+\[
+K(x\mid sr) \le K(x\mid rs) + O(\log(l(rs)+2)).
+\]
+The reverse inequality follows by the same argument, since $rs$ can be reconstructed from $sr$ by specifying
+the boundary between its components. Combining both inequalities establishes the result.
+\end{proof}
+
+The proposition shows that, although joint representation is not commutative as a string operation, exchanging the components does not substantially change their combined informational content beyond the boundary-identification overhead.
+
+A further property concerns duplication of a representation.
+
+\begin{proposition}
+Let $r\in\mathcal{R}_{\mathcal{E}}$ and let $x\in\mathcal{B}^\ast$. Then
+\[
+K(x\mid rr) = K(x\mid r)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+The string $rr$ can be constructed from $r$ by a fixed program that duplicates its input. Therefore,
+\[
+K(x\mid r) \le K(x\mid rr) + O(1).
+\]
+Conversely, since $rr$ consists of two identical halves, $r$ can be recovered from $rr$ by a fixed program that extracts its first half. Hence,
+\[
+K(x\mid rr) \le K(x\mid r) + O(1).
+\]
+Combining both inequalities gives
+\[
+K(x\mid rr) = K(x\mid r) + O(1).
+\]
+\end{proof}
+
+This property establishes the informational idempotence of joint representation: duplicating a representation does not introduce additional independent algorithmic information. It does not imply that the representation oracle must reconstruct the same entity from $r$ and $rr$, since their syntactic forms differ.
+
+An intra-entity joint representation combines two extended representations of the same entity. Its primary purpose is to bring together information about different aspects of the entity, potentially obtaining a more informative representation than either component separately. The general information preservation property of joint representations takes a particularly useful form in this case.
+
+\begin{proposition}
+Let $e\in\mathcal{E}$ be an entity, and let $r,s\in\mathcal{R}_e$. Then, for every $\bar r\in\bar{\mathcal{R}}_e$,
+\[
+K(\bar r\mid rs) \le \min\{K(\bar r\mid r),K(\bar r\mid s)\} + O(\log(l(rs)+2)).
+\]
+\end{proposition}
+\begin{proof}
+Applying the general information-preservation proposition with $e_1=e_2=e$ gives
+\[
+K(\bar r\mid rs) \le K(\bar r\mid r) + O(\log(l(r)+2))
+\]
+and
+\[
+K(\bar r\mid rs) \le K(\bar r\mid s) + O(\log(l(s)+2)).
+\]
+Since both $l(r)$ and $l(s)$ are bounded by $l(rs)$, the logarithmic overheads are bounded by $O(\log(l(rs)+2))$. Taking the smaller of the two resulting upper bounds establishes the proposition.
+\end{proof}
+
+This proposition shows that combining two extended representations of the same entity preserves, up to the logarithmic overhead, the information provided by the more informative component relative to any particular admissible representation. Nevertheless, the reduction in conditional complexity need not be strict. If both representations contain essentially the same information, their combination may provide little additional benefit. By contrast, when the component representations contain complementary information, their joint representation may reduce the amount of information required to reconstruct an admissible representation of the entity more than either component individually.
 
 \begin{example}
 \label{ex:lung_cancer_joint}
-Let $e$ be the entity corresponding to the set of causes of lung cancer. Suppose that $r$ is a dataset obtained from a population sample consisting exclusively of male subjects, and that $s$ is a dataset obtained from a population sample consisting exclusively of female subjects. Both $r$ and $s$ belong to $\mathcal{R}_e$, but each constitutes a biased and incomplete representation of the entity. The joint representation $rs$ combines both datasets and yields a more informative and less biased representation of $e$.
+Let $e$ be the entity corresponding to the causes of lung cancer. Suppose that $r$ is a representation consisting of observations collected exclusively from male subjects, while $s$ contains observations collected exclusively from female subjects. Both representations may contain non-trivial information about $e$, while omitting information about population variability.
+
+The intra-entity joint representation $rs$ combines both collections of observations. If the two datasets contain complementary information, their combination may provide a more informative representation of $e$ than either component separately. However, the combination does not automatically guarantee a less biased or more adequate representation. Its contribution depends on the information contained in the datasets.
 \end{example}
 
-With the following propostions we formally study the properties of the concept of joint representations.
+Intra-entity joining is therefore a natural mechanism for enriching representations of an existing entity. Its theoretical significance lies in the possibility of combining different informational contributions, rather than merely increasing the length of the representation. Whether an intra-entity joint representation reduces deficiency, increases surplus, or decreases miscoding depends on the particular information carried by its components. These questions will be studied in Chapter~\ref{chap:Miscoding}.
 
-\begin{proposition}
-Joint representation is associative. That is, for all $r,s,t \in \mathcal{R}_{\mathcal{E}}$, we have
-\[
-(rs)t = r(st).
-\]
-\end{proposition}
-\begin{proof}
-Joint representation is defined as string concatenation. Since string concatenation is associative, the equality $(rs)t = r(st)$ holds for all binary strings, and therefore for all representations.
-\end{proof}
+An inter-entity joint representation combines extended representations of two distinct entities. Its primary purpose is not necessarily to improve the representation of either component entity, but to investigate whether their combination contains information about additional entities.
 
-Despite its associativity, joint representation is not commutative. A concrete counterexample arises when $r$ encodes a theoretical model and $s$ encodes experimental constraints. The order in which these components are presented may affect how the oracle reconstructs the entity, leading to different outcomes.
+Let $e_1,e_2\in\mathcal{E}$ be distinct entities, and let $r \in \mathcal{R}_{e_1}$ and $s \in \mathcal{R}_{e_2}$. The resulting string $rs$ may remain informative about $e_1$ and $e_2$, but it may also contain information about another entity $e_3\in\mathcal{E}$. This possibility is particularly relevant because extended representations are defined through algorithmic information rather than through unique reconstruction. A string may contain information about an entity even when it was constructed from representations originally associated with different entities.
 
-Joint representation also satisfies an idempotence property.
-
-\begin{proposition}
-For any representation $r \in \mathcal{R}_{\mathcal{E}}$, the joint representation $rr$ represents the same entity as $r$.
-\end{proposition}
-\begin{proof}
-The concatenated string $rr$ contains no information that is not already present in $r$. While redundancy may increase, the oracle can ignore duplicated symbols during reconstruction. Consequently, $rr \in \mathcal{R}_{\mathcal{E}}$ and $\mathcal{O}_{\mathcal{E}}(rr) = \mathcal{O}_{\mathcal{E}}(r)$.
-\end{proof}
-
-We now turn to closure properties.
-
-\begin{proposition}
-If $r,s \in \mathcal{R}_{\mathcal{E}}$ and $rs \in \mathcal{R}_{\mathcal{E}}$, then $rs$ is a representation.
-\end{proposition}
-\begin{proof}
-This follows directly from the definition of $\mathcal{R}_{\mathcal{E}}$ as the domain of the oracle. Whenever $rs$ belongs to $\mathcal{R}_{\mathcal{E}}$, it is, by definition, a valid representation.
-\end{proof}
-
-Although syntactically well defined, joint representation is not guaranteed to preserve entity identity.
-
-\begin{proposition}
-Let $r,s \in \mathcal{R}_e$ be representations of the same entity $e$. Then the joint representation $rs$ does not necessarily belong to $\mathcal{R}_e$.
-\end{proposition}
-
-\begin{proof}
-The joint representation $rs$ may introduce interactions between symbols in $r$ and $s$ that the oracle interprets as defining a different entity. Even if $r$ and $s$ individually encode correct and complementary information about $e$, their combination may cross a representational threshold that leads the oracle to reconstruct a distinct entity $e' \neq e$. Hence, $rs \in \mathcal{R}_{e'}$.
-\end{proof}
-
-This phenomenon is not a defect but a defining feature of joint representations.
+The following example illustrates how inter-entity joining can produce information that is not substantially available from either component individually.
 
 \begin{example}
-Consider a domain in which entities are chemical compounds and representations encode molecular descriptors. Let $r$ represent a compound with anti-inflammatory properties and let $s$ represent a structurally related compound with antiviral properties. While both $r$ and $s$ individually correspond to known compounds, the joint representation $rs$ may encode a novel molecular structure. If the oracle associates $rs$ with a previously uncharacterized compound, then $rs$ represents a new entity.
+Let $x,y\in\mathcal{B}^\ast$ be two algorithmically independent, incompressible binary strings of equal length $n$, and let $z = x \oplus y$, where $\oplus$ denotes bitwise exclusive OR.
+
+Consider three distinct entities $e_1,e_2,e_3\in\mathcal{E}$ whose admissible representations include $x$, $y$, and $z$, respectively. The strings $x$ and $y$ are extended representations of $e_1$ and $e_2$, respectively.
+
+By their algorithmic independence, knowing either string alone does not substantially reduce the information required to reconstruct $z$:
+\[
+K(z\mid x)=n+O(\log n),
+\]
+\[
+K(z\mid y)=n+O(\log n).
+\]
+However, the inter-entity joint representation $xy$ allows $z$ to be reconstructed by a fixed program. Since both components have length $n$, they can be separated by dividing $xy$ into two equal halves. Therefore,
+\[
+K(z\mid xy)=O(1).
+\]
+Since $K(z)=n+O(\log n)$, the joint representation contains substantial algorithmic information about an admissible representation of $e_3$, even though neither component individually provides such information.
 \end{example}
 
-The concept of joint representation can be extended to any arbitrary, but finite, collection of representations. This allows us to incorporate multiple partial representations into our research or to use them in the process of discovering new entities.
+The example demonstrates that the information available from a joint representation need not be limited to information that is substantially available from its individual components. The combination may reveal information about another entity through a computable relationship between the components. This provides a theoretical mechanism through which information about distinct entities can be combined to obtain information about an additional entity.
+
+Nevertheless, inter-entity joining does not guarantee that the resulting string represents another entity. The combination may contain only redundant information, may remain informative solely about the original entities, or may fail to provide non-trivial information about any additional entity. Furthermore, the entity represented by the joint string need not be distinct from both component entities. An inter-entity joint representation may also improve the representation of one of its original entities by incorporating information obtained from another.
+
+Inter-entity joining therefore offers a general mechanism for combining information across different entities, without imposing any assumption that the resulting combination is necessarily meaningful, novel, or scientifically useful. Its potential role in discovering previously unrecognized entities will be examined in the later applications of the theory.
+
+\subsubsection*{Joint Representations of Finite Collections}
+
+The concept of joint representation can be generalized from pairs to arbitrary finite collections.
 
 \begin{definition}
-Let $r_1, r_2, \ldots, r_n \in \mathcal{R}_\mathcal{E}$ be a finite collection of representations. The \emph{joint representation} of $r_1, r_2, \ldots, r_n$ is defined as the concatenated string $r_1 r_2 \ldots r_n$.
+Let $r_1,\ldots,r_n\in \mathcal{R}_{\mathcal{E}}$, where $n\ge 1$. We define their \emph{joint representation} as the concatenated string
+\[
+r_1r_2\cdots r_n.
+\]
 \end{definition}
 
-The possibility that joint representations of known entities give rise to representations of new entities is a critical element of the theory of nescience. It provides a formal mechanism for the discovery of previously unknown entities through the systematic combination of existing knowledge, without requiring access to representations that lie outside the current epistemic horizon.
+By associativity, the resulting string does not depend on how the successive concatenations are grouped.
+
+When all the component representations refer to the same entity, the operation generalizes intra-entity joining.
+When they refer to different entities, it generalizes inter-entity joining. More generally, a finite joint representation may combine several representations of each of several distinct entities. Such a combination can be understood as a succession of intra-entity and inter-entity joins.
+
+The recovery of individual components may require additional information about their boundaries unless these boundaries are determined by the representation convention.
+
+For a fixed number of components, the informational contribution of each component is preserved up to the corresponding boundary-identification overhead. Consequently, the combination makes the information from the different representations jointly available, although it does not guarantee improved extendedness relative to any particular entity.
 
 %
 % Section: Representation of Areas
 %
 
+
 \section{Representations of Research Areas}
+\label{sec:representations_research_areas}
 
-Research areas are subsets of the set of entities \(E\). Once individual
-entities admit representations, it is natural to ask how an entire area can be
-represented. Intuitively, a representation of an area should collect
-representations of the entities that compose it in such a way that each
-component can be isolated and identified. This allows the area to be studied
-not merely as an undifferentiated collection of symbols, but as a structured
-family of entity-level representations.
+Research areas are subsets of the set of entities $\mathcal{E}$. Once individual entities admit representations, it is natural to ask how an entire research area can be represented. Intuitively, a representation of an area should collect representations of its constituent entities in such a way that each component can be identified and recovered independently.
 
-A first difficulty is that research areas need not be finite, whereas
-representations are finite binary strings. A second difficulty is that some
-entities in an area may be unknowable, and therefore may not admit any
-representation at all. For these reasons, the representation of an area must be
-understood relative to a finite subset of its representable entities.
+This requirement distinguishes the representation of a research area from an ordinary joint representation, introduced in Section~\ref{sec:joint_representations}. Whereas joint representation is based on string concatenation, representing an area requires preserving the boundaries and identities of its components. Otherwise, the resulting string would not necessarily allow us to determine which information belongs to each entity.
 
-Let \(A \subseteq E\) be a research area. Recall that, for each entity
-\(e \in E\), the set \(R_e \subseteq B^\ast\) denotes the set of representations of
-\(e\), and \(\hat{R}_e \subseteq B^\ast\) denotes the set of effective
-representations of \(e\).
+Two difficulties arise immediately. First, a research area need not be finite, whereas every representation is a finite binary string. Second, some entities within an area may be unknowable, and therefore may not admit extended representations. Consequently, the component-wise representation of a research area must be formulated in terms of finite subsets of its representable entities.
+
+In practice, a further limitation appears: scientific inquiry relies on effective representations rather than on the theoretical sets of extended representations. We therefore distinguish between theoretical area representations and their effective counterparts.
+
+% Subsection: Area Representation
+
+\subsection*{Area Representations}
+
+We define the representation of a research area by collecting extended representations of a finite selection of its constituent entities.
 
 \begin{definition}
-Let \(\mathcal{O}\) be a representation oracle over \(E\), and let \(A \subseteq E\)
-be a research area. We define the \emph{oracle-knowable part} of \(A\) by
+Let $A\subseteq\mathcal{E}$ be a research area, and let $F=\{e_1,\ldots,e_n\}\subseteq A$ be a nonempty finite subset of entities, with a fixed ordering $e_1,\ldots,e_n$. For each $i=1,\ldots,n$, let $r_i\in\mathcal{R}_{e_i}$ be an extended representation of $e_i$. We define a \emph{representation of the research area} \index{Representation of a research area} $A$, associated with the finite subarea $F$, as any binary string of the form
 \[
-A_{\mathcal{O}}^{\top} := A \cap E_{\mathcal{O}}^{\top}.
+\rho_F=\langle r_1,\ldots,r_n\rangle,
+\]
+where $\langle\cdot\rangle$ denotes a fixed computable, self-delimiting encoding of finite sequences.
+\end{definition}
+
+The representation $\rho_F$ collects one extended representation of each entity in $F$. The ordering establishes the association between each component $r_i$ and its corresponding entity $e_i$. This association is part of the chosen research context. The binary string $\rho_F$ does not, by itself, need to encode the identities of the entities in $F$. In particular, the construction does not require the set $\mathcal{E}$ to be effectively enumerable or its entities to possess computable identifiers.
+
+The representation $\rho_F$ is not necessarily an extended representation of any individual entity. Rather, it is a structured binary string constructed from extended representations of the entities in $F$. This distinction allows area representations to be treated as objects of description and algorithmic analysis without introducing a separate representation oracle for research areas.
+
+An area representation is not necessarily complete. It may cover only a finite subset of the entities in the area, reflecting the possibility that the area is infinite or contains unknowable entities.
+
+\begin{definition}
+The \emph{knowable part of an arera}\index{Knowable part of an area} $A$, denoted by $A^{\top}$,
+is given by
+\[
+A^{\top}=A\cap\mathcal{E}^{\top}.
 \]
 \end{definition}
 
-Thus, \(A_{\mathcal{O}}^{\top}\) is the subset of entities in the area that are
-knowable with respect to the oracle \(\mathcal{O}\). If \(A\) contains entities
-outside \(A_{\mathcal{O}}^{\top}\), then no area representation based on
-\(\mathcal{O}\) can include them as individually decodable components.
+An area representation covering every entity in $A^{\top}$ can exist when this set is finite and nonempty. A representation covering the entire area additionally requires that $A$ itself be finite and all its entities knowable. If $A$ contains unknowable entities, no component-wise area representation constructed exclusively from extended representations can include those entities. Nevertheless, a representation of its knowable part
+may still be constructed.
 
-In order to represent several entities together, we must separate their
-representations and attach identifiers that allow each component to be
-recognized. Any standard self-delimiting encoding of finite strings may be
-used for this purpose.
-
-\begin{definition}
-Let \(A \subseteq E\) be a research area, let
-\[
-F = \{e_1,\dots,e_n\} \subseteq A
-\]
-be a finite subset, and let \(r_i \in R_{e_i}\) for each \(i=1,\dots,n\). Let
-\(\iota_1,\dots,\iota_n \in B^\ast\) be pairwise distinct identifier strings. We
-define a \emph{representation of the finite subarea \(F\)} as any finite binary
-string of the form
-\[
-\rho_F
-=
-\langle (\iota_1,r_1),\dots,(\iota_n,r_n)\rangle,
-\]
-where \(\langle \cdot,\cdot\rangle\) and its finite iteration denote a fixed
-self-delimiting computable encoding of pairs and finite sequences of binary
-strings.
-\end{definition}
-
-The identifiers \(\iota_i\) do not need to carry scientific meaning by
-themselves. Their only purpose is to make it possible to separate the
-different components of the area representation and to determine which
-representation belongs to which entity within the represented finite family.
-
-\begin{definition}
-Let \(A \subseteq E\) be a research area. We say that a binary string
-\(\rho\in B^\ast\) is an \emph{extended representation of the area \(A\)} if
-there exists a finite subset \(F=\{e_1,\dots,e_n\}\subseteq A\) and strings
-\(r_i\in R_{e_i}\) such that
-\[
-\rho=\langle (\iota_1,r_1),\dots,(\iota_n,r_n)\rangle
-\]
-for some pairwise distinct identifiers \(\iota_1,\dots,\iota_n\).
-\end{definition}
-
-This definition deliberately allows area representations to be partial: the
-string \(\rho\) need not encode all entities in \(A\), but only a finite subset of
-them. This is unavoidable whenever \(A\) is infinite, and it remains useful
-even when \(A\) is finite but some of its entities are unknowable.
-
-\begin{definition}
-Let \(A \subseteq E\) be a research area and let \(\mathcal{O}\) be a
-representation oracle. We say that \(\rho\) is a \emph{complete area
-representation of \(A\) relative to \(\mathcal{O}\)} if \(\rho\) is an area
-representation associated with the finite set
-\[
-F=A_{\mathcal{O}}^{\top}.
-\]
-In particular, such a complete representation can exist only if
-\(A_{\mathcal{O}}^{\top}\) is finite.
-\end{definition}
-
-Thus, if \(A\) is finite and all its entities are knowable with respect to
-\(\mathcal{O}\), then \(A\) admits a complete area representation. If \(A\)
-contains unknowable entities, then at best one can represent its knowable
-part \(A_{\mathcal{O}}^{\top}\).
+A fundamental requirement of area representations is that their individual components remain recoverable. This property follows directly from the encoding convention.
 
 \begin{proposition}
-Let
-\[
-\rho_F=\langle (\iota_1,r_1),\dots,(\iota_n,r_n)\rangle
-\]
-be a representation of a finite subarea \(F=\{e_1,\dots,e_n\}\subseteq A\).
-Then each pair \((\iota_i,r_i)\) can be recovered effectively from \(\rho_F\).
+Let $\rho_F=\langle r_1,\ldots,r_n\rangle$ be a representation of a finite subarea $F=\{e_1,\ldots,e_n\}$. Then each component $r_i$ can be recovered effectively from $\rho_F$, given its position $i$ in the sequence.
 \end{proposition}
-
 \begin{proof}
-By construction, \(\rho_F\) is encoded using a fixed self-delimiting
-computable coding of finite sequences of pairs. Therefore there exists a
-computable decoding procedure that parses \(\rho_F\) and returns each pair
-\((\iota_i,r_i)\). Hence every component representation is effectively
-recoverable from the area representation.
+By construction, $\rho_F$ is encoded using a fixed computable, self-delimiting encoding of finite sequences. Therefore, there exists a computable procedure that parses $\rho_F$ into its individual components and returns the component at position $i$.
 \end{proof}
 
-The previous proposition formalizes the main purpose of tagging
-individual entity representations: the representation of an area preserves the
-identity of its components.
+This proposition shows that representing an area does not erase the individual representations of its constituent entities. Each component remains available for independent analysis, comparison, or description.
+
+The same property has an immediate consequence for the algorithmic information contained in an area representation.
 
 \begin{proposition}
-Area representations are not unique.
+Let $\rho_F=\langle r_1,\ldots,r_n\rangle$ be a representation of a finite subarea $F$. For every $i\in\{1,\ldots,n\}$ and every $x\in\mathcal{B}^\ast$,
+\[
+K(x\mid\rho_F) \le K(x\mid r_i)+K(i)+O(1),
+\]
+where $K(i)$ denotes the Kolmogorov complexity of a fixed binary encoding of the integer $i$.
 \end{proposition}
-
 \begin{proof}
-Non-uniqueness may arise in at least two ways. First, an entity
-\(e \in E\) may admit several distinct representations \(r,r' \in R_e\). Second,
-even for a fixed family of entity-level representations, one may choose
-different identifiers or a different order of concatenation. Therefore the same
-research area may admit multiple distinct area representations.
+Given $\rho_F$ and the index $i$, the previous proposition provides a fixed computable procedure for recovering $r_i$. Once $r_i$ has been recovered, a shortest program witnessing $K(x\mid r_i)$ can be executed to
+reconstruct $x$. The index $i$ can be supplied using a program of length $K(i)$, while the procedure combining
+these computations contributes only a fixed overhead. Consequently,
+\[
+K(x\mid\rho_F) \le K(i)+K(x\mid r_i)+O(1),
+\]
+which establishes the result.
 \end{proof}
 
-This non-uniqueness is not a defect. It reflects the fact that a research area
-may be organized in different representational styles, just as an individual
-entity may admit several valid representations.
+The proposition shows that an area representation preserves access to the algorithmic information provided by each component, up to the information required to select that component.
+
+In particular, for every admissible representation
+$\bar r_i\in\bar{\mathcal{R}}_{e_i}$,
+\[
+K(\bar r_i\mid\rho_F) \le K(\bar r_i\mid r_i)+K(i)+O(1).
+\]
+Thus, the combined area representation makes the information contained in each extended representation available within a single binary string.
+
+The benefit of representing an area as a single string is not limited to preserving its individual representations. The entities composing an area may exhibit relationships that allow their representations to be described jointly more economically than independently. For example, the representation of one entity may be computable from the representations of other entities, making it unnecessary to encode all components independently. Such dependencies can reduce the Kolmogorov complexity of the combined representation and provide evidence of shared algorithmic structure within the research area. This possibility will be examined in Chapter~\ref{chap:Descriptions}.
+
+Another useful property is that finite area representations can be combined to represent larger areas.
 
 \begin{proposition}
-Let \(F_1,F_2\subseteq A\) be finite subareas with \(F_1\cap F_2=\varnothing\).
-If \(\rho_{F_1}\) and \(\rho_{F_2}\) are area representations of \(F_1\) and \(F_2\),
-respectively, then there exists an area representation of \(F_1\cup F_2\).
+Let $F_1,F_2\subseteq A$ be disjoint, nonempty, finite subareas, and let $\rho_{F_1}$ and $\rho_{F_2}$ be their respective area representations. Then there exists an area representation of $F_1\cup F_2$ containing all the
+component representations of $\rho_{F_1}$ and $\rho_{F_2}$.
 \end{proposition}
-
 \begin{proof}
-Write
+Write $\rho_{F_1} = \langle r_1,\ldots,r_m\rangle$ and $\rho_{F_2} = \langle s_1,\ldots,s_\ell\rangle$. Since $F_1$ and $F_2$ are disjoint, we may construct the area representation
 \[
-\rho_{F_1}=\langle (\iota_1,r_1),\dots,(\iota_m,r_m)\rangle
+\rho_{F_1\cup F_2} = \langle r_1,\ldots,r_m, s_1,\ldots,s_\ell \rangle,
 \]
-and
-\[
-\rho_{F_2}=\langle (\kappa_1,s_1),\dots,(\kappa_\ell,s_\ell)\rangle.
-\]
-Choosing the identifiers so that all
-\(\iota_1,\dots,\iota_m,\kappa_1,\dots,\kappa_\ell\) are pairwise distinct, the
-concatenated string
-\[
-\langle (\iota_1,r_1),\dots,(\iota_m,r_m),(\kappa_1,s_1),\dots,(\kappa_\ell,s_\ell)\rangle
-\]
-is a representation of the finite subarea \(F_1\cup F_2\).
+using the ordering that lists the entities of $F_1$ before those of $F_2$. Every component remains an extended
+representation of its corresponding entity. Therefore, the resulting string is an area representation of
+$F_1\cup F_2$.
 \end{proof}
 
-This shows that finite area representations are closed under finite
-aggregation. In this sense, representing an area amounts to collecting
-identifiable entity-level representations into a single structured string.
+This proposition establishes that area representations can be aggregated while preserving the individual representations of their constituent entities. The construction is not necessarily the literal concatenation of the original area-representation strings. Rather, their component sequences are combined using the fixed self-delimiting encoding.
 
-In practice, however, science does not work with the full set \(R_e\) of
-representations of an entity, but with the currently available effective
-representations.
+Area representations are generally not unique. The same entity may admit different extended representations, and the entities of a finite subarea may be ordered in different ways. Consequently, the same research area may admit multiple area representations, each emphasizing different information about its constituent entities Furthermore, an area representation associated with a finite subarea $F\subseteq A$ may also serve as a partial representation of any larger research area containing $F$. These properties reflect the flexibility of research areas: the same entities may be grouped, ordered, and represented differently depending on the objectives of the investigation.
+
+% Subsection. Effective Representation of Research Areas
+
+\subsection*{Effective Representations of Research Areas}
+
+The theoretical construction introduced above relies on extended representations of individual entities. In practice, however, scientific inquiry proceeds with the effective representations that have entered scientific consideration.
+
+We first identify the portion of a research area that has entered scientific consideration.
 
 \begin{definition}
-Let \(A \subseteq E\) be a research area and let \(t\) denote a time index. We
-define the \emph{effectively known part} of the area at time \(t\) by
+Let $A\subseteq\mathcal{E}$ be a research area and let $t$ be a time index. We define the \emph{effectively known part} \index{Effectively known part of a research area} of $A$ at time $t$ as
 \[
-\hat{A}^{\,t} := A \cap \hat{E}^{\,t}.
+\hat{A}^{\,t} = A\cap\hat{\mathcal{E}}^t.
 \]
 \end{definition}
 
-The set \(\hat{A}^{\,t}\) contains those entities of the area for which at least one
-effective representation is available at time \(t\).
+The set $\hat{A}^{\,t}$ contains those entities in $A$ for which at least one effective representation has been
+assigned by time $t$. Unlike the theoretical knowable part $A^\top$, the set $\hat{A}^{\,t}$ may contain fictitious, incorrectly classified, or theoretically unknowable entities. Indeed, the existence of an effective
+representation does not guarantee the existence of an admissible representation of the entity. Conversely, an entity may belong to $A^\top$ while remaining effectively unknown because no effective representation has yet
+been assigned to it.
+
+We can now introduce the practical counterpart of an area representation.
 
 \begin{definition}
-Let \(A \subseteq E\) be a research area and let
+Let $A\subseteq\mathcal{E}$ be a research area, and let
 \[
-F=\{e_1,\dots,e_n\}\subseteq \hat{A}^{\,t}
+F=\{e_1,\ldots,e_n\} \subseteq\hat{A}^{\,t}
 \]
-be a finite subset of effectively known entities at time \(t\). For each
-\(i=1,\dots,n\), let \(\hat{r}_i \in \hat{R}_{e_i}^{\,t}\), and let
-\(\iota_1,\dots,\iota_n\in B^\ast\) be pairwise distinct identifiers. We define an
-\emph{effective representation of the finite known subarea \(F\) at time \(t\)}
-as any binary string of the form
+be a nonempty finite subset of effectively known entities, with a fixed ordering. For each $i=1,\ldots,n$, let
+$\hat r_i\in\hat{\mathcal{R}}_{e_i}^t$ be an effective representation of $e_i$. We define an \emph{effective representation of the research area}\index{Effective representation of a research area} $A$, associated with the finite subarea $F$ at time $t$, as any binary string of the form
 \[
-\hat{\rho}^{\,t}_F
-=
-\langle (\iota_1,\hat{r}_1),\dots,(\iota_n,\hat{r}_n)\rangle.
+\hat{\rho}_F^{\,t} = \langle \hat r_1,\ldots,\hat r_n \rangle.
 \]
 \end{definition}
 
-Effective area representations are the practical counterparts of area
-representations. They need not be correct or complete, because their
-components are only effective representations of the individual entities.
-Nevertheless, they encode the current representational state of the part of
-the area that is effectively known.
+An effective area representation collects the representations that have been assigned to the entities of a finite subarea within scientific practice. Its components are not required to belong to the corresponding theoretical sets $\mathcal{R}_{e_i}$. Consequently, an effective area representation may contain incorrect, misleading, or entirely uninformative representations. This distinction is essential because the theoretical sets of extended representations are generally inaccessible in practice.
+
+An effective area representation is also not necessarily complete. If $\hat{A}^{\,t}$ is finite and nonempty, one may choose $F=\hat{A}^{\,t}$ and represent every effectively known entity in the area. If $\hat{A}^{\,t}$ is infinite, any component-wise effective representation necessarily
+covers only a finite subset.
+
+Under the cumulative interpretation of effective representations, the components of $\hat{\rho}_F^{\,t}$
+may include representations that have subsequently been rejected or superseded. Thus, an effective area
+representation reflects the historical record of scientific inquiry rather than necessarily the collection of representations that remain accepted or actively used at time $t$.
+
+% Subsection: Evolution of Area Representations
+
+\subsection*{Evolution of Area Representations}
+
+Scientific inquiry progressively introduces new effective representations and recognizes additional entities
+as subjects of investigation. Under the cumulative interpretation of effective representations, the set of effectively known entities $\hat{\mathcal{E}}^t$ is monotonic over time. This property extends immediately
+to the effectively known part of any fixed research area.
 
 \begin{proposition}
-Let \(A \subseteq E\) be a fixed research area. If \(t_1<t_2\), then
+Let $A\subseteq\mathcal{E}$ be a fixed research area, and let $t_1<t_2$. Then
 \[
-\hat{A}^{\,t_1}\subseteq \hat{A}^{\,t_2}.
+\hat{A}^{\,t_1} \subseteq \hat{A}^{\,t_2}.
 \]
 \end{proposition}
-
 \begin{proof}
-By Proposition~3.8.2, the set \(\hat{E}^{\,t}\) of effectively known entities is
-monotone in time. Therefore
-\[
-\hat{A}^{\,t_1}
-=
-A\cap \hat{E}^{\,t_1}
-\subseteq
-A\cap \hat{E}^{\,t_2}
-=
-\hat{A}^{\,t_2}.
-\]
+By the monotonicity of effectively known entities, $\hat{\mathcal{E}}^{t_1} \subseteq \hat{\mathcal{E}}^{t_2}$. Intersecting both sides with the fixed research area $A$ gives $A\cap\hat{\mathcal{E}}^{t_1} \subseteq A\cap\hat{\mathcal{E}}^{t_2}$. Hence, $\hat{A}^{\,t_1} \subseteq \hat{A}^{\,t_2}$.
 \end{proof}
 
-This proposition states that, if the research area \(A\) is held fixed, the
-subset of its entities that are effectively known is expected to grow over
-time. Consequently, effective area representations may be progressively
-extended by incorporating newly available effective representations of
-entities that were previously unknown.
+The proposition establishes that, for a fixed research area, the historical collection of effectively known entities can only increase over time. This does not imply that scientific understanding necessarily improves.
+Newly introduced representations may be incomplete, incorrect, or associated with fictitious entities. In particular, scientific inquiry may introduce new mistakes as well as correct previous ones. These developments expand the historical record without necessarily reducing nescience.
+
+A further property concerns the extension of effective area representations as additional entities become effectively known.
 
 \begin{proposition}
-Let \(A \subseteq E\) be a fixed research area, and let
-\(\hat{\rho}^{\,t_1}_{F_1}\) be an effective representation of a finite known
-subarea \(F_1\subseteq \hat{A}^{\,t_1}\). If \(t_1<t_2\), then there exists a finite
-set \(F_2\) such that
-\[
-F_1\subseteq F_2\subseteq \hat{A}^{\,t_2}
-\]
-and an effective representation \(\hat{\rho}^{\,t_2}_{F_2}\) extending
-\(\hat{\rho}^{\,t_1}_{F_1}\).
+Let $A\subseteq\mathcal{E}$ be a fixed research area, and let $\hat{\rho}_{F_1}^{\,t_1}$ be an effective representation of a finite subarea $F_1 \subseteq \hat{A}^{\,t_1}$. If $t_1<t_2$, then for every finite set $F_2$ satisfying $F_1\subseteq F_2 \subseteq \hat{A}^{\,t_2}$, there exists an effective representation $\hat{\rho}_{F_2}^{\,t_2}$ that retains all the component representations of $\hat{\rho}_{F_1}^{\,t_1}$.
 \end{proposition}
-
 \begin{proof}
-Since \(\hat{A}^{\,t_1}\subseteq \hat{A}^{\,t_2}\), every entity in \(F_1\) remains
-effectively known at time \(t_2\). Let \(F_2\) be any finite subset of
-\(\hat{A}^{\,t_2}\) containing \(F_1\). For entities in \(F_1\), retain their
-previous tagged effective representations, and for entities in \(F_2\setminus
-F_1\), append newly available tagged effective representations. The resulting
-self-delimiting concatenation is an effective representation of \(F_2\) at time
-\(t_2\).
+By the previous proposition, $F_1 \subseteq \hat{A}^{\,t_1} \subseteq \hat{A}^{\,t_2}$. Since effective representations are cumulative, every effective representation associated with an entity in $F_1$ by time $t_1$
+remains recorded at time $t_2$. We therefore retain the original component representations of $\hat{\rho}_{F_1}^{\,t_1}$. For each entity in $F_2\setminus F_1$, we select an effective representation available by time $t_2$. Encoding the resulting ordered sequence of representations yields an effective area representation $\hat{\rho}_{F_2}^{\,t_2}$ that retains all the original components.
 \end{proof}
 
-The previous proposition formalizes the idea that scientific progress can be
-viewed as a gradual enrichment of area representations.
+The proposition formalizes the cumulative enrichment of effective area representations. The extension need not
+preserve the original binary string as a literal prefix of the new one. Instead, it preserves the previous component representations, which remain effectively recoverable.
 
-However, this monotonicity concerns only the set of effectively known
-entities relative to a \emph{fixed} research area. In practice, the area itself may
-change over time.
+The monotonicity properties established above depend on holding the research area $A$ fixed. In practice, however, the collection of entities considered to belong to a research area may itself change over time. As scientific understanding develops, new entities may be incorporated because previously unrecognized phenomena or structures are discovered. Other entities may be excluded because they are reclassified, shown to be fictitious, or considered irrelevant to the research objective.
 
-\begin{notation}
-If the membership of a research area changes with time, we write \(A^t\) for
-the set of entities regarded as belonging to the area at time \(t\).
-\end{notation}
+For example, an astronomical investigation may initially include an object believed to be a planet. Subsequent investigation may establish that the observations originated from an instrumental artifact. The purported planet may then be excluded from the current classification of astronomical objects, while its historical effective representations remain recorded. Thus, scientific development may involve two distinct processes: the cumulative expansion of the effectively known part of a fixed research area, and the revision of the membership
+and boundaries of the research area itself.
 
-This distinction is important. As scientific understanding deepens, the very
-delimitation of an area may be revised. New entities may be incorporated
-because they are discovered to belong naturally to the area, while other
-entities may be removed because they are reclassified or shown to be
-irrelevant.
-
-For example, a research area may initially include only those entities that
-are directly observable within a given methodological framework. Later, the
-introduction of new theories or instruments may enlarge the area by adding
-previously inaccessible entities. Conversely, some entities once thought to
-belong to the area may later be abandoned as fictitious, misclassified, or
-scientifically unproductive. Thus, the time evolution of a research area has
-two distinct components: the growth of the effectively known subset of a
-fixed area, and the possible redefinition of the area itself.
-
-In summary, the representation of a research area is necessarily
-component-wise and finite. It is obtained by concatenating identifiable
-representations of individual entities. When all entities in a finite area are
-knowable, one may represent the whole area. When some entities are
-unknowable, only the knowable part can be represented. In practice, one
-works instead with effective area representations built from the currently
-available effective representations of the effectively known entities. These
-effective representations are expected to become richer over time, while the
-boundaries of the research area itself may also evolve as scientific knowledge
-progresses.
+When the area changes, there is no general guarantee that its successive sets of constituent entities are related by inclusion. Consequently, the effectively known part of a changing area need not be monotonic, even though the historical set of effectively known entities remains cumulative.
 
 %
 % Section: References

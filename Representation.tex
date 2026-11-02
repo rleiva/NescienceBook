@@ -1357,6 +1357,89 @@ This dependence is unavoidable. Admissibility is not a purely syntactic property
 
 Admissible representations thus occupy an intermediate position between minimality and unrestricted empirical data. They are broader than minimal representations because they allow redundancy, but narrower than arbitrary representations because they exclude semantically irrelevant independent information. This makes them especially suitable as the raw material for later description-building. In practice, useful scientific representations are seldom minimal, but they must still be sufficiently grounded in the entity to prevent models from being driven by spurious informational content. Admissibility captures exactly this compromise.
 
+% Section: Admissible Representational Complexity Floor
+
+\subsection*{Admissible Representational Complexity Floor}
+
+The representational complexity floor $\kappa_e$, introduced in Definition~\ref{def:representational_complexity_floor}, measures the minimum Kolmogorov complexity among all decodable representations of an entity $e$. However, a decodable representation need not be admissible, since it may contain independent information that is unnecessary for reconstructing the entity. It is therefore useful to introduce a corresponding complexity floor restricted to admissible representations. This quantity will provide a reference bound for the deficiency and miscoding of representations, which will be studied in Chapter \ref{chap:Miscoding}.
+
+\begin{definition}
+\label{def:admissible_complexity_floor}
+Let $e\in\mathcal E_{\mathcal O}^{\top}$ be an oracle-knowable entity, and let $\mathcal O_{\mathcal E}$be a fixed representation oracle. We define the\emph{admissible representational complexity floor}of $e$ as
+\[
+\bar\kappa_e = \min_{r\in\bar{\mathcal R}_e}K(r).
+\]
+\end{definition}
+
+The admissible representational complexity floor measures the least algorithmic information contained in any admissible representation of the entity. Unlike the representational complexity floor $\kappa_e$, the minimization is restricted to representations satisfying the admissibility criterion.
+
+Since every oracle-knowable entity admits at least one minimal representation, and every minimal representation is admissible, the set $\bar{\mathcal R}_e$ is nonempty. Consequently, the minimum is well defined.
+
+The following proposition establishes the relationship between the two representational complexity floors.
+
+\begin{proposition}
+\label{prop:complexity_floors_order}
+Let $e\in\mathcal E_{\mathcal O}^{\top}$. Then
+\[
+\kappa_e\le\bar\kappa_e.
+\]
+\end{proposition}
+\begin{proof}
+By definition, every admissible representation is decodable. Therefore, $\bar{\mathcal R}_e \subseteq \mathcal R_e^\top$. Since the minimum of a function over a set cannot exceed its minimum over a nonempty subset, we have
+\[
+\min_{r\in\mathcal R_e^\top}K(r) \le \min_{r\in\bar{\mathcal R}_e}K(r).
+\]
+By the definitions of the two complexity floors we have $\kappa_e\le\bar\kappa_e$.
+\end{proof}
+
+This proposition shows that imposing admissibility cannot decrease the minimum Kolmogorov complexity of a representation. The inequality may be an equality, but equality is not guaranteed by the definitions alone. We next establish a sufficient condition under which the two complexity floors coincide.
+
+\begin{proposition}
+\label{prop:complexity_floors_equality}
+Let $e\in\mathcal E_{\mathcal O}^{\top}$. If there exists an admissible representation $r_0\in\bar{\mathcal R}_e$ satisfying $K(r_0)=\kappa_e$, then
+\[
+\bar\kappa_e = \kappa_e.
+\]
+\end{proposition}
+\begin{proof}
+Since $r_0\in\bar{\mathcal R}_e$, the definition of the admissible representational complexity floor
+implies $\bar\kappa_e\le K(r_0)=\kappa_e$. On the other hand, Proposition~\ref{prop:complexity_floors_order}  $\kappa_e\le\bar\kappa_e$. Combining both inequalities yields $\bar\kappa_e=\kappa_e$.
+\end{proof}
+
+The two complexity floors therefore coincide whenever a representation attaining the minimum complexity among all decodable representations is also admissible. More generally, equality holds precisely when at least one admissible representation attains the unrestricted minimum.
+
+A further relationship follows from the inclusion of minimal representations within admissible representations.
+
+\begin{proposition}
+\label{prop:admissible_floor_minimal_bound}
+Let $e\in\mathcal E_{\mathcal O}^{\top}$. Then
+\[
+\bar\kappa_e \le \min_{r^\star\in\mathcal R_e^\star}K(r^\star).
+\]
+Consequently,
+\[
+\bar\kappa_e \le \min_{r^\star\in\mathcal R_e^\star} \ell(r^\star)+O(1).
+\]
+\end{proposition}
+\begin{proof}
+Every minimal representation is admissible. Therefore, $\mathcal R_e^\star \subseteq \bar{\mathcal R}_e$. Taking minima of Kolmogorov complexity over these sets gives
+\[
+\min_{r\in\bar{\mathcal R}_e}K(r) \le \min_{r^\star\in\mathcal R_e^\star}K(r^\star).
+\]
+Hence,
+\[
+\bar\kappa_e \le \min_{r^\star\in\mathcal R_e^\star}K(r^\star).
+\]
+Finally, since $K(r^\star)\le\ell(r^\star)+O(1)$, we obtain
+\[
+\bar\kappa_e \le \min_{r^\star\in\mathcal R_e^\star} \ell(r^\star)+O(1).
+\]
+\end{proof}
+
+This proposition connects the admissible complexity floor with the minimal representations introduced earlier. In particular, it provides an upper bound based on the shortest decodable encodings of the entity. The distinction is important because minimal string length and minimum Kolmogorov complexity are different optimization criteria. An admissible representation may be longer than every minimal representation while still having lower Kolmogorov complexity because it contains algorithmically redundant information.
+
+The admissible representational complexity floor thus provides a common reference scale for evaluating representations of an entity. Together with the representational complexity floor, it distinguishes between the least complexity achievable through decodability and the least complexity achievable subject to admissibility.
+
 %
 % Section: Extended Representations
 % 
@@ -2174,6 +2257,6 @@ When the area changes, there is no general guarantee that its successive sets of
 % Section: References
 %
 
-\section{References}
+\section*{References}
 
 For more information about Russell's paradox, Cantor's theorem, and universal sets, refer, for example, to \cite{jech2013set}. This book also covers the Zermelo–Fraenkel system of axioms, including the Axiom of Choice. The idea of using a function to assign to each symbol and well-formed formula of a formal language a unique natural number (called a Gödel number) was introduced by Kurt Gödel in his proof of the incompleteness theorems \cite{godel1931formal}. A detailed discussion of the Berry paradox from the perspective of computability can be found in \cite{chaitin1995berry}. For a review of the problem of representation in Kolmogorov complexity, as well as a detailed account of the implications of Kolmogorov complexity being defined only up to an additive constant, see \cite{li2013introduction}. That oracle machines are not mechanical was originally stated by Turing when he introduced the concept of the oracle machine in \cite{turing1939systems}. For a comprehensive review of oracle Turing machines, refer to \cite{robivc2015foundations}.

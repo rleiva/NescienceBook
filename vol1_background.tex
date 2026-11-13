@@ -1,0 +1,1018 @@
+%
+% CHAPTER: Preliminaries
+%
+
+\chapterimage{Koenigsberg_Map_by_Bering_1613.pdf} % Chapter heading image
+
+\chapter{Mathematical Background}
+\label{chap:Mathematical_Background}
+
+\begin{quote}
+\begin{flushright}
+\emph{Mathematics may be defined as the subject in which\\
+we never know what we are talking about,\\
+nor whether what we are saying is true.}\\
+Bertrand Russell
+\end{flushright}
+\end{quote}
+\bigskip
+
+%
+% Section: Discrete Mathematics
+%
+
+\section{Discrete Mathematics}
+
+This section introduces the concepts and notation from \emph{discrete mathematics} needed throughout this book, including sets, relations, functions and partial functions, countability, finite strings, and asymptotic notation. Particular attention is given to string operations and encoding conventions, which underpin the treatment of representations and descriptions as finite binary strings. These preliminaries establish the mathematical language used to formulate the theory of nescience and provide the foundation for the treatment of computability and Kolmogorov complexity in the sections that follow.
+
+% Subsection: Sets
+
+\subsection*{Sets}
+\label{sec:sets}
+
+The sets of \emph{natural}\index{Set of natural numbers}, \emph{integer}\index{Set of integers}, \emph{rational}\index{Set of rationals}, and \emph{real}\index{Set of real numbers} numbers are denoted by $\mathbb{N}$, $\mathbb{Z}$, $\mathbb{Q}$, and $\mathbb{R}$, respectively. Each of these sets includes the number $0$. The \emph{nonnegative integers}\index{Set of nonnegative integers} are represented by $\mathbb{Z}_{\geq 0}$, and the \emph{positive reals}\index{Set of positive reals} by $\mathbb{R}_{\geq 0}$; both sets also include $0$. Let $A$ be a \emph{set}\index{Set}. We indicate that $x$ is an \emph{element}\index{Element of a set} of $A$ using the notation $x \in A$, and that $x$ is not an element of $A$ with $x \notin A$. Elements of a set can be listed explicitly using braces, as in $A = \{0, 1, 2, 3\}$, or defined by a condition using \emph{set-builder}\index{Set formation notation} notation, for example, $A = \{x \in \mathbb{N} : x < 4\}$, provided that the \emph{universe}\index{Universe of a set} of discourse is clearly specified.
+
+Suppose $A$ and $B$ are two sets. We use the notation $A = B$ to indicate that the sets are \emph{equal}\index{Equal sets}. The expression $A \subseteq B$ signifies that $A$ is a \emph{subset or equal}\index{Subset} to $B$, while $A \subset B$ denotes that $A$ is a \emph{proper subset}\index{Proper subset} of $B$ (meaning that $A$ is contained in $B$ but is not equal to $B$). The condition $A = B$ holds if and only if both $A \subseteq B$ and $B \subseteq A$ are true. The symbol $\varnothing$ denotes the \emph{empty set}\index{Empty set}, which is the set containing no elements.
+
+The term \emph{cardinality}\index{Cardinality of a set} refers to the number of elements in a finite set $A$, denoted by $d(A)$. Accordingly, the cardinality of the empty set $\varnothing$ is 0, since it contains no elements. For any two sets $A$ and $B$, the notation $A \cup B$ denotes the \emph{union}\index{Union of sets} of $A$ and $B$, while $A \cap B$ represents their \emph{intersection}\index{Intersection of sets}. For a collection of $n$ sets $A_1, A_2, \ldots, A_n$, we write their union and intersection as $\cup_{i=1}^n A_i$ and $\cap_{i=1}^n A_i$, respectively. For an arbitrary collection of sets indexed by a set $I$, we use the notations $\cup_{i \in I} A_i$ and $\cap_{i \in I} A_i$. When dealing with an infinite collection of sets, we may use the shorthand $\cup_{i=1}^{\infty} A_i$ and $\cap_{i=1}^{\infty} A_i$. Occasionally, we will make use of \emph{Venn diagrams}\index{Venn diagram} (a graphical representation of sets using overlapping closed regions) to visually represent set operations.
+
+Given any two sets $A$ and $B$, the \emph{set difference}\index{Set difference} is denoted by $A \backslash B$, and the \emph{complement}\index{Complement of a set} of the set $A$ is written as $A^c$. \emph{De Morgan's laws}\index{De Morgan's laws} state that for any sets $A$ and $B$, we have $\left( A \cup B \right)^c = A^c \cap B^c$ and $\left( A \cap B \right)^c = A^c \cup B^c$.
+
+Two sets $A$ and $B$ are said to be \emph{disjoint}\index{Disjoint sets} if their intersection is empty, i.e., $A \cap B = \varnothing$. A collection of sets $A_1, A_2, \ldots, A_n$ is disjoint if $A_i \cap A_j = \varnothing$ for all $i \neq j$. A \emph{partition}\index{Partition of a set} of a set $A$ is an indexed family of nonempty, pairwise disjoint subsets $\{A_i\}_{i \in I}$ such that $A = \bigcup_{i \in I} A_i$. The \emph{power set}\index{Power set} of $A$, denoted by $\mathcal{P}(A)$, is the set of all possible subsets of $A$. If the cardinality of $A$ is $n$, i.e., $d(A) = n$, then the cardinality of its power set is $2^n$, so $d\left( \mathcal{P}(A) \right) = 2^n$.
+
+% Relations
+
+\subsection*{Relations}
+\label{sec:relations}
+
+Consider two elements, $x$ and $y$. An \emph{ordered pair}\index{Ordered pair}, denoted as $(x, y)$, is a pairing in which the order of the elements matters. Generalizing this idea, an \emph{n-tuple}\index{n-tuple} is an ordered sequence of $n$ elements, written as $(x_1, \ldots, x_n)$. The \emph{Cartesian product}\index{Cartesian product} of two sets $A$ and $B$, denoted by $A \times B$, is the set of all ordered pairs $(x, y)$ such that $x \in A$ and $y \in B$. This concept extends naturally to $n$ sets $A_1, A_2, \dots, A_n$, where the Cartesian product is expressed as $A_1 \times A_2 \times \dots \times A_n$. Additionally, the \emph{n-fold Cartesian product} of a set $A$ with itself is denoted as $A^n$.
+
+Let $R$ be a subset of the Cartesian product of a set $A$ with itself, i.e., $R \subseteq A \times A$. Such a subset is called a \emph{binary relation}\index{Binary relation}. We write $aRb$ to indicate that the ordered pair $(a, b)$ belongs to $R$. A binary relation is said to be \emph{reflexive}\index{Reflexive relation} if, for every element $a \in A$, it holds that $aRa$. It is called \emph{symmetric}\index{Symmetric relation} if, for all $a, b \in A$, the condition $aRb$ implies $bRa$. A relation is \emph{antisymmetric}\index{Antisymmetric relation} if, for all $a, b \in A$, the coexistence of $aRb$ and $bRa$ implies $a = b$. It is \emph{transitive}\index{Transitive relation} if, for all $a, b, c \in A$, the conditions $aRb$ and $bRc$ together imply $aRc$. A relation is \emph{total}\index{Total relation} if, for every pair $a, b \in A$, either $aRb$ or $bRa$ holds. Binary relations can also be defined between two different sets $A$ and $B$, in which case $R$ is a subset of $A \times B$. Furthermore, the concept can be generalized to \emph{n-ary} relations, represented as $R \subseteq A_1 \times A_2 \times \dots \times A_n$.
+
+Let $R$ be a binary relation that is a subset of the Cartesian product $A \times A$, i.e., $R \subseteq A \times A$. If this relation is reflexive, symmetric, and transitive, it is called an \emph{equivalence relation}\index{Equivalence relation}, typically denoted by the symbol $\sim$. Under an equivalence relation, two elements $a, b \in A$ are said to be \emph{equivalent}\index{Equivalent elements} if $a \sim b$. The \emph{equivalence class}\index{Equivalence class} of an element $a$, denoted by $[a]$, is the set of all elements in $A$ that are equivalent to $a$. That is, the equivalence class of $a$ is defined as $[a] := \{ b \in A : a \sim b \}$. An equivalence relation partitions the set $A$ into disjoint subsets known as \emph{equivalence classes}, collectively forming what is called the \emph{quotient set}\index{Quotient set}. The quotient set is denoted by $A / {\mathord {\sim }}$ and is defined as the set of all equivalence classes: $A / {\mathord {\sim }} := { [a] : a \in A }$.
+
+A binary relation that is reflexive, transitive, and antisymmetric is known as a \emph{partial order}\index{Partial order}, typically denoted by the symbol $\preceq$. A set equipped with a partial order is called a \emph{partially ordered set}\index{Partially ordered set}, or \emph{poset}\index{poset} for short. In a poset, an element $a \in A$ is considered \emph{minimal}\index{Minimal element} if there is no element $b \in A$ such that $b \preceq a$ and $b \neq a$. Similarly, an element $a$ is said to be \emph{maximal}\index{Maximal element} if there is no element $b \in A$ such that $a \preceq b$ and $b \neq a$. A relation that is reflexive, transitive, antisymmetric, and total is called a \emph{total order}\index{Total order}, often denoted by the symbol $\leq$. A set endowed with a total order is referred to as a \emph{totally ordered set}\index{Totally ordered set}. In such a set $A$, the \emph{maximum element}\index{Maximum element}, denoted by $\max(A)$, satisfies $\max(A) \geq x$ for all $x \in A$, and the \emph{minimum element}\index{Minimum element}, denoted by $\min(A)$, satisfies $\min(A) \leq x$ for all $x \in A$. The set of natural numbers $\mathbb{N}$ satisfies
+the \emph{well-ordering principle}\index{Well-ordering principle}: every nonempty subset of $\mathbb{N}$ has a least element under the usual order $\leq$.
+
+\begin{example}
+Consider the set $A = \{(1,4), (4,1)\}$ equipped with the componentwise partial order $\preceq$, defined by $(x_1,x_2) \preceq (y_1,y_2)$ if and only if $x_1 \leq y_1$ and $x_2 \leq y_2$. Neither element of $A$ precedes the other, since $(1,4) \npreceq (4,1)$ and $(4,1) \npreceq (1,4)$. Consequently, both elements are minimal and maximal, but $A$ has neither a least nor a greatest element.
+\end{example}
+
+% Functions
+
+\subsection*{Functions}
+\label{sec:functions}
+
+A \emph{function}\index{Function} is defined as a binary relation $f \subseteq A \times B$ such that for each element $x \in A$, there exists at most one $y \in B$ for which $\left(x, y\right) \in f$. In this context, elements $\left(x, y\right) \in f$ are written as $f(x) = y$, and the function is denoted by $f : A \rightarrow B$. The set $A$ is called the \emph{domain}\index{Domain} of $f$, and $B$ is the \emph{codomain}\index{Codomain}. The set ${ y \in B : \exists x \in A \text{ such that } f(x) = y }$ is known as the \emph{range}\index{Range} of $f$. If the relation is not defined for every $x \in A$, the function is called a \emph{partial function}\index{Partial function}, and we write $f(x) \uparrow$ to indicate that $f$ is undefined at $x$.
+
+A \emph{total function}\index{Total function} $f: A \rightarrow B$ assigns exactly one element of $B$ to every element of $A$. By contrast, a \emph{partial function}\index{Partial function} $f: A \rightharpoonup B$ assigns at most one element of $B$ to each element of $A$ and may be undefined for some inputs. The \emph{domain of definition}\index{Domain of definition} of a partial function, denoted by $\operatorname{dom}(f) \subseteq A$, consists of those elements for which $f$ is defined. We write $f(x) \uparrow$ when $f$ is undefined at $x$. A function is \emph{injective}\index{Injective function} if $f(x) = f(y)$ implies $x = y$ for all $x,y \in \operatorname{dom}(f)$. It is \emph{surjective}\index{Surjective function} if, for every $y \in B$, there exists an $x \in \operatorname{dom}(f)$ such that $f(x) = y$. A total function is \emph{bijective}\index{Bijective function} if it is both injective and surjective. The \emph{identity function}\index{Identity function} $I_A: A \rightarrow A$, defined by $I_A(a) = a$ for all $a \in A$, is bijective. These concepts extend naturally to functions of multiple arguments, with domain $A_1 \times \cdots \times A_n$.
+
+The \emph{inverse}\index{Inverse function} of a bijective function $f$, is defined as $f(f^{-1}(x)) = f^{-1}(f(x)) = x$, for all $x$ in the domain of $f^{-1}$ and the range of $f$, respectively. Given a function $f: A \rightarrow B$, or a partial function $f: A \rightharpoonup B$, and a subset $C \subseteq B$, the \emph{inverse image} \index{Inverse image} of $C$ under $f$ is defined as $f^{-1}(C) = \{x \in \operatorname{dom}(f) : f(x) \in C\}$. Unlike an inverse function, the inverse image is defined for any function, regardless of whether
+it is injective or surjective. Given two functions $f$ and $g$, where the domain of $f$ includes the range of $g$, the \emph{composition}\index{Composition} of $f$ with $g$, denoted by $f \circ g$, is defined as $(f \circ g)(x) = f(g(x))$.
+
+\begin{example}
+Consider the partial function $f: \mathbb{R} \rightharpoonup \mathbb{R}$ defined by $f(x) = 1/x$ for $x \neq 0$.
+Its domain of definition is $\operatorname{dom}(f) = \mathbb{R} \setminus \{0\}$, since $f(0) \uparrow$.
+\end{example}
+
+Given a set $A \subseteq U$, the \emph{characteristic function}\index{Characteristic function} of $A$ is the function $1_A : U \rightarrow \{0, 1\}$, defined by $1_A(x) = 1$ if $x \in A$, and $1_A(x) = 0$ otherwise.
+
+A set $A$ is \emph{finite}\index{Finite set} if it contains $n$ elements for some $n \in \mathbb{N}$. It is \emph{countably infinite}\index{Countably infinite set} if there exists a bijection between $A$ and $\mathbb{N}$. A set is \emph{countable}\index{Countable set} if it is either finite or countably infinite, and \emph{uncountable}\index{Uncountable set} otherwise. Countability does not imply that the elements of a set can be enumerated by an algorithm. This stronger property, known as \emph{computable enumerability} \index{Computably enumerable set}, is discussed in the section on computability.
+
+\begin{example}
+The sets $\mathbb{N}$, $\mathbb{Z}$, and $\mathbb{Q}$ are countable, whereas $\mathbb{R}$ is uncountable.
+\end{example}
+
+Considering a real number $x \in \mathbb{R}$, its \emph{absolute value}\index{Absolute value}, denoted by $\mid x \mid$, is defined as $x$ if $x \geq 0$ and $-x$ if $x < 0$. The \emph{ceiling}\index{Ceil} function of $x$, written as $\lceil x \rceil$, is the smallest integer greater than or equal to $x$. The \emph{floor}\index{Floor} function of $x$, denoted by $\lfloor x \rfloor$, is the largest integer less than or equal to $x$. Given two positive integers $a$ and $b$, the \emph{modulo}\index{Modulo} operation, written as $a \bmod b$, yields the remainder when $a$ is divided by $b$.
+
+The \emph{Big-O notation}\index{Big-O notation} expresses asymptotic bounds on functions. For functions $f,g:\mathbb{N}\rightarrow\mathbb{R}$, with $g(n)>0$ for sufficiently large $n$, we write $f(n)=O(g(n))$ if there exist constants $c>0$ and $n_0\in\mathbb{N}$ such that $|f(n)|\leq c\,g(n) \qquad\text{for all }n\geq n_0$. In particular, the notation $f(n)=O(1)$ indicates that $f$ is bounded in absolute value by a constant, independently of $n$.  Big-O notation is also used to express additive bounds on information quantities. For functions $F,G:\mathcal{B}^*\rightarrow\mathbb{R}$, the expression $F(s)=G(s)+O(1)$ means that there exists a constant $c\geq 0$ such that $|F(s)-G(s)|\leq c$ for every $s\in\mathcal{B}^*$. Similarly, $F(s)\leq G(s)+O(\log(l(s)+2))$ means that there exists a constant $c\geq 0$ such that $F(s)-G(s)\leq c\log(l(s)+2)$ for every $s\in\mathcal{B}^*$. The constants appearing in asymptotic bounds must be independent of the variables over which the bounds are asserted, although they may depend on fixed parameters, such as the chosen universal Turing machine or encoding convention. In particular, an $O(1)$ term is bounded but not necessarily numerically small. Unless otherwise stated, logarithms are taken to base two throughout this book.
+
+%
+% Section: Strings
+%
+
+\subsection*{Strings}
+\label{sec:strings}
+
+Consider a non-empty finite set $\mathcal{S} = \{ s_1, s_2, \ldots, s_q \}$, referred to as the \emph{alphabet}\index{Alphabet}. The elements of this set are called \emph{symbols}\index{Symbols}. A \emph{sequence}\index{Sequence of symbols} over $\mathcal{S}$ is defined as an ordered arrangement of symbols $x_1 x_2 \dots x_n$, where each $x_i$ belongs to $\mathcal{S}$. In the special case where the alphabet is $\mathcal{B} = \{0, 1\}$, such sequences are known as \emph{binary sequences}\index{Binary sequence}. We use the term \emph{string}\index{String} to denote a finite sequence. This book primarily focuses on binary strings.
+
+The \emph{length}\index{Length of a string} of a string $s$, denoted by $l(s)$, refers to the total number of symbols contained in $s$. The symbol $\lambda$ is used to denote the \emph{empty string}\index{Empty string}, which is defined as the unique string over $\mathcal{S}$ with length 0. Given a symbol $x \in \mathcal{S}$, the string consisting of $x$ repeated $n$ times is denoted by $x^n$.
+
+The set of all strings $s\_{1}s\_{2}\ldots s\_{n}$ of length $n$ over the alphabet $\mathcal{S}$ is denoted by $\mathcal{S}^{n}$. We denote by $\mathcal{S}^{+}$ the union of all $\mathcal{S}^{n}$ for $n \geq 1$, and by $\mathcal{S}^{\ast}$ the set $\mathcal{S}^{+} \cup {\lambda}$. Note that all strings in $\mathcal{S}^{\ast}$ have finite length. The term \emph{Kleene closure}\index{Kleene closure} refers to $\mathcal{S}^{\ast}$.
+
+The \emph{multiplication principle}\index{Multiplication principle} states that, for finite sets $A_1, \ldots, A_k$, the cardinality of their Cartesian product is $d(A_1 \times \cdots \times A_k) = \prod_{i=1}^{k} d(A_i)$.
+In particular, for the binary alphabet $\mathcal{B} = \{0,1\}$, the number of strings of length $n$ is $d(\mathcal{B}^n) = 2^n$. The \emph{pigeonhole principle} \index{Pigeonhole principle} states that if more than $n$ objects are distributed among $n$ containers, at least one container must contain more than one object.
+
+\begin{example}
+The following relations hold: the cardinality of the set of binary strings of length $n$ is $d \left( \left\{ s \in \mathcal{B}^{\ast} : l(s) = n \right\} \right) = 2^n$, and the cardinality of the set of binary strings of length up to $n$ is $d \left( \left\{ s \in \mathcal{B}^{\ast} : l(s) \leq n \right\} \right) = 2^{n+1}-1$.
+\end{example}
+
+Given two strings $s$ and $t$ from $\mathcal{S}^{\ast}$, the \emph{concatenation}\index{String concatenation} of $s$ and $t$, denoted as $st$, is the sequence obtained by placing the sequence of symbols in $t$ immediately after the sequence in $s$. Consequently, the length of the concatenated string, $l(st)$, is the sum of the lengths of $s$ and $t$. This indicates that $\mathcal{S}^\ast$ is closed under the operation of concatenation. There exists an identity element, the empty string $\lambda$, for which $\lambda a = a \lambda = a$ holds for any string $a$.
+
+A string $s$ is called a \emph{substring}\index{Substring} of a string $t$ if there exist strings $u$ and $v$ (possibly empty) such that $t = usv$. If there exists a string $u$ such that $t = su$, then $s$ is said to be a \emph{prefix}\index{Prefix string} of $t$, denoted by $s <_p t$. A subset $S \subset \mathcal{S}^{\ast}$ is described as \emph{prefix-free}\index{Prefix free set} if, for any $s, t \in S$, the condition $s <_p t$ implies $s = t$.
+
+We denote the \emph{self-delimited}\index{Self delimited string} form of a string $s \in \mathcal{S}^{\ast}$ by $\bar{s}$, and define it as $\bar{s} = 1^{l(s)}0s$. Consequently, the length of $\bar{s}$, denoted $l(\bar{s})$, is given by $l(\bar{s}) = 2l(s) + 1$, meaning it is twice the length of $s$ plus one. 
+
+\begin{example}
+The set $\bar{\mathcal{S}^{\ast}}$, consisting of all self-delimited strings from $\mathcal{S}^{\ast}$, is prefix-free.
+\end{example}
+
+In cases where $\mathcal{S}$ is a totally ordered set, we can define a total order on $\mathcal{S}^{\ast}$. This ordering, known as \emph{shortlex ordering}\index{Shortlex ordering}, arranges sequences primarily by length, with shorter sequences appearing first. Among sequences of the same length, lexicographical order is used to break ties.
+
+\begin{example}
+For the binary alphabet $\mathcal{B} = \{0,1\}$, shortlex ordering produces the sequence $\lambda, 0, 1, 00, 01, 10, 11, 000, \ldots$. Since every finite binary string appears at a finite position in this sequence, the set $\mathcal{B}^*$ is countably infinite. Moreover, this enumeration can be generated by an algorithm, so
+$\mathcal{B}^*$ is computably enumerable. However, not every subset of $\mathcal{B}^*$ is computably enumerable, even though every such subset is countable.
+\end{example}
+
+For any object $O$ equipped with a specified binary encoding, we use the notation $\langle O \rangle$ to denote its encoded string. Given objects $O_1, \ldots, O_k$, the notation $\langle O_1 O_2 \ldots O_k \rangle$ denotes
+the plain concatenation $\langle O_1 \rangle \cdots \langle O_k \rangle$. In general, this concatenation does not allow the boundaries between the individual encodings to be recovered. By contrast, the notation $\langle O_1, \ldots, O_k \rangle$ denotes a structured encoding of a finite sequence. Throughout this book, we assume a fixed, computable, and injective encoding convention that allows each component to be recovered effectively and
+unambiguously. One possible construction is
+\[
+\langle O_1, \ldots, O_k \rangle =
+\overline{\langle k \rangle}
+\overline{\langle O_1 \rangle}
+\cdots
+\overline{\langle O_k \rangle},
+\]
+where $\langle k \rangle$ is a fixed binary encoding of the number of components, and $\overline{s}$ denotes the self-delimited form of a binary string $s$. The initial component encodes the number of elements, allowing the complete sequence to be decoded without ambiguity. This construction also produces a prefix-free set of sequence encodings, including sequences of different lengths.
+
+\begin{example}
+Natural numbers can be encoded as binary strings using shortlex ordering: $\langle 0 \rangle = \lambda$, $\langle 1 \rangle = 0$, $\langle 2 \rangle = 1$, $\langle 3 \rangle = 00$, $\langle 4 \rangle = 01$, $\langle 5 \rangle = 10$, $\langle 6 \rangle = 11$, $\langle 7 \rangle = 000$, and so on. Under this encoding, the length of the representation of a natural number $n$ is given by $l(\langle n \rangle) = \lfloor \log_2(n+1) \rfloor$. Using the structured sequence encoding convention, the pair $\langle 3,7 \rangle$ is represented as
+\[
+\begin{aligned}
+\langle 3,7 \rangle
+&= \overline{\langle 2 \rangle}
+   \ \overline{\langle 3 \rangle}
+   \ \overline{\langle 7 \rangle} \\
+&= 101\ 11000\ 1110000 \\
+&= 101110001110000.
+\end{aligned}
+\]
+The first component encodes the number of elements, while the remaining components encode their values, allowing the sequence to be decoded unambiguously.
+\end{example}
+
+%
+% Section: Vectors and Norms
+%
+
+\subsection*{Vectors}
+\label{sec:cavectors}
+
+A \emph{vector}\index{Vector} in $\mathbb{R}^2$ is an ordered pair of real numbers, represented as a column $\mathbf{x} = (x_1,x_2)^{\mathsf{T}}$, where $x_1$ and $x_2$ are its \emph{coordinates}. Given two vectors $\mathbf{x},\mathbf{y} \in \mathbb{R}^2$, their addition and subtraction are defined componentwise $\mathbf{x} \pm \mathbf{y} = (x_1 \pm y_1, x_2 \pm y_2)^{\mathsf{T}}$. The \emph{componentwise order}\index{Componentwise order} is defined by $\mathbf{x} \preceq \mathbf{y}$ if and only if $x_1 \leq y_1$ and $x_2 \leq y_2$. This relation is a partial order on $\mathbb{R}^2$. A \emph{norm}\index{Vector norm} assigns a nonnegative number to a vector, representing its magnitude. For $1 \leq p < \infty$, the \emph{$p$-norm} \index{p-norm} is defined as $\|\mathbf{x}\|_p = \left(|x_1|^p + |x_2|^p\right)^{1/p}$. The \emph{maximum norm}\index{Maximum norm}, also called the \emph{infinity norm}, is defined as $\|\mathbf{x}\|_\infty = \max\{|x_1|,|x_2|\}$. Every norm satisfies the \emph{triangle inequality} \index{Triangle inequality}, which states that $\|\mathbf{x}+\mathbf{y}\| \leq \|\mathbf{x}\|+\|\mathbf{y}\|$.
+
+%
+% Section: Computability
+%
+
+\section{Computability}
+
+We continue our review of the background required to understand the theory of nescience by providing a mathematical formalization of the concept of a \emph{computable procedure}\index{Computable procedure}. Intuitively, a computable procedure is a method consisting of a finite sequence of instructions that, when applied to a problem, produces the correct answer after a finite number of steps. This informal notion rests on the requirement that the instructions be clear and precise enough for any human to follow without additional guidance. We may strengthen this requirement further by demanding that the instructions be so unambiguous that a machine could execute them.
+
+In 1936, the British mathematician Alan Turing introduced a formal model of a family of hypothetical machines and argued that, for every intuitively computable procedure, there exists a \emph{Turing machine}\index{Turing machine} capable of carrying it out. The model is not only simple enough to allow precise mathematical analysis but also sufficiently general to capture the intuitive concept of effective computation.
+
+Over the years, many alternative approaches have been proposed to formalize the notion of computability. Some of these are technically intricate, yet all have been shown to be equivalent in expressive power to Turing machines; in other words, they characterize the same class of effectively computable functions. Two notable examples are Alonzo Church's \emph{lambda calculus}\index{Lambda calculus} and the \emph{theory of recursive functions}\index{Recursive function} developed by Kurt Gödel and Stephen Kleene. The \emph{Church-Turing thesis}\index{Church-Turing thesis} asserts that any reasonable formalization of a computable procedure (subject to minimal requirements, such as performing only a finite amount of work in a single step) coincides with the Turing machine model. While not a theorem, this thesis has become a widely accepted working principle, providing a stable and shared notion of computability that is independent of any specific formalism.
+
+The concept of the Turing machine, originally conceived as a model of a mechanical device designed to solve a particular problem, was later extended and generalized. A \emph{universal Turing machine}\index{Universal Turing machine} can simulate the behavior of any other Turing machine and thereby compute any function that is computable in the intuitive sense. This is analogous to modern digital computers, which can execute algorithms expressed in diverse programming languages. This universality raises a natural question: Are there problems that no Turing machine can solve? The answer is yes. Certain well-defined problems, such as the Halting problem\index{Halting problem}, lie beyond the reach of computation, and such problems are more common than one might initially expect. The existence of uncomputable functions will play a central role in our theory of nescience.
+
+Given the abstract character of many entities studied in science, we employ the concept of the \emph{oracle Turing machine}\index{Oracle Turing machine} to formalize our framework. An oracle Turing machine resembles an ordinary Turing machine but is augmented with the ability to query an external oracle. The oracle, whose internal mechanism is unspecified, provides answers to questions that may be uncomputable for standard machines. Different oracles yield different computational powers, giving rise to a hierarchy of relative computability. For our purposes, the oracle can be viewed as a theoretical construct that models access to sources of information beyond the limits of mechanical computation. It should be emphasized that the oracle is not a physical device but an abstract tool for reasoning about the boundaries of computation.
+
+Turing machines reveal the intrinsic limitations of computation. Exploring these limitations is not merely a philosophical exercise; it has profound implications for the field of \emph{computational complexity}\index{Computational complexity}. Situated at the intersection of computer science and mathematics, computational complexity studies the resources (most notably time and space) required to solve problems. Problems are classified into \emph{complexity classes}\index{Complexity classes} according to the asymptotic resources needed by the best algorithms known for their solution. One of the most famous open problems in this field is the $P\overset{?}{=}NP$\index{$P\overset{?}{=}NP$} question, which asks whether the class $P$ of problems solvable in polynomial time coincides with the class $NP$ of problems for which proposed solutions can be verified in polynomial time. In this book, our interest extends beyond the epistemological issue of determining which problems can be solved in principle, given unlimited resources, to the more practical question of which problems can be solved efficiently with respect to time.
+
+%
+% Section: Turing Machines
+%
+
+\section{Turing Machines}
+\label{sec:Turing-Machines}
+
+A Turing machine is an extremely simplified model of a general-purpose computer, yet it is powerful enough to capture the notion of effective computation. Intuitively, the machine consists of a head that operates on a two-way infinite tape divided into cells, each containing a symbol. At each time step, the machine reads the symbol under the head and, according to a fixed set of rules, either writes a new symbol, moves the head one cell to the left or right, or performs both actions. The rules are encoded in a finite control table. The input to the computation is written on the tape at the start, and once the machine enters a designated halting state, the output can be read from the tape. Figure \ref{fig:Turing-Machine} illustrates a machine in its initial configuration, with the head positioned at the beginning of the input string.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=stealth', shorten >=1pt, auto, node distance=2cm]
+    % Draw tape
+    % \draw[thick] (-3,0) -- (3,0);
+    \foreach \x in {-2.5,-1.5,...,2.5} {
+        \draw (\x,-0.5) rectangle ++(1,1);
+    }
+    
+    % Draw tape head
+    \node[draw, rectangle, minimum height=1cm, minimum width=1cm, thick] (head) at (0.5,1.5) {Head};
+    
+    % Draw symbols on the tape
+    \node at (-2,0) {1};
+    \node at (-1,0) {0};
+    \node at (0,0) {1};
+    \node at (1,0) {0};
+    \node at (2,0) {1};
+    
+    % Draw arrow from head to tape
+    \draw[->] (head) -- (1,0.5);
+\end{tikzpicture}
+\caption{\label{fig:Turing-Machine}Turing Machine}
+\end{figure}
+
+\begin{definition}[Turing Machine]
+\label{def:Turing-Machine}\index{Turing machine}
+A \emph{Turing machine} is a 7-tuple
+\[
+\left(Q,\Gamma,\sqcup,\Sigma,q_{0},q_{f},\tau\right)
+\]
+where:
+\begin{align*}
+ & Q \quad \text{is a finite, non-empty set of \emph{states},} \index{Machine State} \\
+ & \Gamma \quad \text{is a finite, non-empty set of \emph{tape symbols},} \index{Tape Symbol} \\
+ & \sqcup\in\Gamma \quad \text{is the \emph{blank symbol},} \index{Blank Symbol} \\
+ & \Sigma\subseteq\Gamma\setminus\{\sqcup\} \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
+ & q_{0}\in Q \quad \text{is the \emph{initial state},} \index{Initial State} \\
+ & q_{f}\in Q \setminus \{q_0\} \quad \text{is the designated \emph{halting state},} \index{Halting State} \\ 
+ & \tau:\left(Q\setminus \{q_{f}\}\right)\times\Gamma \rightharpoonup  Q\times\Gamma\times\{L,R,S\} \quad\text{is the \emph{transition}. \index{Transition Function} }
+\end{align*}
+\end{definition}
+
+The algorithm executed by the machine is defined by the (partial) transition function $\tau$. This function dictates the machine's actions based on its current state and the tape symbol currently under the head. According to $\tau$, the machine transitions to a new state, writes a new symbol on the tape (or retains the existing one), and moves the head left, right, or keeps it stationary ($L$, $R$, or $S$ respectively). The machine follows a finite, uniquely determined sequence of steps until it reaches the final state $q_f$\footnote{Some authors allow multiple halting states in the definition of Turing machines.} and \emph{halts}, making no subsequent moves. The algorithm's output is the string of symbols $s \in \Gamma^\ast$ remaining on the tape after halting. Some machines, however, may enter an infinite loop, never reaching a halting state. If a machine encounters an undefined transition, it will enter an infinite loop, never halting. We assume that the head of the machine is initially positioned at the first symbol of the input string.
+
+\begin{example}
+\label{ex:Turing-Machine}
+The following Turing machine is designed to solve the problem of adding two natural numbers. It consists of the set of states $Q = \left\{q_{o}, q_{1}, q_{f}\right\}$, the set of tape symbols $\Gamma = \left\{0, 1, \sqcup \right\}$, and the set of input symbols $\Sigma = \left\{0, 1 \right\}$. The transition function is defined in the table below, where rows are indexed by machine states, and columns by tape symbols:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l l l l}
+\toprule
+ & 0 & 1 & $\sqcup$ \\
+\midrule
+$q_{o}$ & $\left(q_{f}, \sqcup, R\right)$ & $\left(q_{1}, \sqcup, R\right)$ & $\uparrow$ \\
+$q_{1}$ & $\left(q_{f}, 1     , S\right)$ & $\left(q_{1}, 1     , R\right)$ & $\uparrow$ \\
+\bottomrule
+\end{tabular}
+\caption{Transition Rules}
+\end{table}
+
+For natural numbers $n$ and $m$, the input string is composed of $n$ occurrences of the symbol '1', followed by a '0', and then followed by $m$ occurrences of '1'. The machine's output will be a string of $n+m$ consecutive '1's. For instance, to add the numbers 2 and 3, the input string should be $\sqcup 1 1 0 1 1 1 \sqcup$, resulting in the output string $\sqcup 1 1 1 1 1 \sqcup$.
+\end{example}
+
+A Turing machine can also be represented by a \emph{state diagram}\index{State diagram}. A state diagram is similar to a labeled directed graph\footnote{In this particular case, we allow loops and multiple edges originating from vertices.} where the vertices represent the states of the machine. The edges signify transitions from one state to another, and the edge labels indicate the symbol under the head that leads to the new state, the symbol that gets written on the tape, and the direction in which the head moves. Following these conventions, the state diagram for the Turing machine in Example \ref{ex:Turing-Machine} is depicted in Figure \ref{fig:Example-Turing-Machine}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto] 
+   \node[state,initial] (q_0)   {$q_0$}; 
+   \node[state] (q_1) [right=of q_0] {$q_1$}; 
+   \node[state] (q_f) [right=of q_1] {$q_f$}; 
+   
+   \path[->] 
+    (q_0) edge  node {1$\to$$\sqcup$,R} (q_1)
+    (q_0) edge[bend right] node[below] {0$\to$$\sqcup$,R} (q_f)
+    (q_1) edge  node {0$\to$1,S} (q_f)
+    (q_1) edge [loop above] node {1$\to$1,R} ();
+\end{tikzpicture}
+\caption{\label{fig:Example-Turing-Machine}State diagram of the addition machine}
+\end{figure}
+
+It is a remarkable fact that minor alterations to the definition of a Turing machine do not change its computational power. In other words, the definition is highly robust. In Example \ref{ex:multitape_turing_machine}, it's demonstrated that adding more tapes to the machine doesn't expand the range of problems it can solve. Similar arguments can be made when adding finite storage to the control, allowing for parallel processing with multiple control heads, and so on.
+
+\begin{example}
+\label{ex:multitape_turing_machine}
+A \emph{multitape Turing machine}\index{Multitape Turing machine} is a Turing machine equipped with multiple heads and their respective tapes. In the initial configuration, the input string resides in tape 1, while the other tapes are blank. The transition function for a multitape Turing machine is:
+\[
+\tau:\left(Q \setminus q_{f} \right) \times \Gamma^k \rightarrow  Q \times \Gamma^k \times \left\{L,R,S\right\}^k,
+\]
+where $k$ denotes the number of tapes. Multitape Turing machines are equivalent in power to standard Turing machines. We can validate this claim by devising a method for a standard Turing machine to mimic a multitape machine's behavior. This requires encoding the content of multiple tapes onto a single tape, introducing a new symbol as a tape separator, and encoding the positions of the heads across the tapes with a distinct head location symbol. If we designate the tape separation symbol as $|$ and the head location symbol as $h$, a simulation tape for a machine with 3 tapes might appear as $\sqcup01h00|000h1|h0101\sqcup$. The standard machine's operation would involve scanning the subtapes one by one, pinpointing the head's location, and executing the necessary transition. If the computation on one subtape necessitates writing a new symbol beyond its boundary, we'd need to shift subsequent symbols to accommodate the new one. While the simulation might operate at a slower pace than the original multitape machine, both machine types can solve an identical set of problems.
+\end{example}
+
+For the remainder of this book, without any loss of generality, we'll assume that the set of input symbols is $\Sigma = \mathcal{B}$ and the set of tape symbols is $\Gamma = \left\{0, 1, \sqcup \right\}$.
+
+In addition to providing a formal definition of a Turing machine, it's essential to formally outline its computational process. This entails detailing how the machine reads the input string, produces the output string, and transitions between states during computation. We will start by defining the concept of the machine's internal configuration. This configuration captures the machine's current state and position, as well as the present state of the tape.
+
+\begin{definition}\index{Configuration}
+A \emph{configuration}\index{Configuration} of a Turing machine $T$ is the 3-tuple $\left(q,s,i\right)$, where $q\in Q$ represents a state of the machine, $s\in\Gamma^+$ denotes a string containing the tape's content (excluding the blank symbols), and $1 \le i \le n$ is the index of the symbol $s_i$ beneath the head. Here, $s_1$ is the first symbol on the tape, and $n=l(s)$. 
+\end{definition}
+
+Configurations enable us to describe the current state of a Turing machine without any loss of information. At any stage of computation, one could halt the machine, record its configuration, and later resume the computation from the exact point of interruption using this configuration.
+
+The following definition explains how we transition from one configuration to the next during computation.
+
+\begin{definition}\index{Configuration yields configuration}
+A configuration $C=\left(q,s,i\right)$ \emph{yields}\index{Yield} another configuration $C'=\left(r,s',j\right)$ if there exists a transition $\tau:\left(q, s_{i}\right) = \left(r, s'_{i}, a\right)$, where
+\[
+s=s_{1} \dots s_{i-1}s_{i}s_{i+1} \dots s_{n}$, $s'=s_{1} \dots s_{i-1}s'_{i}s_{i+1} \dots s_{n},
+\]
+and
+\begin{equation}
+  j = \begin{cases}
+        i+1 & \text{if $a=R$} \\
+        i-1 & \text{if $a=L$} \\
+        i   & \text{if $a=S$}
+  \end{cases}
+\end{equation}
+\end{definition}
+
+If $a=L$ and $i=1$, we extend $s$ on the left by a blank and keep the head at position $1$ (now on $\sqcup$); if $a=R$ and $i=n$, we extend $s$ on the right by a blank and set the head to position $n+1$.
+
+Building on the concepts of configuration and one configuration yielding another, we can now formally articulate the notion of computation.
+
+\begin{definition}[Computation]\index{Computation}
+Let $T$ be a Turing machine, $C_{0}$ its initial configuration, and $C_n$ a configuration encompassing the final state $q_f$. A \emph{computation}\index{Computation} under machine $T$ refers to a finite sequence of $n+1$ configurations $\left(C_{0},C_{1},\ldots,C_n\right)$ wherein each configuration $C_{k}$ yields the subsequent configuration $C_{k+1}$, for all $0\leq k < n$.
+\end{definition}
+
+Computations are deterministic; meaning, for a given Turing machine $T$ and an input string $s$, the configuration sequence is uniquely determined.. If machine $T$ neither halts nor progresses with input $s$, we deduce the absence of computation.
+
+\begin{example}
+The computation of the Turing machine described in Example \ref{ex:Turing-Machine} using the input string $110111$ results in the following sequence of configurations:
+
+\begin{enumerate}
+\item $(q_0, 110111, 1)$
+\item $(q_1, 10111,  1)$
+\item $(q_1, 10111,  2)$  
+\item $(q_f, 11111,  2)$  
+\end{enumerate}
+
+\end{example}
+
+Intuitively, a procedure is deemed computable by a human if it can be delineated through specific steps, executed systematically, without relying on intuition or ingenuity. This intuitive grasp aligns with the formalized concept of a Turing machine, bridging informal comprehension and the machine's rigorous definition—a cornerstone in the theory of computation. However, this alignment presents an intriguing challenge. Affirming that our grasp of computability mirrors a Turing machine's capabilities cannot be proven traditionally, as 'computability' lacks a well-defined interpretation. Consequently, some researchers categorize this as a \emph{thesis}, avoiding the formal 'theorem' label. Turing himself opted to term it a \emph{definition}, steering clear of denoting it as a theorem.
+
+\begin{theorem}[Turing's Thesis]
+\label{th:turing_thesis}\index{Turing's thesis}
+A procedure is computable if, and only if, it can be executed by a Turing machine.
+\end{theorem}
+
+To further underscore the significance and robustness of the Turing machine as a model of computation, it's worth noting, as mentioned earlier in this chapter, that all alternative formalizations of computability proposed to date align in terms of their computational capabilities with that of the Turing machine. This universality underscores the Turing machine's central position in the realm of theoretical computer science.
+
+%
+% Section: Universal Turing Machine
+%
+
+\section{Universal Turing Machines}
+\label{sec:Universal-Turing-Machines}
+
+In Section \ref{sec:Turing-Machines}, we explored storing the current state of a Turing machine, its configuration, to pause and later resume computation. In Example \ref{ex:Encoding_TM}, we will delve into a similar procedure, not for storing the machine's current state, but for saving a comprehensive description of the machine itself. This methodology facilitates the enumeration, or listing, of all possible Turing machines. Such enumeration is instrumental in demonstrating the existence of problems that cannot be solved by any Turing machine (refer to Section \ref{sec:non_computable_problems}) and unveiling the pivotal concept of the \emph{Universal Turing Machine}.
+
+\begin{example}
+\label{ex:Encoding_TM}
+To describe a Turing machine concisely, we need to encode the transition function $\tau:\left(Q\setminus \{q_{f}\}\right)\times\Gamma\rightarrow Q\times\Gamma\times\left\{ L,R,S\right\}$. This function can be represented as a collection of quintuples $\left(q,s,r,t,a\right)$, where $q \in \left(Q\setminus \{q_{f}\}\right)$, $r \in Q$, $s, t\in\Gamma$, and $a\in\left\{ L,R,S\right\}$. In this manner, any Turing machine $T$ is fully described by a collection of quintuples:
+\[
+\left(q_{1},s_{1},r_{1},t_{1},a_{1}\right),\left(q_{2},s_{2},r_{2},t_{2},a_{2}\right),\ldots,\left(q_{m},s_
+{m},r_{m},t_{m},a_{m}\right)
+\]
+where $m \leq d\left(Q\setminus \{q_{f}\}\right) \times d(\Gamma)$, with the stipulation that the first quintuple refers to the initial state and the second one to the final state; i.e., $q_{1} = q_{o}$ and $r_{2} = q_{f}$. A possible approach to describe these quintuples is to encode the elements of the set $Q\cup\Gamma\cup\left\{ L, R, S \right\}$ using a fixed-length binary code (refer to Definition \ref{def:Fixed-Length-Codes} for more details), encoding the quintuple $\left(q,s,r,t,a\right)$ as $\left\langle q, s, r, t, a \right\rangle$. The length of an encoded quintuple is $5l$, where $l=\left\lceil \log\left(d\left(Q\cup\Gamma\cup\left\{ L,R,S\right\}\right)\right)\right\rceil$. Following this convention, machine $T$ is encoded as the binary string:
+\[
+\left\langle T \right\rangle = \left\langle \bar{l}, \left\langle q_{1}, s_{1}, r_{1}, t_{1}, a_{1} \right\rangle, \ldots, \left\langle q_{r}, r_{r}, s_{r}, t_{r}, a_{r} \right\rangle \right\rangle 
+\]
+The length of the encoded machine, following this schema, would be $l(\left\langle T \right\rangle) \leq 5lm + \log l + 1$.
+\end{example}
+
+Since each Turing machine is composed by a finite set of quintuples, we can encode and list all the machines using a shortlex ordering. We associate each machine $T$ with the index $i$ corresponding to its position in this list, and we denote by $T_i$ the i-th Turing machine. Each positive integer $i$ encodes one, and only one, Turing machine. However, as Proposition \ref{prop:padding_lemman} shows, all Turing machines have an infinite number of indexes. We associate each Turing machine with its smallest index.
+
+\begin{proposition}[Padding Lemma]
+\label{prop:padding_lemman}\index{Padding lemma}
+Each Turing machine has infinitely many indexes.
+\end{proposition}
+\begin{proof}
+Consider a Turing machine $T_i$ encoded by the string $\langle T_i \rangle$. We can create a new encoding $\langle T_j \rangle$  by appending a finite number of 0's to $\langle T_i \rangle$,  such that $\langle T_j \rangle = \langle T_i \rangle 0^n$  for some positive integer $n$. Since $n$ can take on any positive integer value, there are infinitely many possible encodings $\langle T_j \rangle$ for the same Turing machine $T_i$.
+\end{proof}
+
+A universal Turing machine is a machine that can simulate the behavior of any other Turing machine on arbitrary input. The universal machine achieves this by reading both the description of the machine to be simulated (for instance, using the coding schema described in Example \ref{ex:Encoding_TM}) and the input string for the computation from its own tape.
+
+\begin{definition}[Universal Turing Machine]
+\label{def:Universal-Turing-Machine}
+\index{Universal Turing machine}
+A \emph{Universal Turing Machine} is a Turing machine $U$ such that $U(\langle \langle T_i\rangle, s \rangle) = T_i(s)$ for all Turing machines $T_i$ and all input strings $s \in \mathcal{B}$.
+\end{definition}
+
+Naturally, we must prove that such a machine exists before we can utilize it. One could argue that a human being could decode the machine $T_i$ and simulate its behavior with the input string $s$, and then refer to Theorem \ref{th:turing_thesis}. A more rigorous approach would be to explicitly construct a universal Turing machine. However, providing a detailed description of one of these machines is beyond the scope of this book. Instead, we direct the reader to the references included at the end of the chapter for further exploration.
+
+%
+% Section: Non computable problems
+%
+
+\section{Non-Computable Problems}
+\label{sec:non_computable_problems}
+
+Turing machines enable us to delineate the set of problems that can be resolved through effective procedures or, in other words, by computers. It may be surprising to learn that numerous problems cannot be addressed using algorithms; such challenges lie beyond the computational capabilities of machines. We are not alluding to speculative queries like whether a computer can be intelligent or self-aware but to concrete, well-defined mathematical problems. We are also not referring to complex problems that demand a substantial amount of time to solve, as those, irrespective of their time consumption, remain computable.
+
+One classic exemplar of non-computability is the \emph{halting problem}\index{Halting problem}. As illustrated in Algorithm \ref{alg:halt}, it involves a program or algorithm tasked with determining whether any given program (including itself) and input will eventually halt or continue to run indefinitely. Alan Turing proved that no algorithm can exist to solve this problem for all possible program-input pairs. This revelation wasn't a reflection on the limitations of technology or processing power but highlighted a profound theoretical limit intrinsic to computation.
+
+\begin{algorithm}
+\caption{HALT function}
+\label{alg:halt}
+\begin{algorithmic}
+\Procedure{HALT}{$A, I$}
+    \If{$A(I)$ halts} 
+        \State \textbf{return} $1$
+    \Else
+        \State \textbf{return} $0$
+    \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+The proposition below proves that the halting problem is non-computable.
+
+\begin{proposition}[Halting Problem]
+\index{Halting problem}
+\label{th:halting-problem}
+Define HALT as in Algorithm \ref{alg:halt}. There does not exist a Turing machine that computes the HALT function for all possible pairs $(A, I)$, where $A$ is a Turing machine and $I$ is the input string to that machine.
+\end{proposition}
+\begin{proof}
+The proof is by contradiction. Assume that the machine $HALT$  exists, and define a new Turing machine $TC$ such that $TC(A) = 1$ if $HALT(A,A) = 0$, and $TC(A)$ will never stop if $HALT(A,A) = 1$. Then the contradiction arises when we ask about the result of $TC(TC)$: if $TC(TC)$ stops we have that $HALT(TC,TC) = 0$ and that $TC(TC)$ should not stop, and if $TC(TC)$ does not stop then we have that $H(TC,TC) = 1$ and thus $TC(TC)$ should stop.
+\end{proof}
+
+The existence of such non-computable problems underscores the boundaries of mechanical computation. It illustrates that while Turing machines, and by extension, computers are profoundly powerful tools capable of solving an extensive array of problems, they are not omnipotent. A frontier of unsolvable problems exists, necessitating deeper exploration into the realms of mathematics, logic, and perhaps even philosophy to understand the inherent limits of computation.
+
+The Halting Problem also has significant practical consequences in computer programming. For instance, it is impossible to write a program that can guarantee any other arbitrary program is bug-free or that all infinite loops with conditional exits will eventually halt for all possible inputs.
+
+The next example introduces a well-defined, practical problem involving simple string manipulation that cannot be solved using computers.
+
+\begin{example}
+\label{ex:PCP}
+Given two finite lists $\left( \alpha_1, \ldots, \alpha_n \right)$ and $\left( \beta_1, \ldots, \beta_n \right)$ of strings over some alphabet $\Sigma$, where $d(\Sigma) \ge 2$, the \emph{Post Correspondence Problem}\index{Post Correspondence Problem} (PCP) asks to determine if there exists a sequence of $K \geq 1$ indices $(i_k)$, with $1 \le i_k \le n$ for all $1 \le k \le K$, such that $\alpha_{i_1} \ldots \alpha_{i_K} = \beta_{i_1} \ldots \beta_{i_K}$. For instance, given the sequences $(a, ab, bba)$ and $(baa, aa, bb)$, a solution would be $\alpha_3 \alpha_2 \alpha_3 \alpha_1 = \beta_{3} \beta_{2} \beta_{3} \beta_{1}$. No algorithm exists to solve PCP. Like many proofs of incomputability, the proof proceeds by showing that HALT can be reduced to PCP, meaning if PCP is decidable, then the Halting Problem should be decidable as well. We will not detail the proof in this section; for interested readers, we refer to the references at the end of this chapter.
+\end{example}
+
+Non-computable problems are generally not derived directly from natural phenomena but from logical and mathematical constructs. To date, there are no known examples of non-computable problems manifesting plainly in natural phenomena. It's essential to distinguish between non-computability and unpredictability. Non-computable problems are those for which no algorithm can ever be created to solve them. In contrast, unpredictable systems (such as chaotic or complex systems) are theoretically computable but are unpredictable in practice due to factors like sensitivity to initial conditions or measurement precision.
+
+%
+% Section: Computable Functions and Sets
+%
+
+\section{Computable Functions and Sets}
+\label{sec:computable_functions}
+
+Each Turing machine \(T\) defines a function \(f_T:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) that assigns to each input string \(s \in \mathcal{B}^{\ast}\) an output string \(T(s) \in \mathcal{B}^{\ast}\). The relationship between Turing machines and functions forms the basis for introducing the concept of a \emph{computable function}.
+
+\begin{definition}
+\label{def:computable-function}
+\index{Computable function}
+A function \(f: \mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) is \emph{computable}\index{Computable function} if there exists a Turing machine \(T\) that defines the function \(f\) and halts for all the values of \( \mathcal{B}^{\ast} \).
+\end{definition}
+
+The terminology in computational theory can vary. While computable functions are occasionally referred to as \emph{recursive functions}\index{Recursive function}, this book opts for the term computable functions for consistency.
+
+\begin{example}
+The function that assigns to each pair of natural numbers \(x\) and \(y\) their sum \(x + y\) is computable, as demonstrated in Example \ref{ex:Turing-Machine}. 
+\end{example}
+
+In real-world scenarios, certain functions don’t provide a defined output for all possible inputs. Partial computable functions, characterized by Turing machines that don’t halt for specific inputs, model these cases.
+
+\begin{definition}
+A partial function \(f:\mathcal{B}^{\ast} \rightarrow \mathcal{B}^{\ast}\) is \emph{partial computable}\index{Partial computable function} if there exists a Turing machine \(T\) that defines \(f\) for defined values and does not halt for undefined values.
+\end{definition}
+
+The distinction between total computable functions and partial computable functions is significant in computability theory because it reflects the difference between problems that are always solvable by an algorithm (total) and those that are only solvable in some cases (partial).
+
+\begin{example}
+The function $f: \mathbb{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that assigns to each pair of natural numbers $x$ and $y$ the number $x - y$ is a partial computable function, since it is not defined in the case that $x < y$. Recall that according to our definition of Turing machine (see Definition \ref{def:Turing-Machine}), when the machine reaches an undefined configuration enters an infinite loop without ever halting.
+\end{example}
+
+We can expand the application of the principles of computability and partial computability to the domain of sets. We characterize sets through the lens of theirs characteristic functions that discern the membership of elements within the sets.
+
+\begin{definition}
+A set $A \in \mathcal{B}^\ast$ is \emph{computable}\index{Computable set} if its characteristic function $\mathcal{X}_A$ is a total computable function. A set $A \in \mathcal{B}^\ast$ is \emph{computably enumerable}\index{Computably enumerable set} if its characteristic function $\mathcal{X}_A$ is a partial computable function, that is, $\mathcal{X}_A(a) = 1$ if $a \in A$, but $\mathcal{X}_A(a)$ is undefined if $a \not\in A$.
+\end{definition}
+
+The application of these concepts is illustrated through the example of the set of all Turing machines that halt for all inputs.
+
+\begin{example}
+The set of all Turing machines that halt on all inputs, as demonstrated in \ref{th:halting-problem}, is not computable but is computably enumerable.
+\end{example}
+
+Next proposition provides an alternative characterization of computable sets.
+
+\begin{proposition}
+A set $A \in \mathcal{B}^\ast$ is computable if and only if $A$ and its complement $A^c$ are computably enumerable.
+\end{proposition}
+\begin{proof}
+If $A$ is computable, by definition, there exists a Turing machine that decides for any input $x \in \mathcal{B}^\ast$ whether $x \in A$ or $x \notin A$, halting in both cases. This implies that both $A$ and its complement $A^c$ can be enumerated by Turing machines. Thus, both $A$ and $A^c$ are computably enumerable.
+
+Conversely, suppose $A$ and $A^c$ are computably enumerable. This means there exist two Turing machines, $T_A$ and $T_{A^c}$, that enumerate the elements of $A$ and $A^c$, respectively. To show that $A$ is computable, construct a Turing machine $T$ that, given an input $x \in \mathcal{B}^\ast$, simulates $T_A$ and $T_{A^c}$ in parallel to search for $x$. If $x$ appears in the enumeration produced by $T_A$, $T$ halts and accepts $x$ as an element of $A$. If $x$ appears in the enumeration produced by $T_{A^c}$, $T$ halts and accpts $x$, indicating $x \notin A$. Since every element of $\mathcal{B}^\ast$ must be in either $A$ or $A^c$ and both sets are computably enumerable, $T$ will eventually halt for every input $x$, proving that $A$ is computable.
+\end{proof}
+
+%
+% Section: Oracle Turing Machine
+%
+
+\section{Oracle Turing Machine}
+\label{sec:oracle_turing_machine}
+
+An oracle Turing machine\index{Oracle Turing machine} (see Figure \ref{fig:Oracle-Turing-Machine}) is a theoretical model of computation that extends the capabilities of a standard Turing machine by providing it with an oracle. The oracle is a black box that can instantly compute certain answers, even for problems that are unsolvable or would take an impractical amount of time for a standard Turing machine to process. This model helps computer scientists and mathematicians explore the implications and boundaries of computational theory, including questions about complexity classes and the limits of what is computationally possible. The oracle Turing machine isn't a physical or implementable machine but rather a conceptual tool used in theoretical studies.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=stealth', shorten >=1pt, auto, node distance=2cm]
+    % Draw tape
+    \foreach \x in {-2.5,-1.5,...,2.5} {
+        \draw (\x,-0.5) rectangle ++(1,1);
+    }
+    
+    % Draw tape head
+    \node[draw, rectangle, minimum height=1cm, minimum width=1cm, thick] (head) at (0.5,1.5) {Head};
+    
+    % Draw symbols on the tape
+    \node at (-2,0) {1};
+    \node at (-1,0) {0};
+    \node at (0,0) {1};
+    \node at (1,0) {0};
+    \node at (2,0) {1};
+    
+    % Draw oracle
+    \node[draw, rectangle, minimum height=1.5cm, minimum width=2cm, right of=head, node distance=3cm] (oracle) {Oracle};
+    
+    % Draw arrow from head to tape
+    \draw[->] (head) -- (1,0.5);
+    
+    % Draw arrows to and from the oracle
+    \draw[->] (head.east) to[out=0,in=180] node[midway, above] {Query} (oracle.west);
+    \draw[->] (oracle.west) to[out=180,in=0] node[midway, below] {Answer} (head.east);
+\end{tikzpicture}
+\caption{\label{fig:Oracle-Turing-Machine}Oracle Turing Machine}
+\end{figure}
+
+\begin{definition}[Oracle Turing Machine]
+\label{def:Oracle-Turing-Machine}
+An \emph{oracle Turing machine} with oracle set $\mathcal{O}$ is a 8-tuple $\left(Q, \Gamma, \sqcup, \Sigma, q_i, q_f, \tau, \mathcal{O} \right)$ where:
+\begin{align*}
+ & Q \quad \text{is a finite, non-empty, set of \emph{states},} \index{Machine State} \\
+ & \Gamma \quad \text{is a finite, non-empty, set of \emph{tape symbols},} \index{Tape Symbol} \\
+ & \sqcup\in\Gamma \quad \text{is the \emph{blank symbol},} \index{Blank Symbol} \\
+ & \Sigma\subseteq\Gamma\setminus\sqcup \quad \text{is the set of \emph{input symbols},}  \index{Input Symbol} \\
+ & q_{o}\in Q \quad \text{is the \emph{initial state},} \index{Initial State} \\
+ & q_{f}\in Q \setminus \{q_0\} \quad \text{is the \emph{final state},} \index{Final State} \\ 
+ & \tau: \left(Q \setminus \{q_{f}\}\right) \times \Gamma \times \{0, 1\} \rightarrow  Q\times\Gamma\times\left\{ L,R,S\right\} \quad\text{is the \emph{transition}, \index{Transition Function} } \\
+ & \mathcal{O} \subseteq \Sigma^\ast \quad \text{is the \emph{oracle set}.}
+\end{align*}
+\end{definition}
+
+Building on the concept of a regular Turing machine (refer to Definition \ref{def:Turing-Machine}), an oracle Turing machine introduces the unique feature of an oracle set $\mathcal{O}$. This set comprises a subset of strings for which the oracle can instantly provide answers. The true strength of an oracle machine emerges when the set $\mathcal{O}$ is non-computable; in cases where $\mathcal{O}$ is computable, a regular Turing machine would be sufficient.
+
+The transition function $\tau$ for the oracle Turing machine is nuanced. At each step the machine will query the oracle. Specifically, it sends the current string $w$ —starting under the head and extending to the rightmost non-empty cell of the input tape—to the oracle. The oracle then responds with a binary answer: '1' if $w$ is in $\mathcal{O}$ or '0' if it isn't. The machine doesn't always utilize this response. There are steps where, despite receiving an answer, the computation proceeds unaffected by the oracle's response—essentially ignoring it. However, when the oracle's answer is pivotal, the machine makes a decision based on it. This decision could affect the next state, the next symbol to be written, or the next move (left, right, or stay). In essence, while the machine has the capability to continuously consult the oracle, it strategically chooses when to act on the information received. We could have modified the $\tau$ funcion in such a way that the oracle is queried only when the answer is relevant for the computation, but that would require making important changes to the behaviour of the function, such as the introduction of new control states.
+
+\begin{example}
+In the realm of theoretical computer science, an oracle can be invoked to "solve" the halting problem (refer to Theorem \ref{th:halting-problem}). The oracle is a hypothetical device or black box that, as if by magic, provides an instantaneous answer to a specific problem instance. The oracle set $\mathcal{O}$ would consist of a collection of strings in the form $\langle P, I \rangle$, where $P$ represents a program encoded as a string and $I$ denotes its input. Given a program and its input, this oracle would instantly inform us whether the program halts on that input. Naturally, this concept is purely theoretical. No such oracle exists in reality, and the halting problem remains unsolvable in practical terms.
+\end{example}
+
+A standard Turing machine can be viewed as an oracle machine that simply \emph{ignores} its oracle or, equivalently, uses any fixed oracle set and never branches on the oracle bit. Thus ordinary Turing machines embed as a subclass of oracle Turing machines.
+
+\begin{proposition}
+\label{prop:tm_subset_otm}
+For every (ordinary) Turing machine $T=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ and every oracle set $\mathcal{O}\subseteq\Sigma^\ast$, there exists an oracle Turing machine $T^{\mathcal{O}}$ such that for all inputs $x\in\Sigma^\ast$, the computation of $T$ on $x$ and the computation of $T^{\mathcal{O}}$ on $x$ (with oracle $\mathcal{O}$) produce the same outcome.
+\end{proposition}
+
+\begin{proof}
+Define $T^{\mathcal{O}}=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau',\mathcal{O})$ with the same components as $T$ and transition function $\tau'$ given by
+\[
+\tau'(q,s,b) \;=\; \tau(q,s)\qquad\text{for all }(q,s)\in (Q\setminus\{q_f\})\times\Gamma\text{ and }b\in\{0,1\}.
+\]
+That is, $T^{\mathcal{O}}$ ignores the oracle bit. A step-by-step induction on the unique computation of $T$ on $x$ shows that $T$ and $T^{\mathcal{O}}$ visit identical configurations (up to the presence of the unused oracle bit) and therefore have the same outcome and output.
+\end{proof}
+
+An oracle machine is specified by two pieces of data: the \emph{machine component} $(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ and the \emph{oracle set} $\mathcal{O}$. The former is defined syntactically and does not depend on which $\mathcal{O}$ is chosen. Semantically, the behavior of a fixed machine component on a given input depends only on the answers to the queries it actually makes (i.e., on the restriction of $\mathcal{O}$ to those queries).
+
+\begin{proposition}
+\label{prop:indep_machine_oracle}
+Let $M=(Q,\Gamma,\sqcup,\Sigma,q_0,q_f,\tau)$ be a fixed machine component. For any two oracle sets $\mathcal{O}_1,\mathcal{O}_2\subseteq\Sigma^\ast$ and any input $x$, if $\mathcal{O}_1$ and $\mathcal{O}_2$ give the same answers to all oracle queries made during the run of $M$ on input $x$ (with either oracle), then the computations $M^{\mathcal{O}_1}(x)$ and $M^{\mathcal{O}_2}(x)$ are identical (same sequence of configurations, hence same outcome and output).
+\end{proposition}
+\begin{proof}
+Consider the (unique) run of $M^{\mathcal{O}_1}$ on input $x$. By hypothesis, $\mathcal{O}_2$ agrees with $\mathcal{O}_1$ on precisely the queried strings that arise along this run. Since $\tau$ is deterministic given the current state, scanned symbol, and oracle bit, and the oracle bit provided by $\mathcal{O}_2$ matches that from $\mathcal{O}_1$ at every step, both computations take the same transition at each step. Thus the configuration sequences coincide, yielding identical outcomes.
+\end{proof}
+
+A (partial) function is \emph{computable relative to} $\mathcal{O}$ if some oracle machine with oracle $\mathcal{O}$ computes it. Two useful facts: (i) ordinary computable functions are $\mathcal{O}$-computable for any oracle (by ignoring the oracle); (ii) if $\mathcal{O}$ is itself computable, then $\mathcal{O}$-computability coincides with ordinary computability.
+
+\begin{definition}[Oracle computability]\index{Oracle computable function}
+Given $\mathcal{O}\subseteq\Sigma^\ast$, a partial function $f:\Sigma^\ast\rightharpoonup\Sigma^\ast$ is \emph{$\mathcal{O}$-computable} if there exists an oracle Turing machine $M^{\mathcal{O}}$ such that, for every $x\in\Sigma^\ast$:
+\begin{itemize}
+\item if $f(x)$ is defined, then $M^{\mathcal{O}}$ halts on input $x$ and outputs $f(x)$ (under the chosen output convention);
+\item if $f(x)$ is undefined, then $M^{\mathcal{O}}$ does not halt on input $x$.
+\end{itemize}
+\end{definition}
+
+\begin{proposition}
+\label{prop:O_comp_equals_comp_if_O_decidable}
+If $\mathcal{O}$ is (ordinarily) computable, then a partial function $f$ is $\mathcal{O}$-computable if and only if $f$ is computable by an ordinary Turing machine.
+\end{proposition}
+\begin{proof}
+Suppose $f$ is $\mathcal{O}$-computable via $M^{\mathcal{O}}$. Since $\mathcal{O}$ is computable, there exists an ordinary machine $D$ deciding membership in $\mathcal{O}$. Simulate $M^{\mathcal{O}}$ step by step on an ordinary machine; whenever $M^{\mathcal{O}}$ needs the oracle bit, call $D$ on the current query string to obtain the bit and continue the simulation. This yields an ordinary machine computing $f$.
+
+If $f$ is computable by an ordinary machine $T$, then by Proposition \ref{prop:tm_subset_otm} there is an oracle machine $T^{\mathcal{O}}$ that ignores the oracle and computes $f$ for any $\mathcal{O}$. Hence $f$ is $\mathcal{O}$-computable.
+\end{proof}
+
+More generally, if $\mathcal{O}$ is \emph{Turing reducible} to $\mathcal{O}'$ (i.e., decidable by some $\mathcal{O}'$-oracle machine), then every $\mathcal{O}$-computable function is $\mathcal{O}'$-computable. This captures the standard notion of \emph{relative computability}.
+
+\begin{example}[Toy oracle machine that outputs the oracle's answer]
+\label{ex:encode_otm}
+Let $\Sigma={0,1}$ and $\Gamma={0,1,\sqcup}$. Fix the oracle set $\mathcal{O}={11,101}$ (finite for concreteness). Consider the oracle machine $M^{\mathcal{O}}$ that, on any input $w\in\Sigma^\ast$, writes a single symbol indicating the oracle's answer and halts:
+\begin{itemize}
+\item If the queried string (as per your convention) is in $\mathcal{O}$, write $1$ and halt.
+\item Otherwise, write $0$ and halt.
+\end{itemize}
+Use states $Q={q_0,q_f}$, with $q_0$ initial and $q_f$ halting. Define $\tau$ independently of the scanned symbol $s\in\Gamma$ by the sextuples
+\[
+(q_0,0,1,q_f,1,S),\quad (q_0,1,1,q_f,1,S),\quad (q_0,\sqcup,1,q_f,1,S),
+\]
+\[
+(q_0,0,0,q_f,0,S),\quad (q_0,1,0,q_f,0,S),\quad (q_0,\sqcup,0,q_f,0,S),
+\]
+and leave all other transitions undefined (so the machine halts after one step). Then $\langle M\rangle$ is obtained by concatenating the fixed-length codes of these six sextuples after the header. The oracle's finite code is, for example,
+\[
+\langle \mathcal{O}\rangle \;=\; \big\langle\, 2,\ \langle 11\rangle,\ \langle 101\rangle \,\big\rangle,
+\]
+using any self-delimiting code for strings. The full encoding is the pairing $\big\langle \langle M\rangle,\langle \mathcal{O}\rangle\big\rangle$.
+\end{example}
+
+These additions make explicit (i) how ordinary computation embeds into oracle computation, (ii) in what precise sense the machine component is independent of the oracle set, (iii) that an oracle machine is exactly a pair $(M,\mathcal{O})$, and (iv) what it means for a function to be computable \emph{relative} to an oracle. The encoding example matches your earlier quintuple-based scheme with a minimal extension to handle the oracle bit.
+
+%
+% Section: Multiobjective Optimization
+%
+
+\section{Multiobjective Optimization}
+\label{sec:multiobjective_optimization}
+
+Multiobjective optimization is the area of mathematics that deals with the problem of simultaneously optimizing two or more conflicting functions. It has been applied in many areas of science, including engineering, economics, and logistics, where there is typically no single solution that simultaneously satisfies all objectives. In such situations, a decision must be made in the presence of trade-offs between the conflicting goals.
+
+From a formal point of view, we are interested in solving the following \emph{multiobjective optimization} problem:
+\begin{align*}
+     & \text{minimize}	  \quad \left\{f_1(\mathbf{x}), f_2(\mathbf{x}), \ldots, f_k(\mathbf{x}) \right\} \\
+     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}
+\end{align*}
+where $f_i:\mathbb{R}^n \rightarrow \mathbb{R}$, $i = 1, \ldots, k$, are two or more \emph{objective functions}, and the nonempty set $\mathbf{S} \subset \mathbb{R}^n$ is the \emph{feasible region}, whose elements $\mathbf{x} = \left( x_1, x_2, \ldots, x_n \right)$ are \emph{decision vectors}. The image of the feasible region $f(\mathbf{S}) \subset \mathbb{R}^k$, denoted by $\mathbf{Z}$, is called the \emph{objective region}, and its elements $\mathbf{z} = \left(f_1(\mathbf{x}), f_2(\mathbf{x}), \ldots, f_k(\mathbf{x}) \right)$ are \emph{objective vectors}. In some applications, the feasible region is defined by a collection of inequality constraints $\mathbf{S} = \{ \mathbf{x} \in \mathbb{R}^n \mid g(\mathbf{x}) = \left( g_1(\mathbf{x}), \ldots, g_m(\mathbf{x}) \right) \leq 0 \}$.
+
+In this book we will be dealing with nonlinear multiobjective minimization problems, where at least one of the objective functions or constraint functions is not linear. Objective functions can also be incommensurable, that is, measured in different units or on different scales.
+
+Since the objective functions are conflicting, there does not exist a single solution that is optimal with respect to every objective function (the objective region is only partially ordered). 
+
+\begin{definition}
+\label{def:multiobjective_dominance}
+A decision vector $\mathbf{x} \in \mathbf{S}$ \emph{dominates} another decision vector $\mathbf{y} \in \mathbf{S}$ if $f_i(\mathbf{y}) \leq f_i(\mathbf{x})$ for all $i \in \{1, \ldots, k\}$ and $f_j(\mathbf{y}) < f_j(\mathbf{x})$ for at least one $j \in \{1, \ldots, k\}$. An objective vector $\mathbf{z} \in \mathbf{Z}$ \emph{dominates} another objective vector $\mathbf{w} \in \mathbf{Z}$ if $w_i \leq z_i$ for all $i \in \{1, \ldots, k\}$ and $w_j < z_j$ for at least one $j \in \{1, \ldots, k\}$.
+\end{definition}
+
+Dominance can be studied from the point of view of the decision variable space or the objective space. An objective vector dominates another objective vector if, and only if, its corresponding decision vector also dominates the other decision vector.
+
+We are interested in those objective vectors for which none of its individual components can be improved without deteriorating at least one of the others.
+
+\begin{definition}
+\label{def:pareto_optimal}
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{Pareto optimal} if there does not exists another decision vector $\mathbf{y} \in \mathbf{S}$ such that $\mathbf{y}$ dominates $\mathbf{x}$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is Pareto optimal if there does not exits another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $\mathbf{w}$ dominates $\mathbf{z}$.
+\end{definition}
+
+Pareto optimality can also be studied from the point of view of the decision variable space or the objective space. An objective vector is Pareto optimal if, and only if, its corresponding decision vector is Pareto optimal.
+
+\begin{definition}
+The set of Pareto optimal solutions, denoted by $\mathbf{P}_D$, is called the \emph{Pareto optiomal set}. The set of Pareto optimal solutions in the space of objectives, denoted by $\mathbf{P}_O$, is called the \emph{Pareto frontier}.
+\end{definition}
+
+Sometimes, in practice, it is convenient to use a more restrictive definition of optimality, in which we identify those vectors for which there does not exist any other vector that improves over all the components simultaneously.
+
+\begin{definition}
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{weakly Pareto optimal} if there does not exist another decision vector $\mathbf{y} \in \mathbf{S}$ such that $f_i ( \mathbf{y} ) < f_i ( \mathbf{x} )$ for all $i = 1, \ldots, k$. An objective vector $\mathbf{z} \in \mathbf{Z}$ is weakly Pareto optimal if there does not exists another objective vector $\mathbf{w} \in \mathbf{Z}$ such that $w_i < z_i$ for all $i = 1, \ldots, k$.
+\end{definition}
+
+An objective vector is weakly Pareto optimal if its corresponding decision vector is weakly Pareto optimal. Obviously, the Pareto optimal set is a subset of the weakly Pareto optimal set.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.8cm,>=Latex]
+
+% Axes
+\draw[line width=0.6pt] (0,0) -- (11,0) ;
+\draw[line width=0.6pt] (0,0) -- (0,9) ;
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (10.7,0) -- (11,0);
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (0,8.7) -- (0,9);
+
+% Axis labels
+\node[below] at (10.9,0) {$f1$};
+\node[left]  at (0,8.9) {$f2$};
+
+% Helper styles
+\tikzset{
+  ptfilled/.style={circle,fill=black,draw=black,inner sep=1.8pt},
+  pthollow/.style={circle,fill=white,draw=black,inner sep=1.8pt}
+}
+
+% --- Points (approximate positions to match the image) ---
+
+% Leftmost filled points (A and B)
+\node[ptfilled] (Apt) at (1.6,7.3) {};
+\node[ptfilled] (Bpt) at (1.6,5.6) {};
+
+% Label A and B
+\node[left]  at (Apt) {A};
+\node[left]  at (Bpt) {B};
+
+% Nearby hollow point (C) and its label
+\node[pthollow] (Cpt) at (3.0,6.6) {};
+\node[left]  at (3.0,6.6) {C};
+
+% Upper hollow cloud
+\node[pthollow] at (3.8,7.0) {};
+\node[pthollow] at (5.0,7.3) {};
+\node[pthollow] at (6.3,7.0) {};
+\node[pthollow] at (7.6,6.6) {};
+\node[pthollow] at (5.6,8.3) {};
+
+% Middle hollow points
+\node[pthollow] at (4.4,5.9) {};
+\node[pthollow] at (5.2,5.2) {};
+\node[pthollow] at (6.6,5.4) {};
+\node[pthollow] at (7.8,4.9) {};
+\node[pthollow] at (5.0,4.1) {};
+
+% Lower hollow point
+\node[pthollow] at (7.0,3.2) {};
+
+% Filled points along the lower-left boundary (approx. Pareto set)
+\node[ptfilled] at (3.5,4.8) {};
+\node[ptfilled] at (4.6,3.8) {};
+\node[ptfilled] at (6.0,3.1) {};
+\node[ptfilled] at (8.6,1.8) {};
+
+\end{tikzpicture}
+
+\caption{\label{fig:pareto}Pareto optimality.}
+\end{figure}
+
+\begin{example}
+\label{ex:pareto}
+In figure \ref{fig:pareto} we have depicted a sample of the objective region of a multiobjetive optimization problem composed by two real-valued objective functions $f_1$ and $f_2$ that we are interested in minimizing. White points are not weakly Pareto optimal since there exist points that improve both components at the same time (for example, point $\mathbf{B}$ improves point $\mathbf{C}$ in both functions). Black points are weakly Pareto optimal since there is no point that improves both components at the same time. Point $\mathbf{A}$ is not Pareto optimal since point $\mathbf{B}$ improves one component without deteriorating the other.
+\end{example}
+
+Mathematically speaking, all the solutions that compose the Pareto optimal set are equally good. However, for most practical applications, it is highly desirable to obtain a single solution. Finding this solution requires additional information not included in the definition of the optimization problem. The relation of preference between objective function values is expressed through a \emph{decision maker}, who is assumed to have additional insights about the problem to be solved. In this sense, solving a multiobjective optimization problem requires finding those feasible decision vectors that are Pareto optimal and that also satisfy the additional requirements imposed by the decision maker.
+
+% {\color{red}TODO: Introduce the concept of Pareto local optimality.}
+
+In practice, we assume that the preferences of the decision maker can be expressed using a value function.
+
+\begin{definition}
+A \emph{value function} is a function $U : \mathbb{R}^k \rightarrow \mathbb{R}$ that assigns to each objective vector $\mathbf{z} = \left( z_1, \ldots, z_k \right)$ a single real value $U(\mathbf{z})$.
+\end{definition}
+
+Value functions are maximized: among all the Pareto optimal objective vectors, the decision maker selects the one that achieves the largest value of $U(\mathbf{z})$. This reflects the idea that the decision maker aggregates multiple criteria into a single utility score and prefers the alternative that yields the highest overall satisfaction. In this way, a multiobjective optimization problem is converted into a single-objective problem over the Pareto frontier.
+
+Value functions allow us to order the vectors of the objective region $\mathbf{Z}$. We are interested in applying the value function to the Pareto optimal subset to find a unique solution to the multiobjective optimization problem.
+
+% Subsection: Range of the Solutions
+
+\subsection{Range of the Solutions}
+\label{sec:range_solutions}
+
+We are intersted in investigating the range of the solutions included in the Pareto optimal set. To do that, we have to find the lower and upper bounds of this set. In the rest of this section, we assume that the objective functions are bounded over the feasible region $\mathbf{S}$.
+
+An objective vector that minimizes all objective functions is called an ideal objective vector, while an objective vector that maximizes (within the Pareto set) all objective functions is called a nadir objective vector. These two vectors can be formally defined using the notions of \emph{infimum} and \emph{supremum}.
+
+\begin{definition}
+The \emph{ideal objective vector} $\mathbf{z}^\star \in \mathbb{R}^k$ is defined componentwise as
+\[
+z^\star_i = \inf_{\mathbf{x} \in \mathbf{S}} f_i(\mathbf{x}), \qquad i = 1,\ldots,k.
+\]
+\end{definition}
+
+If there exists an ideal objective vector that belongs to the objective region, that is $\mathbf{z}^\star \in \mathbf{Z}$, then that vector would be a solution of the optimization problem, and that solution would be unique. In general, the ideal vector is not feasible, but it constitutes a lower bound to the Pareto optimal set.
+
+\begin{definition}
+The \emph{nadir objective vector} $\mathbf{z}^{nad} \in \mathbb{R}^k$ is defined componentwise as
+\[
+z^{nad}_i = \sup_{\mathbf{z} \in \mathbf{P}_O} z_i, \qquad i = 1,\ldots,k,
+\]
+where $\mathbf{P}_O \subseteq \mathbf{Z}$ is the Pareto frontier.
+\end{definition}
+
+The nadir vector is the componentwise worst objective value among all Pareto optimal solutions, and it provides an upper bound to the Pareto set. However, unlike the ideal vector, it cannot usually be computed directly, because the full Pareto frontier is unknown. Instead, it is often estimated using the so-called \emph{payoff table}.
+
+\begin{definition}
+Let $\mathbf{z}^\star = \{ z^\star_1, \ldots, z^\star_k \}$ be the ideal objective vector, and let $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ be the decision vectors that individually minimize each objective function:
+\[
+z^\star_i = f_i(\mathbf{x}^\star_i), \qquad \text{with } \mathbf{x}^\star_i \in \arg\min_{\mathbf{x}\in\mathbf{S}} f_i(\mathbf{x}).
+\]
+This collection $\{ \mathbf{x}^\star_1, \ldots, \mathbf{x}^\star_k \}$ is called the \emph{payoff table}.
+\end{definition}
+
+By construction, each $\mathbf{x}^\star_i$ minimizes $f_i$ over $\mathbf{S}$, but not necessarily the other objectives. Let $f^\star_{ij}$ denote the value of the objective function $f_i$ computed at $\mathbf{x}^\star_j$, that is, $f^\star_{ij} = f_i(\mathbf{x}^\star_j)$ for $i,j = 1,\ldots,k$. Using these values, we can estimate the nadir objective vector as follows.
+
+\begin{definition}
+Given the payoff table $\{\mathbf{x}^\star_1,\ldots,\mathbf{x}^\star_k\}$, the \emph{nadir objective vector} is approximated as
+\[
+z^{nad}_i = \max_{j} f^\star_{ij}, \qquad i = 1,\ldots,k.
+\]
+\end{definition}
+
+The ideal objective vector and the nadir objective vector may, or may not, be feasible. In Figure \ref{fig:nadir} are depicted the ideal (vector $\mathbf{E}$) and nadir (vector $\mathbf{F}$) vectors of the multiobjective optimization problem of Example \ref{ex:pareto}.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.8cm,>=Latex]
+
+% ----- Axes -----
+\draw[line width=0.6pt] (0,0) -- (11,0);
+\draw[line width=0.6pt] (0,0) -- (0,9);
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (10.7,0) -- (11,0);
+\draw[line width=0.6pt,-{Latex[length=3mm]}] (0,8.7) -- (0,9);
+\node[below] at (10.9,0) {$f1$};
+\node[left]  at (0,8.9) {$f2$};
+
+% ----- Styles -----
+\tikzset{
+  ptfilled/.style={circle,fill=black,draw=black,inner sep=1.8pt},
+  pthollow/.style={circle,fill=white,draw=black,inner sep=1.8pt},
+  ptgray/.style  ={circle,fill=gray!60,draw=black,inner sep=2.0pt}
+}
+
+% ----- Dashed rectangle (from ideal E to nadir F corners) -----
+% choose coordinates to match layout
+\coordinate (Lx) at (2.0,1.6);  % left x of box
+\coordinate (Rx) at (9.0,1.6);  % right x shares y for bottom
+\coordinate (TopY) at (2.0,5.5); % top y shares x for left
+\coordinate (TopR) at (9.0,5.5); % top-right
+
+\draw[dashed,line width=0.8pt]
+  (Lx) -- (TopY) -- (TopR) -- (Rx) -- cycle;
+
+% ----- Special corner points E, B, F, and bottom-right -----
+\node[ptgray,label=left:E] (Ept) at (Lx) {};
+\node[ptfilled,label=left:B] (Bpt) at (TopY) {};
+\node[ptgray,label=right:F]  (Fpt) at (TopR) {};
+\node[ptfilled]               at (Rx) {};
+
+% ----- Left-top cluster with A, B, C -----
+\node[ptfilled] (Apt) at (1.6,7.3) {}; \node[left] at (Apt) {A};
+% B already placed on the box’s top-left
+\node[pthollow] (Cpt) at (3.0,6.6) {}; \node[left] at (Cpt) {C};
+
+% ----- Hollow cloud (top area) -----
+\node[pthollow] at (3.8,7.0) {};
+\node[pthollow] at (5.0,7.3) {};
+\node[pthollow] at (6.3,7.0) {};
+\node[pthollow] at (7.6,6.6) {};
+\node[pthollow] at (5.6,8.3) {};
+
+% ----- Middle hollow points -----
+\node[pthollow] at (4.4,5.9) {};
+\node[pthollow] at (5.2,5.2) {};
+\node[pthollow] at (6.6,5.4) {};
+\node[pthollow] at (7.8,4.9) {};
+\node[pthollow] at (5.0,4.1) {};
+
+% ----- Hollow point on right dashed edge (as in the image) -----
+\node[pthollow] at (9.0,4.8) {};
+
+% ----- Lower region points (mixed) -----
+\node[ptfilled] at (3.5,4.8) {};
+\node[ptfilled] at (4.6,3.8) {};
+\node[ptfilled] at (6.0,3.1) {};
+\node[pthollow] at (7.0,3.2) {};
+
+\end{tikzpicture}
+\caption{Ideal and nadir bounds (dashed) over a schematic objective space.}
+\label{fig:nadir}
+\end{figure}
+
+For some applications, the range of values of the objective functions can differ by orders of magnitude. In those situations, it is advisable to normalize them, so the values are in the same scale. We can use the ideal and nadir vector for this normalization process, by replacing each objective function $f_i (\mathbf{x}) (i = 1, \ldots, k)$ by the normalized function
+\[
+\frac{f_i(\mathbf{x}) - z^\star_i}{z^{nad}_i - z^\star_i}
+\]
+
+% Subsection: Trade-offs
+
+\subsection{Trade-offs}
+\label{sec:trade_offs}
+
+Since the functions we want to minimize are conflicting, we often have to assume that the only way to gain a benefit in one aspect of the problem is to lose something in another aspect. How much we have to give up in one objective to achieve a certain improvement in another is called a \emph{trade-off}.
+
+\begin{definition}
+Let $\mathbf{x}^1, \mathbf{x}^2 \in \mathbf{S}$ be two decision vectors. The \emph{ratio of change} between the functions $f_i$ and $f_j$ for the vectors $\mathbf{x}^1, \mathbf{x}^2$, denoted by $\Delta_{ij}$, is defined as:
+\[
+\Delta_{ij} ( \mathbf{x}^1, \mathbf{x}^2 ) = \frac{f_i(\mathbf{x}^1) - f_i(\mathbf{x}^2)}{f_j(\mathbf{x}^1) - f_j(\mathbf{x}^2)}
+\] 
+for all $i, j = 1, \ldots, k$ such that $f_j(\mathbf{x}^1) - f_j(\mathbf{x}^2) \neq 0$.
+\end{definition}
+
+$\Delta_{ij}$ is called a \emph{partial trade-off} between $f_i$ and $f_j$ from $\mathbf{x}^1$ to $\mathbf{x}^2$ if $f_l(\mathbf{x}^1) = f_l(\mathbf{x}^2)$ for all $l = 1, \ldots, k$, $l \neq i, j$. If $f_l(\mathbf{x}^1) \neq f_l(\mathbf{x}^2)$ for at least one $l \neq i,j$, then $\Delta_{ij}$ is called a \emph{total trade-off}.
+
+If the trade-off between two objective functions is extremely small or extremely large (that is, if a small change in one aspect of the problem produces a disproportionately large change in another), then the solution behaves similarly to a weakly Pareto optimal solution that is not truly Pareto optimal. In some practical applications, it is convenient to filter out those solutions that exhibit this undesirable behavior. This leads to the concept of \emph{properly Pareto optimal} solutions, which impose a bound on the possible trade-offs between objectives.
+
+\begin{definition}
+A decision vector $\mathbf{x} \in \mathbf{S}$ is \emph{properly Pareto optimal} if it is Pareto optimal and if there exists a real number $M > 0$ such that, for every $i = 1,\ldots,k$ and every $\mathbf{y} \in \mathbf{S}$ satisfying $f_i ( \mathbf{y} ) < f_i ( \mathbf{x} )$, there exists at least one $j \in \{1,\ldots,k\}$ such that $f_j ( \mathbf{x} ) < f_j ( \mathbf{y} )$ and
+\[
+\frac{f_i ( \mathbf{x} ) - f_i ( \mathbf{y} )}{f_j ( \mathbf{y} ) - f_j ( \mathbf{x} )} \leq M.
+\]
+An objective vector $\mathbf{z} \in \mathbf{Z}$ is properly Pareto optimal if the decision vector corresponding to it is properly Pareto optimal.
+\end{definition}
+
+Intuitively, a solution is properly Pareto optimal if improving one objective even slightly is possible only at the expense of worsening at least one other objective by a proportionally bounded amount. This rules out extreme cases where an infinitesimal improvement in one objective requires an arbitrarily large deterioration in another.
+
+Note that the properly Pareto optimal set is a subset of the Pareto optimal set, and the Pareto optimal set is a subset of the weakly Pareto optimal set.
+
+% Optimization Methods
+
+\subsection{Optimization Methods}
+\label{sec:pareto_optimization_methods}
+
+Generating Pareto optimal solutions plays a central role in multiobjective optimization. From a mathematical perspective, the problem is considered to be solved when the entire Pareto optimal set has been identified. However, this is often not enough for practical decision-making. In real-world applications, we typically want to obtain a single solution. This means that once the Pareto optimal set is known, we must find a way to impose a complete order on its elements. This requires the participation of a decision maker who provides additional information in the form of a preference structure over the objective space.
+
+A standard way to generate Pareto optimal solutions is through scalarization: converting the multiobjective optimization problem into a single-objective optimization problem, or into a family of such problems. In this approach, the original vector-valued objective function is replaced by a real-valued scalarization function that incorporates the original objectives. To be useful, a scalarization function is usually expected to satisfy the following conditions: i) for every Pareto optimal solution $\mathbf{x} \in \mathbf{P}_D$, there exists a choice of parameters of the scalarization function such that $\mathbf{x}$ is the unique optimal solution of the scalarized problem; ii) every solution produced by the scalarization function is Pareto optimal.
+
+Several scalarization-based methods exist, and they can be classified according to how the decision maker participates in the solution process:
+
+\begin{itemize}
+\item No-preference methods: no preference information from the decision maker is used.
+\item A posteriori methods: first a (possibly large) set of Pareto optimal solutions is generated; then the decision maker selects the preferred one among them.
+\item A priori methods: the decision maker specifies preference information before the optimization is carried out, and this information is used to generate a single preferred solution.
+\item Interactive methods: the decision maker provides preference information progressively during the optimization process, which iteratively guides the search toward a preferred solution.
+\end{itemize}
+
+In no-preference methods, the knowledge of the decision maker is not taken into account, and the optimization problem is solved using a relatively simple method. In a posteriori methods, the Pareto optimal set (or part of it) is identified first, and then the decision maker selects the preferred solution among the alternatives. A priori methods and interactive methods incorporate preference information directly into the search, thereby producing solutions more tailored to the decision maker's values.
+
+\subsubsection{Global Criterion}
+\label{sub:multiobjective_global_criterion}
+
+The global criterion method is a no-preference method in which the distance between a given reference point and the feasible objective region is minimized. In this method, all the objective functions are considered equally important. The reference point is usually chosen as the ideal objective vector $\mathbf{z}^\star$, and a common distance metric is the $L_p$-norm. Under these assumptions, the global criterion method becomes the following minimization problem:
+\begin{align*}
+     & \text{minimize}    \quad \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - z_i^\star \right)^p \right)^{\frac{1}{p}} \\
+     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S}.
+\end{align*}
+Different values of $p$ produce different solutions to this minimization problem. Common choices are $p=1$, $p=2$, and $p=\infty$. 
+
+\begin{proposition}
+\label{prop:global_criterion_pareto_optimal}
+The solution of the $L_p$-based global criterion problem is Pareto optimal.
+\end{proposition}
+\begin{proof}
+Let $\mathbf{x}$ be a solution of the $L_p$-based global criterion problem, with $1 \leq p < \infty$, and assume that $\mathbf{x}$ is not Pareto optimal. Then, by Definition \ref{def:pareto_optimal}, there must exist a point $\mathbf{y} \in \mathbf{S}$ such that $f_i( \mathbf{y} ) \leq f_i( \mathbf{x} )$ for all $i = 1, \ldots, k$, and $f_j( \mathbf{y} ) < f_j( \mathbf{x} )$ for at least one $j$. Then we have that $( f_i(\mathbf{y}) - z_i^\star )^p \leq ( f_i(\mathbf{x}) - z_i^\star )^p$ for all $i \neq j$ and $( f_j(\mathbf{y}) - z_j^\star )^p < ( f_j(\mathbf{x}) - z_j^\star )^p$. Adding all these terms and raising to the $1/p$ power gives
+\[
+\left( \sum_{i=1}^k \left( f_i(\mathbf{y}) - z_i^\star \right)^p \right)^{\frac{1}{p}} < \left( \sum_{i=1}^k \left( f_i(\mathbf{x}) - z_i^\star \right)^p \right)^{\frac{1}{p}},
+\]
+which contradicts the assumption that $\mathbf{x}$ is a solution to the minimization problem.
+\end{proof}
+
+Although all the solutions selected by the $L_p$-based global criterion are Pareto optimal, not all Pareto optimal solutions can be obtained by this method. In practice, it is often convenient to normalize the ranges of the objective functions, so that objectives with values closer to the ideal vector do not dominate the criterion. A common normalization factor used in practice is $z_i^{nad} - z_i^\star$.
+
+\subsubsection{Weighting Method}
+
+The weighting method is one of the simplest and most widely used techniques for generating different Pareto optimal solutions. The idea is to associate each objective function with a weighting coefficient and minimize the weighted sum of the objectives. In this way, the multiple objective functions are transformed into a single objective function. We suppose that the weighting coefficients $w_i$ are real numbers such that $w_i \geq 0$ for all $i = 1, \ldots, k$, and that they are normalized so that $\sum_{i=1}^k w_i = 1$. The multiobjective optimization problem is then transformed into the following \emph{weighting problem}:
+\begin{align*}
+     & \text{minimize}    \quad \sum_{i=1}^k  w_i  f_i(\mathbf{x}) \\
+     & \text{subject\;to} \quad \mathbf{x} \in \mathbf{S},
+\end{align*}
+where $w_i \geq 0$ for all $i = 1, \ldots, k$ and $\sum_{i=1}^k w_i = 1$.
+
+Weighting coefficients equal to zero should generally be avoided, because they effectively remove an objective from consideration. Furthermore, the objective functions should be normalized or scaled so that their values are approximately of the same order of magnitude; otherwise, the effect of the weights can be misleading and difficult to control. Only when the objectives are scaled comparably can one steer the search toward desirable solutions by adjusting the weights.
+
+\begin{proposition}
+\label{prop:weighted_method_pareto_optimal}
+If all weighting coefficients are strictly positive ($w_i > 0$ for all $i = 1,\ldots,k$), then any solution of the weighting problem is Pareto optimal.
+\end{proposition}
+\begin{proof}
+Assume that $\mathbf{x}^\star$ solves the weighting problem but is not Pareto optimal. Then there exists a $\mathbf{y} \in \mathbf{S}$ such that $f_i(\mathbf{y}) \le f_i(\mathbf{x}^\star)$ for all $i$ and $f_j(\mathbf{y}) < f_j(\mathbf{x}^\star)$ for some $j$. Since $w_i>0$, multiplying by the weights gives
+\[
+\sum_{i=1}^k w_i f_i(\mathbf{y}) < \sum_{i=1}^k w_i f_i(\mathbf{x}^\star),
+\]
+contradicting the optimality of $\mathbf{x}^\star$. Therefore, $\mathbf{x}^\star$ must be Pareto optimal.
+\end{proof}
+
+If the solution of the weighting problem is unique, it is Pareto optimal even if some weights are zero. However, not all Pareto optimal solutions can be found using the weighting method: it only generates solutions lying on the convex hull of the Pareto frontier. In practice, the condition $w_i \geq \varepsilon$ with some small $\varepsilon > 0$ is often used instead of strict positivity, which requires a careful choice of $\varepsilon$.
+
+The weighting method can also be used as an a priori method by letting the decision maker specify a weighting vector representing their preferences. In this case, the weighting problem can be viewed as maximizing (the negative of) a linear \emph{value function}. However, it must be noted that changing the weighting coefficients linearly does not imply that the values of the objective functions will change linearly. In particular, if some of the objective functions are correlated, then seemingly “good” weighting vectors may produce poor results, and seemingly “bad” weighting vectors may produce useful results. Furthermore, weighting coefficients are often hard to interpret and understand for average decision makers. 
+
+When the weighting method is used as an a priori method, it is sometimes said that the weights reflect the \emph{relative importance} of the objective functions. However, it is more accurate to interpret them as representing the \emph{rates at which the decision maker is willing to trade off} values of the objective functions. This interpretation better captures their intended role.
+
+Finally, using the weighting method as an a priori method implicitly assumes that the decision maker’s underlying value function is (or can be approximated by) a linear function of the objectives. This assumption may be unrealistic in many cases, and it explains why the weighting method can be difficult to control in practice.
+
+\subsubsection{\texorpdfstring{$\epsilon$}{epsilon}-Constraint Method}
+\label{sub:epsilon_constraint_method}
+
+The $\epsilon$-constraint method is another classical scalarization technique for generating Pareto optimal solutions. Unlike the weighting method, which combines all objective functions into a single weighted sum, the $\epsilon$-constraint method selects one of the objective functions to optimize and converts the remaining objectives into inequality constraints bounded by user-specified thresholds (the $\epsilon$ values).
+
+Let us assume without loss of generality that $f_1$ is the chosen primary objective function to be minimized. Then the multiobjective optimization problem is transformed into the following \emph{$\epsilon$-constraint problem}:
+\begin{align*}
+     & \text{minimize}    \quad f_1(\mathbf{x}) \\
+     & \text{subject\;to} \quad f_i(\mathbf{x}) \le \epsilon_i, \quad i = 2, \ldots, k, \\
+     & \phantom{\text{subject\;to}}\quad \mathbf{x} \in \mathbf{S}.
+\end{align*}
+
+Different choices of the bounds $\epsilon_2,\ldots,\epsilon_k$ produce different solutions. By systematically varying these values, one can generate a set of Pareto optimal solutions.
+
+\begin{proposition}
+\label{prop:epsilon_constraint_pareto_optimal}
+Any optimal solution of the $\epsilon$-constraint problem is Pareto optimal, provided that all the constraints $f_i(\mathbf{x}) \le \epsilon_i$ are active or at least binding for some feasible choice of $\epsilon_i$.
+\end{proposition}
+\begin{proof}
+Suppose $\mathbf{x}^\star$ solves the $\epsilon$-constraint problem and is not Pareto optimal. Then there exists $\mathbf{y} \in \mathbf{S}$ such that $f_i(\mathbf{y}) \le f_i(\mathbf{x}^\star)$ for all $i$, and $f_j(\mathbf{y}) < f_j(\mathbf{x}^\star)$ for at least one $j$. In particular, $f_1(\mathbf{y}) < f_1(\mathbf{x}^\star)$ and $f_i(\mathbf{y}) \le \epsilon_i$ for $i\ge2$, meaning that $\mathbf{y}$ is also feasible and strictly improves the objective. This contradicts the optimality of $\mathbf{x}^\star$.
+\end{proof}
+
+A key advantage of the $\epsilon$-constraint method is that, unlike the weighting method, it can generate Pareto optimal solutions lying in the non-convex parts of the Pareto frontier. This makes it particularly suitable for problems where the Pareto set is not convex.
+
+In practice, choosing suitable $\epsilon_i$ values can be challenging. If they are too restrictive, the problem becomes infeasible; if they are too loose, the solution will simply minimize $f_1$ with little regard to the other objectives. A common strategy is to estimate lower and upper bounds for each $f_i$ (for example, the ideal and nadir values defined in Section~\ref{sec:range_solutions}) and then sample values of $\epsilon_i$ within these ranges. This allows the decision maker to explore different trade-offs between objectives systematically.
+
+The $\epsilon$-constraint method can be used as a posteriori method (by generating many solutions for different $\epsilon$ values and letting the decision maker choose) or as an interactive method (by progressively adjusting the $\epsilon_i$ values based on the decision maker’s feedback).
+
+%
+% Section: References
+%
+
+\section*{References}
+
+% References for Discrete Mathematics
+
+The book \emph{Discrete Mathematics} by Johnsonbaugh \cite{johnsonbaugh2009discrete} is designed for undergraduate students enrolled in a one- or two-semester course in discrete mathematics, and it provides thorough coverage of fundamental topics in the field. \emph{Introduction to the Theory of Computation} by Sipser \cite{sipser2012introduction} offers a comprehensive and accessible introduction to key topics in computational theory. It is widely praised for its clear presentation and in-depth treatment of automata, formal languages, and complexity theory. \emph{Introduction to Algorithms} by Cormen et al. \cite{cormen1990introduction}, often referred to as "CLRS" after the initials of its authors, is a foundational text in the study of algorithms. It covers a broad range of subjects, including graph algorithms, and is known for its depth and rigor. Lastly, \emph{Matrix Computations} by Golub and Van Loan \cite{golub2013matrix} focuses on a wide array of topics in matrix theory, with particular emphasis on computational techniques—making it especially valuable for those involved in numerical and computational studies.
+
+% References for Computability
+
+The original paper form Alan Turing where the concepts of Turing machine, universal Turing machine, and non-computable problems were introduced is \cite{turing1936computable}, however it is a difficult to read paper for the contemporary reader. An easier to read introduction to computability theory, from the point of view of languages, can be found in \cite{sipser2012introduction}, and a more advanced introductions in \cite{cooper2003computability} and \cite{soare2016turing}. In \cite{fernandez2009models} we can find a description of the most important computability models proposed so far. The Post Correspondence Problem was introduced by Emil Post in \cite{post1946variant}; for the details of the proof sketched in Example \ref{ex:PCP} please refer to \cite{sipser2012introduction}.

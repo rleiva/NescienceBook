@@ -1870,478 +1870,78 @@ Conditional descriptions thus formalize how scientific accounts can be concise w
 \section{Descriptions of Research Areas}
 \label{sec:description_of_areas}
 
-Scientific inquiry frequently concerns collections of related entities rather than individual entities considered in isolation. The representations of these entities may exhibit common regularities, allowing them to be described using shared mathematical structures. For example, a single physical law may account for observations of several systems, with differences between the systems captured by their parameters or initial conditions. This motivates the study of descriptions of research areas.
+Research areas organize scientific entities into collections according to their subject matter, shared properties, methods, or other classification criteria. As introduced in Section~\ref{sec:research_areas}, these collections may form hierarchies of areas and subareas, providing a structured organization of scientific knowledge. The representations of entities belonging to the same research area may contain common information, relationships, or regularities. This motivates the extension of descriptions from individual entities to finite collections of entities.
 
-A straightforward way to describe a finite research area is to combine descriptions of its constituent representations. This construction preserves the individual computational accounts while organizing them into a single description.
-
-Let $(r_i,d_i)\in\mathcal{H}_{e_i} i=1,\ldots,n$, be hypotheses associated with the entities in $F$. Thus, each $d_i$ is an extended description of its corresponding representation $r_i$. We may construct a decodable description $d_F$ that executes the individual descriptions and collects their outputs using the same sequence encoding employed for the area representation.
+Given a representation $\rho_F$ of a finite subarea $F\subseteq\mathcal A$, a description of the area is a computational description of $\rho_F$. It need not be constructed from independent descriptions of its constituent entities, and it may exploit shared information among them.
 
 \begin{definition}
-\label{def:componentwise_area_description}
-Let $F=\{e_1,\ldots,e_n\}\subseteq\mathcal{A}$ be a nonempty finite subarea with a fixed ordering, and let $(r_i,d_i)\in\mathcal{H}_{e_i}$ for each $i=1,\ldots,n$. We define a \emph{componentwise description} \index{Componentwise description of a research area} of the area representation $\rho_F=\langle r_1,\ldots,r_n\rangle$ as
+Let $\mathcal{A}\subseteq\mathcal{E}$ be a research area, and let $\rho_F$ be a representation of a nonempty finite subarea $F\subseteq\mathcal{A}$. We define the set of \emph{descriptions of the research area} \index{Description of a research area}, relative to $\rho_F$, as
 \[
-d_F = \left\langle TM_{\mathrm{joint}}, \langle d_1,\ldots,d_n\rangle \right\rangle,
+\mathcal{D}_{\rho_F} = \left\{d_F\in\mathcal{D}^{\top}: \Gamma(d_F)=\rho_F \;\lor\; 
+K(\rho_F\mid\Gamma(d_F))\leq K(\rho_F)-\tau \right\},
 \]
-where $TM_{\mathrm{joint}}$ is a fixed permitted Turing machine that executes each component description and produces the encoded sequence of their outputs:
-\[
-\Gamma(d_F) = \left\langle \Gamma(d_1),\ldots,\Gamma(d_n) \right\rangle.
-\]
+where $\tau$ is the fixed information threshold introduced for extended descriptions.
 \end{definition}
 
-Since every $d_i$ is decodable, each component computation terminates. The joint computation therefore also terminates, and $d_F\in\mathcal{D}^\top$. The fixed machine uses a prefix-free encoding of its input sequence, ensuring compatibility with the computational conventions established earlier in this chapter.
+This definition extends the concept of description to the joint representation of a finite collection of entities. It does not require those entities to share a common scientific law or explanatory model. Their descriptions may nevertheless benefit from shared information or computational structures.
 
-The component descriptions can be recovered effectively from $d_F$ by parsing its input. Their association with the corresponding entities is determined by the fixed ordering of $F$, without requiring additional entity identifiers. If every component description is exact, then $\Gamma(d_i)=r_i$ for all $i$, and consequently $\Gamma(d_F)=\rho_F$. Thus, $d_F$ is an exact description of the area representation. In general, however, the individual descriptions need not be exact. If one or more components produce outputs different from their intended representations, the resulting area description may also differ from $\rho_F$.
-
-Componentwise descriptions provide a simple way to organize existing
-hypotheses, but they do not necessarily exploit regularities shared by
-the representations. Each component description is supplied separately,
-even when several components rely on the same mathematical structures.
-
-% Subsection: Joint Descriptions
-
-\subsection*{Joint Descriptions}
-
-A more general approach is to construct a single computational description of the area representation, without requiring it to be assembled from independent descriptions of the individual representations. Let $\rho_F=\langle r_1,\ldots,r_n\rangle$ be an area representation. A joint description $d_F\in\mathcal{D}^\top$ may implement a computational procedure intended to account for the entire collection. Its output can be compared with $\rho_F$, using the same encoding conventions. Such a description need not contain separately recoverable descriptions of each component. Instead, it may use common computational structures to produce their outputs. In particular, a mathematical relationship that applies to several entities may be encoded once and reused with different parameters or inputs.
-
-The potential advantage of joint descriptions can be understood through
-Kolmogorov complexity. When representations are considered independently,
-their minimal descriptions must account for their information separately.
-When they are considered jointly, shared algorithmic structure may reduce
-the total amount of information required.
+The potential economy of joint descriptions can be expressed using Kolmogorov complexity.
 
 \begin{proposition}
 \label{prop:area_joint_complexity}
-Let $r_1,\ldots,r_n\in\mathcal{B}^\ast$, with $n\geq 1$, and let $\rho_F=\langle r_1,\ldots,r_n\rangle$ be their joint encoding. Then
+Let $\rho_F=\langle r_1,\ldots,r_n\rangle$ be a representation of a nonempty finite subarea $F$. Then
 \[
-K(\rho_F) \leq \sum_{i=1}^{n}K(r_i)+K(n)+O(1).
+K(\rho_F)\leq\sum_{i=1}^{n}K(r_i)+K(n)+O(1).
 \]
 \end{proposition}
 \begin{proof}
-For each $r_i$, choose a minimal prefix-free description of length $K(r_i)$. A fixed computational procedure can decode the integer $n$, execute the $n$ descriptions in sequence, and encode their outputs using the prescribed self-delimiting representation of finite sequences. The resulting program reconstructs $\rho_F$. Its length is bounded by the sum of the individual minimal-description lengths, the length $K(n)$ needed to specify the number of components, and the constant overhead of the fixed procedure. Therefore,
+Choose minimal prefix-free descriptions of $n$ and each $r_i$, having lengths $K(n)$ and $K(r_i)$, respectively.
+A fixed computational procedure can decode $n$, execute the $n$ component descriptions, and encode their outputs
+as a finite sequence, reconstructing $\rho_F$. Since the descriptions are self-delimiting, they can be combined with constant overhead. Therefore,
 \[
-K(\rho_F) \leq \sum_{i=1}^{n}K(r_i)+K(n)+O(1).
+K(\rho_F)\leq\sum_{i=1}^{n}K(r_i)+K(n)+O(1).
 \]
 \end{proof}
 
-The proposition establishes an upper bound based on describing the components independently. It does not imply that a minimal joint description must have this structure. When the representations share algorithmic information, their joint complexity may be substantially smaller. For example, if all the components are identical to a string $r$, then $\rho_F=\langle r,\ldots,r\rangle$ can be reconstructed by describing $r$ once and specifying the number of repetitions. Consequently,
+The proposition establishes an upper bound on the complexity of an area representation. When its components share algorithmic information, the joint complexity may be substantially smaller than this bound. For example, if all components are identical to a string $r$, then
 \[
 K(\rho_F)\leq K(r)+K(n)+O(1),
 \]
-rather than requiring an independent description of every occurrence
-of $r$.
+since the string can be described once and repeated $n$ times.
 
-More generally, related representations may share mathematical relationships, computational procedures, or other regularities. A joint description can exploit these relationships by encoding the common structure once and supplying only the information specific to each component.
+More generally, representations of related research entities may share terminology, mathematical structures, computational procedures, or other regularities that can be exploited by a joint description.
 
 \begin{example}
-Consider a research area consisting of several adsorption systems, each represented by experimental measurements of the amount of gas adsorbed at different equilibrium pressures. Suppose that the systems are described using the Langmuir adsorption isotherm, introduced in Section~\ref{sec:models}:
-\[
-q(P)=\frac{q_{\max}KP}{1+KP}.
-\]
-For each system $e_i$, let $r_i$ encode its experimental observations, and let
-\[
-\theta_i=(q_{\max,i},K_i)
-\]
-denote its finitely encoded model parameters. The pressure values at which predictions are required are encoded in an input $a_i$. One approach is to construct an independent description for every system, repeating the implementation of the Langmuir equation in each description. Alternatively, a joint description can encode the common mathematical structure once, together with the parameters and inputs of the individual systems. A Turing machine implementing this structure can evaluate the model for each pair $(\theta_i,a_i)$ and produce the joint output
-\[
-\Gamma(d_F) = \left\langle \widehat{r}_1,\ldots,\widehat{r}_n \right\rangle,
-\]
-where $\widehat{r}_i$ encodes the predictions for system $e_i$. The resulting description may be shorter than a collection of independent descriptions because the mathematical relationship is encoded only once. However, the predicted representations need not coincide with the experimental observations. The joint description may therefore contain descriptive deficiencies even when it achieves a substantial reduction in descriptive complexity.
+Consider the research area of machine learning, containing entities such as decision trees, support vector machines, and nearest-neighbor algorithms. Each entity may be represented by information about its mathematical
+foundations, computational procedures, properties, and applications. A joint description of these representations may exploit shared concepts, such as training datasets, feature spaces, classification rules, and evaluation procedures. Rather than encoding all this information repeatedly, a computational description may represent common structures once, together with information specific to each entity. Such a description may be more economical than describing the representations independently. However, the existence of common information does not imply that all the entities belong to a single explanatory model, nor does descriptive economy alone guarantee that their representations are adequately described.
 \end{example}
 
-Joint descriptive economy is particularly relevant to scientific inquiry. A general scientific law may account for observations of many different entities, replacing a collection of unrelated computational accounts with a common mathematical structure. Nevertheless, a shorter joint description does not necessarily constitute a better scientific explanation. A common model may simplify the description while failing to account for important differences between the entities. Consequently, the value of shared descriptive structures must be assessed by considering both the information captured and the information omitted.
+Descriptions of research areas are therefore not restricted to common scientific laws. They provide a general mechanism for describing collections of entities organized according to scientific classifications. The quality of such descriptions depends on their ability to account for the information contained in the joint representation, rather than merely on their length.
 
-The conditional descriptions introduced in Section~\ref{sec:conditional_descriptions} provide a complementary mechanism for reusing shared knowledge. When several descriptions rely on the same mathematical or computational background, that background can be specified once and made available to their conditional computations. Joint descriptions exploit regularities among the representations, whereas conditional descriptions distinguish additional information from knowledge already available. Both mechanisms may be used together without changing the fundamental definition of a computational description.
+Furthermore, a description of $\rho_F$ concerns only the selected finite subarea $F$. It does not necessarily account for all the entities belonging to $\mathcal{A}$, particularly when the area contains unknown or unknowable entities. The descriptive quality of such collections will be considered in the subsequent chapters on mismodel and nescience.
 
 % Subsection: Effective Descriptions of Research Areas
 
 \subsection*{Effective Descriptions of Research Areas}
 
-The preceding constructions concern theoretical representations and descriptions. In practice, scientific inquiry proceeds with effective representations and the descriptions that have been considered as models of them.
+In practice, scientific inquiry proceeds with effective representations and descriptions that have entered scientific consideration. Let $F=\{e_1,\ldots,e_n\}\subseteq \hat{\mathcal{A}}^{\,t}$ be a nonempty finite subarea, with effective representation $\hat{\rho}_F^{\,t} = \langle\hat r_1,\ldots,\hat r_n\rangle$. An \emph{effective description of the research area} at time $t$ is a decodable description $d_F$ that has been considered within scientific practice as a  description of $\hat{\rho}_F^{\,t}$. Using the notation for effective descriptions introduced earlier $d_F \in \hat{\mathcal{D}}_{\hat{\rho}_F^{\,t}}^{\,t}$.
 
-Recall that Chapter 3 defines the effectively known part of a research area $\mathcal{A}$ at time $t$ as $\hat{\mathcal{A}}^{\,t} = \mathcal{A}\cap\hat{\mathcal{E}}^{\,t}$. An effectively known entity need not have an effective description. It may have entered scientific consideration through observations or other representations before any computational model has been proposed.
+An effective area description need not satisfy the informational conditions defining an extended description of its target $\hat\rho_F^{\,t}$. It may be incomplete, inaccurate, or entirely uninformative about that representation. Conversely, descriptions satisfying those conditions may exist without having been discovered or considered within scientific practice.
 
-For a finite subset
-\[
-F=\{e_1,\ldots,e_n\}\subseteq\hat{\mathcal{A}}^{\,t},
-\]
-suppose that at least one known hypothesis is available for every entity. We may then select $(r_i,d_i)\in\hat{\mathcal{H}}_{e_i}^{\,t} i=1,\ldots,n$. The representations determine the effective area representation
-\[
-\hat{\rho}_F^{\,t} = \langle r_1,\ldots,r_n\rangle,
-\]
-while the descriptions provide computational accounts that have been considered in scientific practice.
+As with individual entities, effective descriptions are recorded cumulatively, including those subsequently rejected or superseded. Their expansion reflects the historical development of scientific inquiry, but does not necessarily imply a reduction in nescience.
 
-As in the theoretical case, the selected component descriptions can be
-combined into a decodable description
-\[
-d_F=
-\left\langle
-TM_{\mathrm{joint}},
-\langle d_1,\ldots,d_n\rangle
-\right\rangle,
-\]
-satisfying
-\[
-\Gamma(d_F)
-=
-\langle\Gamma(d_1),\ldots,\Gamma(d_n)\rangle.
-\]
-This construction does not require the component descriptions to be extended descriptions of their intended representations. A known hypothesis may contain an inaccurate, incomplete, or entirely uninformative description.
+\begin{remark}[Characterization of Research Areas]
+Although a research area is formally defined as a subset of entities, not every subset constitutes a scientifically meaningful area. It remains an open question whether the coherence of a research area can be characterized mathematically through the algorithmic information shared by its constituent representations or the economy of their joint descriptions.
 
-The construction also does not imply that the resulting joint description has itself been proposed or investigated within scientific practice. It establishes only that a computational description of the selected collection can be constructed from the available components. A joint model independently considered by scientists may instead have a different computational structure, including shared mathematical relationships that are not explicitly represented in the individual descriptions.
+The existence of a joint description is not sufficient to establish such coherence, since any finite collection of representations admits an exact description. Conversely, scientifically meaningful areas may contain entities with little shared algorithmic information.
 
-The distinction between theoretical and effective descriptions is therefore preserved at the level of research areas. The former characterize computational possibilities, while the latter concern descriptions that have actually entered scientific investigation.
-
-Since effective representations, effective descriptions, and known hypotheses are defined cumulatively, the historical collection of entities for which at least one known hypothesis exists cannot decrease over time for a fixed research area. However, this does not imply that scientific understanding improves monotonically. Newly proposed descriptions may be inaccurate or unnecessarily complex, and earlier descriptions may subsequently be rejected. An increase in descriptive coverage must therefore be distinguished from a reduction in nescience.
-
-% Subsection: Descriptive Quality of Research Areas 
-
-\subsection*{Descriptive Quality of Research Areas}
-
-Describing a research area raises a question that does not arise when considering entities independently: whether the quality of the joint description should be evaluated as a whole or through the quality of its individual components.
-
-A componentwise assessment examines the relationships between each representation $r_i$ and its corresponding description $d_i$. This approach makes it possible to reuse the existing measures of descriptive deficiency, surplus, and mismodel. A joint assessment instead considers a description $d_F$ relative to the complete area representation $\rho_F$. Such an assessment may capture regularities shared by the different components that are not visible when they are evaluated independently. These approaches need not produce equivalent results. In particular, the joint area representation is not necessarily an element of the theoretical representation space $\mathcal{R}$, so the existing definition of mismodel cannot automatically be applied to it without specifying an appropriate extension or evaluation convention. We therefore leave the evaluation of descriptive quality to the subsequent chapters on mismodel and nescience. At this stage, the important distinction is between collecting existing descriptions and constructing a computational account that exploits common regularities across multiple representations.
-
-Descriptions of research areas thus extend the descriptive framework from individual entities to collections of related entities. Their principal significance is not merely that several descriptions can be combined into one binary string, but that a single computational structure may account for information distributed across many representations. This provides a formal foundation for studying scientific laws and models whose explanatory scope extends beyond individual phenomena.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Old Descriptions of Research Areas}
-\label{sec:description_of_areas}
-
-Research areas are subsets of the set of entities \(\mathcal{E}\). Once individual
-entities admit descriptions, it is natural to ask how an entire research area can be
-described. Intuitively, a description of an area should collect descriptions of the
-entities that compose it in such a way that each component can be identified and,
-when needed, recovered effectively. In this way, a research area is not treated as an
-undifferentiated aggregate, but as a structured family of entity-level descriptions.
-
-As in the case of representations, two difficulties appear immediately. First, a research
-area need not be finite, whereas every description is a finite binary string. Second,
-some entities in the area may fail to admit any exact description, or may only be
-associated in practice with effective descriptions. For this reason, the description of a
-research area must be understood relative to finite subsets of the area and, in practice,
-relative to the effective descriptions currently available.
-
-Recall that, for each entity \(e \in \mathcal{E}\), the set \(\mathcal{D}_e\) denotes the set of
-valid descriptions associated with \(e\), and \(\hat{\mathcal{D}}_e\) denotes the set of effective
-descriptions of \(e\).
-
-\begin{definition}
-Let \(\mathcal{A} \subseteq \mathcal{E}\) be a research area. We define the
-\emph{describable part}\index{Describable part of a research area} of \(\mathcal{A}\) as
-\[
-\mathcal{A}^{\mathcal{D}}
-=
-\{e \in \mathcal{A} : \mathcal{D}_e \neq \varnothing\}.
-\]
-\end{definition}
-
-Thus, \(\mathcal{A}^{\mathcal{D}}\) consists of those entities in the area for which at least
-one valid description exists. If \(\mathcal{A}\) contains entities outside
-\(\mathcal{A}^{\mathcal{D}}\), then no exact area description can include them as individually
-described components.
-
-To describe several entities together, we must separate their descriptions and attach
-identifiers that allow each component to be recognized. Any standard self-delimiting
-encoding of finite strings may be used for this purpose.
-
-\begin{definition}
-Let \(\mathcal{A} \subseteq \mathcal{E}\) be a research area, let
-\[
-F=\{e_1,\ldots,e_n\}\subseteq \mathcal{A}
-\]
-be a finite subset, and let \(d_i \in \mathcal{D}_{e_i}\) for each \(i=1,\ldots,n\). Let
-\(\iota_1,\ldots,\iota_n \in \mathcal{B}^\ast\) be pairwise distinct identifier strings. We define a
-\emph{description of the finite subarea \(F\)}\index{Description of a finite subarea} as any
-finite binary string of the form
-\[
-\Delta_F
-=
-\langle (\iota_1,d_1),\ldots,(\iota_n,d_n)\rangle,
-\]
-where \(\langle \cdot,\cdot\rangle\) and its finite iteration denote a fixed self-delimiting
-computable encoding of pairs and finite sequences of binary strings.
-\end{definition}
-
-The identifiers \(\iota_i\) need not carry scientific meaning by themselves. Their role is
-only to make it possible to separate the different components of the area description
-and determine which description is associated with which entity in the represented
-finite family.
-
-\begin{definition}
-Let \(\mathcal{A}\subseteq \mathcal{E}\) be a research area. We say that a binary string
-\(\Delta\in\mathcal{B}^\ast\) is an \emph{extended description of the area}
-\index{Extended description of a research area} if there exists a finite subset
-\[
-F=\{e_1,\ldots,e_n\}\subseteq \mathcal{A}
-\]
-and strings \(d_i\in \mathcal{D}_{e_i}\) such that
-\[
-\Delta = \langle (\iota_1,d_1),\ldots,(\iota_n,d_n)\rangle
-\]
-for some pairwise distinct identifiers \(\iota_1,\ldots,\iota_n\).
-\end{definition}
-
-This definition deliberately allows area descriptions to be partial. The string
-\(\Delta\) need not describe all entities in \(\mathcal{A}\), but only a finite subset of them.
-This is unavoidable whenever \(\mathcal{A}\) is infinite, and it remains useful even when
-\(\mathcal{A}\) is finite but some of its entities are not describable.
-
-\begin{definition}
-Let \(\mathcal{A}\subseteq \mathcal{E}\) be a research area. We say that \(\Delta\) is a
-\emph{complete area description}\index{Complete area description} of \(\mathcal{A}\) if
-\(\Delta\) is an area description associated with the finite set
-\[
-F=\mathcal{A}^{\mathcal{D}}.
-\]
-In particular, such a complete description can exist only if \(\mathcal{A}^{\mathcal{D}}\) is finite.
-\end{definition}
-
-Thus, if \(\mathcal{A}\) is finite and all its entities admit at least one description, then
-\(\mathcal{A}\) admits a complete area description. If \(\mathcal{A}\) contains entities with no
-description, then at best one can describe its describable part
-\(\mathcal{A}^{\mathcal{D}}\).
-
-The next proposition formalizes the main purpose of tagging individual descriptions:
-the description of an area preserves the identity of its components.
-
-\begin{proposition}
-\label{prop:recover_components_area_description}
-Let
-\[
-\Delta_F=\langle (\iota_1,d_1),\ldots,(\iota_n,d_n)\rangle
-\]
-be a description of a finite subarea \(F=\{e_1,\ldots,e_n\}\subseteq \mathcal{A}\). Then
-each pair \((\iota_i,d_i)\) can be recovered effectively from \(\Delta_F\).
-\end{proposition}
-
-\begin{proof}
-By construction, \(\Delta_F\) is encoded using a fixed self-delimiting computable coding
-of finite sequences of pairs. Therefore, there exists a computable decoding procedure
-that parses \(\Delta_F\) and returns each pair \((\iota_i,d_i)\). Hence every component
-description is effectively recoverable from the area description.
-\end{proof}
-
-The previous proposition shows that a description of a research area does not erase the
-individual descriptions of its members, but rather organizes them within a single
-computable object.
-
-Area descriptions are generally not unique.
-
-\begin{proposition}
-\label{prop:area_descriptions_not_unique}
-Descriptions of research areas are not unique.
-\end{proposition}
-
-\begin{proof}
-Non-uniqueness may arise in at least two ways. First, an entity
-\(e\in\mathcal{E}\) may admit several distinct descriptions \(d,d' \in \mathcal{D}_e\).
-Second, even for a fixed family of entity-level descriptions, one may choose different
-identifiers or a different order of concatenation. Therefore, the same research area may
-admit multiple distinct area descriptions.
-\end{proof}
-
-This non-uniqueness is not a defect. It reflects the fact that a research area may be
-organized in different descriptive styles, just as an individual entity may admit several
-valid descriptions.
-
-Finite area descriptions are also stable under finite aggregation.
-
-\begin{proposition}
-\label{prop:union_finite_area_descriptions}
-Let \(F_1,F_2\subseteq \mathcal{A}\) be finite subareas with \(F_1\cap F_2=\varnothing\).
-If \(\Delta_{F_1}\) and \(\Delta_{F_2}\) are descriptions of \(F_1\) and \(F_2\), respectively,
-then there exists a description of \(F_1\cup F_2\).
-\end{proposition}
-
-\begin{proof}
-Write
-\[
-\Delta_{F_1}
-=
-\langle (\iota_1,d_1),\ldots,(\iota_m,d_m)\rangle
-\]
-and
-\[
-\Delta_{F_2}
-=
-\langle (\kappa_1,d'_1),\ldots,(\kappa_\ell,d'_\ell)\rangle.
-\]
-Choosing the identifiers so that all
-\(\iota_1,\ldots,\iota_m,\kappa_1,\ldots,\kappa_\ell\) are pairwise distinct, the string
-\[
-\langle
-(\iota_1,d_1),\ldots,(\iota_m,d_m),
-(\kappa_1,d'_1),\ldots,(\kappa_\ell,d'_\ell)
-\rangle
-\]
-is a description of the finite subarea \(F_1\cup F_2\).
-\end{proof}
-
-This result shows that finite area descriptions are closed under finite aggregation. In
-this sense, describing an area amounts to collecting identifiable entity-level
-descriptions into a single structured string.
-
-It is often useful to isolate the family of all area descriptions associated with a given
-research area.
-
-\begin{definition}
-Let \(\mathcal{A}\subseteq \mathcal{E}\) be a research area. We define the set of
-\emph{descriptions of the area \(\mathcal{A}\)}\index{Set of descriptions of a research area}
-by
-\[
-\mathcal{D}_{\mathcal{A}}
-=
-\left\{
-\Delta \in \mathcal{B}^\ast :
-\Delta \text{ is an extended description of } \mathcal{A}
-\right\}.
-\]
-\end{definition}
-
-By definition, \(\mathcal{D}_{\mathcal{A}}\) contains all finite strings that describe finite
-subsets of \(\mathcal{A}\) by means of identifiable valid descriptions of their entities.
-
-The description of an area can also be understood as the union, in a structural sense,
-of the descriptions of its finite subareas.
-
-\begin{proposition}
-\label{prop:area_description_from_finite_subareas}
-Let \(\mathcal{A}\subseteq\mathcal{E}\) be a research area. Then every element of
-\(\mathcal{D}_{\mathcal{A}}\) is a description of some finite subarea \(F\subseteq \mathcal{A}\).
-\end{proposition}
-
-\begin{proof}
-This follows immediately from the definition of extended description of a research
-area, which requires the existence of a finite subset
-\(F=\{e_1,\ldots,e_n\}\subseteq \mathcal{A}\) and corresponding descriptions
-\(d_i\in\mathcal{D}_{e_i}\) such that
-\[
-\Delta=\langle (\iota_1,d_1),\ldots,(\iota_n,d_n)\rangle.
-\]
-Therefore every \(\Delta\in\mathcal{D}_{\mathcal{A}}\) is associated with some finite
-subarea \(F\subseteq \mathcal{A}\).
-\end{proof}
-
-In practice, however, science does not work with the full sets \(\mathcal{D}_e\) of valid
-descriptions of entities, but with the effective descriptions currently available.
-
-\begin{definition}
-Let \(\mathcal{A}\subseteq \mathcal{E}\) be a research area and let \(t\) denote a time index.
-We define the \emph{effectively describable part of the area at time \(t\)}
-\index{Effectively describable part of a research area} by
-\[
-\hat{\mathcal{A}}^{\,t}_{\mathcal{D}}
-=
-\{e\in \mathcal{A} : \hat{\mathcal{D}}_e^{\,t}\neq \varnothing\}.
-\]
-\end{definition}
-
-The set \(\hat{\mathcal{A}}^{\,t}_{\mathcal{D}}\) contains those entities of the area for which
-at least one effective description is available at time \(t\).
-
-\begin{definition}
-Let \(\mathcal{A}\subseteq \mathcal{E}\) be a research area and let
-\[
-F=\{e_1,\ldots,e_n\}\subseteq \hat{\mathcal{A}}^{\,t}_{\mathcal{D}}
-\]
-be a finite subset of effectively describable entities at time \(t\). For each
-\(i=1,\ldots,n\), let \(\hat{d}_i\in \hat{\mathcal{D}}_{e_i}^{\,t}\), and let
-\(\iota_1,\ldots,\iota_n\in\mathcal{B}^\ast\) be pairwise distinct identifiers. We define an
-\emph{effective description of the finite known subarea \(F\) at time \(t\)}
-\index{Effective description of a finite subarea} as any binary string of the form
-\[
-\hat{\Delta}^{\,t}_F
-=
-\langle (\iota_1,\hat{d}_1),\ldots,(\iota_n,\hat{d}_n)\rangle.
-\]
-\end{definition}
-
-Effective area descriptions are the practical counterparts of exact area descriptions.
-They need not be correct or minimal, because their components are only effective
-descriptions of the individual entities. Nevertheless, they encode the current
-descriptive state of the part of the area that is effectively described.
-
-\begin{proposition}
-\label{prop:effective_describable_area_monotone}
-Let \(\mathcal{A}\subseteq \mathcal{E}\) be a fixed research area. If \(t_1<t_2\), then
-\[
-\hat{\mathcal{A}}^{\,t_1}_{\mathcal{D}}
-\subseteq
-\hat{\mathcal{A}}^{\,t_2}_{\mathcal{D}}.
-\]
-\end{proposition}
-
-\begin{proof}
-If \(e\in \hat{\mathcal{A}}^{\,t_1}_{\mathcal{D}}\), then \(e\in\mathcal{A}\) and
-\(\hat{\mathcal{D}}_e^{\,t_1}\neq\varnothing\). Since effective descriptions are monotonic over
-time, we have \(\hat{\mathcal{D}}_e^{\,t_2}\neq\varnothing\) for all \(t_2>t_1\). Therefore
-\(e\in \hat{\mathcal{A}}^{\,t_2}_{\mathcal{D}}\).
-\end{proof}
-
-As a consequence, effective descriptions of areas may be progressively extended over
-time by incorporating descriptions of entities that were previously not effectively
-described.
-
-\begin{proposition}
-\label{prop:effective_area_description_extension}
-Let \(\mathcal{A}\subseteq\mathcal{E}\) be a fixed research area, and let
-\(\hat{\Delta}_{F_1}^{\,t_1}\) be an effective description of a finite subarea
-\(F_1\subseteq \hat{\mathcal{A}}^{\,t_1}_{\mathcal{D}}\). If \(t_1<t_2\), then there exists a
-finite set \(F_2\) such that
-\[
-F_1 \subseteq F_2 \subseteq \hat{\mathcal{A}}^{\,t_2}_{\mathcal{D}}
-\]
-and an effective description \(\hat{\Delta}_{F_2}^{\,t_2}\) extending
-\(\hat{\Delta}_{F_1}^{\,t_1}\).
-\end{proposition}
-
-\begin{proof}
-By Proposition \ref{prop:effective_describable_area_monotone},
-\[
-\hat{\mathcal{A}}^{\,t_1}_{\mathcal{D}}
-\subseteq
-\hat{\mathcal{A}}^{\,t_2}_{\mathcal{D}}.
-\]
-Hence every entity in \(F_1\) remains effectively describable at time \(t_2\). Let
-\(F_2\) be any finite subset of \(\hat{\mathcal{A}}^{\,t_2}_{\mathcal{D}}\) containing \(F_1\).
-Retaining the previous effective descriptions for the entities in \(F_1\), and choosing
-effective descriptions at time \(t_2\) for the entities in \(F_2\setminus F_1\), we obtain
-an effective description \(\hat{\Delta}_{F_2}^{\,t_2}\) of \(F_2\) that extends
-\(\hat{\Delta}_{F_1}^{\,t_1}\).
-\end{proof}
-
-This monotonicity property reflects a natural feature of scientific practice: as more
-entities in an area become describable, the descriptive coverage of the area expands.
-
-Finally, it is important to note that the description of a research area is not, in general,
-a minimal description of a single entity. It is a structured object that organizes
-descriptions of several entities simultaneously. For this reason, area descriptions are
-best understood as a bookkeeping and modeling device that allows the theory of
-nescience to be lifted from individual entities to families of related entities.
-
-In later chapters, this lifting will make it possible to define area-level notions of
-mismodel, inaccuracy, surfeit, and nescience. At that point, the description of a
-research area will no longer be merely a collection of component descriptions, but the
-basis for measuring how well an entire domain of inquiry is currently understood.
+Establishing a mathematical criterion for the coherence of research areas is left for future research.
+\end{remark}
 
 %
 % Section: References
 %
 
-\section{References}
+\section*{References}
 
 For more information about Russell's paradox, Cantor's theorem, and universal sets, refer, for example, to \cite{jech2013set}. This book also covers the Zermelo–Fraenkel system of axioms, including the Axiom of Choice. The idea of using a function to assign to each symbol and well-formed formula of a formal language a unique natural number (called a Gödel number) was introduced by Kurt Gödel in his proof of the incompleteness theorems \cite{godel1931formal}. A detailed discussion of the Berry paradox from the perspective of computability can be found in \cite{chaitin1995berry}. For a review of the problem of representation in Kolmogorov complexity, as well as a detailed account of the implications of Kolmogorov complexity being defined only up to an additive constant, see \cite{li2013introduction}. That oracle machines are not mechanical was originally stated by Turing when he introduced the concept of the oracle machine in \cite{turing1939systems}. For a comprehensive review of oracle Turing machines, refer to \cite{robivc2015foundations}.

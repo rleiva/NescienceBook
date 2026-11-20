@@ -20,15 +20,15 @@ Richard Feynman
 % Section: Descriptions
 %
 
-In Chapter \ref{chap:Representations}, we addressed the problem of representing possibly abstract entities by means of finite binary strings, called \emph{representations}, that preserve information about them and make them available for scientific investigation. A representation, however, is not sufficient for scientific understanding. Even when it contains relevant information about an entity, it may remain too large, irregular, or unstructured to support explanation, prediction, or further reasoning. The next challenge is therefore to construct descriptions capable of accounting for the information contained in those representations.
+In Chapter \ref{chap:Representations}, we addressed the problem of representing possibly abstract entities by means of finite binary strings, called \emph{representations}, that preserve information about them and make them available for scientific investigation. A representation, however, is not sufficient for scientific understanding. Even when it contains relevant information about an entity, it may remain too large or unstructured to support explanation, prediction, or further reasoning. The next challenge is therefore to construct descriptions capable of accounting for the information contained in those representations.
 
-In the theory of nescience, descriptions are treated as computational objects: finite binary strings that encode a Turing machine together with an input string. In scientific applications, the machine may encode the regularities underlying a representation, whereas the input may contain parameters, initial conditions, or residual information. The requirement that descriptions be computationally well-defined is essential. It excludes arbitrary linguistic or symbolic expressions that do not specify an executable procedure capable of producing a finite output. It also allows descriptions to be studied within the mathematical framework of computability and algorithmic information theory, where their lengths, outputs, and transformations can be analyzed precisely. 
+In the theory of nescience, descriptions are computational objects: finite binary strings encoding a Turing machine together with an input string. The machine may capture regularities underlying a representation, while the input contains parameters, initial conditions, or residual information. This computational restriction ensures that descriptions produce well-defined outputs and allows their properties to be studied using computability and algorithmic information theory.
 
-We distinguish several classes of descriptions according to their mathematical properties. We begin with \emph{decodable descriptions}, which encode computations that halt and produce finite binary strings. Among these, \emph{exact descriptions} are those that reproduce a specified representation without error. A particularly important subclass consists of \emph{minimal descriptions}, the shortest exact descriptions of a given representation, which provide a theoretical benchmark for descriptive optimality. Unfortunately, exact reconstructions are too restrictive; we therefore require \emph{extended descriptions}, which offer a broader theoretical framework capable of encompassing partial and approximate descriptions. In practice it is generally not possible to establish either exactness or extension; consequently, scientific inquiry proceeds by means of \emph{effective descriptions}, computational descriptions that have been explicitly formulated, investigated, or adopted within a scientific context.
+We distinguish several classes of descriptions. \emph{Decodable descriptions} encode computations that halt and produce finite binary strings. \emph{Exact descriptions} reproduce a specified representation without error, while \emph{minimal descriptions} are the shortest exact descriptions of a representation. More generally, \emph{extended descriptions} produce outputs containing non-trivial algorithmic information about their intended representations, without necessarily reproducing them exactly. Since determining minimality or extendedness is generally non-computable, scientific inquiry proceeds with \emph{effective descriptions}: computational descriptions that have been formulated or considered in scientific practice, without guarantees of their adequacy or optimality.
 
-Descriptions are also rarely considered in isolation. Scientific inquiry involves pairing representations with descriptions that attempt to account for them, forming what we call \emph{hypotheses}. Moreover, researchers generally restrict their attention to particular families of descriptions, such as linear models, systems of differential equations, decision trees, or neural networks. These restricted families constitute \emph{model classes}, which organize the space of possible descriptions according to shared computational structures or modeling assumptions.
+Scientific inquiry involves associating representations with descriptions intended to account for them, forming \emph{hypotheses}. We distinguish theoretical hypotheses from those considered in scientific practice. Researchers also restrict their attention to particular families of descriptions, such as linear models, differential equations, or neural networks. These families constitute \emph{model classes}, characterized by shared mathematical or computational structures.
 
-Finally, scientific descriptions evolve as knowledge develops. Existing descriptions may be enriched with additional information, simplified by removing unnecessary components, combined to account for joint representations, or evaluated relative to previously established background knowledge. This chapter introduces operations such as augmentation, reduction, and conditioning to formalize these transformations. It also extends the descriptive framework from individual representations to collections of representations associated with broader research areas.
+Finally, scientific descriptions evolve through the addition, removal, or reuse of information. This chapter introduces \emph{augmentation} and \emph{reduction} as operations on descriptions, and \emph{conditional descriptions} to account for background knowledge. It also extends the framework to joint descriptions of finite collections of entities belonging to broader research areas.
 
 %
 % Section: Decodable Descriptions
@@ -39,7 +39,7 @@ Finally, scientific descriptions evolve as knowledge develops. Existing descript
 
 The theory of nescience requires descriptions to be computationally well-defined. In particular, a description must encode a Turing machine together with an input on which the computation halts. This requirement excludes arbitrary symbolic expressions that do not specify an effective procedure for producing a finite output.
 
-Throughout this chapter, we assume a fixed, effective, uniquely decodable encoding of Turing machines and their inputs. The permitted machines are drawn from a computably enumerable family of prefix-free Turing machines, sufficiently expressive to simulate arbitrary Turing computations and generate any finite binary string. Here, prefix-freeness means that, for each permitted machine, the set of inputs on which it halts is prefix-free. We also assume that arbitrary Turing computations can be effectively embedded into permitted machines with a single designated input that halts exactly when the simulated computation halts. We further assume that the complete description encoding forms an optimal universal prefix-free description system, so that its induced description complexity satisfies the invariance theorem for prefix-free Kolmogorov complexity. The encoding convention is fixed throughout the theory, so that description lengths can be compared consistently.
+Throughout this chapter, we assume a fixed, effective, uniquely decodable encoding of Turing machines and their inputs. The permitted machines are drawn from a computably enumerable family of prefix-free Turing machines, sufficiently expressive to simulate arbitrary Turing computations and generate any finite binary string. Here, prefix-freeness means that, for each permitted machine, the set of inputs on which it halts is prefix-free. We also assume that arbitrary Turing computations can be effectively embedded into permitted machines with a single designated input that halts exactly when the simulated computation halts. We further assume that the complete encodings of halting computations form an optimal universal prefix-free description system, so that the induced description complexity satisfies the invariance theorem for prefix-free Kolmogorov complexity. The encoding convention is fixed throughout the theory, so that description lengths can be compared consistently.
 
 \begin{definition}
 \label{def:description_model}
@@ -72,7 +72,7 @@ The set $\mathcal{D}^\top$ constitutes the most general descriptive domain consi
 
 The computational requirement has several important consequences. First, every decodable description determines a definite output string, independently of human interpretation. Second, descriptions can be compared through their lengths, computational structures, and the transformations that relate them. Third, their execution can be simulated by a universal Turing machine, providing a common computational framework for scientific modeling.
 
-Nevertheless, decodability must not be confused with decidability. Given an arbitrary candidate description, one can simulate its encoded computation and obtain the output if the computation halts. However, there is no general algorithm that determines whether the computation will eventually terminate. Thus, although decodable descriptions can be executed and their outputs verified when they halt, membership in $\mathcal{D}^\top$ cannot be decided in general.
+Nevertheless, decodability must not be confused with decidability. Given an arbitrary candidate description, one can simulate its encoded computation and obtain the output if the computation halts. However, there is no general algorithm that determines whether the computation will eventually terminate. Thus, although decodable descriptions can be executed and their outputs obtained when they halt, membership in $\mathcal{D}^\top$ cannot be decided in general.
 
 \subsection*{Description Function}
 
@@ -107,11 +107,8 @@ The description function is surjective onto $\mathcal{B}^\ast$. That is,
 \Gamma(\mathcal{D}^\top)=\mathcal{B}^\ast.
 \]
 \end{proposition}
-
 \begin{proof}
-Let $r\in\mathcal{B}^\ast$ be an arbitrary finite binary string. Construct a permitted prefix-free Turing machine $TM_r$ that, on a designated input $a_0$, outputs $r$ and halts, and that does not halt on any other input. Its halting domain is therefore the singleton $\{a_0\}$, which is prefix-free.
-
-Let $d=\langle TM_r,a_0\rangle$. Then $d\in\mathcal{D}^\top$ and $\Gamma(d) = TM_r(a_0) = r$. Since $r$ was arbitrary, every finite binary string belongs to the image of $\Gamma$. Therefore $\Gamma(\mathcal{D}^\top)=\mathcal{B}^\ast$.
+Let $r\in\mathcal{B}^\ast$. By the assumed computational expressiveness of the permitted machines, there exists a permitted prefix-free Turing machine $TM_r$ that outputs $r$ and halts on a designated input $a_0$, and does not halt on any other input. Hence, $d=\langle TM_r,a_0\rangle\in\mathcal{D}^\top$ and $\Gamma(d)=r$. Since $r$ was arbitrary, $\Gamma(\mathcal{D}^\top)=\mathcal{B}^\ast$.
 \end{proof}
 
 This proposition establishes that every finite binary string admits at least one decodable description capable of reproducing it exactly. Consequently, the principal difficulty of scientific description is not the mere existence of a computational procedure that generates a representation. Such a procedure always exists for finite representations. The challenge is to find descriptions that capture their regularities in an informative and economical manner.
@@ -126,15 +123,12 @@ The set $\mathcal{D}^\top$ is recursively enumerable but not decidable.
 \begin{proof}
 Since the permitted machine encodings are effectively enumerable, one can enumerate all candidate descriptions $d=\langle TM,a\rangle$ and simulate their computations by dovetailing. Whenever a computation halts, its description can be enumerated. Every element of $\mathcal{D}^\top$ will eventually be produced, so $\mathcal{D}^\top$ is recursively enumerable.
 
-To establish undecidability, suppose that membership in $\mathcal{D}^\top$ were decidable. Given an arbitrary Turing machine $M$ and input $x$, construct effectively a permitted prefix-free machine $TM_{M,x}$ that, on a designated input $a_0$, simulates $M(x)$ and halts if and only if $M(x)$ halts. The machine is undefined on all other inputs, so its halting domain is either empty or the singleton $\{a_0\}$, both of which are prefix-free.
-
-Then
+To establish undecidability, suppose that membership in $\mathcal{D}^\top$ were decidable. Given an arbitrary Turing machine $M$ and input $x$, construct effectively a permitted prefix-free machine $TM_{M,x}$ that, on a designated input $a_0$, simulates $M(x)$, outputs a fixed binary string, and halts if and only if $M(x)$ halts. The machine is undefined on all other inputs, so its halting domain is either empty or the singleton $\{a_0\}$, both of which are prefix-free. Then
 \[
 \langle TM_{M,x},a_0\rangle\in\mathcal{D}^\top
 \quad\Longleftrightarrow\quad
 M(x)\downarrow.
 \]
-
 A decision procedure for membership in $\mathcal{D}^\top$ would therefore decide the halting problem, which is impossible. Hence $\mathcal{D}^\top$ is not decidable.
 \end{proof}
 
@@ -183,22 +177,7 @@ By Proposition \ref{prop:description_function_surjective}, every finite binary s
 \bar{\mathcal{D}}_r\neq\varnothing \qquad \text{for every }r\in\mathcal{B}^\ast.
 \]
 
-Since the description function assigns a unique output to every decodable description, the exact-description sets associated with distinct strings are disjoint.
-
-\begin{proposition}
-\label{prop:disjoint_descriptions_of_representations}
-Let $r_1,r_2\in\mathcal{B}^\ast$ with $r_1\neq r_2$. Then
-\[
-\bar{\mathcal{D}}_{r_1} \cap \bar{\mathcal{D}}_{r_2} = \varnothing.
-\]
-\end{proposition}
-\begin{proof}
-Suppose, for contradiction, that there exists $d \in \bar{\mathcal{D}}_{r_1} \cap \bar{\mathcal{D}}_{r_2}$. By definition of exact description $\Gamma(d)=r_1$ and $\Gamma(d)=r_2$. Since $\Gamma$ is a function on its domain, its output is unique. Hence $r_1=r_2$, contradicting the assumption that they are distinct. Therefore the intersection is empty.
-\end{proof}
-
-This proposition establishes that an exact description is associated with exactly one output string. Different descriptions may produce the same representation, but a single decodable description cannot produce two different representations under the fixed description function.
-
-The disjointness property can be strengthened into a partition result.
+Since the description function assigns a unique output to every decodable description, the exact-description sets associated with distinct strings are disjoint. In fact, these sets form a partition of $\mathcal{D}^\top$.
 
 \begin{proposition}
 \label{prop:exact_descriptions_partition}
@@ -208,7 +187,7 @@ The family $\left\{\bar{\mathcal{D}}_r:r\in\mathcal{B}^\ast\right\}$ forms a par
 \]
 \end{proposition}
 \begin{proof}
-Let $d\in\mathcal{D}^\top$. Since $\Gamma$ is defined on every decodable description, there exists a unique string $r=\Gamma(d)\in\mathcal{B}^\ast$. By definition, $d\in\bar{\mathcal{D}}_r$. Hence every decodable description belongs to at least one set in the stated family. By Proposition \ref{prop:disjoint_descriptions_of_representations}, exact-description sets corresponding to distinct strings are disjoint. Therefore every decodable description belongs to exactly one such set, and the family forms a partition of $\mathcal{D}^\top$.
+Let $d\in\mathcal{D}^\top$. Since $\Gamma$ is defined on every decodable description, there exists a unique string $r=\Gamma(d)\in\mathcal{B}^\ast$. By definition, $d\in\bar{\mathcal{D}}_r$. If $d\in\bar{\mathcal{D}}_{r'}$ for some $r'\in\mathcal{B}^\ast$, then $\Gamma(d)=r'$, and hence $r'=r$. Therefore every decodable description belongs to exactly one set in the family, which forms a partition of $\mathcal{D}^\top$.
 \end{proof}
 
 This result provides a complete classification of decodable descriptions according to their outputs. Every description belongs to one and only one exact-description set, independently of the procedure used to generate that output.
@@ -249,7 +228,7 @@ This establishes the global exact-description space without imposing any require
 
 \subsection*{Exact Descriptions of Entities}
 
-Descriptions are defined computationally through the strings they produce. Scientific inquiry, however, is ultimately directed toward entities rather than isolated strings. It is therefore useful to associate descriptions with entities through the representations that they generate. A description may be associated with an entity whenever its output belongs to this set.
+Descriptions are defined computationally through the strings they produce. Scientific inquiry, however, is ultimately directed toward entities rather than isolated strings. It is therefore useful to associate descriptions with entities through the representations that they generate. A description may be associated with an entity whenever its output belongs to the set of extended representations of that entity.
 
 \begin{definition}
 \label{def:descriptions_for_entity}
@@ -259,7 +238,6 @@ Let $e\in\mathcal{E}$ be an entity. We define the \emph{set of exact description
 \]
 \end{definition}
 
-\noindent
 The set $\bar{\mathcal{D}}_e$ contains all decodable descriptions that exactly generate some extended representation of the entity $e$. Unlike $\bar{\mathcal{D}}_r$, which refers to a fixed binary string, $\bar{\mathcal{D}}_e$ allows the output representation itself to vary.
 
 It is important to distinguish exact reconstruction of a representation from adequate representation of an entity. A description $d\in\bar{\mathcal{D}}_e$ generates its output exactly, but the output may be only an imperfect extended representation of $e$. Therefore, membership in $\bar{\mathcal{D}}_e$ does not guarantee that the description provides a complete or accurate account of the entity. This distinction reflects the separation between the representational and descriptive layers of the theory. Exactness concerns the relation between a description and its output, while the adequacy of that output as a representation is determined independently.
@@ -305,7 +283,7 @@ Conversely, suppose that $\mathcal{R}_e\neq\varnothing$. Choose any $r\in\mathca
 
 This result shows that an entity admits exact descriptions of its extended representations precisely when it admits at least one extended representation. The existence of such descriptions therefore imposes no additional restriction beyond the existence of the corresponding representation strings.
 
-This equivalence concerns representability through $\mathcal{R}_e$. Its relationship with the stronger notions of oracle-relative and intrinsic knowability depends on the representation oracles and admissibility conditions introduced in Chapter \ref{chap:Representations}.
+Since $\mathcal{R}_e$ is defined relative to a fixed representation oracle, its nonemptiness is equivalent to oracle-relative knowability. If that oracle is admissible, this also establishes intrinsic knowability; for an arbitrary oracle, it does not.
 
 Although exact-description sets associated with distinct representations are disjoint, the corresponding sets associated with distinct entities need not be. This follows from the fact that extended representations may contain information about more than one entity.
 
@@ -337,13 +315,15 @@ Then there exists some $r\in\mathcal{R}_{e_1}\cap\mathcal{R}_{e_2}$ such that $\
 Finally, since every finite binary string admits at least one exact description, the union on the right-hand side is nonempty precisely when $\mathcal{R}_{e_1} \cap \mathcal{R}_{e_2} \neq \varnothing$. This proves the equivalence.
 \end{proof}
 
-This proposition reveals an important structural distinction. At the level of individual representations, exact descriptions are uniquely classified by their outputs. At the level of entities, however, the same description may belong to several entity-specific sets whenever its output contains non-trivial information about several entities.
+This proposition reveals an important structural distinction. At the level of individual representations, exact descriptions are uniquely classified by their outputs. At the level of entities, however, the same description may belong to several entity-specific sets whenever its output is an extended representation of several entities.
 
 \begin{example}
 A representation encoding observations of a physical system may contain information relevant to both its mechanical and thermal behavior. A description that exactly generates this representation may therefore be associated with distinct entities corresponding to these phenomena.
 \end{example}
 
 The association between exact descriptions and entities is consequently not necessarily one-to-one, even though the output of every decodable description is uniquely determined.
+
+% Subsection: Recursive Enumerability of Exact Descriptions
 
 \subsection*{Recursive Enumerability of Exact Descriptions}
 
@@ -368,7 +348,7 @@ Suppose first that $\mathcal{R}_e$ is recursively enumerable. Enumerate all cand
 Conversely, suppose that $\bar{\mathcal{D}}_e$ is recursively enumerable. Enumerate its elements $d_1,d_2,d_3,\ldots$ and execute each description to obtain its output. By definition, every enumerated description satisfies $\Gamma(d_i)\in\mathcal{R}_e$. Moreover, every representation $r\in\mathcal{R}_e$ admits at least one exact description, so there exists some $d_i\in\bar{\mathcal{D}}_e$ such that $\Gamma(d_i)=r$. Thus, the outputs of the enumerated descriptions produce an effective enumeration of $\mathcal{R}_e$. Hence $\mathcal{R}_e$ is recursively enumerable.
 \end{proof}
 
-This proposition establishes that passing from extended representations to their exact descriptions does not alter recursive enumerability. The two sets are related by the description function, and every finite representation admits at least one exact description. The result does not imply that these sets are recursively enumerable in general. In the theory of nescience, membership in $\mathcal{R}_e$ depends on the admissible representations of the entity and on conditions involving Kolmogorov complexity. These theoretical objects are generally inaccessible and need not be recursively enumerable. Furthermore, recursive enumerability does not imply that membership can be decided, nor that an economical or minimal description can be identified effectively. The proposition establishes only that, whenever the representations of an entity can be enumerated, their exact descriptions can also be enumerated, and conversely.
+This proposition establishes that passing from extended representations to their exact descriptions does not alter recursive enumerability. The two sets are related by the description function, and every finite representation admits at least one exact description. The result does not imply that these sets are recursively enumerable in general. In the theory of nescience, membership in $\mathcal{R}_e$ depends on the chosen representation oracle and, for candidates not decoded by that oracle, on admissible representations and conditions involving Kolmogorov complexity. These theoretical objects are generally inaccessible and need not be recursively enumerable. Furthermore, recursive enumerability does not imply that membership can be decided, nor that an economical or minimal description can be identified effectively. The proposition establishes only that, whenever the representations of an entity can be enumerated, their exact descriptions can also be enumerated, and conversely.
 
 %
 % Section: Minimal Descriptions
@@ -382,7 +362,6 @@ Inspired by the principle of Occam's razor\index{Occam's razor principle}\footno
 A representation may admit many exact descriptions, each employing a different computational procedure or a different distribution of information between the Turing machine and its input. Although all these descriptions generate the same representation, their lengths may differ substantially. This motivates the concept of a \emph{minimal description}: an exact description that reconstructs a representation using the shortest possible encoding.
 
 Minimal descriptions provide a theoretical reference for descriptive optimality. Their significance follows from their connection with Kolmogorov complexity, which measures the length of the shortest program capable of producing a given string. In the theory of nescience, minimal descriptions play a central role in defining the ideal limit of descriptive knowledge. Nevertheless, minimality concerns only the relationship between a description and its representation. Even a minimal description cannot guarantee perfect knowledge of an entity when the representation itself is inadequate.
-
 
 % Subsection: Minimal Descriptions of Representations
 
@@ -469,7 +448,7 @@ This hierarchy distinguishes three levels of descriptive restriction: decodable 
 
 \subsection*{Minimal Descriptions and Kolmogorov Complexity}
 
-The length of a minimal description is closely related to Kolmogorov complexity. Recall that Kolmogorov complexity measures the length of the shortest program capable of producing a given binary string under a fixed universal description system. To make this relationship precise, we must account for the encoding convention used to represent Turing machines and their inputs. For the complexity results in this section, we assume that the fixed description encoding constitutes an optimal universal prefix-free description system. In particular, the complete description codes are prefix-free, and the system can simulate any prefix-free computational description scheme with a constant description-length overhead. This is stronger than requiring each individual Turing machine to have a prefix-free halting domain.
+The length of a minimal description is closely related to Kolmogorov complexity. Recall that Kolmogorov complexity measures the length of the shortest program capable of producing a given binary string under a fixed universal description system. To make this relationship precise, we must account for the encoding convention used to represent Turing machines and their inputs. For the complexity results in this section, we assume that the fixed description encoding constitutes an optimal universal prefix-free description system. In particular, the set of decodable description codes $\mathcal{D}^\top$ is prefix-free, and the system can simulate any prefix-free computational description scheme with a constant description-length overhead. This is stronger than requiring each individual Turing machine to have a prefix-free halting domain. We also assume a two-part encoding in which, for every fixed permitted machine $TM$ and every input $a$ on which it halts, $\ell(\langle TM,a\rangle)=\ell(a)+O(1)$, with a constant independent of $a$, and where $a$ can be recovered computably from the complete encoding.
 
 \begin{notation}
 We denote by $K_\Gamma(r)$ the Kolmogorov complexity of $r$ relative to the description function $\Gamma$:
@@ -545,10 +524,11 @@ Although minimal descriptions exist for every finite representation, they cannot
 
 \begin{proposition}
 \label{prop:minimal_descriptions_uncomputable}
-There is no algorithm that, given an arbitrary representation $r\in\mathcal{B}^\ast$, always returns a minimal description of $r$ under an optimal universal prefix-free description function.
+There is no general algorithm that, for every possible representation space $\mathcal{R}$ and every representation $r\in\mathcal{R}$, always returns a minimal description of $r$ under an optimal universal prefix-free description function.
 \end{proposition}
 \begin{proof}
-Suppose that such an algorithm existed. Given any binary string $r$, the algorithm would return a minimal description $d_r^\star$. By Proposition \ref{prop:nescience-kolmogorov}, its length would satisfy $\ell(d_r^\star)=K_\Gamma(r)$. Since the length of a finite binary string is computable, the algorithm would provide a procedure for computing $K_\Gamma(r)$ for every $r\in\mathcal{B}^\ast$. This contradicts the noncomputability of Kolmogorov complexity for an optimal universal description system. Therefore no such algorithm exists.
+Consider a domain in which the entities are finite binary strings and the representation oracle reconstructs each string from itself. For this domain, $\mathcal{R}=\mathcal{B}^\ast$. If such a general algorithm existed, it would return a minimal description $d_r^\star$ for every $r\in\mathcal{B}^\ast$. By Proposition \ref{prop:nescience-kolmogorov}, $\ell(d_r^\star)=K_\Gamma(r)$. Since string length is computable, this would provide an algorithm for computing $K_\Gamma(r)$ for every finite binary string,
+contradicting the noncomputability of Kolmogorov complexity.
 \end{proof}
 
 This proposition distinguishes the mathematical existence of minimal descriptions from our ability to discover them. Although every finite representation admits at least one minimal description, there is no general effective procedure that identifies one.
@@ -599,35 +579,51 @@ It is equally important to note that the converse of Theorem \ref{th:perfect_inc
 
 \begin{proposition}
 \label{prop:incompressibility_not_minimality}
-There exist decodable descriptions $d$ and representations $r$ such that $\Gamma(d)=r$ and $K(d)\geq\ell(d)-O(1)$ but $d \notin\mathcal{D}_r^\star$. Moreover, the difference between $\ell(d)$ and the minimum description length of $r$ can be arbitrarily large.
+Assume $\mathcal{R}\neq\varnothing$. Then there exist a representation $r_0\in\mathcal{R}$, a constant $c$, and a sequence of decodable descriptions $(d_n)$ such that, for every $n$,
+\[
+\Gamma(d_n)=r_0, \qquad K(d_n)\geq\ell(d_n)-c.
+\]
+Moreover,
+\[
+\ell(d_n)-K_\Gamma(r_0)\longrightarrow\infty.
+\]
+Consequently, $d_n\notin\mathcal{D}_{r_0}^\star$ for all sufficiently large $n$.
 \end{proposition}
 \begin{proof}
-Fix a representation $r_0\in\mathcal{R}$, and consider a sequence of strings $s_n$ whose Kolmogorov complexities increase without bound. For each $s_n$, let $p_n\in\mathcal{D}_{s_n}^\star$ be a minimal description, using the definition of minimal descriptions for arbitrary finite binary targets. Construct a fixed prefix-free machine $TM_0$ that, given a valid description $p$, executes the computation encoded by $p$, discards its output, and then produces $r_0$. Its halting domain is the prefix-free domain of the reference description function. Consider the descriptions $d_n=\langle TM_0,p_n\rangle$. Since $TM_0$ has a fixed encoding, the descriptions can be constructed with constant additional length:
+Fix a representation $r_0\in\mathcal{R}$, and consider a sequence of binary strings $s_n$ such that $K(s_n)$ increases without bound. For each $s_n$, choose a shortest prefix-free program $p_n$ under the reference description function $\Gamma$, so that $\Gamma(p_n)=s_n$, and $\ell(p_n)=K(s_n)$. Since $\Gamma$ is computable on its domain, there exists a constant $c_1$, independent of $n$, such that
 \[
-\ell(d_n)=\ell(p_n)+O(1).
-\]
-Furthermore, $p_n$ can be recovered computably from $d_n$. Therefore,
-\[
-K(d_n)\geq K(p_n)-O(1).
-\]
-By Theorem \ref{th:perfect_incompressible},
-\[
-K(p_n)\geq\ell(p_n)-O(1).
+K(s_n)=K(\Gamma(p_n))\leq K(p_n)+c_1.
 \]
 Consequently,
 \[
-K(d_n)\geq\ell(d_n)-O(1).
+K(p_n)\geq\ell(p_n)-c_1.
 \]
-However, every $d_n$ generates the same fixed representation $\Gamma(d_n)=r_0$.
+Construct a fixed permitted prefix-free machine $TM_0$ that, given a valid description $p$, executes the computation encoded by $p$, discards its output, and produces $r_0$. Its halting domain is the prefix-free domain of the reference description function.
 
-Since the complexity of $s_n$ increases without bound, the lengths of $d_n$ also increase without bound. Meanwhile, the minimum description length of $r_0$ remains fixed. Thus, for sufficiently large $n$,
+Consider the descriptions $d_n=\langle TM_0,p_n\rangle$. Since every $p_n$ is a valid terminating program,
+we have $d_n\in\mathcal{D}^\top$ and $\Gamma(d_n)=r_0$. Under the fixed two-part encoding convention,
+there exists a constant $c_2$, independent of $n$, such that $\ell(d_n)\leq\ell(p_n)+c_2$. Furthermore, $p_n$ can be recovered computably from $d_n$. Therefore, for some constant $c_3$,
 \[
-\ell(d_n) > \min_{d\in\bar{\mathcal{D}}_{r_0}}\ell(d),
+K(d_n)\geq K(p_n)-c_3.
 \]
-and hence
+Combining these inequalities gives
 \[
-d_n\notin\mathcal{D}_{r_0}^\star.
+K(d_n) \geq \ell(p_n)-c_1-c_3 \geq \ell(d_n)-c,
 \]
+where $c=c_1+c_2+c_3$ is independent of $n$. However, every $d_n$ generates the same fixed representation $r_0$. Since
+\[
+\ell(p_n)=K(s_n)\longrightarrow\infty,
+\]
+and $\ell(d_n)\geq\ell(p_n)$ up to a fixed additive constant under the encoding convention, the lengths of $d_n$ also increase without bound. Meanwhile, the minimum description length of
+$r_0$ remains fixed:
+\[
+K_\Gamma(r_0) = \min_{d\in\bar{\mathcal{D}}_{r_0}}\ell(d).
+\]
+Consequently,
+\[
+\ell(d_n)-K_\Gamma(r_0)\longrightarrow\infty.
+\]
+Thus, for all sufficiently large $n$, $d_n\notin\mathcal{D}_{r_0}^\star$. Therefore, descriptions can be algorithmically incompressible up to a fixed additive constant without being minimal descriptions of their outputs, and their excess lengths can be arbitrarily large.
 \end{proof}
 
 This proposition demonstrates that incompressibility and descriptive minimality are fundamentally different properties. An incompressible description may contain substantial information that is unnecessary for reconstructing its output. What matters for minimality is not whether the description itself can be compressed, but whether a shorter description of the same representation exists.
@@ -639,7 +635,6 @@ Thus, minimality implies incompressibility, but incompressibility alone does not
 \subsection*{Minimal Descriptions of Entities}
 
 The concept of minimal description can be extended from individual representations to the entities they represent. Since an entity may admit multiple extended representations, each representation may have its own collection of minimal descriptions. It is important, however, to distinguish minimality relative to a representation from perfection relative to an entity. A minimal description reconstructs its target representation using the smallest possible amount of descriptive information, but the representation itself may still be incomplete, inaccurate, or otherwise unsuitable for the entity under investigation. We therefore define minimal descriptions of entities through their associated representations, without assuming that all such descriptions provide perfect knowledge.
-
 
 \begin{definition}
 \label{def:entities_perfect_model}
@@ -669,7 +664,7 @@ Suppose first that $\mathcal{D}_e^\star\neq\varnothing$. By definition, there ex
 Conversely, suppose that $\mathcal{R}_e\neq\varnothing$. Choose any $r\in\mathcal{R}_e$. By Proposition \ref{prop:minimal_descriptions_exist}, $\mathcal{D}_r^\star\neq\varnothing$. Since $\mathcal{D}_r^\star\subseteq\mathcal{D}_e^\star$, it follows that $\mathcal{D}_e^\star\neq\varnothing$.
 \end{proof}
 
-This proposition shows that every entity admitting an extended representation also admits at least one minimal description of that representation. However, this does not imply that the entity can be represented adequately, nor that perfect knowledge of it is attainable. In the theory of nescience, perfect knowledge requires the simultaneous adequacy of the representation and optimality of its description. In particular, the representation must belong to the set of admissible representations $\bar{\mathcal{R}}_e$, while the description must be minimal relative to that representation. Consequently, the descriptions that may participate in a perfect-knowledge pair belong to
+This proposition shows that every entity admitting an extended representation also admits at least one minimal description of such a representation. Moreover, since every oracle-knowable entity admits an admissible representation under the fixed oracle, a minimal description of an admissible representation also exists in principle. When the oracle itself is admissible, such a pair satisfies the structural conditions for perfect knowledge. However, this does not imply that an arbitrary minimal description provides perfect knowledge, nor that a perfect-knowledge hypothesis can be effectively identified. In the theory of nescience, perfect knowledge requires the simultaneous adequacy of the representation and optimality of its description. In particular, the representation must belong to the set of admissible representations $\bar{\mathcal{R}}_e$, while the description must be minimal relative to that representation. Consequently, the descriptions that may participate in a perfect-knowledge pair belong to
 \[
 \bigcup_{r\in\bar{\mathcal{R}}_e} \mathcal{D}_r^\star,
 \]
@@ -681,19 +676,14 @@ This distinction is fundamental. A minimal description of an inadequate represen
 % Section: Extended Descriptions
 %
 
-
-%
-% Section: Extended Descriptions
-%
-
 \section{Extended Descriptions}
 \label{sec:extended_descriptions}
 
 The set of exact descriptions $\bar{\mathcal{D}}_r$ associated with a representation $r$ is too restrictive to capture the full range of descriptions relevant to scientific inquiry. By definition, an exact description must reproduce the intended representation without error. Scientific descriptions, however, frequently capture only part of the information contained in a representation, generating outputs that differ from the target while still accounting for some of its regularities.
 
-This motivates the introduction of \emph{extended descriptions}. An extended description need not reconstruct its target representation exactly, but its output must contain non-trivial algorithmic information about that representation. Extended descriptions therefore provide a theoretical generalization of exact descriptions, allowing us to study partial and imperfect computational accounts without abandoning the requirement that they convey genuine information about their targets.
+This motivates the introduction of \emph{extended descriptions}. An extended description either reconstructs its target representation exactly or produces an output containing non-trivial algorithmic information about that representation. Extended descriptions therefore provide a theoretical generalization of exact descriptions, allowing us to study partial and imperfect computational accounts without abandoning the requirement that they convey genuine information about their targets.
 
-Unlike effective descriptions, which will be introduced in the following section, extended descriptions are defined by an objective mathematical condition rather than by their use in scientific practice. Their membership is determined by the algorithmic information contained in their outputs, independently of whether they have been discovered, proposed, or investigated by scientists. This distinction will be important when introducing mismodel in Chapter \ref{chap:Mismodel}.
+Unlike effective descriptions, which will be introduced in the following section, extended descriptions are defined by a mathematical condition relative to a fixed reference description system and information threshold, rather than by their use in scientific practice. Their membership is determined by the algorithmic information contained in their outputs, independently of whether they have been discovered, proposed, or investigated by scientists. This distinction will be important when introducing mismodel in Chapter \ref{chap:Mismodel}.
 
 % Subsection: Extended Descriptions of Representations
 
@@ -786,7 +776,7 @@ K(r_2\mid\Gamma(d))\leq K(r_2)-\tau
 hold. Consequently $d\in\mathcal{D}_{r_1}$ and $d\in\mathcal{D}_{r_2}$. Thus $\mathcal{D}_{r_1}\cap\mathcal{D}_{r_2} \neq \varnothing$.
 \end{proof}
 
-This proposition shows that extended descriptions do not partition representations in the same way as exact descriptions. An exact description is associated with a unique output string, whereas an extended description may be informative about several distinct representations. This overlap is particularly relevant in scientific practice, where a common mathematical structure or computational model may help account for different datasets or phenomena.
+This proposition shows that, unlike the sets of exact descriptions, the sets of extended descriptions associated with distinct representations need not be disjoint. An exact description is associated with a unique output string, whereas an extended description may be informative about several distinct representations. This overlap is particularly relevant in scientific practice, where a common mathematical structure or computational model may help account for different datasets or phenomena.
 
 \begin{example}
 Consider two representations $r_1$ and $r_2$ consisting of climate observations collected from two nearby cities. The datasets may differ in their measured temperatures, rainfall, and local variations, while sharing a common large-scale seasonal pattern. Let $d$ be a decodable description whose output $\Gamma(d)$ encodes this common seasonal structure. If the seasonal pattern reduces the conditional Kolmogorov complexity of each dataset by at least $\tau$ bits, then $d\in\mathcal{D}_{r_1} \cap \mathcal{D}_{r_2}$. Thus, the same description may contain useful information about multiple representations, even though it does not reproduce either one exactly.
@@ -846,7 +836,7 @@ d_2\in\mathcal{D}_r.
 \]
 \end{proposition}
 \begin{proof}
-Given $\Gamma(d_2)$, one can execute a shortest conditional program that reconstructs $\Gamma(d_1)$ from $\Gamma(d_2)$. Once $\Gamma(d_1)$ has been obtained, a shortest conditional program for reconstructing $r$ from $\Gamma(d_1)$ can be executed. The two computations can be combined using a fixed universal procedure. Therefore, there exists a constant $c_0$, independent of $r$, $d_1$, and $d_2$, such that
+Given $\Gamma(d_2)$, one can execute a shortest conditional program that reconstructs $\Gamma(d_1)$ from $\Gamma(d_2)$. Once $\Gamma(d_1)$ has been obtained, a shortest conditional program for reconstructing $r$ from $\Gamma(d_1)$ can be executed. Since conditional programs are prefix-free, the two programs can be concatenated and executed sequentially by a fixed universal procedure, introducing only a constant description-length overhead. Therefore, there exists a constant $c_0$, independent of $r$, $d_1$, and $d_2$, such that
 \[
 K(r\mid\Gamma(d_2)) \leq K(\Gamma(d_1)\mid\Gamma(d_2)) +
 K(r\mid\Gamma(d_1)) + c_0.
@@ -865,7 +855,7 @@ K(r\mid\Gamma(d_2)) \leq K(r)-\tau.
 Hence $d_2$ satisfies the information-gain condition in the definition of extended descriptions, and therefore $d_2\in\mathcal{D}_r$.
 \end{proof}
 
-This proposition formalizes the preservation of informational content under computable transformations of description outputs. The amount of information that may be lost is bounded by the conditional complexity of reconstructing the original output from the new one, together with a fixed computational overhead. In particular, when $\Gamma(d_1)$ can be reconstructed from $\Gamma(d_2)$ using a constant-size program, the informational contribution of $d_1$ is preserved up to an additive constant. However, preservation of membership in $\mathcal{D}_r$ additionally requires that the original informational gain be sufficient to absorb this overhead and still satisfy the threshold $\tau$. Thus, a more informative output need not preserve the extendedness classification automatically when the original description lies close to the informational threshold. Nevertheless, the proposition provides a precise quantitative relationship between the descriptive information available before and after the transformation.
+This proposition establishes a bound on the change in informational content when one description output is replaced by another. The amount of information that may be lost is bounded by the conditional complexity of reconstructing the original output from the new one, together with a fixed computational overhead. In particular, when $\Gamma(d_1)$ can be reconstructed from $\Gamma(d_2)$ using a constant-size program, the informational contribution of $d_1$ is preserved up to an additive constant. However, preservation of membership in $\mathcal{D}_r$ additionally requires that the original informational gain be sufficient to absorb this overhead and still satisfy the threshold $\tau$. Thus, a more informative output need not preserve the extendedness classification automatically when the original description lies close to the informational threshold. Nevertheless, the proposition provides a precise quantitative relationship between the descriptive information available before and after the transformation.
 
 % Subsection: Extended Descriptions of Entities
 
@@ -961,7 +951,7 @@ It is important to emphasize that extendedness remains a property of the relatio
 
 The sets of extended descriptions are also generally inaccessible in practice. Their definitions depend on conditional Kolmogorov complexity, which is not computable in general. Consequently, there is no general effective procedure for verifying the required informational relationship for arbitrary candidate descriptions.
 
-Scientific inquiry therefore cannot proceed by directly enumerating or selecting descriptions from the theoretical set $\mathcal{D}$. Instead, it relies on descriptions that have actually been proposed, constructed, or investigated as models of particular representations.
+In general, scientific inquiry cannot rely on an effective enumeration of the theoretical set $\mathcal{D}$. Instead, it proceeds through descriptions that have actually been proposed, constructed, or investigated as models of particular representations.
 
 These descriptions may satisfy the extendedness condition, but they may also be uninformative or entirely incorrect. This motivates the introduction of \emph{effective descriptions}, which distinguish the descriptions available within scientific practice from those that satisfy the theoretical informational requirements established in this section.
 
@@ -972,7 +962,7 @@ These descriptions may satisfy the extendedness condition, but they may also be 
 \section{Effective Descriptions}
 \label{sec:effective_descriptions}
 
-The set of extended descriptions $\mathcal{D}_r$ contains all decodable descriptions whose outputs carry non-trivial algorithmic information about a representation $r$, including those that reconstruct it exactly. However, this set is generally inaccessible in practice, since membership depends on Kolmogorov complexity, which is not computable in general. Consequently, scientists cannot normally determine whether a proposed description belongs to $\mathcal{D}_r$. Scientific inquiry proceeds instead with descriptions that have been formulated, investigated, or adopted as models of particular representations. Such descriptions may capture substantial regularities, provide only limited information, or even fail to convey any meaningful information about their intended representations. We call these \emph{effective descriptions}.
+The set of extended descriptions $\mathcal{D}_r$ contains all decodable descriptions that either reconstruct a representation $r$ exactly or produce outputs carrying non-trivial algorithmic information about it. However, this set is generally inaccessible in practice, since membership depends on Kolmogorov complexity, which is not computable in general. Consequently, scientists cannot normally determine whether a proposed description belongs to $\mathcal{D}_r$. Scientific inquiry proceeds instead with descriptions that have been formulated, investigated, or adopted as models of particular representations. Such descriptions may capture substantial regularities, provide only limited information, or even fail to convey any meaningful information about their intended representations. We call these \emph{effective descriptions}.
 
 As in the case of effective representations, the distinction is between theoretical informational relevance and scientific practice. Extended descriptions are defined by a mathematical condition concerning the information contained in their outputs, whereas effective descriptions are determined by their use within a particular scientific context. Their inclusion does not imply correctness, explanatory power, or minimality. Nevertheless, effective descriptions must be decodable, since the theory requires descriptions to encode terminating computational procedures.
 
@@ -1016,8 +1006,8 @@ Scientific inquiry is usually directed toward understanding entities rather than
 \label{def:effective_descriptions_entity}
 Let $e\in\mathcal{E}$ be an entity and let $t\in T$. We define the \emph{set of effective descriptions of $e$}\index{Effective descriptions!of an entity}, denoted by $\hat{\mathcal{D}}_e^t$, as
 \[
-\hat{\mathcal{D}}_e^t = \left\{ d\in\mathcal{D}^\top \;\middle|\; 
-\exists r\in\hat{\mathcal{R}}_e^t: d\in\hat{\mathcal{D}}_r^t \right\}.
+\hat{\mathcal{D}}_e^t = \left\{ d\in\mathcal{D}^\top \;\middle|\;
+\exists r\in\hat{\mathcal{R}}_e^{\leq t}: d\in\hat{\mathcal{D}}_r^t \right\}.
 \]
 \end{definition}
 
@@ -1025,19 +1015,11 @@ Thus, a description belongs to $\hat{\mathcal{D}}_e^t$ whenever it has been cons
 
 The definition makes explicit that effective descriptions of entities are mediated by effective representations. A description is associated with an entity not because it necessarily captures the entity correctly, but because scientific practice has associated it with a representation assigned to that entity. The corresponding union characterization follows immediately from the definition:
 \[
-\hat{\mathcal{D}}_e^t = \bigcup_{r\in\hat{\mathcal{R}}_e^t} \hat{\mathcal{D}}_r^t.
+\hat{\mathcal{D}}_e^t = \bigcup_{r\in\hat{\mathcal{R}}_e^{\leq t}} \hat{\mathcal{D}}_r^t.
 \]
 Different effective descriptions of the same entity may therefore be associated with different representations, or with alternative models of a common representation. Moreover, the same effective description may belong to the sets associated with several entities, since effective representations themselves need not be uniquely associated with a single entity.
 
-An important consequence concerns the relationship between effective descriptions and effectively known entities.
-
-\begin{proposition}
-\label{prop:effective_descriptions_imply_known_entity}
-Let $e\in\mathcal{E}$ be an entity and let $t\in T$. If $\hat{\mathcal{D}}_e^t\neq\varnothing$, then $\hat{\mathcal{R}}_e^t\neq\varnothing$.
-\end{proposition}
-\begin{proof}
-Suppose that $\hat{\mathcal{D}}_e^t\neq\varnothing$. Then there exists a description $d\in\hat{\mathcal{D}}_e^t$. By definition, there exists some $r\in\hat{\mathcal{R}}_e^t$ such that $d\in\hat{\mathcal{D}}_r^t$. Therefore $\hat{\mathcal{R}}_e^t\neq\varnothing$.
-\end{proof}
+By definition, an entity can have an effective description only if it has at least one cumulative effective representation. Thus, $\hat{\mathcal{D}}_e^t\neq\varnothing$ implies $\hat{\mathcal{R}}_e^{\leq t}\neq\varnothing$.
 
 This proposition establishes that an entity cannot have an effective description without having at least one effective representation. The converse, however, does not necessarily hold. An entity may have entered scientific consideration through observations or other representations before any computational description has been proposed for it. Thus, the existence of effective representations is a necessary, but not sufficient, condition for the existence of effective descriptions. This distinction separates the recognition of an entity from the development of computational models intended to account for it.
 
@@ -1051,13 +1033,14 @@ Having defined effective descriptions for individual representations and entitie
 \label{def:set_of_effective_descriptions}
 Let $t\in T$ be a time index. We define the \emph{set of effective descriptions}\index{Set of effective descriptions}, denoted by $\hat{\mathcal{D}}^t$, as
 \[
-\hat{\mathcal{D}}^t = \left\{d\in\mathcal{D}^\top \;\middle|\; \exists r\in\hat{\mathcal{R}}^t: d\in\hat{\mathcal{D}}_r^t \right\}.
+\hat{\mathcal{D}}^t = \left\{d\in\mathcal{D}^\top \;\middle|\;
+\exists r\in\hat{\mathcal{R}}^{\leq t}: d\in\hat{\mathcal{D}}_r^t \right\}.
 \]
 \end{definition}
 
 Equivalently,
 \[
-\hat{\mathcal{D}}^t = \bigcup_{r\in\hat{\mathcal{R}}^t} \hat{\mathcal{D}}_r^t.
+\hat{\mathcal{D}}^t = \bigcup_{r\in\hat{\mathcal{R}}^{\leq t}} \hat{\mathcal{D}}_r^t.
 \]
 The set $\hat{\mathcal{D}}^t$ contains all decodable descriptions that have been considered as models of effective representations within the domain of investigation by time $t$.
 
@@ -1094,11 +1077,16 @@ and
 \]
 \end{proposition}
 \begin{proof}
-Let $r\in\mathcal{B}^\ast$ and suppose that $d\in\hat{\mathcal{D}}_r^{t_1}$. By definition, $(r,d)\in P_{t_1}$. Since the association sets are cumulative, $P_{t_1}\subseteq P_{t_2}$. Therefore $(r,d)\in P_{t_2}$, and hence $d\in\hat{\mathcal{D}}_r^{t_2}$. This proves the first inclusion.
+Let $r\in\mathcal{B}^\ast$ and suppose that $d\in\hat{\mathcal{D}}_r^{t_1}$. By definition, $d$ has been considered as a description of $r$ by time $t_1$. Since $t_1<t_2$, it has also been considered by
+time $t_2$. Therefore, $d\in\hat{\mathcal{D}}_r^{t_2}$, proving the first inclusion.
 
-For the second inclusion, let $d\in\hat{\mathcal{D}}_e^{t_1}$. Then there exists some $r\in\hat{\mathcal{R}}_e^{t_1}$ such that $d\in\hat{\mathcal{D}}_r^{t_1}$. By the monotonicity of effective representations established in Chapter \ref{chap:Representations} $\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}$. Combining this with the first inclusion gives $r\in\hat{\mathcal{R}}_e^{t_2}$ and $d\in\hat{\mathcal{D}}_r^{t_2}$. Therefore $d\in\hat{\mathcal{D}}_e^{t_2}$.
+For the second inclusion, let $d\in\hat{\mathcal{D}}_e^{t_1}$. Then there exists some $r\in\hat{\mathcal{R}}_e^{\leq t_1}$ such that $d\in\hat{\mathcal{D}}_r^{t_1}$. By the monotonicity of cumulative effective representations established in Chapter \ref{chap:Representations},
+\[
+\hat{\mathcal{R}}_e^{\leq t_1} \subseteq \hat{\mathcal{R}}_e^{\leq t_2}.
+\]
+Combining this with the first inclusion gives $r\in\hat{\mathcal{R}}_e^{\leq t_2}$ and $d\in\hat{\mathcal{D}}_r^{t_2}$. Therefore $d\in\hat{\mathcal{D}}_e^{t_2}$.
 
-Finally, the global inclusion follows from the definition of $\hat{\mathcal{D}}^t$, the monotonicity of the global effective-representation sets, and the first inclusion.
+Finally, let $d\in\hat{\mathcal{D}}^{t_1}$. Then there exists some $r\in\hat{\mathcal{R}}^{\leq t_1}$ such that $d\in\hat{\mathcal{D}}_r^{t_1}$. Since $\hat{\mathcal{R}}^{\leq t_1} \subseteq \hat{\mathcal{R}}^{\leq t_2}$ and $\hat{\mathcal{D}}_r^{t_1} \subseteq\hat{\mathcal{D}}_r^{t_2}$, we conclude that $d\in\hat{\mathcal{D}}^{t_2}$. This establishes the final inclusion.
 \end{proof}
 
 This proposition formalizes the cumulative development of scientific modeling. Once a description has been considered as a model of a representation, it remains part of the historical record, even if it is later rejected or superseded. Consequently, the collection of effective descriptions associated with a fixed representation, a fixed entity, or the entire domain cannot decrease over time.
@@ -1257,7 +1245,7 @@ The theoretical set $\mathcal{H}$ contains all representation--description pairs
 \label{def:known_hypotheses}
 We define the \emph{set of known hypotheses}\index{Known hypotheses} at time $t$, denoted by $\hat{\mathcal{H}}^t$, as
 \[
-\hat{\mathcal{H}}^t = \left\{(r,d) \in \hat{\mathcal{R}}^t\times\mathcal{D}^\top 
+\hat{\mathcal{H}}^t = \left\{(r,d) \in \hat{\mathcal{R}}^{\leq t}\times\mathcal{D}^\top
 \;\middle|\; d\in\hat{\mathcal{D}}_r^t \right\}.
 \]
 \end{definition}
@@ -1268,8 +1256,8 @@ This distinction is fundamental. The set $\mathcal{H}$ contains theoretically in
 
 The correspondence between known hypotheses and effective descriptions follows directly from their definitions:
 \[
-\hat{\mathcal{D}}^t = \left\{ d\in\mathcal{D}^\top \;\middle|\; 
-\exists r\in\hat{\mathcal{R}}^t: (r,d)\in\hat{\mathcal{H}}^t \right\}.
+\hat{\mathcal{D}}^t = \left\{ d\in\mathcal{D}^\top \;\middle|\;
+\exists r\in\hat{\mathcal{R}}^{\leq t}: (r,d)\in\hat{\mathcal{H}}^t \right\}.
 \]
 Thus, the global set of effective descriptions can be recovered from the descriptive components of known hypotheses. The hypothesis space, however, retains additional information: it records which descriptions have been associated with which representations.
 
@@ -1279,20 +1267,21 @@ As with theoretical hypotheses, it is useful to consider the known hypotheses as
 \label{def:known_hypotheses_entity}
 Let $e\in\mathcal{E}$ be an entity. We define the \emph{set of known hypotheses of $e$}\index{Known hypotheses!of an entity} at time $t$, denoted by $\hat{\mathcal{H}}_e^t$, as
 \[
-\hat{\mathcal{H}}_e^t = \left\{(r,d)\in\hat{\mathcal{H}}^t \;\middle|\; r\in\hat{\mathcal{R}}_e^t \right\}.
+\hat{\mathcal{H}}_e^t = \left\{(r,d)\in\hat{\mathcal{H}}^t \;\middle|\;
+r\in\hat{\mathcal{R}}_e^{\leq t} \right\}.
 \]
 \end{definition}
 
 The set $\hat{\mathcal{H}}_e^t$ collects the known representation--description pairs associated with effective representations of the entity $e$.
 
-These associations must be interpreted historically. Since both effective representations and effective descriptions are defined cumulatively, a pair may belong to $\hat{\mathcal{H}}_e^t$ even if the description was not explicitly proposed as an explanation of $e$ at the time it was originally formulated. For example, a representation may initially be associated with one entity and later be reinterpreted as representing another. Descriptions previously associated with that representation then belong to the derived hypothesis sets of both entities under the cumulative convention. This does not imply that each description was explicitly proposed as a hypothesis about both entities.
+These associations must be interpreted historically. Since $\hat{\mathcal{H}}_e^t$ is defined using cumulative effective representations and descriptions, a pair may belong to $\hat{\mathcal{H}}_e^t$ even if the description was not explicitly proposed as an explanation of $e$ at the time it was originally formulated. For example, a representation may initially be associated with one entity and later be reinterpreted as representing another. Descriptions previously associated with that representation then belong to the derived hypothesis sets of both entities under the cumulative convention. This does not imply that each description was explicitly proposed as a hypothesis about both entities.
 
 The set $\hat{\mathcal{H}}_e^t$ therefore characterizes the hypotheses associated with an entity through historical representation--description relationships, rather than requiring a separate record of explicit entity-level proposals.
 
 The relationship between known hypotheses and effective descriptions of an entity follows directly from their definitions:
 \[
-\hat{\mathcal{D}}_e^t = \left\{d\in\mathcal{D}^\top \;\middle|\; 
-\exists r\in\hat{\mathcal{R}}_e^t: (r,d)\in\hat{\mathcal{H}}_e^t \right\}.
+\hat{\mathcal{D}}_e^t = \left\{d\in\mathcal{D}^\top \;\middle|\;
+\exists r\in\hat{\mathcal{R}}_e^{\leq t}: (r,d)\in\hat{\mathcal{H}}_e^t \right\}.
 \]
 Consequently,
 \[
@@ -1300,7 +1289,7 @@ Consequently,
 \]
 Furthermore, since every known hypothesis of an entity contains an effective representation of that entity,
 \[
-\hat{\mathcal{H}}_e^t\neq\varnothing \quad\Longrightarrow\quad \hat{\mathcal{R}}_e^t\neq\varnothing.
+\hat{\mathcal{H}}_e^t\neq\varnothing \quad\Longrightarrow\quad \hat{\mathcal{R}}_e^{\leq t}\neq\varnothing.
 \]
 The converse does not necessarily hold. An entity may have entered scientific consideration through one or more effective representations before any computational description has been associated with them. Thus, the existence of a known hypothesis distinguishes entities for which scientific practice has developed at least one descriptive account from those for which representations have been proposed but no corresponding description has yet been recorded.
 
@@ -1310,7 +1299,7 @@ The converse does not necessarily hold. An entity may have entered scientific co
 
 Scientific hypotheses evolve over time as new representations and descriptions are proposed, existing models are refined, and previously accepted explanations are rejected or superseded. As scientific inquiry progresses, the collection of hypotheses that have been considered expands, while their scientific status may change. As in the preceding sections on effective representations and descriptions, we distinguish the cumulative historical record from the collection of hypotheses that remain under active scientific consideration.
 
-Both effective representations and effective descriptions are defined cumulatively: once a representation has been considered, or a description has been associated with a representation, that historical association remains recorded even if it is subsequently rejected or superseded. These properties determine the temporal evolution of known hypotheses.
+The cumulative effective-representation sets and the effective-description sets retain historical associations: once a representation has been considered, or a description has been associated with a representation, that association remains recorded even if it is subsequently rejected or superseded. These properties determine the temporal evolution of known hypotheses.
 
 \begin{proposition}
 \label{prop:known_hypotheses_monotonic}
@@ -1324,9 +1313,9 @@ Moreover, for every fixed entity $e\in\mathcal{E}$,
 \]
 \end{proposition}
 \begin{proof}
-Let $(r,d)\in\hat{\mathcal{H}}^{t_1}$. By definition $r\in\hat{\mathcal{R}}^{t_1}$ and $d\in\hat{\mathcal{D}}_r^{t_1}$. By the monotonicity of effective representations and effective descriptions $\hat{\mathcal{R}}^{t_1} \subseteq \hat{\mathcal{R}}^{t_2}$ and $\hat{\mathcal{D}}_r^{t_1} \subseteq \hat{\mathcal{D}}_r^{t_2}$. Consequently $r\in\hat{\mathcal{R}}^{t_2}$ and $d\in\hat{\mathcal{D}}_r^{t_2}$, which implie $(r,d)\in\hat{\mathcal{H}}^{t_2}$. Therefore $\hat{\mathcal{H}}^{t_1} \subseteq \hat{\mathcal{H}}^{t_2}$.
+Let $(r,d)\in\hat{\mathcal{H}}^{t_1}$. By definition, $r\in\hat{\mathcal{R}}^{\leq t_1}$ and $d\in\hat{\mathcal{D}}_r^{t_1}$. By the monotonicity of cumulative effective representations established in Chapter \ref{chap:Representations}, $\hat{\mathcal{R}}^{\leq t_1} \subseteq\hat{\mathcal{R}}^{\leq t_2}$. Moreover, by the cumulative definition of effective descriptions, $\hat{\mathcal{D}}_r^{t_1} \subseteq\hat{\mathcal{D}}_r^{t_2}$. Consequently, $r\in\hat{\mathcal{R}}^{\leq t_2}$ and $d\in\hat{\mathcal{D}}_r^{t_2}$, which implies $(r,d)\in\hat{\mathcal{H}}^{t_2}$. Therefore, $\hat{\mathcal{H}}^{t_1} \subseteq\hat{\mathcal{H}}^{t_2}$.
 
-For the second statement, let $(r,d)\in\hat{\mathcal{H}}_e^{t_1}$. By definition $(r,d)\in\hat{\mathcal{H}}^{t_1}$ and $r\in\hat{\mathcal{R}}_e^{t_1}$. The first inclusion established above gives $(r,d)\in\hat{\mathcal{H}}^{t_2}$. Moreover, by the monotonicity of effective representations of an entity $\hat{\mathcal{R}}_e^{t_1} \subseteq \hat{\mathcal{R}}_e^{t_2}$. Hence $r\in\hat{\mathcal{R}}_e^{t_2}$ Therefore $(r,d)\in\hat{\mathcal{H}}_e^{t_2}$, which establishes the second inclusion.
+For the second statement, let $(r,d)\in\hat{\mathcal{H}}_e^{t_1}$. By definition, $(r,d)\in\hat{\mathcal{H}}^{t_1}$ and $r\in\hat{\mathcal{R}}_e^{\leq t_1}$. The first inclusion established above gives $(r,d)\in\hat{\mathcal{H}}^{t_2}$. Moreover, by the monotonicity of cumulative effective representations of an entity, $\hat{\mathcal{R}}_e^{\leq t_1} \subseteq\hat{\mathcal{R}}_e^{\leq t_2}$. Hence $r\in\hat{\mathcal{R}}_e^{\leq t_2}$. Therefore $(r,d)\in\hat{\mathcal{H}}_e^{t_2}$, which establishes the second inclusion.
 \end{proof}
 
 This proposition formalizes the cumulative character of scientific exploration. Once a hypothesis has been considered, it remains part of the historical record, even if subsequent evidence leads to its rejection. The same property holds for the known hypotheses associated with any fixed entity, provided that historical representation--entity and representation--description associations are retained. However, the expansion of the known-hypothesis set does not necessarily imply an improvement in scientific understanding. New hypotheses may be informative, redundant, misleading, or entirely incorrect. Their introduction expands the range of explanations explored, but does not guarantee a reduction in miscoding, mismodel, or nescience.
@@ -1348,7 +1337,7 @@ Mathematical models are therefore treated as computational descriptions satisfyi
 
 \subsection*{Model Classes}
 
-A mathematical model specifies a relationship between variables, often expressed through an equation or a system of equations. Examples include equations of state, adsorption isotherms, kinetic laws, and differential equations describing the evolution of physical or biological systems. Such mathematical relationships can be implemented by computational procedures, provided that their inputs and outputs are encoded appropriately and the relevant computations terminate. Different descriptions may share the same mathematical structure while differing in their parameter values or other computational details. This motivates the following definition.
+A mathematical model specifies a relationship between variables, often expressed through an equation or a system of equations. Examples include equations of state, adsorption isotherms, kinetic laws, and differential equations describing the evolution of physical or biological systems. Such mathematical relationships can be implemented by computational procedures when the required operations are computable, their inputs and outputs can be encoded appropriately, and the computations terminate. Different descriptions may share the same mathematical structure while differing in their parameter values or other computational details. This motivates the following definition.
 
 \begin{definition}
 \label{def:model_class}
@@ -1363,7 +1352,7 @@ A model class restricts the space of decodable descriptions to those conforming 
 
 The definition does not require descriptions in $\mathcal{M}$ to be exact, minimal, or extended descriptions of any particular representation. A model may have been formulated according to a valid mathematical structure while failing to describe the observations for which it was proposed. Consequently, model classes are defined as subsets of $\mathcal{D}^\top$, rather than the more restrictive set $\mathcal{D}$ of extended descriptions.
 
-The distinction between models and hypotheses is important. A model instance is a computational description, whereas a hypothesis associates a description with a particular representation. Thus, a model instance $d\in\mathcal{M}$ can participate in different hypotheses, depending on the representation it is intended to describe.
+The distinction between models and hypotheses is important. A model instance is a computational description, whereas a hypothesis associates a description with a particular representation. Thus, a model instance $d\in\mathcal{D}$ may be associated with different representations in known hypotheses. It belongs to a theoretical hypothesis $(r,d)$ only when $d\in\mathcal{D}_r$.
 
 \begin{notation}
 Let $\mathcal{M}\subseteq\mathcal{D}^\top$ be a model class. We denote by $\mathcal{H}_{\mathcal{M}}$ the set of theoretical hypotheses whose descriptions belong to $\mathcal{M}$:
@@ -1392,9 +1381,9 @@ Let $TM_m$ be a fixed computational implementation of a mathematical model struc
 \[
 M_\theta = \langle TM_m,\langle\theta\rangle_m\rangle,
 \]
-where the encoding denotes the permitted Turing machine obtained by specializing $TM_m$ to the parameter values $\theta$ through a fixed computable procedure.
+where this notation denotes the code of a permitted Turing machine obtained by a fixed computable specialization of $TM_m$ to the parameter values $\theta$. The specialized machine computes $M_\theta(a)=TM_m(\langle\langle\theta\rangle_m,a\rangle)$ for every admissible input $a$.
 
-Let $\mathcal{A}_m\subseteq\mathcal{B}^\ast$ be a set of admissible input strings. We assume that each $M_\theta$ is a permitted prefix-free Turing machine and that $M_\theta(a)\downarrow$ for every $a\in\mathcal{A}_m$. We define the \emph{parametric model class}\index{Parametric model} associated with $TM_m$ as
+Let $\mathcal{A}_m\subseteq\mathcal{B}^\ast$ be a prefix-free set of admissible input strings. We assume that each $M_\theta$ is a permitted prefix-free Turing machine and that $M_\theta(a)\downarrow$ for every $a\in\mathcal{A}_m$. We define the \emph{parametric model class}\index{Parametric model} associated with $TM_m$ as
 \[
 \mathcal{M}_m = \left\{d_{\theta,a}=\langle M_\theta,a\rangle : \theta\in\Theta_m,\; a\in\mathcal{A}_m \right\}.
 \]
@@ -1461,7 +1450,7 @@ The same parameterized model $M_\theta$ can be applied to different collections 
 
 This example illustrates how parametric mathematical models fit naturally into the existing descriptive framework. The mathematical structure is implemented by a Turing machine, the model parameters determine a specialized machine, and the input specifies the conditions under which the model is evaluated. The resulting computational object is a decodable description whose output can be compared with an experimental representation. The same construction applies to other mathematical models, including equations of state, kinetic laws, and systems of differential equations. More elaborate models may require numerical solvers or additional computational procedures, but they remain subject to the same definitions and properties established for descriptions.
 
-Restricting descriptions to a model class limits the mathematical structures available for modeling a representation. Such restrictions may simplify the search for suitable descriptions and facilitate mathematical reasoning, but they may also exclude descriptions that capture relevant regularities more effectively. In particular, a model class $\mathcal{M}$ need not contain any exact description of a given representation $r$, even though exact descriptions always exist in the unrestricted descriptive space. Likewise, a model class may contain extended descriptions of $r$ without containing any of its minimal descriptions. Consequently, restricting the descriptive space may prevent the discovery of descriptions that are more accurate or economical. Different model classes may provide alternative descriptions of the same representation. For example, observations of a physical phenomenon may be described using different mathematical laws, each characterized by its own structural assumptions and parameters. These competing descriptions can be evaluated using the same measures of mismodel, inaccuracy, and surfeit introduced in subsequent chapters. Thus, model classes provide a practical way to organize scientific descriptions without changing their fundamental properties. Their purpose is not to guarantee descriptive optimality, but to make particular mathematical structures available for investigation, comparison, and refinement.
+Restricting descriptions to a model class limits the mathematical structures available for modeling a representation. Such restrictions may simplify the search for suitable descriptions and facilitate mathematical reasoning, but they may also exclude descriptions that capture relevant regularities more effectively. In particular, a model class $\mathcal{M}$ need not contain any exact description of a given representation $r$, even though exact descriptions always exist in the unrestricted descriptive space. Likewise, a model class may contain extended descriptions of $r$ without containing any of its minimal descriptions. Consequently, restricting the descriptive space may prevent the discovery of descriptions that are more accurate or economical. Different model classes may provide alternative descriptions of the same representation. For example, observations of a physical phenomenon may be described using different mathematical laws, each characterized by its own structural assumptions and parameters. These competing descriptions can be evaluated using the measures of descriptive deficiency, descriptive surplus, and mismodel introduced in subsequent chapters. Thus, model classes provide a practical way to organize scientific descriptions without changing their fundamental properties. Their purpose is not to guarantee descriptive optimality, but to make particular mathematical structures available for investigation, comparison, and refinement.
 
 %
 % Section: Operations on Descriptions
@@ -1476,7 +1465,6 @@ These operations are introduced here at a purely structural level. Their purpose
 This distinction is important because the same formal operation may have very different effects depending on the context. An augmentation may add genuinely useful information, but it may also introduce irrelevant detail. Likewise, a reduction may remove superfluous structure, but it may also discard information that later proves important. For this reason, augmentation and reduction are best understood at this stage as general operations on descriptions. Their role in decreasing deficiency, surplus, or mismodel will be examined in Chapter \ref{chap:Mismodel}, once those defects have been formally defined.
 
 % Subsection: Operation of Augmentation
-
 
 \subsection*{Operation of Augmentation}
 
@@ -1504,14 +1492,13 @@ p(\operatorname{aug}(d,a))=d.
 Whenever $\operatorname{aug}(d,a)$ is defined, the resulting description $\operatorname{aug}(d,a)$ is called an \emph{augmentation}\index{Augmentation of descriptions} of $d$ by $a$, and $a$ is called an \emph{augmentation description}\index{Augmentation description}.
 \end{definition}
 
-The operator constructs a new description by incorporating information from an auxiliary description into an existing one. The definition does not prescribe a particular method of combination, allowing different augmentation operators to be employed according to the computational structures under consideration. A particular operator is assumed to be fixed whenever its properties are investigated.
+The operator may construct a new description by incorporating information from an auxiliary description into an existing one. The definition does not prescribe a particular method of combination, allowing different augmentation operators to be employed according to the computational structures under consideration. A particular operator is assumed to be fixed whenever its properties are investigated.
 
 Augmentation is defined over decodable descriptions rather than entity-dependent sets such as $\mathcal D_e$, because it is a general computational operation independent of any particular entity. Moreover, membership in $\mathcal D_e$ is generally undecidable, so restricting augmentation to this set would complicate its computability. Unlike augmentation of representations, which is defined over $\mathcal{R}_{e}$, descriptive augmentation may combine any two decodable descriptions. Whenever defined, it produces another decodable description, whose relationship with a particular entity or target representation must be established separately.
 
 The recoverability requirement ensures that the original description can be reconstructed effectively from the augmented description. The recovery procedure is fixed and does not depend on the particular arguments. This uniformity is essential: allowing a different recovery procedure for each augmentation would not establish a uniform bound on conditional Kolmogorov complexity, since the recovery procedure could itself encode the description to be recovered.
 
-The following proposition establishes the fundamental algorithmic
-properties of augmentation.
+The following proposition establishes the fundamental algorithmic properties of augmentation.
 
 \begin{proposition}
 \label{prop:augmentation_information_preservation}
@@ -1535,7 +1522,7 @@ such that
 \[
 p(\operatorname{aug}(d,a))=d.
 \]
-Consequently, a program of constant length can recover$d$ from $\operatorname{aug}(d,a)$, giving
+Consequently, a program of constant length can recover $d$ from $\operatorname{aug}(d,a)$, giving
 \[
 K(d\mid\operatorname{aug}(d,a))=O(1).
 \]
@@ -1551,22 +1538,22 @@ Information preservation does not imply preservation of the original output. In 
 \[
 \Gamma(\operatorname{aug}(d,a)) \neq \Gamma(d).
 \]
-The augmented description may implement a different computational procedure and produce a different representation. Furthermore, augmentation need not increase the length of the description, since recoverability constrains algorithmic information rather than literal length.
+The augmented description may implement a different computational procedure and produce a different binary string. Furthermore, augmentation need not increase the length of the description, since recoverability constrains algorithmic information rather than literal length.
 
-Augmentation also does not necessarily preserve the relationship between a description and its target representation. In particular,
+Augmentation also does not necessarily preserve the relationship between a description and its target representation. In particular, even when $\operatorname{aug}(d,a)$ is defined,
 \[
 d\in\mathcal D_r \quad\not\Rightarrow\quad \operatorname{aug}(d,a)\in\mathcal D_r.
 \]
 Although the original description remains recoverable, the output of the augmented description may no longer contain sufficient information about $r$. Membership in $\mathcal D_r$ must therefore be established separately.
 
-Finally, augmentation does not guarantee an improvement in descriptive quality. When both descriptions belong to $\mathcal D_r$, information preservation ensures that deficiency cannot increase substantially, but also that existing surplus cannot decrease substantially. An augmentation may therefore reduce deficiency while increasing surplus, without necessarily reducing mismodel. These effects will be examined in Chapter~\ref{chap:Mismodel}.
+Finally, augmentation does not guarantee an improvement in descriptive quality. When both $d$ and its augmentation $\operatorname(d,a)$ belong to $\mathcal D_r$, information preservation ensures that deficiency cannot increase substantially, but also that existing surplus cannot decrease substantially. An augmentation may therefore reduce deficiency while increasing surplus, without necessarily reducing mismodel. These effects will be examined in Chapter~\ref{chap:Mismodel}.
 
 \begin{example}
-Consider a representation $r$ encoding observations of the trajectory of a projectile. Let $d=\langle TM_1,a_1\rangle$ be a decodable description implementing projectile motion in vacuum, with initial conditions encoded in $a_1$- Let $a=\langle TM_2,a_2\rangle$ be an auxiliary description modeling aerodynamic drag.
+Consider a representation $r$ encoding observations of the trajectory of a projectile. Let $d=\langle TM_1,a_1\rangle$ be a decodable description implementing projectile motion in vacuum, with initial conditions encoded in $a_1$. Let $a=\langle TM_2,a_2\rangle$ be an auxiliary description modeling aerodynamic drag.
 Suppose that an augmentation operator combines both models, producing $d^+=\operatorname{aug}(d,a)$. The augmented description implements equations of motion that account for air resistance. Consequently, its output generally differs from that of the original description: $\Gamma(d^+)\neq\Gamma(d)$. Nevertheless, $d$ must remain recoverable from $d^+$ by a fixed computable procedure. For example, $d^+$ may contain a recoverable encoding of the original model alongside the modified computational procedure. The auxiliary description $a$, however, need not be recoverable in its entirety. If aerodynamic drag is relevant to the observed trajectory, the augmented model may provide a better account of the observations. However, improved agreement does not by itself establish that descriptive deficiency or mismodel has decreased.
 \end{example}
 
-Augmentation thus incorporates additional information while preserving the original description. Its effects on descriptive deficiency and surplus, and its contribution to decreasing nescience, will be examined in the corresponding chapters.
+Augmentation thus allows additional information to be incorporated while preserving the original description. Its effects on descriptive deficiency and surplus, and its contribution to decreasing nescience, will be examined in the corresponding chapters.
 
 % Subsection: Operation of Reduction
 
@@ -1594,10 +1581,7 @@ such that, whenever $\operatorname{red}(d)=(d_1,a)$ is defined, the following co
     \item $p(d_1,a)=d$.
 \end{enumerate}
 
-The description $d_1$ is called the
-\emph{reduced description}\index{Reduced description}
-of $d$, and $a$ is called the
-\emph{discarded description}\index{Discarded description}.
+The description $d_1$ is called the \emph{reduced description}\index{Reduced description} of $d$, and $a$ is called the \emph{discarded description}\index{Discarded description}.
 \end{definition}
 
 The first condition requires that the reduced description be no longer than the original. The second guarantees that the original description can be reconstructed exactly from the reduced and discarded descriptions, including its computational structure and encoding. The reconstruction function is fixed and does not depend on the particular description being reduced. This ensures that reconstruction requires only constant computational description overhead. Reduction is defined independently of augmentation. Although the two operations are complementary, the reconstruction function associated with reduction need not coincide with any previously defined augmentation operator. This allows different reduction operators to implement different ways of decomposing the same description.
@@ -1608,7 +1592,7 @@ Reduction preserves the complete algorithmic information of the original descrip
 
 \begin{proposition}
 \label{prop:reduction_information}
-Let $\operatorname{red}$ be a reduction operator, and suppose that $\operatorname{red}(d)=(d_1,a)$, then
+Let $\operatorname{red}$ be a reduction operator, and suppose that $\operatorname{red}(d)=(d_1,a)$. Then
 \[
 K(d_1,a\mid d)=O(1)
 \]
@@ -1706,7 +1690,6 @@ Reduction therefore provides a computational mechanism for simplifying descripti
 \section{Conditional Descriptions}
 \label{sec:conditional_descriptions}
 
-
 Scientific descriptions are rarely constructed in isolation. They typically rely on mathematical procedures, established models, computational tools, and other knowledge already available within a scientific community. Rather than reproducing all this information, scientists describe only what is needed beyond the existing knowledge. A \emph{conditional description} formalizes this practice by specifying a computation relative to an explicitly defined background.
 
 Conditional descriptions extend the unconditional framework introduced earlier by allowing computations to access additional background information. This background is not included in the description itself, and its encoding cost is not charged when measuring the additional descriptive information. Nevertheless, the background must be specified to ensure that the resulting computation is well defined.
@@ -1739,9 +1722,9 @@ For every background description $c\in\mathcal{D}^\top$ and every $d\in\mathcal{
 \]
 \end{proposition}
 \begin{proof}
-Using the fixed specialization convention, construct a machine $M_c$ that, on input $d$, first executes $c$ to obtain $b=\Gamma(c)$ and then simulates $U(d,b)$. Since $c\in\mathcal{D}^\top$, the first computation terminates. Since $d\in\mathcal{D}_c^\top$, the second computation also terminates. Moreover, the halting domain of $M_c$ is $\mathcal{D}_c^\top$, which is prefix-free. Thus, $M_c$ can be realized within the permitted machine convention. The ordinary description $d^{[c]}=\langle M_c,d\rangle$ therefore belongs to $\mathcal{D}^\top$ and satisfies
+Given $c$ and $d$, construct a computation that first executes $c$ to obtain $b=\Gamma(c)$ and then executes $U(d,b)$. By the effective embedding assumption established in Section~\ref{sec:decodable_descriptions}, this computation can be encoded in a permitted prefix-free Turing machine $TM_{c,d}$ with a designated input $a_0$. Since $c\in\mathcal{D}^\top$, the computation producing $b$ terminates. Since $d\in\mathcal{D}_c^\top$, the conditional computation also terminates. Therefore, the ordinary description $d^{[c]}=\langle TM_{c,d},a_0\rangle$ belongs to $\mathcal{D}^\top$ and satisfies
 \[
-\Gamma(d^{[c]}) = M_c(d) = U(d,\Gamma(c)) = \Gamma_c(d).
+\Gamma(d^{[c]}) = U(d,\Gamma(c)) = \Gamma_c(d).
 \]
 \end{proof}
 
@@ -1759,11 +1742,11 @@ Let $r\in\mathcal{B}^\ast$ be a finite target string and let $c\in\mathcal{D}^\t
 
 An element of $\bar{\mathcal{D}}_{r\mid c}$ reconstructs $r$ exactly when the background generated by $c$ is available. This is an exactness condition relative to the background, not a claim that the conditional code reconstructs $r$ on its own. As in the unconditional case, exactness concerns the target string rather than its adequacy as a representation of an entity. Even an exact conditional description may reproduce an incomplete or misleading representation perfectly.
 
-Every finite target string admits an exact conditional description: a program can ignore the background and simply output the target. Thus, $\bar{\mathcal{D}}_{r\mid c}$ is nonempty. We can consequently identify those exact conditional descriptions for which no shorter alternative exists under the same background.
+Every finite target string admits an exact conditional description: a program can ignore the background and simply output the target. Thus, $\bar{\mathcal{D}}_{r\mid c}$ is nonempty. For every representation $r\in\mathcal{R}$, we can consequently define those exact conditional descriptions for which no shorter alternative exists under the same background.
 
 \begin{definition}
 \label{def:minimal_conditional_description}
-Let $r\in\mathcal{B}^\ast$ and $c\in\mathcal{D}^\top$. We define the \emph{set of minimal conditional descriptions} \index{Minimal conditional description} of $r$ given $c$, denoted by $\mathcal{D}_{r\mid c}^\star$, as
+Let $r\in\mathcal{R}$ be a representation and let $c\in\mathcal{D}^\top$. We define the \emph{set of minimal conditional descriptions} \index{Minimal conditional description} of $r$ given $c$, denoted by $\mathcal{D}_{r\mid c}^\star$, as
 \[
 \mathcal{D}_{r\mid c}^\star = \left\{d\in\bar{\mathcal{D}}_{r\mid c}\;\middle|\;
 \nexists d'\in\bar{\mathcal{D}}_{r\mid c}: \ell(d')<\ell(d) \right\}.
@@ -1772,13 +1755,13 @@ Let $r\in\mathcal{B}^\ast$ and $c\in\mathcal{D}^\top$. We define the \emph{set o
 
 We write $d_{r\mid c}^\star$ to denote an arbitrary element of $\mathcal{D}_{r\mid c}^\star$. This notation does not imply uniqueness.
 
-Minimal conditional descriptions exist because the set of exact conditional-description lengths is a nonempty subset of the natural numbers. Furthermore, there are only finitely many minimal conditional descriptions of any fixed target under any fixed background, since they all have the same finite length. Using $U$ as the reference interpreter for conditional Kolmogorov complexity, we obtain
+For every representation $r\in\mathcal{R}$ and background description $c\in\mathcal{D}^\top$, minimal conditional descriptions exist because the set of exact conditional-description lengths is a nonempty subset of the natural numbers. Furthermore, there are only finitely many minimal conditional descriptions of any fixed representation under any fixed background, since they all have the same finite length. Using $U$ as the reference interpreter for conditional Kolmogorov complexity, we obtain
 \[
 \ell(d_{r\mid c}^\star) = \min \left\{\ell(d):U(d,\Gamma(c))=r \right\} = K(r\mid\Gamma(c)).
 \]
 Thus, minimal conditional-description length measures the least additional encoded information needed to reconstruct the target once the background has been supplied. Minimality remains relative to the chosen coding conventions and, in this case, to the specified background.
 
-% Subsction: Additional and Total Descriptive Information
+% Subsection: Additional and Total Descriptive Information
 
 \subsection*{Additional and Total Descriptive Information}
 

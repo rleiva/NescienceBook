@@ -399,579 +399,811 @@ Oracle computation thus provides a formal framework for studying computation rel
 \section{Kolmogorov Complexity}
 \label{sec:kolmogorov_complexity}
 
-In Appendix \ref{chap:Coding}, the concept of the complexity of a string based on the lengths of the codewords of a prefix-free code was introduced. This definition is limited by two main factors: first, it necessitates prior knowledge of the set of possible strings, and second, it requires the definition of a probability distribution over this set a priori. It would be highly desirable to expand the set of strings to encompass all strings (that is, $\mathcal{B}^\ast$) without requiring a probability distribution, thereby providing an absolute notion of string complexity. Unfortunately, even if these issues are resolved, a more fundamental limitation arises when studying the complexity of strings using codes: certain strings that we intuitively expect to be simple cannot be compressed. For instance, the binary expansion of the constant $\pi$ is widely conjectured to behave like a uniform distribution over the set $\{0, 1\}$ and, as such, cannot be compressed. Yet it can be fully and effectively described by a very short mathematical formula. This motivates the need for an alternative definition of string complexity.
+Kolmogorov complexity provides an absolute measure of the algorithmic information contained in a finite binary string, without requiring a predefined set of possible strings or a probability distribution. Rather than measuring complexity through statistical coding, it considers the length of the shortest computer program capable of generating the string. This distinction allows highly structured strings, such as finite prefixes of the binary expansion of $\pi$, to have low complexity even when their digits exhibit apparent statistical irregularity.
 
-\emph{Kolmogorov complexity}, also known as \emph{algorithmic information theory}, offers a definition of the complexity of a string that directly addresses these issues. Intuitively, the amount of information in a finite string is measured by the length of the shortest computer program capable of producing the string. This approach does not require prior knowledge of the set of valid strings or their probability distribution. Furthermore, objects like $\pi$ are appropriately classified as having low complexity. We may argue that Kolmogorov complexity provides a universal definition of the amount of information that closely aligns with our intuitive understanding. To compute the Kolmogorov complexity of a string, it is necessary to fix a universal description method or computer language, together with a universal computer. One might question whether, in doing so, the complexity of a string becomes dependent on the chosen language. Fortunately, it has been shown that this is not the case: all reasonable (and sufficiently powerful) languages yield the same description length, up to a fixed constant that depends on the choice of languages but not on the string itself. Unfortunately, Kolmogorov complexity also introduces a significant challenge: it is a non-computable quantity and, as such, must be approximated in practice.
+The definition relies on a fixed universal computational system, but the invariance theorem establishes that different optimal universal systems yield complexities that differ by at most an additive constant independent of the string. Although Kolmogorov complexity is not computable in general, it provides a rigorous mathematical foundation for comparing descriptions and quantifying algorithmic information. The following sections introduce its fundamental properties, joint and conditional complexity, information distance, and the relationship between incompressibility and randomness.
 
-At this point, one might ask whether it is possible to define the complexity of arbitrary objects, not just strings. The answer is yes, at least in theory. Given an object $x$, the task is to provide an encoding method that represents the object as a string. This encoding is useful only if we can losslessly and effectively reconstruct the original object from its description. However, providing such encodings is not always feasible, either because the objects in question are abstract (as in much of mathematics) or because practical reconstruction of the object from its description is currently impossible (for example, with living organisms\footnote{As of now, it is not possible to recreate an animal solely based on its DNA.}).
 
-%
-% Section: String Complexity
-%
+% Subsection: String Complexity
 
-\section{Strings Complexity}
+\subsection*{String Complexity}
 \label{sec:strings_complexity}
 
-In Section \ref{sec:computability}, the concept of the Turing machine, an idealized model of computation, was introduced. We saw that Turing machines can be represented as partial computable functions $T:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$, which assign to each input string $s \in \mathcal{B}^\ast$ an output string $T(s) \in \mathcal{B}^\ast$ (Definition \ref{def:computable-function}). We also introduced the concept of a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ (Definition \ref{def:Universal-Turing-Machine}), a machine that can simulate the behavior of any other Turing machine; that is, for all $(x,v) \in  \mathcal{B}^\ast \times \mathcal{B}^\ast$, we have that $U(x,v) = T_{x}(v)$. Later, in Section \ref{Codes}, the concept of a code, and in particular, the notion of a prefix-free code, was introduced (Definition \ref{def:Prefix-free-Code}). We saw that this kind of code presents important properties (Theorem \ref{th:Kraft-Inequality}). The next definition merges the best of both worlds, Turing machines and prefix-free codes, and introduces a new type of universal Turing machine.
+The preceding section introduced Turing machines and universal computation. A Turing machine computes a partial function on finite binary strings: on some inputs it halts and produces an output, whereas on others its computation may remain undefined. We now use universal computation to measure the information required to generate a string. The relevant description length is that of a complete, self-delimiting program, rather than an arbitrary binary input.
 
 \begin{definition}
-A \emph{prefix-free universal Turing machine}\index{Prefix-free universal Turing machine} is a universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ such that, for every $v \in \mathcal{B}^\ast$, the domain $U_{v}$ is prefix-free, where $U_{v}:\mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$ and $U_{v}(p) = U(p, v)$ for all $p \in \mathcal{B}^\ast$.
-\end{definition}
-
-Using modern computer science terminology we could say that $U$ is the computer, $p$ is the program, and $v$ is the input to the program. Intuitively, the above definition requires that no computer program can be a prefix of any other program. This is not a limitation from the point of view of string lengths, since, by applying McMillan's theorem (Theorem \ref{th:Kraft-Inequality}), given a uniquely decodable program, we could always find a prefix-free one that computes exactly the same function and has the same length. In practice, programming languages enforce syntactic rules that make programs effectively self-delimiting (for example, programs or functions must terminate with specific delimiters).
-
-Fixing the input $v$ allows us to regard the set of valid programs $\{p : U(p,v)\downarrow\}$ as prefix-free. This ensures that descriptions can be uniquely parsed and avoids ambiguity when concatenating programs.
-
-The concept of a prefix-free universal Turing machine allows us to introduce a new definition of the complexity of a string that aligns more closely with our intuitive understanding of the amount of computational information contained in an object (encoded as a string).
-
-\begin{definition}[Kolmogorov Complexity]
-\label{def:Kolmogorov-Complexity}\index{Kolmogorov Complexity}
-Fix a prefix-free universal Turing machine $U:\mathcal{B}^\ast \times \mathcal{B}^\ast \rightarrow \mathcal{B}^\ast$. The \emph{Kolmogorov complexity} of a string $s \in \mathcal{B}^\ast$, denoted by $K(s)$, is defined as:
+\label{def:prefix-free-universal-machine}
+A \emph{prefix-free universal Turing machine}\index{Prefix-free universal Turing machine} is a partial computable function
 \[
-K(s)=\min_{p,v \in \mathcal{B}^\ast}\left\{l(p) + l(v)\,:\, U(p,v)=s\right\}.
+U:\mathcal{B}^*\times\mathcal{B}^*\rightharpoonup\mathcal{B}^*
 \]
+such that, for each fixed auxiliary input $v\in\mathcal{B}^*$, the set of halting programs
+\[
+\operatorname{dom}(U_v)=\{p\in\mathcal{B}^*:U(p,v)\downarrow\},
+\qquad U_v(p)=U(p,v),
+\]
+is prefix-free. We choose $U$ to be \emph{optimal}: for every other partial computable machine $T$ with prefix-free program domains, there is a fixed interpreter code $w_T$ such that, whenever $T(p,v)$ is defined,
+\[
+U(w_Tp,v)=T(p,v).
+\]
+The length $l(w_T)$ depends on $T$ but not on $p$ or $v$.
 \end{definition}
 
-Intuitively, the shortest description of a string $s$ is given by two elements: a program $p$ (a self-delimiting program) that captures all the regular patterns of the string, and a new string $v$ that comprises those parts of $s$ that do not present any regularity. We have to find the optimum balance between increasing the complexity of the program, trying to grasp more regularities, or increasing the size of the non-compressible part.\footnote{In the literature, the Kolmogorov complexity of the string $s$ is defined as $K(s)=\min_{p \in \mathcal{B}^\ast}\{l(p)\,:\, U(p,\lambda)=s\}$, that is, the length of the shortest computer program that, without any additional input, can print the string $s$. We prefer to use the two-part definition $l(p) + l(v)$ because it is more in line with the requirements of the theory of nescience.}
+The first argument $p$ is a self-delimiting program; the second argument $v$ is auxiliary information available to that program. Prefix-freeness means that no halting program for a fixed auxiliary input is a proper prefix of another halting program for that input. Optimality guarantees that changing the reference prefix-free computational system incurs at most a fixed additive cost in description length.
+
+\begin{definition}
+\label{def:Kolmogorov-Complexity}\index{Kolmogorov Complexity}
+Fix an optimal prefix-free universal Turing machine $U$. The \emph{Kolmogorov complexity} of a finite binary string $s\in\mathcal{B}^*$ is
+\[
+K(s)=\min\{l(p):p\in\mathcal{B}^*,\ U(p,\lambda)=s\},
+\]
+where $\lambda$ is the empty string.
+\end{definition}
+
+Thus $K(s)$ is the length of a shortest complete program that generates $s$ without auxiliary input. Every finite binary string has finite complexity, since a program can contain the string explicitly and print it. The minimum exists because the admissible program lengths form a nonempty subset of $\mathbb{N}$.
+
+A complete program may encode a computational model together with data supplied to that model. In the notation used for descriptions in this book, such a program may have the structured form $\langle T_M,a\rangle$, where $T_M$ encodes a computational procedure and $a$ encodes its input, parameters, or residual information. The cost of this description is the length $l(\langle T_M,a\rangle)$ of the complete encoded pair, including its decoding overhead. It is not, in general, equal to $l(\langle T_M\rangle)+l(a)$. We use the same fixed optimal prefix-free description convention for the description function $\Gamma$ introduced in Chapter 4: its decodable descriptions are the halting programs of the reference interpreter. Consequently,
+\[
+K(s)=\min\{l(d):d\in\mathcal{D}^{\top},\ \Gamma(d)=s\}.
+\]
+The model--input decomposition therefore remains available for interpreting scientific descriptions without changing the definition of Kolmogorov complexity.
 
 \begin{example}
-Consider the string composed of one thousand repetitions of the substring "10", that is "$\underbrace{1010\ldots1010}_{1.000\,\mathrm{times}}$". We could write the following program:
-
-\begin{verbatim}
-    example(char *v) {
-        for (int i=1; i<=1000; i++)
-            printf("%s", v);
-    }
-\end{verbatim}
-and then run it with:
-\begin{verbatim}
-    example("10");
-\end{verbatim}
-
-in order to print it. The length of the original string is 2,000 bits, but suppose the program length is approximately 480 bits (assuming that every symbol is encoded using a uniform code of 8 bits), and the input length is 2 bits. We can then conclude that the string has a low complexity. Of course, in order to compute the actual Kolmogorov complexity of the string we would need to find the shortest Turing machine that prints that string.
-
-On the contrary, a string composed of two thousand random bits would, with overwhelming probability, have high complexity, since no program significantly shorter than the string itself can generate it.
+Consider the string $s$ formed by repeating the block $10$ one thousand times. Although $l(s)=2000$, it can be generated by a short program that specifies the block and the number of repetitions. Its Kolmogorov complexity may therefore be much smaller than its length. By contrast, most binary strings of length $2000$ cannot be generated by programs substantially shorter than the strings themselves. The exact value of $K(s)$ cannot generally be determined by inspecting a particular program or compression method.
 \end{example}
 
-As we mentioned in the preface of this chapter, Kolmogorov complexity would not be particularly useful if the complexity of strings depended on the choice of universal Turing machine. The following theorem demonstrates that this concern is unfounded, up to a constant that depends on the choice of machines, but not on the strings themselves. This establishes Kolmogorov complexity as an inherent property of strings.
+The numerical value of Kolmogorov complexity depends on the selected reference machine. The following theorem shows that this dependence is bounded uniformly over all strings.
 
 \begin{theorem}[Invariance theorem]
 \label{def:Invariance-theorem}\index{Invariance Theorem}
-Let $U$ and $U'$ be two universal Turing machines. Then, there exists a constant $C_{U, U'}$, depending only on $U$ and $U'$, such that for each string $s \in \mathcal{B}^{\ast}$ we have:
+Let $U$ and $U'$ be optimal universal prefix-free Turing machines. There exists a constant $c_{U,U'}\geq 0$, depending only on the machines, such that for every $s\in\mathcal{B}^*$,
 \[
-K_{U}(s) \leq K_{U'}(s) + C_{U, U'}.
+K_U(s)\leq K_{U'}(s)+c_{U,U'}.
 \]
+In particular, $|K_U(s)-K_{U'}(s)|$ is bounded by a constant independent of $s$.
 \end{theorem}
 \begin{proof}
-Let $p, v$ be the shortest strings such that $U'(p,v)=s$. Then we can encode the pair $(U',p)$ and simulate it on $U$, obtaining $U(\langle U',p,v \rangle,\lambda) = U'(p,v) = s$. Encoding the pair $(U',p)$ requires a fixed description of $U'$ plus the description of $p$. Thus, $K_U(s) \leq K_{U'}(s) + C_{U,U'}$, where $C_{U,U'}$ is the length of an interpreter for $U'$ on $U$.
+By optimality of $U$, a fixed interpreter code $w$ allows $U$ to simulate $U'$: whenever $U'(p,\lambda)$ halts, $U(wp,\lambda)=U'(p,\lambda)$. Let $p$ be a shortest program for $s$ on $U'$. Then $wp$ is a program for $s$ on $U$, and hence
+\[
+K_U(s)\leq l(wp)=l(w)+l(p)=K_{U'}(s)+l(w).
+\]
+Interchanging $U$ and $U'$ yields the reverse inequality, possibly with a different constant. Taking the larger constant gives the stated bound on the absolute difference.
 \end{proof}
 
-\begin{example}
-Consider a universal programming language, such as Java, and an alternative language, such as Python. We can write a Python interpreter in Java, that is, a Java program that takes a Python script as input and executes it. Then, to compute the complexity of a string $s \in \mathcal{B}^\ast$ using Java, $C_J(s)$, it would be no greater than the complexity of the string using Python, $C_P(s)$, plus the length of the Python interpreter written in Java, $C_{J,P}$. Importantly, the length of the interpreter, $C_{J,P}$, does not depend on the string $s$.
-\end{example}
-
-Although we have proved that Kolmogorov complexity does not depend on the selected universal Turing machine, the size of the constant \(C_{U, U'}\) could pose a limitation in practical applications, especially when computing the complexity of short strings where the constant might significantly exceed the complexity of the string itself. This challenge is addressed by the Minimum Description Length principle, as described in Section \ref{sec:MML}.
+The invariance theorem permits the use of a fixed reference machine without making the theory depend on a particular programming language. However, the additive constant can be significant for short strings and must not be interpreted as numerically negligible. Unless otherwise stated, all occurrences of $K$ in this book refer to the same fixed reference machine and encoding convention.
 
 \begin{notation}
-We denote by \(s^\ast\) the shortest program that outputs the string \(s\) on the universal Turing machine \(U\), that is, \(s^\ast = \langle p,v \rangle\), \(U(s^\ast) = s\), and \(l(s^\ast) = K(s)\). If more than one program satisfies these properties, we select the first one using a lexicographical order induced by \(0 < 1\).
+For every $s\in\mathcal{B}^*$, we denote by $s^*$ the lexicographically first shortest program that generates $s$ on the fixed reference machine $U$. Thus
+\[
+U(s^*,\lambda)=s,
+\qquad l(s^*)=K(s).
+\]
+If several shortest programs exist, the lexicographic ordering is induced by $0<1$.
 \end{notation}
 
-The size of the constant \(C_{U, U'}\) is not the only challenge presented by Kolmogorov complexity; another issue is its non-computability, that is, there is no algorithm capable of determining the shortest program that generates an arbitrary string. The following theorem on the uncomputability of Kolmogorov complexity marks a pivotal insight into the intrinsic limits of complexity theory.
+A shortest program exists for every finite binary string, but there is no general algorithm that finds such a program from the string itself. More fundamentally, Kolmogorov complexity is not computable.
 
-\begin{theorem}
-The function \(K: \mathcal{B}^\ast \rightarrow \mathbb{N}\) that assigns to each string \(s\) its Kolmogorov complexity \(K(s)\) is not computable.
+\begin{theorem}[Noncomputability of Kolmogorov complexity]
+\label{th:Kolmogorov-noncomputability}
+The function $K:\mathcal{B}^*\rightarrow\mathbb{N}$ is not computable.
 \end{theorem}
 \begin{proof}
-Assume, for contradiction, that \(K\) is computable. Then we could construct a function that, for any $n$, finds the first string $s$ such that $K(s) > n$. This function would produce such an $s$ by a program of length $O(\log n)$, thereby giving a description of $s$ much shorter than $n$. This contradicts the definition of Kolmogorov complexity. Therefore, $K$ is not computable.
+Suppose, for contradiction, that $K$ were computable. For each natural number $n$, let $s_n$ be the first string in shortlex order satisfying $K(s_n)>n$. Such a string exists: there are more sufficiently long binary strings than programs of length at most $n$. Under the assumption that $K$ is computable, a fixed algorithm could find $s_n$ by enumerating strings in shortlex order and evaluating their complexities until the inequality is satisfied.
+
+A complete program for $s_n$ would then consist of this fixed algorithm and a self-delimiting encoding of $n$. Its length would be $O(\log(n+2))$, so
+\[
+K(s_n)=O(\log(n+2)).
+\]
+For sufficiently large $n$, this contradicts the defining inequality $K(s_n)>n$. Hence $K$ is not computable.
 \end{proof}
 
-If \(K\) were computable, we could also solve the Halting Problem by constructing a program that, for any input program and input, computes whether the program halts by checking if its Kolmogorov complexity is finite. Since the Halting Problem is known to be undecidable, this provides an alternative contradiction.
+Although $K$ is not computable, it is \emph{upper semicomputable}\index{Upper semicomputability}: for each string $s$, a computable procedure can produce a nonincreasing sequence of upper bounds converging to $K(s)$. This follows by systematically simulating candidate programs and retaining the length of the shortest program so far found to generate $s$. The procedure can discover shorter descriptions, but it cannot generally determine when no shorter description exists. Consequently, neither $K(s)$ nor a shortest program $s^*$ can generally be identified with certainty by an effective procedure.
 
-In practice, we approximate Kolmogorov complexity using compression algorithms, such as the Huffman algorithm described in Section \ref{sec:Huffman-Algorithm}, or more sophisticated schemes like Lempel-Ziv, which provide practical upper bounds on $K(s)$ relative to their model class.
+In practice, lossless compression algorithms provide computable descriptions and hence upper bounds on Kolmogorov complexity when the decompressor and all encoding overhead are included. If $C$ is a computable lossless compressor with a fixed computable decompressor $D$, then a complete encoding of $D$ and $C(s)$ is a description of $s$, yielding
+\[
+K(s)\leq l(\langle D,C(s)\rangle)+O(1).
+\]
+These bounds may be useful, but failure to compress a string with a particular method does not establish that the string has high Kolmogorov complexity.
 
-%
-% Section: Properties of Kolmogorov Complexity
-%
+% Subsection: Properties of Kolmogorov Complexity
 
-\section{Properties of Complexity}
+\subsection*{Properties of Complexity}
+\label{sec:properties_complexity}
 
-In this section, we delve into the properties of Kolmogorov complexity. We will explore the foundational principles that govern this complexity measure, including its invariance, symmetry, and non-computability. Through examining these properties, we gain deeper insights into the interplay between information, computation, and randomness.
+This section introduces the fundamental properties of Kolmogorov complexity concerning description length and computable transformations. Throughout, $K$ denotes prefix-free Kolmogorov complexity relative to the fixed optimal universal Turing machine introduced in the preceding section.
 
-Kolmogorov complexity is always a finite positive natural number.
-
-\begin{proposition}
-For all $s\in\mathcal{B}^{\ast}$ we have that $0 < K(s) < \infty$.
-\end{proposition}
-\begin{proof}
-Since $K(s)$ is defined as the length of a program-input pair, it is a non-negative integer. For non-empty strings $s$, we have $K(s) > 0$. The property $K(s) < \infty$ is a consequence of Proposition \ref{prop:kolmogorov_length} and the fact that we are only dealing with finite strings.
-\end{proof}
-
-The Kolmogorov complexity of a string cannot surpass the sum of its own length and a constant.
+For every finite binary string $s \in \mathcal{B}^*$, its Kolmogorov complexity $K(s)$ is a finite positive integer. Moreover, the complexity of a string is bounded by its length plus the information required to specify that length.
 
 \begin{proposition}
 \label{prop:kolmogorov_length}
-There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s) \leq l(s) + c$.
+For every $s \in \mathcal{B}^*$,
+\[
+K(s) \leq l(s) + K(l(s)) + O(1),
+\]
+where $K(l(s))$ denotes the Kolmogorov complexity of the integer $l(s)$ under the fixed encoding of natural numbers. Consequently,
+\[
+K(s) \leq l(s) + O(\log(l(s)+2)).
+\]
 \end{proposition}
+
 \begin{proof}
-Let $s \in \mathcal{B}^\ast$ be an arbitrary string, and consider the encoding of a Turing machine $p$ such that for any input $v = s$, it halts and outputs $s$. The program $p$ is designed to simply reproduce its input. Given this setup, when $p$ is executed on a universal Turing machine $U$ with $s$ as input, it satisfies the condition $U(p, s) = s$. The length of \(p\) is a constant $c$ across all strings $s$. There exists a fixed program $p_{\text{id}}$ that outputs its input; its length is constant and independent of $s$. By the definition of Kolmogorov Complexity $K(s)$, which seeks the minimum length of a program-input pair that generates $s$, the combination of $p$ and $s$ presents a feasible solution. Therefore, we have $K(s) \leq l(s) + l(p) = l(s) + c$.
+Let $n=l(s)$. Consider a prefix-free description consisting of a shortest self-delimiting program that outputs $n$, followed by the $n$ bits of $s$. A fixed interpreter first obtains $n$, then reads exactly $n$ bits and outputs $s$. Since the length description is self-delimiting and the number of subsequent bits is fixed by $n$, the resulting descriptions form a prefix-free set. Thus,
+\[
+K(s) \leq n + K(n) + O(1).
+\]
+Since natural numbers admit self-delimiting encodings of length $O(\log(n+2))$, we have $K(n)=O(\log(n+2))$, establishing the second inequality.
 \end{proof}
 
-The size of the constant $c$ depends on the specific encoding schema used by the selected universal Turing machine $U$, but it is independent of the string $s$. In Section \ref{sec:incompressibility_randomness}, we will explore the characteristics of random strings, which are defined as strings that cannot be compressed. Such strings exhibit a Kolmogorov complexity close to their own length, that is, $K(s) \ge l(s) - c$ for some constant $c$.
+The additional term accounts for the self-delimiting encoding required by prefix-free complexity. In particular, unlike plain Kolmogorov complexity, prefix-free complexity does not generally satisfy the uniform bound $K(s)\leq l(s)+O(1)$.
 
-The absolute difference in Kolmogorov complexity between any string \(x\) and its transformed counterpart \(f(x)\), via a computable bijection, is bounded by a constant $c$. That is, not only does $f$ not increase the complexity of $x$ by more than a constant, but also $f$ does not decrease the complexity by more than a constant.
+Another fundamental property concerns the effect of computable transformations on the algorithmic information contained in a string.
 
 \begin{proposition}
-Let $f:\mathcal{B}^{\ast} \to \mathcal{B}^{\ast}$ is a computable bijection, then there exists a constant $c$ such that $| K\left( f(x) \right) -  K(x) | < c$.
+\label{prop:computable-transformation}
+Let $f:\mathcal{B}^*\rightharpoonup\mathcal{B}^*$ be a partial computable function. Then there exists a constant $c_f\geq 0$, depending only on $f$ and the reference universal machine, such that
+\[
+K(f(x)) \leq K(x) + c_f
+\]
+for every $x\in\operatorname{dom}(f)$.
 \end{proposition}
+
 \begin{proof}
-Let $P_f$ be the program that computes $f$ and $P_{f^{-1}}$ the program that computes the inverse of $f$. For any string $x$, let $P_x$ be the shortest program that generates $x$. Then, a program $P_{f(x)}$ that generates $f(x)$ can be constructed by concatenating $P_x$ with $P_f$. The length of this program is $|P_{f(x)}| = |P_f| + |P_x|$. Since $|P_f|$ is a constant that does not depend on $x$, we can say that $K(f(x)) \leq K(x) + |P_f|$. Similarly, given $f(x)$, we can construct a program $P'_{x}$ to generate $x$ by applying $P_{f^{-1}}$ to $f(x)$. The length of this program is $|P'_{x}| = |P_{f^{-1}}| + |P_{f(x)}|$. Thus, $K(x) \leq K(f(x)) + |P_{f^{-1}}|$. The two inequalities combined imply that $|K(f(x)) - K(x)| \leq \max(|P_f|, |P_{f^{-1}}|) = c$, where \(c\) is a constant that represents the maximum of the lengths of the programs that compute \(f\) and \(f^{-1}\). This constant \(c\) does not depend on \(x\), but rather on the complexity of the functions \(f\) and \(f^{-1}\).
+Let $p$ be a shortest program that generates $x$, so that $U(p,\lambda)=x$ and $l(p)=K(x)$. Consider a machine that first executes $p$ and then applies $f$ to its output. This machine is prefix-free because its domain is a subset of the prefix-free domain of $U$. By the optimality of the reference universal machine, the computation can be simulated with a fixed additional description of length $c_f$, independent of $x$. Therefore,
+\[
+K(f(x)) \leq l(p)+c_f = K(x)+c_f.
+\]
 \end{proof}
 
-This proposition shows a remarkable stability of informational content under computable bijections, underscoring the intrinsic robustness of Kolmogorov complexity in the face of such transformations.
+This proposition establishes that a fixed computable transformation cannot increase Kolmogorov complexity by more than a constant. However, it may decrease complexity substantially when the transformation discards information. If the transformation is computably reversible, a stronger property holds.
+
+\begin{proposition}
+\label{prop:computable-bijection}
+Let $f:\mathcal{B}^*\rightarrow\mathcal{B}^*$ be a computable bijection. Then there exists a constant $c_f\geq 0$ such that, for every $x\in\mathcal{B}^*$,
+\[
+|K(f(x))-K(x)|\leq c_f.
+\]
+\end{proposition}
+
+\begin{proof}
+Since $f$ is computable, Proposition \ref{prop:computable-transformation} gives
+\[
+K(f(x))\leq K(x)+O(1).
+\]
+Moreover, because $f$ is a computable bijection on $\mathcal{B}^*$, its inverse $f^{-1}$ is also computable. Applying the same proposition to $f^{-1}$ yields
+\[
+K(x)\leq K(f(x))+O(1).
+\]
+Combining both inequalities establishes the result, with a constant independent of $x$.
+\end{proof}
+
+Thus, Kolmogorov complexity is invariant up to an additive constant under computable bijections. This property is particularly important when comparing alternative encodings of the same information.
 
 \begin{example}
-Consider the function $f:\mathcal{B}^\ast \to \mathcal{B}^\ast$ that reverses the order of the bits in a string, i.e., $f(x_1x_2\ldots x_n) = x_n\ldots x_2x_1$. This function is a computable bijection, since both $f$ and its inverse (which is itself) can be computed by a fixed, finite program. If $x$ is a highly compressible string, such as $x = 1010\ldots10$ repeated $1{,}000$ times, then $f(x)$ is also highly compressible (it is the same pattern written backwards). If $x$ is an incompressible random string, then $f(x)$ is also incompressible. The difference in Kolmogorov complexity between $x$ and $f(x)$ is bounded by the length of the fixed program that reverses the bits, a constant independent of $x$.
+Consider the function $f:\mathcal{B}^*\rightarrow\mathcal{B}^*$ that reverses the bits of a string:
+\[
+f(x_1x_2\ldots x_n)=x_n\ldots x_2x_1.
+\]
+This function is a computable bijection whose inverse is itself. Consequently,
+\[
+K(f(x))=K(x)+O(1).
+\]
+Since bit reversal also preserves string length, a string that is incompressible up to a fixed additive constant remains incompressible, up to a possibly different constant, after its bits are reversed.
 \end{example}
 
-Finally, it is worth emphasizing that some strings are very compressible, and this phenomenon occurs at every string length. For instance, the string of $n$ zeros,
+Finally, some strings admit descriptions substantially shorter than their lengths. Consider the string $0^n$, consisting of $n$ repetitions of the symbol $0$. Since a fixed program can construct $0^n$ from $n$, and another fixed program can recover $n$ by counting the symbols in $0^n$, the computable-transformation property implies
 \[
-0^n = \underbrace{00\ldots0}_{n\ \text{times}},
+K(0^n)=K(n)+O(1).
 \]
-has a description of length $O(\log n)$: a program that prints "0" exactly $n$ times. Therefore, $K(0^n) \leq c + \log n$, which is which is asymptotically much smaller than $n$. Similarly, strings with simple patterns, such as alternating zeros and ones, or repetitions of short substrings, can always be described concisely regardless of their total length.
-
-%
-% Section: Joint Kolmogorov Complexity
-%
-
-\section{Joint Kolmogorov Complexity}
-
-The joint Kolmogorov complexity of two strings $s$ and $t$ is defined as the length of the shortest program $p$ that, when executed on a universal Turing machine $U$, outputs the pair $\langle s, t \rangle$, in such a way that both strings can be unambiguously retrieved. Here, $\langle s,t\rangle$ denotes a computable pairing function that encodes two strings into a single string in such a way that both components can be effectively recovered. The pairing function $\langle s,t\rangle$ is assumed to be a fixed, computable bijection with computable inverse, so that both $s$ and $t$ can be effectively recovered. Different choices of pairing function affect $K(s,t)$ by at most an additive constant.
-
-\begin{definition}[Joint Kolmogorov Complexity]
-\label{def:Joint-Kolmogorov-Complexity}\index{Joint Kolmogorov complexity}
-The \emph{Joint Kolmogorov complexity} of the strings $s, t \in \mathcal{B}^\ast$, denoted by $K(s, t)$, is defined as:
+Consequently,
 \[
-K(s, t)=\min_{p,v \in \mathcal{B}^\ast}\left\{l(p) + l(v)\,:\, U(p,v)=\langle s, t \rangle \right\}
+K(0^n)=O(\log(n+2)),
 \]
+which grows asymptotically much more slowly than its length $n$. Similar bounds apply to other strings generated by simple computational rules, illustrating that string length and Kolmogorov complexity measure different properties.
+
+% Subection: Joint Kolmogorov Complexity
+
+\subsection*{Joint Kolmogorov Complexity}
+\label{sec:joint_kolmogorov_complexity}
+
+The \emph{joint Kolmogorov complexity} of two binary strings measures the length of the shortest program capable of generating both strings. To represent a pair of strings as a single string, we use the fixed pairing convention $\langle s,t\rangle$ introduced in the section on discrete mathematics. This convention is computable and injective, with a computable inverse on its image, allowing both components to be recovered unambiguously. Different choices of such pairing conventions affect joint complexity by at most an additive constant.
+
+\begin{definition}
+\label{def:Joint-Kolmogorov-Complexity}
+\index{Joint Kolmogorov complexity}
+The \emph{joint Kolmogorov complexity} of two strings $s,t\in\mathcal{B}^*$, denoted by $K(s,t)$, is defined as
+\[
+K(s,t)=K(\langle s,t\rangle),
+\]
+where $K$ denotes prefix-free Kolmogorov complexity relative to the fixed optimal universal Turing machine.
 \end{definition}
 
-The notation $K(s, t)$ and $K(st)$ represent two different concepts in the context of Kolmogorov complexity. $K(s, t)$ refers to the joint Kolmogorov complexity of two strings $s$ and $t$ as per Definition \ref{def:Joint-Kolmogorov-Complexity}, meanwhile $K(st)$ represents the Kolmogorov complexity of the concatenation of $s$ and $t$, without any additional structure to distinguish between them, and so, Defintion \ref{def:Kolmogorov-Complexity} is applied. The choice between $K(s, t)$ and $K(st)$ depends on whether it's important to preserve and utilize the distinction and relationship between $s$ and $t$. If analyzing the interplay or the shared characteristics of $s$ and $t$ is relevant, $K(s, t)$ is more appropriate. If the focus is on the information content of the combined sequence without regard to its origin from two separate strings, $K(st)$ is used.
+This definition extends naturally to any finite collection of strings, using the fixed encoding convention for finite tuples:
+\[
+K(s_1,\ldots,s_n)
+=K(\langle s_1,\ldots,s_n\rangle).
+\]
 
-\begin{example}
-Consider the strings $s = 0000$ and $t = 1111$. The concatenation $st = 00001111$ can be described by a short program that prints this eight-bit string directly, so $K(st)$ is roughly the length of that description. However, the joint description $\langle s,t\rangle$ requires that the decoding procedure be able to recover the boundary between $s$ and $t$. Thus $K(s,t)$ and $K(st)$ differ by at most a fixed constant, reflecting the extra information required to separate $s$ and $t$. 
-\end{example}
+It is important to distinguish $K(s,t)$ from $K(st)$. The former measures the complexity of a structured pair whose components can be recovered individually, while the latter measures the complexity of their concatenation, without explicitly identifying the boundary between them. Recovering this boundary may require additional information, as established by the following proposition.
 
-Our first proposition highlights a fundamental symmetry in Kolmogorov complexity, illustrating that the complexity of describing a pair of strings in either order differs by at most a constant. This reflects the intrinsic property that the information content is independent of the specific arrangement of the strings being described. The constant $c$ encapsulates the overhead associated with the operations needed to reverse the order of the strings.
+\begin{proposition}
+\label{prop:joint-concatenation}
+For all $s,t\in\mathcal{B}^*$,
+\[
+K(st)\leq K(s,t)+O(1)
+\]
+and
+\[
+K(s,t)\leq K(st)+K(l(s))+O(1).
+\]
+Consequently,
+\[
+K(s,t)=K(st)+O(\log(l(s)+2)).
+\]
+\end{proposition}
+\begin{proof}
+The concatenation $st$ can be computed from the structured pair $\langle s,t\rangle$ by a fixed program that extracts both components and concatenates them. By the computable-transformation property,
+\[
+K(st)\leq K(s,t)+O(1).
+\]
+Conversely, given $st$ and the length $l(s)$, a fixed program can recover $s$ and $t$ by splitting the concatenation at the specified position. Combining shortest self-delimiting descriptions of $st$ and $l(s)$, with a fixed decoding procedure, gives
+\[
+K(s,t)\leq K(st)+K(l(s))+O(1).
+\]
+Since $K(n)=O(\log(n+2))$ for natural numbers $n$, the second inequality implies
+\[
+K(s,t)\leq K(st)+O(\log(l(s)+2)).
+\]
+Together with the first inequality, this establishes the result.
+\end{proof}
+
+Joint Kolmogorov complexity is symmetric up to an additive constant: the order in which two strings are encoded does not substantially affect their joint algorithmic information.
 
 \begin{proposition}
 \label{prop:kolmogorov_order}
-There is a constant $c$ such that for all $x, y \in\mathcal{B}^{\ast}$ we have that $| K(x, y) - K(y, x) | \le c$.
+There exists a constant $c\geq 0$ such that, for all
+$x,y\in\mathcal{B}^*$,
+\[
+|K(x,y)-K(y,x)|\leq c.
+\]
 \end{proposition}
 \begin{proof}
-Let $U$ be a universal Turing machine, and let $p_{yx}$ be the shortest program that outputs $\langle y,x\rangle$ when executed on $U$. To obtain a program that outputs $\langle x,y\rangle$, we can prepend $p_{yx}$ with a fixed program that swaps the order of the two components in the decoded pair. This additional program has a constant length $c$, independent of $x$ and $y$. Therefore, $K(x,y) \leq K(y,x) + c$.
+Given $\langle x,y\rangle$, a fixed computable procedure can recover both components and construct $\langle y,x\rangle$. By the computable-transformation property,
+\[
+K(y,x)\leq K(x,y)+O(1).
+\]
+Applying the same procedure in the opposite direction gives
+\[
+K(x,y)\leq K(y,x)+O(1).
+\]
+Combining both inequalities establishes the result, with a constant independent of $x$ and $y$.
 \end{proof}
 
-Next proposition underscores the subadditive nature of Kolmogorov complexity, proving that the total complexity of describing two strings jointly cannot exceed the sum of their individual complexities by more than a fixed constant, irrespective of the strings' content.
+Another fundamental property is that the complexity of describing two strings jointly cannot exceed the sum of their individual complexities by more than a constant.
 
 \begin{proposition}
 \label{prop:additive_kolmogorov}
-There is a constant $c$ such that for all $s, t \in\mathcal{B}^{\ast}$ we have that $K(s, t) \leq K(s) + K(t) + c$.
+There exists a constant $c\geq 0$ such that, for all
+$s,t\in\mathcal{B}^*$,
+\[
+K(s,t)\leq K(s)+K(t)+c.
+\]
 \end{proposition}
 \begin{proof}
-Let $s^\ast$ and $t^\ast$ be the shortest self-delimiting programs that generate $s$ and $t$, respectively. Since $s^\ast$ and $t^\ast$ are prefix-free, their concatenation can be parsed unambiguously by a universal Turing machine $U$. A fixed wrapper program of length $c$ instructs $U$ to run both $s^\ast$ and $t^\ast$ in sequence and output the pair $\langle s,t\rangle$. Therefore, $K(s,t) \leq K(s) + K(t) + c$.
+Let $s^*$ and $t^*$ be shortest self-delimiting programs generating $s$ and $t$, respectively. Since these programs belong to a prefix-free description system, a fixed machine can read and execute them sequentially, and then output the structured pair $\langle s,t\rangle$. The concatenation of the two programs therefore provides a valid description under this machine, with length
+\[
+l(s^*)+l(t^*)=K(s)+K(t).
+\]
+By the optimality of the reference universal machine, this computation can be simulated with a fixed additional description overhead $c$. Consequently,
+\[
+K(s,t)\leq K(s)+K(t)+c.
+\]
 \end{proof}
 
-The final proposition establishes a lower bound on the joint complexity of two strings relative to their individual complexities.
+Conversely, the joint complexity of two strings cannot be substantially smaller than the complexity of either string individually, since both components can be recovered from their joint encoding.
 
 \begin{proposition}
 \label{prop:excess_kolmogorov}
-There is a constant $c$ such that for all $s, t \in \mathcal{B}^{\ast}$ we have
+There exists a constant $c\geq 0$ such that, for all
+$s,t\in\mathcal{B}^*$,
 \[
-K(s, t) \geq \max(K(s), K(t)) - c.
+K(s,t)\geq\max\{K(s),K(t)\}-c.
 \]
 \end{proposition}
 \begin{proof}
-Let $p$ be the shortest program that outputs the pair $\langle s,t\rangle$, so $K(s,t) = l(p)$. From $\langle s,t\rangle$, both $s$ and $t$ can be effectively recovered using a fixed decoding program of length $c$. Thus $K(s) \le K(s,t) + c$ and $K(t) \le K(s,t) + c$. Rearranging gives $K(s,t) \ge K(s) - c$ and $K(s,t) \ge K(t) - c$, which together imply $K(s,t) \ge \max(K(s),K(t)) - c$.
+Both $s$ and $t$ can be recovered from $\langle s,t\rangle$ by fixed computable procedures. Applying the computable-transformation property to each projection gives
+\[
+K(s)\leq K(s,t)+O(1)
+\]
+and
+\[
+K(t)\leq K(s,t)+O(1).
+\]
+Combining these inequalities establishes the result, with a constant independent of $s$ and $t$.
 \end{proof}
 
-%
-% Section: Conditional Kolmogorov Complexity
-%
-
-\section{Conditional Kolmogorov complexity}
-
-In this section, we explore the concept of \emph{conditional Kolmogorov complexity}, which measures how the description length of a string $s$ may decrease when prior knowledge of another string $t$ is available. This notion highlights the impact of background information on the compressibility of a description. Here, $\langle v,t\rangle$ denotes a computable pairing function with computable inverse, ensuring both $v$ and $t$ can be recovered unambiguously. Different choices of pairing function affect $K(s|t)$ by at most an additive constant.
-
-\begin{definition}[Conditional Kolmogorov Complexity]
-\index{Conditional Kolmogorov complexity}
-The \emph{conditional Kolmogorov complexity} of a string $s \in \mathcal{B}^{\ast}$ given the string $t \in \mathcal{B}^{\ast}$ is defined as:
+An immediate consequence of these properties concerns repeated information. Since a fixed program can construct $\langle s,s\rangle$ from $s$, and another fixed program can recover $s$ from this pair, we have
 \[
-K(s|t)=\min_{p, v \in \mathcal{B}^{\ast}}\left\{l(p) + l(v)\,:\, U(p,\langle v, t \rangle)=s\right\}
+K(s,s)=K(s)+O(1).
 \]
+Thus, describing two identical strings jointly requires no more than a constant amount of additional algorithmic information compared with describing a single copy. More generally, joint complexity accounts for shared computational structure, which may allow two strings to be described together more economically than separately.
+
+% Subsection: Conditional Kolmogorov Complexity
+
+\subsection*{Conditional Kolmogorov Complexity}
+\label{sec:conditional_kolmogorov_complexity}
+
+\emph{Conditional Kolmogorov complexity} measures the amount of algorithmic information required to generate a string when another string is available as auxiliary information. Unlike unconditional Kolmogorov complexity, which measures the length of a shortest program generating a string without additional input, conditional complexity allows the program to use a specified string without including its length in the description.
+
+\begin{definition}
+\label{def:Conditional-Kolmogorov-Complexity}
+\index{Conditional Kolmogorov complexity}
+The \emph{conditional Kolmogorov complexity} of a string $s \in \mathcal{B}^*$ given a string $t \in \mathcal{B}^*$ is defined as
+\[
+K(s \mid t) = \min\{l(p) : p \in \mathcal{B}^*, U(p,t)=s\},
+\]
+where $U$ is the fixed optimal prefix-free universal Turing machine.
 \end{definition}
 
-This definition is equivalent up to a constant to the standard formulation $K(s|t) = \min_p \{|p| : U(p,t) = s\}$, since the encoding $\langle v,t\rangle$ can be replaced by $t$ alone with at most constant overhead. As with unconditional Kolmogorov complexity, the conditional complexity is machine-independent: for any two universal Turing machines $U$ and $U'$, there exists a constant $C_{U,U'}$ such that for all $s, t \in \mathcal{B}^{\ast}$,
+The string $t$ is supplied as auxiliary information and does not contribute to the length of the program $p$. Any additional information not already available in $t$ must be encoded in the program. For multiple conditions, we use the notation
 \[
-K_{U}(s|t) \leq K_{U'}(s|t) + C_{U,U'}.
+K(s \mid t,u) = K(s \mid \langle t,u\rangle),
 \]
+where $\langle t,u\rangle$ is the fixed, computably decodable pairing convention introduced in the section on discrete mathematics. Natural numbers supplied as conditions are encoded using the same fixed integer encoding convention.
+
+As with unconditional complexity, conditional Kolmogorov complexity is invariant up to an additive constant under changes of optimal universal prefix-free machine. For any two such machines $U$ and $U'$, there exists a constant $c_{U,U'}$ such that
+\[
+K_U(s \mid t) \leq K_{U'}(s \mid t) + c_{U,U'}
+\]
+for all $s,t \in \mathcal{B}^*$. The constant depends on the machines but not on the strings.
 
 \begin{example}
-Let $s = 1010101010$ and $t = 10$. The unconditional complexity $K(s)$ is proportional to the length of $s$, since it is a ten-bit string. However, given $t$, we can describe $s$ succinctly by a short program: ``print $t$ five times.'' Thus $K(s|t)$ is only $O(\log 5)$, far smaller than $K(s)$. This illustrates how prior knowledge reduces the description length.
+Let $t$ be an incompressible binary string of length $n$, such that $K(t) \geq n-O(1)$, and consider the string $s=tt$, formed by concatenating two copies of $t$. Since $t$ can be recovered from $s$ by extracting its first half, we have
+\[
+K(s) \geq K(t)-O(1) \geq n-O(1).
+\]
+However, given $t$, a fixed program can generate $s$ by duplicating its input, so
+\[
+K(s \mid t)=O(1).
+\]
+Thus, a string with high unconditional complexity may have very low conditional complexity when suitable auxiliary information is available.
 \end{example}
 
-As with the unconditional Kolmogorov complexity, the conditional Kolmogorov complexity is a finite non-negative integer.
-
-\begin{proposition}
-For all $s, t \in\mathcal{B}^{\ast}$ we have that $0 \leq K(s | t) < \infty$.
-\end{proposition}
-\begin{proof}
-$K(s|t)$ is the length of a program-input pair, so it is non-negative. The property $K(s | t) < \infty$ is a consequence of Proposition \ref{prop:kolmogorov_length} and the fact that we are only dealing with finite strings.
-\end{proof}
-
-Next proposition posits that when a string $s$ is conditioned upon itself, its complexity reduces to at most a universal constant.
+For any finite binary strings $s$ and $t$, the conditional complexity $K(s \mid t)$ is a finite nonnegative integer, since a program can ignore its auxiliary input and generate $s$ directly. In particular, when a string is supplied as its own condition, only a fixed copying procedure is required.
 
 \begin{proposition}
 \label{prop:self_conditional}
-There is a constant $c$ such that for all $s\in\mathcal{B}^{\ast}$ we have that $K(s | s ) \leq c$.
+There exists a constant $c\geq 0$ such that, for every $s \in \mathcal{B}^*$,
+\[
+K(s \mid s) \leq c.
+\]
 \end{proposition}
 \begin{proof}
-When a string $s$ is conditioned on itself, the information needed to generate $s$ from $s$ can be encapsulated in a Turing machine that simply copies its input to its output. This machine, being independent of the specific content of $s$, has a fixed length $c$. 
+A fixed program can copy its auxiliary input to its output. Since this program is independent of $s$, its length is bounded by a constant.
 \end{proof}
 
-This proposition explores the relationship between unconditional and conditional Kolmogorov complexities, establishing an upper bound for the latter. It asserts that for any strings $s$ and $t$, the complexity of $s$ given $t$ is at most the complexity of $s$ alone, plus a constant $c$. This highlights the intuitive notion that having additional information can only reduce the complexity of describing a string, or in the worst case, add a constant overhead, but does not increase it beyond this bound.
+More generally, supplying auxiliary information cannot increase the complexity of a string by more than a fixed additive constant.
 
 \begin{proposition}
 \label{prop:kolmogorov_conditional}
-There is a constant $c$ such that for all $s, t \in \mathcal{B}^{\ast}$ we have that $K(s | t ) \leq K(s) + c$.
-\end{proposition}
-\begin{proof}
-Let $p_s$ be the shortest program that generates $s$ without any auxiliary input, so $|p_s| = K(s)$. Construct a new program $p'$ that ignores the conditional input $t$ and executes $p_s$. The additional instructions have fixed length $c$, independent of $s$ or $t$. Therefore $K(s|t) \leq K(s) + c$.
-\end{proof}
-
-Conditional complexity is not symmetric. In general, $K(s|t) \neq K(t|s)$.
-
-\begin{proposition}
-There exist strings $s, t \in \mathcal{B}^{\ast}$ such that $K(s|t) \neq K(t|s)$.
-\end{proposition}
-\begin{proof}
-Consider $s$ as a random $n$-bit string, and let $t$ be a shortest description of $s$. Then $K(s|t) = O(1)$, since given $t$ one can directly reconstruct $s$. On the other hand, $K(t|s) \geq n - O(1)$, since otherwise we would obtain a shorter description of $s$, contradicting minimality. Thus, in general, conditional Kolmogorov complexity is asymmetric.
-\end{proof}
-
-The relationship between conditional, unconditional, and joint Kolmogorov complexities offers a comprehensive perspective on the informational interdependencies of binary strings. It posits that the complexity of a string $s$ given another string $t$ is at most the complexity of $s$ alone, which in turn is no greater than the joint complexity of both $s$ and $t$. 
-
-\begin{proposition}
-\label{prop:kolmogorov_relations}
-For all $s, t\in\mathcal{B}^{\ast}$ we have that $K(s | t ) \leq K(s) \leq K(s, t)$.
-\end{proposition}
-\begin{proof}
-The first inequality follows from Proposition \ref{prop:kolmogorov_conditional}. The second inequality follows from Proposition \ref{prop:excess_kolmogorov}, since from $\langle s,t\rangle$ we can recover $s$ with constant overhead.
-\end{proof}
-
-The Kolmogorov complexity chain rule is a fundamental principle that connects the joint complexity of two strings with their individual and conditional complexities. It asserts that the total complexity of a pair of strings $s$ and $t$ can be decomposed into the complexity of $s$ plus the complexity of $t$ given $s$, up to a logarithmic additive term. This relationship mirrors the additive property of entropy in information theory and provides a powerful tool for understanding the interplay between information content and conditional information in the context of Kolmogorov complexity.
-
-\begin{proposition}[Kolmogorov chain rule]
-\label{prop:kolmogorov_chain_rule}
-For all $s, t \in \mathcal{B}^{\ast}$ we have
+There exists a constant $c\geq 0$ such that, for all $s,t \in \mathcal{B}^*$,
 \[
-K(s, t) = K(s) + K(t \mid s) + O(\log(K(s,t))).
+K(s \mid t) \leq K(s)+c.
 \]
 \end{proposition}
 \begin{proof}
-The upper bound follows by concatenating a shortest program $p_s$ that generates $s$ with a shortest program $p_{t|s}$ that generates $t$ given $s$, plus a fixed wrapper program that runs them in sequence. The overhead is logarithmic, due to the need for self-delimiting encodings of program lengths.  
-
-For the lower bound, note that from $\langle s,t\rangle$ one can reconstruct $s$, and then from $s$ and a decoding procedure reconstruct $t$. This yields $K(s,t) \ge K(s) + K(t|s) - O(\log(K(s,t)))$. Together, these inequalities establish the claim.
+Let $p$ be a shortest program generating $s$ without auxiliary input. A fixed interpreter can execute $p$ while ignoring the supplied string $t$. By the optimality of the reference universal machine, this requires at most a constant additional description length, independent of $s$ and $t$.
 \end{proof}
 
-\begin{example}
-Let $s = 0000$ and $t = 1111$. The joint description $\langle s,t\rangle$ can be generated by first describing $s$ (a short program "print four zeros") and then describing $t$ given $s$ (a short program "print four ones"). Hence $K(s,t) \approx K(s) + K(t|s)$ up to logarithmic overhead, illustrating the chain rule in practice.
-\end{example}
+Conditional complexity is not symmetric: knowing $t$ may substantially simplify the description of $s$, without the reverse being true.
 
-%
-% Section: Information Distance
-%
+\begin{proposition}
+\label{prop:conditional-asymmetry}
+There exist strings $s,t \in \mathcal{B}^*$ for which $K(s \mid t) \neq K(t \mid s)$. Moreover, the difference between these quantities can be arbitrarily large.
+\end{proposition}
 
-\section{Information Distance}
+\begin{proof}
+Let $s$ be an incompressible binary string of length $n$, so that $K(s)\geq n-O(1)$, and let $t=\lambda$ be the empty string. Since conditioning on the empty string is equivalent to providing no auxiliary information,
+\[
+K(s \mid t)=K(s)\geq n-O(1).
+\]
+Conversely, a fixed program can output the empty string regardless of its auxiliary input, so
+\[
+K(t \mid s)=O(1).
+\]
+As $n$ increases, the difference between these two quantities can become arbitrarily large.
+\end{proof}
+
+The preceding results imply that
+\[
+K(s \mid t)\leq K(s)+O(1)
+\]
+and
+\[
+K(s)\leq K(s,t)+O(1).
+\]
+The second inequality follows from the fact that $s$ can be recovered from the structured pair $\langle s,t\rangle$ by a fixed computable procedure.
+
+Conditional complexity satisfies properties analogous to those established for unconditional complexity. In particular, fixed computable transformations cannot increase conditional complexity by more than a constant.
+
+\begin{proposition}
+\label{prop:conditional-transformation}
+Let $f:\mathcal{B}^*\rightharpoonup\mathcal{B}^*$ be a partial computable function. There exists a constant $c_f\geq 0$ such that, for all $s\in\operatorname{dom}(f)$ and $t\in\mathcal{B}^*$,
+\[
+K(f(s)\mid t)\leq K(s\mid t)+c_f.
+\]
+\end{proposition}
+\begin{proof}
+Let $p$ be a shortest program generating $s$ given $t$. A fixed procedure can execute $p$ with auxiliary input $t$ and subsequently apply $f$ to its output. Since $f$ is fixed and computable, the optimality of the reference machine guarantees a constant simulation overhead independent of $s$ and $t$. Therefore,
+\[
+K(f(s)\mid t)\leq K(s\mid t)+O_f(1).
+\]
+\end{proof}
+
+Another property concerns the availability of additional auxiliary information.
+
+\begin{proposition}
+\label{prop:conditional-background}
+There exists a constant $c\geq 0$ such that, for all $s,t,u\in\mathcal{B}^*$,
+\[
+K(s\mid t,u)\leq K(s\mid t)+c.
+\]
+\end{proposition}
+\begin{proof}
+Given the structured pair $\langle t,u\rangle$, a fixed procedure can recover $t$ and execute a shortest program for $s$ conditional on $t$, ignoring $u$. This requires only a constant additional description length.
+\end{proof}
+
+Thus, additional auxiliary information cannot increase conditional complexity beyond a fixed additive constant, although it need not reduce it strictly.
+
+A further property concerns the composition of conditional descriptions. If a string $y$ can be reconstructed from $z$, and another string $x$ can be reconstructed from $y$, the two computations can be combined.
+
+\begin{proposition}
+\label{prop:conditional-composition}
+There exists a constant $c\geq 0$ such that, for all $x,y,z\in\mathcal{B}^*$,
+\[
+K(x\mid z)\leq
+K(y\mid z)+K(x\mid y)+c.
+\]
+\end{proposition}
+\begin{proof}
+Let $p$ be a shortest program generating $y$ given $z$, and let $q$ be a shortest program generating $x$ given $y$. A fixed prefix-free machine can execute $p$ using $z$ as auxiliary information, then execute $q$ using the resulting $y$. Because the programs belong to prefix-free description systems, their concatenation can be parsed sequentially. The combined computation therefore has a description of length
+\[
+l(p)+l(q)+O(1).
+\]
+By the optimality of the reference universal machine,
+\[
+K(x\mid z) \leq K(y\mid z) + K(x\mid y) + O(1),
+\]
+as required.
+\end{proof}
+
+This composition property provides a fundamental bound on the algorithmic information required to reconstruct an object through intermediate descriptions.
+
+The \emph{Kolmogorov complexity chain rule}\index{Kolmogorov complexity chain rule} relates the joint complexity of two strings to the complexity of one string and the additional information required to reconstruct the other.
+
+For prefix-free Kolmogorov complexity, the strongest standard formulation includes the complexity of the first string among the conditions.
+
+\begin{proposition}
+\label{prop:kolmogorov_chain_rule}
+For all $s,t\in\mathcal{B}^*$,
+\[
+K(s,t)=K(s)+K(t\mid s,K(s))+O(1).
+\]
+Consequently,
+\[
+K(s,t)=K(s)+K(t\mid s) +O(\log(K(s,t)+2)).
+\]
+\end{proposition}
+
+The first identity is the standard prefix-free symmetry-of-information theorem, also known as the exact chain rule. Its proof is nontrivial and is not reproduced here; it is established in the standard references on Kolmogorov complexity. The additive constant is independent of $s$ and $t$.
+
+The logarithmic form follows because the integer $K(s)$ can be supplied using a self-delimiting description of length $O(\log(K(s)+2))$. Indeed,
+\[
+K(t\mid s,K(s))
+\leq K(t\mid s)+O(1),
+\]
+while the conditional composition property gives
+\[
+K(t\mid s)
+\leq K(t\mid s,K(s))
++O(\log(K(s)+2)).
+\]
+Since $K(s)\leq K(s,t)+O(1)$, the logarithmic term can be bounded by $O(\log(K(s,t)+2))$, establishing the second identity.
+
+The exact chain rule also holds relative to fixed auxiliary information.
+
+\begin{proposition}
+\label{prop:conditional-chain-rule}
+For all $s,t,b\in\mathcal{B}^*$,
+\[
+\begin{aligned}
+K(s,t\mid b)
+={}&K(s\mid b)\\
+&+K(t\mid s,b,K(s\mid b))+O(1).
+\end{aligned}
+\]
+\end{proposition}
+
+This is the conditional form of the prefix-free chain rule, obtained by applying the same symmetry-of-information theorem relative to the auxiliary information $b$. The additive constant is independent of $s$, $t$, and $b$.
+
+These chain rules establish how the algorithmic information required to reconstruct multiple strings can be decomposed into unconditional and conditional contributions. They provide the mathematical foundation for comparing descriptions, analyzing shared information, and evaluating the information required to reconstruct representations from other representations or descriptions.
+
+% Subsection: Information Distance
+
+\subsection*{Information Distance}
 \label{sec:information_distance}
 
-In this section, we aim to introduce a universal metric for quantifying the absolute information distance between two or more individual entities encoded as strings of symbols. Intuitively, the information distance between two strings $s$ and $t$ can be understood as the length of the shortest computer program for a universal computer that enables the generation of $s$ given $t$ and vice versa.
+Conditional Kolmogorov complexity measures the information required to reconstruct one string from another, but it is generally asymmetric. To compare two strings without privileging either direction of reconstruction, we use the maximum of their two conditional complexities. This quantity is called \emph{algorithmic information distance}. It concerns binary strings; its interpretation as a measure of the inadequacy of scientific descriptions is developed in Chapter~6.
 
 \begin{definition}
-The \emph{information distance}\index{Information distance} between two strings $s,  t \in \mathcal{B}^{\ast}$ with respect to a universal Turing machine $U$, denoted by $ID_U(s, t)$, is defined as
+\label{def:information-distance}
+\index{Information distance}
+The \emph{information distance} between two strings $x,y\in\mathcal{B}^*$ is defined as
 \[
-ID_U(s, t) = \min \{ l(p) : U(p, s) = t, U(p, t) = s \}
+E(x,y)=\max\{K(x\mid y),K(y\mid x)\},
 \]
+where $K$ denotes conditional prefix-free Kolmogorov complexity relative to the fixed optimal universal machine.
 \end{definition}
 
-For any two universal Turing machines $U_1$ and $U_2$, the information distance between two strings differs by at most an additive constant $c$, which depends only on the choice of machines and not on the specific strings. It is also important to note that despite its theoretical significance, information distance is non-computable: there does not exist an algorithm that can compute it exactly for arbitrary strings.
-
-One might consider using the conditional Kolmogorov complexity $K(s \mid t)$ as a measure of information distance. However, this quantity is asymmetric (see Proposition \ref{prop:self_conditional}), making it unsuitable as a distance. Similarly, the sum $K(s \mid t) + K(t \mid s)$ is also inadequate, as it double-counts the overlapping information needed to transform $s$ into $t$ and vice versa.
-
-The following result shows how information distance can be expressed in terms of conditional Kolmogorov complexities.
+The function $E$ is symmetric and nonnegative. Moreover, $E(x,x)=O(1)$ because a fixed program can copy its auxiliary input. It is not an exact metric: its diagonal values need not be zero, and distinct strings may be transformable into one another by fixed programs of constant length. Nevertheless, it satisfies the triangle inequality up to a uniform additive constant.
 
 \begin{proposition}
-Let $s,  t \in \mathcal{B}^{\ast}$ be two binary strings. Then
+\label{prop:information-distance-triangle}
+For all $x,y,z\in\mathcal{B}^*$,
 \[
-ID_U(s, t) = \max\{ K(s \mid t), K(t \mid s) \} + O ( \log \max\{ K(s \mid t), K(t \mid s) \}).
+E(x,z)\leq E(x,y)+E(y,z)+O(1),
 \]
-\end{proposition}
-\begin{proof}[Proof sketch]
-Suppose without loss of generality that $K(s|t) \geq K(t|s)$. A shortest program $p$ of length $K(s|t)$ transforms $t$ into $s$. To also transform $s$ into $t$, we append a fixed routine that, given $s$, reconstructs $t$ by inverting the transformation. This requires at most logarithmic overhead to encode program lengths in a self-delimiting way. 
-Thus one program of length $K(s|t) + O(\log K(s|t))$ suffices in both directions. Therefore,
-\[
-ID_U(s,t) = \max\{K(s|t),K(t|s)\} + O(\log \max\{K(s|t),K(t|s)\}).
-\]
-\end{proof}
-
-\begin{example}
-Let $s=0011$ and $t=1100$. The bitwise exclusive-or $s \oplus t = 1111$ captures the difference between the two strings. 
-Given $s$ and the xor-mask $s \oplus t$, one can reconstruct $t$ by $t = s \oplus (s \oplus t)$, and conversely obtain $s$ from $t$ and the mask. Hence, the information distance between $s$ and $t$ is essentially the Kolmogorov complexity of the xor-mask, $K(s \oplus t)$, up to logarithmic overhead. If the mask is simple (all ones), the distance is small; if it is random, the distance is close to the full length of the strings.
-\end{example}
-
-It is convenient to introduce the following function, which captures the essence of information distance:
-\[
-E(x, y) = \max\{ K(x \mid y), K(y \mid x) \}.
-\]
-\begin{proposition}
-$E(x,y)$ is a metric up to logarithmic additive terms.
-\end{proposition}
-\begin{proof}[Proof sketch]
-Non-negativity and symmetry are immediate from the definition. 
-Identity holds since $E(x,x) = O(1)$, while if $x \neq y$, at least one of $K(x|y)$ or $K(y|x)$ is large, so $E(x,y) > 0$. 
-For the triangle inequality, let $x,y,z$ be strings. 
-From $x$ one can compute $y$ using a program of length $K(y|x)$, and from $y$ one can compute $z$ using a program of length $K(z|y)$. 
-Composing these programs, from $x$ we can compute $z$ using a program of length $K(y|x)+K(z|y)+O(\log)$. 
-Hence
-\[
-K(z|x) \leq K(y|x) + K(z|y) + O(\log).
-\]
-A similar argument applies symmetrically, establishing the triangle inequality for $E(x,y)$ up to logarithmic additive terms.
-\end{proof}
-
-The information distance $E(x,y)$ admits an alternative characterization in terms of the joint and individual Kolmogorov complexities, as follows.
-
-\begin{proposition}
-\[
-E(x, y) = \max\{ K(x \mid y), K(y \mid x) \} = K(xy) - \min\{ K(x), K(y) \} + O(\log K(xy)).
-\]
-\end{proposition}
-\begin{proof}[Proof sketch]
-Assume without loss of generality that $K(x) \leq K(y)$. 
-By the chain rule,
-\[
-K(xy) = K(x) + K(y \mid x) + O(\log K(xy)).
-\]
-Thus
-\[
-K(y|x) = K(xy) - K(x) + O(\log K(xy)).
-\]
-Since $E(x,y) = \max\{K(x|y),K(y|x)\}$, the dominant term is $K(y|x)$ in this case. 
-Hence
-\[
-E(x,y) = K(xy) - \min\{K(x),K(y)\} + O(\log K(xy)).
-\]
-\end{proof}
-
-We now introduce the notion of \emph{admissible information distances}.
-
-\begin{definition}
-An \emph{admissible information distance} $d(x,y)$ is a total function mapping pairs of strings to non-negative integers such that:  
-(1) $d(x,y)$ is upper semicomputable,  
-(2) it satisfies the metric properties up to $O(1)$, and  
-(3) it is normalized in the sense that $\sum_{y} 2^{-d(x,y)} \leq 1$ for all $x$.
-\end{definition}
-
-Among all admissible information distances, $E(x,y)$ plays a distinguished role by being the smallest one up to an additive constant, as stated next.
-
-\begin{proposition}
-$E(x,y)$ is an admissible information distance, and moreover it is minimal: for every other admissible information distance $d(x,y)$, we have
-\[
-E(x,y) \leq d(x,y) + O(1).
-\]
-\end{proposition}
-\begin{proof}[Proof idea]
-$E(x,y)$ is upper semicomputable because conditional complexities are. 
-It satisfies the metric axioms up to logarithmic additive terms, as shown earlier. 
-Normalization follows because conditional Kolmogorov complexities induce a semimeasure. 
-Minimality holds because any admissible distance can be simulated by conditional descriptions, while $E(x,y)$ already captures the maximal overlap of descriptions. 
-Thus $E(x,y)$ is universal among admissible information distances.
-\end{proof}
-
-This universality means that $E(x,y)$ encompasses all other admissible information distances: it is the minimal such function up to additive constants. Therefore, $E(x,y)$ provides a canonical, universal measure of information distance.
-
-% Normalized Information Distance
-
-\subsection*{Normalized Information Distance}
-
-Information distance is an absolute measure; however, when assessing similarity, we are often more concerned with relative measures. For instance, two strings of length $1{,}000{,}000$ differing by $1000$ bits are perceived as relatively more similar than two strings of length $1000$ that differ by the same number of bits. This motivates the introduction of a normalized version of information distance: the size of the description required for transformation should be evaluated relative to the sizes of the objects being compared.
-
-\begin{definition}
-The \emph{normalized information distance}\index{Normalized information distance} between two binary strings $s, t \in \mathcal{B}^{\ast}$, denoted by $NID(s,t)$, is defined as:
-\[
-NID(s, t) = \frac{\max\{ K(s \mid t), K(t \mid s) \}}{\max \{ K(s), K(t) \} }.
-\]
-\end{definition}
-
-As expected, the normalized information distance takes values between $0$ and $1$, up to negligible additive terms.
-
-\begin{proposition}
-\label{prop:ncd_between_zero_and_one}
-The normalized information distance $NID(s, t)$ takes values in the range $[0, 1]$ up to vanishing additive terms.
+where the additive constant is independent of $x$, $y$, and $z$.
 \end{proposition}
 \begin{proof}
-Non-negativity follows because complexities are non-negative, and so $NID(s,t)\geq 0$. 
-For the upper bound, we use the fact that $K(s|t) \leq K(s) + O(1)$ and $K(t|s)\leq K(t) + O(1)$. 
-Therefore
+By the composition property of conditional Kolmogorov complexity,
 \[
-\max\{K(s|t),K(t|s)\} \leq \max\{K(s),K(t)\} + O(1).
+K(x\mid z)\leq K(y\mid z)+K(x\mid y)+O(1)
 \]
-Dividing by $\max\{K(s),K(t)\}$ gives
+and
 \[
-NID(s,t) \leq 1 + O\!\left(\tfrac{1}{\max\{K(s),K(t)\}}\right).
+K(z\mid x)\leq K(y\mid x)+K(z\mid y)+O(1).
 \]
-Hence, up to negligible terms, $NID(s,t)\in [0,1]$.
+Each conditional complexity on the right-hand sides is bounded by the corresponding information distance. Taking the maximum of the two left-hand sides therefore gives
+\[
+E(x,z)\leq E(x,y)+E(y,z)+O(1).
+\]
 \end{proof}
 
-The normalized information distance not only captures relative similarity but also inherits the essential structure of a metric space, satisfying the axioms of a metric up to vanishing additive terms.
+Information distance is small when two strings can be reconstructed from one another using short programs, even if the strings have very different contents. For example, bitwise complementation is a fixed computable bijection, so $E(x,\operatorname{comp}(x))=O(1)$ for every binary string $x$, where $\operatorname{comp}(x)$ is obtained by exchanging zeros and ones. Small information distance therefore expresses algorithmic convertibility, rather than literal equality.
+
+Information distance also admits a characterization using joint Kolmogorov complexity.
 
 \begin{proposition}
-The normalized information distance $NID(x, y)$ is a metric, up to negligible errors.
+\label{prop:information-distance-joint}
+For all $x,y\in\mathcal{B}^*$,
+\[
+E(x,y)=K(x,y)-\min\{K(x),K(y)\}+O(\log(K(x,y)+2)).
+\]
+Here $K(x,y)=K(\langle x,y\rangle)$ denotes the complexity of the structured pair, not that of the concatenation $xy$.
 \end{proposition}
-\begin{proof}[Proof sketch]
-Non-negativity and symmetry are immediate from the definition. 
-For identity, $NID(x,y)=O(1/\max\{K(x),K(y)\})$ when $x=y$, while if $x\neq y$ at least one of the conditional complexities is large, so $NID(x,y) > 0$. 
-For the triangle inequality, let $x,y,z$ be strings. From the inequality
+\begin{proof}
+The logarithmic chain rule gives
 \[
-K(z|x) \leq K(y|x) + K(z|y) + O(\log),
+K(x,y)=K(x)+K(y\mid x)+O(\log(K(x,y)+2)).
 \]
-we obtain
+By symmetry of joint complexity, it also gives
 \[
-E(x,z) \leq E(x,y) + E(y,z) + O(\log),
+K(x,y)=K(y)+K(x\mid y)+O(\log(K(x,y)+2)).
 \]
-where $E(\cdot,\cdot)$ is the (unnormalized) information distance.
-
-Normalizing by $\max\{K(x),K(z)\}$ introduces at most a vanishing additive error. Thus $NID$ satisfies the metric axioms up to negligible terms.
+Rearranging both equations and taking the maximum of the conditional complexities yields
+\[
+\begin{aligned}
+E(x,y)
+&=\max\{K(y\mid x),K(x\mid y)\}\\
+&=K(x,y)-\min\{K(x),K(y)\}+O(\log(K(x,y)+2)),
+\end{aligned}
+\]
+as claimed.
 \end{proof}
 
-The normalized information distance can also be expressed directly in terms of the joint and individual Kolmogorov complexities, as shown below.
+The significance of $E$ is not limited to its symmetry and triangle inequality. It is also universal among a suitably restricted class of effective distances. The restriction is necessary: without it, an arbitrary distance could assign very small values to too many unrelated strings.
 
-\begin{proposition}
-\[
-NID(x, y) = \frac{ K(xy) - \min\{ K(x), K(y) \} + O(\log K(xy)) }{ \max \{ K(x), K(y) \} }.
-\]
-\end{proposition}
-\begin{proof}[Proof sketch]
-From the earlier result for information distance we know
-\[
-E(x,y) = \max\{K(x|y),K(y|x)\} = K(xy) - \min\{K(x),K(y)\} + O(\log K(xy)).
-\]
-Dividing both sides by $\max\{K(x),K(y)\}$ yields the expression for $NID(x,y)$.
-\end{proof}
-
-% Normalized Compression Distance
-
-\subsection*{Normalized Compression Distance}
-
-Although the normalized information distance is not computable, it has a wide range of potential applications. By approximating Kolmogorov complexity with practical compressors, we can obtain a computable surrogate of $NID$. Let $Z(s)$ denote the length in bits of the string $s$ compressed using a compressor $Z$ (such as \texttt{gzip}, \texttt{bzip2}, or \texttt{PPMZ}). Similarly, $Z(s \mid t)$ denotes the compressed size of $s$ when the compressor is given $t$ as auxiliary input. This motivates the following definition.
- 
 \begin{definition}
-The \emph{normalized compression distance}\index{Normalized compression distance} between two strings $s,  t \in \mathcal{B}^{\ast}$, given the compressor $Z$, and denoted by $NCD_Z(s, t)$, is defined as:
+\label{def:admissible-information-distance}
+\index{Admissible information distance}
+An \emph{admissible information distance} is a total function
+$d:\mathcal{B}^*\times\mathcal{B}^*\rightarrow\mathbb{Z}_{\geq 0}$ satisfying the following conditions:
+\begin{enumerate}
+\item $d$ is symmetric and satisfies the metric axioms, including $d(x,x)=0$;
+\item $d$ is upper semicomputable, uniformly in its two arguments;
+\item for every $x\in\mathcal{B}^*$, it satisfies the normalization condition
 \[
-NCD_Z(s, t) = \frac{\max\{ Z(s \mid t), Z(t \mid s) \}}{\max \{ Z(s), Z(t) \} }
+\sum_{y\neq x}2^{-d(x,y)}\leq 1.
+\]
+\end{enumerate}
+\end{definition}
+
+The diagonal is excluded from the sum because $d(x,x)=0$ already contributes $1$ to an unrestricted sum. The normalization condition limits the number of strings that can lie within a given information distance of any fixed string.
+
+\begin{proposition}
+\label{prop:information-distance-universality}
+For every admissible information distance $d$, there exists a constant $c_d\geq 0$ such that, for all $x,y\in\mathcal{B}^*$,
+\[
+E(x,y)\leq d(x,y)+c_d.
+\]
+The constant may depend on $d$ and on the fixed universal machine, but not on $x$ or $y$.
+\end{proposition}
+\begin{proof}
+Fix $x$. Because $d$ is upper semicomputable, the quantities $2^{-d(x,y)}$, for $y\neq x$, are uniformly lower semicomputable. The normalization condition makes them an enumerable conditional semimeasure. By the conditional coding theorem (equivalently, the conditional Kraft--Chaitin coding principle; see \cite{LV13}), there is a fixed conditional prefix-free description method satisfying
+\[
+K(y\mid x)\leq d(x,y)+O_d(1)
+\]
+for every $y\neq x$, with a constant independent of $x$ and $y$. By symmetry of $d$, the same argument gives
+\[
+K(x\mid y)\leq d(x,y)+O_d(1).
+\]
+Taking their maximum establishes the result when $x\neq y$. When $x=y$, the result follows from $E(x,x)=O(1)$ and $d(x,x)=0$.
+\end{proof}
+
+The function $E$ is itself upper semicomputable and satisfies the stated off-diagonal normalization, since
+\[
+\sum_{y\neq x}2^{-E(x,y)}
+\leq\sum_y2^{-K(y\mid x)}\leq 1.
+\]
+It satisfies the metric axioms up to additive constants, as established above. By setting its diagonal to zero and adding a sufficiently large fixed constant to its off-diagonal values, one obtains an admissible metric. Thus $E$ is minimal, up to an additive constant, among admissible information distances. This universality concerns the specified class of effective, normalized distances; it does not apply to arbitrary similarity measures.
+
+Information distance measures the absolute algorithmic information needed to transform one string into another. When comparing objects of substantially different complexities, a relative measure may be more informative.
+
+\begin{definition}
+\label{def:normalized-information-distance}
+\index{Normalized information distance}
+The \emph{normalized information distance} between two strings $x,y\in\mathcal{B}^*$ is defined as
+\[
+\operatorname{NID}(x,y)
+=\frac{E(x,y)}{\max\{K(x),K(y)\}}.
 \]
 \end{definition}
 
-In practice, most compressors do not support conditional compression, making $Z(s \mid t)$ difficult to compute directly. Fortunately, the definition can be reformulated in terms of concatenated compression, which avoids this issue.
+The denominator is positive under the fixed optimal prefix-free complexity convention, so this expression is defined for every pair of finite binary strings. Its basic bounds follow directly from the corresponding properties of conditional complexity.
 
 \begin{proposition}
-The normalized compression distance between two strings $s,  t \in \mathcal{B}^{\ast}$, given the compressor $Z$, satisfies:
+\label{prop:normalized-information-distance-bounds}
+For all $x,y\in\mathcal{B}^*$, writing $M=\max\{K(x),K(y)\}$, we have
 \[
-NCD_Z(s, t) = \frac{ Z(st) - \min\{ Z(s), Z(t) \}}{\max \{ Z(s), Z(t) \} }.
+0\leq\operatorname{NID}(x,y)\leq 1+O\!\left(\frac{1}{M}\right).
+\]
+Moreover,
+\[
+\operatorname{NID}(x,x)=O\!\left(\frac{1}{K(x)}\right).
 \]
 \end{proposition}
-\begin{proof}[Proof sketch]
-From the definition of $NCD_Z$, we have
+\begin{proof}
+Nonnegativity is immediate. Since conditioning cannot increase prefix-free complexity by more than a fixed constant,
 \[
-NCD_Z(s,t) = \frac{\max\{Z(s|t), Z(t|s)\}}{\max\{Z(s), Z(t)\}}.
+K(x\mid y)\leq K(x)+O(1), \qquad K(y\mid x)\leq K(y)+O(1).
 \]
-For real-world compressors, the conditional compression $Z(s|t)$ can be approximated by
-\[
-Z(s|t) \approx Z(st) - Z(t),
-\]
-since compressing the concatenation $st$ encodes $s$ with $t$ as a prefix, effectively using $t$ as context. Similarly,
-\[
-Z(t|s) \approx Z(st) - Z(s).
-\]
-Therefore,
-\[
-\max\{Z(s|t), Z(t|s)\} \approx Z(st) - \min\{Z(s), Z(t)\}.
-\]
-Substituting this into the definition yields
-\[
-NCD_Z(s,t) = \frac{Z(st) - \min\{Z(s), Z(t)\}}{\max\{Z(s), Z(t)\}}.
-\]
-This equality holds up to negligible additive errors, which vanish for ideal compressors.
+Consequently, $E(x,y)\leq M+O(1)$, and division by $M$ gives the upper bound. The diagonal bound follows from $E(x,x)=O(1)$.
 \end{proof}
 
-The normalized compression distance constitutes a family of distances, each defined by the choice of compressor $Z$. The effectiveness of $Z$ determines how closely the normalized compression distance mirrors the normalized information distance, ultimately influencing how well $NCD$ approximates $NID$ in practical applications.
+The normalized information distance is symmetric and satisfies the metric inequalities up to asymptotically vanishing additive discrepancies. In particular, its triangle inequality is a standard result of algorithmic information theory; it does not follow merely by dividing the triangle inequality for $E$ by the different complexity scales of three pairs. The proof, which requires a more detailed analysis of these scales, is omitted here; see \cite{LV13} and the references therein. For the present convention using $K(x\mid y)$ rather than conditioning on a shortest program for $y$, the precision includes logarithmic-order terms.
 
-%
-% Section: Incompressibility and Randomness
-%
+The joint-complexity characterization of information distance also gives
+\[
+\operatorname{NID}(x,y)=
+\frac{K(x,y)-\min\{K(x),K(y)\}}
+     {\max\{K(x),K(y)\}}
++O\!\left(
+\frac{\log(K(x,y)+2)}{\max\{K(x),K(y)\}}
+\right).
+\]
+Thus normalized information distance compares the algorithmic information not shared by two strings with the complexity of the more complex string.
 
-\section{Incompressibility and Randomness}
+Both $E$ and $\operatorname{NID}$ are theoretical quantities, since Kolmogorov complexity is not computable in general. Within the theory of nescience, absolute information distance provides the mathematical foundation for characterizing mismodel as distance from a description to the set of minimal descriptions. Normalized information distance provides the corresponding interpretation of relative mismodel. Practical approximations based on data compression lie outside the scope of this volume.
+
+% Subsection: Incompressibility and Randomness
+
+\subsection*{Incompressibility and Randomness}
 \label{sec:incompressibility_randomness}
 
-A string is considered incompressible if its Kolmogorov complexity is approximately equal to its length; in other words, there is no significantly shorter description or program that can produce it.
+A binary string is \emph{incompressible} when no program substantially shorter than the string itself can generate it. This is a lower-bound property of Kolmogorov complexity. In particular, because we use prefix-free complexity, the general upper bound is $K(s)\leq l(s)+O(\log(l(s)+2))$, rather than $K(s)\leq l(s)+O(1)$.
 
 \begin{definition}
-For each constant $c$ we say that a string $s \in \mathcal{B}^{\ast}$ is \emph{c-incompressible}\index{Incompressible string} if $K(s) \geq l(s) - c$.
+\label{def:c-incompressible}
+\index{Incompressible string}
+For a fixed nonnegative integer $c$, a string $s\in\mathcal{B}^*$ is \emph{$c$-incompressible} if
+\[
+K(s)\geq l(s)-c.
+\]
+The constant $c$ is fixed independently of $s$.
 \end{definition}
 
-The next proposition shows that incompressible strings exist for every string length.
+Incompressible strings exist at every length, even though their individual complexities cannot generally be computed.
 
 \begin{proposition}
-For every length $n$, there exists a string of length $n$ that is incompressible.
+\label{prop:incompressible-existence}
+For every integer $n\geq0$, there exists a string $s\in\mathcal{B}^*$ of length $n$ such that $K(s)\geq n$.
 \end{proposition}
 \begin{proof}
-By a counting argument, the number of programs of length less than $n$ is at most $2^n - 1$, while the number of binary strings of length $n$ is exactly $2^n$. Therefore, at least one string of length $n$ cannot be generated by any program shorter than $n$, and is thus incompressible.
+There are exactly $2^n$ binary strings of length $n$, whereas there are only
+\[
+\sum_{i=0}^{n-1}2^i=2^n-1
+\]
+binary programs of length less than $n$ (with the sum understood as empty when $n=0$). Each halting program produces at most one string. Thus at least one string of length $n$ cannot be generated by any program shorter than $n$.
 \end{proof}
 
-We extend the term \emph{incompressible string} to include all $c$-incompressible strings with $c$ small. In this sense, most strings are incompressible.
+In fact, strings that admit descriptions substantially shorter than their lengths form only a small fraction of all strings of a given length.
 
 \begin{proposition}
-For any $n$ and constant $c > 0$, at least a fraction $1 - 2^{-(c-1)}$ of the strings of length $n$ are $c$-incompressible.
+\label{prop:incompressible-frequency}
+For all integers $n,c\geq0$, at least a fraction $1-2^{-c}$ of the binary strings of length $n$ are $c$-incompressible. Equivalently,
+\[
+\frac{\#\{s\in\mathcal{B}^*:l(s)=n,\ K(s)\geq n-c\}}{2^n} \geq 1-2^{-c}.
+\]
 \end{proposition}
 \begin{proof}
-Consider the number of programs of length at most $n-c$. There are at most
+If $c>n$, every string of length $n$ satisfies the stated inequality. Otherwise, a string is not $c$-incompressible only if $K(s)<n-c$. There are at most
 \[
-\sum_{i=0}^{n-c} 2^i = 2^{n-c+1} - 1
+\sum_{i=0}^{n-c-1}2^i=2^{n-c}-1
 \]
-such programs. Since there are $2^n$ strings of length $n$, at least $2^n - (2^{n-c+1}-1)$ strings must be $c$-incompressible. Thus the fraction of $c$-incompressible strings of length $n$ is at least
-\[
-1 - \frac{2^{n-c+1}-1}{2^n} = 1 - 2^{-(c-1)} + \frac{1}{2^n}.
-\]
-For large $n$, this tends to $1 - 2^{-(c-1)}$.
+programs shorter than $n-c$, and hence at most this many strings of length $n$ can fail the condition. Dividing by $2^n$ gives a proportion of $c$-incompressible strings of at least $1-2^{-c}$.
 \end{proof}
 
-The notion of randomness, especially in the context of sequences or strings, is often associated with unpredictability, lack of pattern, or absence of structure. Kolmogorov complexity formalizes this intuition by linking randomness to incompressibility: a string is random if it cannot be generated by any program significantly shorter than the string itself.
+The same counting argument applies when another string is available as auxiliary information. This form is particularly useful for comparing representations and descriptions.
 
 \begin{definition}
-We say that a string $s \in \mathcal{B}^{\ast}$ is \emph{random}\index{Random string} if it is $c$-incompressible for some fixed small constant $c$.
+\label{def:conditional-incompressibility}
+\index{Conditional incompressibility}
+For a fixed nonnegative integer $c$, a string $s\in\mathcal{B}^*$ is \emph{$c$-incompressible relative to} $t\in\mathcal{B}^*$ if
+\[
+K(s\mid t)\geq l(s)-c.
+\]
 \end{definition}
 
-Random strings are characterized by high Kolmogorov complexity, meaning they are incompressible. The shortest program that can generate a random string is essentially the string itself. Such strings contain the maximum amount of information possible.
+The incompressibility counting bound also holds when arbitrary auxiliary information is available.
+
+\begin{proposition}[Conditional Incompressibility Counting Bound]
+\label{prop:conditional-incompressibility-frequency}
+For every auxiliary string $t\in\mathcal{B}^*$ and all integers $n,c\geq0$,
+\[
+\frac{\#\{s\in\mathcal{B}^*:l(s)=n,\ K(s\mid t)\geq n-c\}}{2^n}
+\geq 1-2^{-c}.
+\]
+In particular, for every $t$ and every $n$, there exists a string $s$ of length $n$ such that $K(s\mid t)\geq n$.
+\end{proposition}
+\begin{proof}
+Fix $t$. Each program, executed with auxiliary input $t$, produces at most one output. When $0\leq c\leq n$, fewer than $2^{n-c}$ programs have length less than $n-c$, so fewer than that many strings of length $n$ can satisfy $K(s\mid t)<n-c$. The claimed proportion follows. If $c>n$, the condition is automatic. Finally, fewer than $2^n$ programs have length less than $n$, so at least one string of length $n$ satisfies $K(s\mid t)\geq n$.
+\end{proof}
+
+Thus, regardless of the available information, most strings of a given length remain incompressible relative to it. In particular, arbitrarily long strings can always be found whose complexity is not reduced by that information.
+
+For finite strings, algorithmic randomness is commonly expressed through incompressibility relative to a specified threshold. The threshold must be fixed independently of the string: allowing it to be chosen after examining the string would make the classification vacuous.
+
+\begin{definition}
+\label{def:finite-algorithmic-randomness}
+\index{Algorithmic randomness}
+For a fixed nonnegative integer $c$, a finite binary string is called \emph{$c$-algorithmically random} if it is $c$-incompressible.
+\end{definition}
+
+This definition concerns finite strings and does not introduce a theory of randomness for infinite sequences. Nor does incompressibility alone imply that every bit of a finite string is unpredictable.
+
+The counting bound gives a precise interpretation in terms of uniformly sampled strings. If $S_n$ consists of $n$ independent fair coin flips, then, for every fixed nonnegative integer $c$,
+\[
+\Pr\bigl(K(S_n)\geq n-c\bigr)\geq 1-2^{-c}.
+\]
+For a fixed $c$, this lower bound does not approach $1$ merely by increasing $n$. If instead $c=c(n)$ tends to infinity, the proportion of strings satisfying $K(s)<n-c(n)$ tends to zero, since it is at most $2^{-c(n)}$.
 
 \begin{example}
-Consider a string generated by flipping a fair coin for each bit, such as $1011010110110101$. With overwhelming probability, this string will be incompressible, since no shorter program or pattern can generate it. Any attempted compression would yield a program of length comparable to the string itself.
+Let $\pi_n$ denote the string consisting of the first $n$ binary digits of $\pi$. A fixed algorithm can compute $\pi_n$ from $n$, so the computable-transformation property gives
+\[
+K(\pi_n)\leq K(n)+O(1)=O(\log(n+2)).
+\]
+Thus the prefixes of a computable sequence may exhibit apparent irregularity while remaining highly compressible in the algorithmic sense. A uniformly sampled $n$-bit string, by contrast, satisfies the preceding incompressibility bound with probability at least $1-2^{-c}$.
 \end{example}
 
-The unpredictability of random strings stems from their incompressibility. Because no algorithm can exploit patterns in such strings, predicting their bits is no better than random guessing.
-
-Random strings are typical in the space of all strings. In the sense of Kolmogorov complexity, almost all strings are random, while only a vanishing fraction admit significantly shorter descriptions.
-
-\begin{example}
-Consider the set of all conceivable high-resolution digital photographs, each represented as a binary string encoding pixel colors and intensities. Only a tiny fraction of these images exhibit recognizable regularities, such as a uniform blue sky or a solid monochromatic background, which can be compressed into shorter binary descriptions. By contrast, the overwhelming majority of possible images resemble random strings: they lack compressible patterns and are essentially incompressible.
-\end{example}
+Incompressibility also concerns the descriptions themselves, not just the strings they produce. If $d^*$ is a shortest complete program generating a string $r$ under the fixed reference description system, then $l(d^*)=K(r)$. Since $r$ can be computed from $d^*$ by a fixed procedure,
+\[
+K(r)\leq K(d^*)+O(1),
+\]
+and therefore
+\[
+K(d^*)\geq l(d^*)-O(1).
+\]
+Hence a minimal description is incompressible up to a constant, even when the string it generates is highly compressible. This distinction is relevant to the treatment of minimal descriptions in Chapter~4 and to their role in the theory of nescience.
 
 %
 % Section: Multiobjective Optimization
